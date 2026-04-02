@@ -1241,7 +1241,7 @@ body { margin: 0; background: #EDF1FC; min-width: 1280px; }
             </div>
             <div style="flex:1;height:1px;background:#7E44FB;margin:0 10px;min-width:12px;"></div>
             <!-- step 2: COMPLETED -->
-            <div style="display:flex;align-items:center;gap:6px;flex-shrink:0;cursor:pointer;" onclick="showScreen('step2')">
+            <div style="display:flex;align-items:center;gap:6px;flex-shrink:0;cursor:pointer;" onclick="showScreenBack('step2')">
               <div style="width:22px;height:22px;border-radius:50%;background:#7E44FB;color:white;display:flex;align-items:center;justify-content:center;">
                 <i data-lucide="check" style="width:12px;height:12px;stroke-width:3;"></i>
               </div>
@@ -1515,7 +1515,7 @@ body { margin: 0; background: #EDF1FC; min-width: 1280px; }
             </div>
             <div style="flex:1;height:1px;background:#7E44FB;margin:0 10px;min-width:12px;"></div>
             <!-- step 2: COMPLETED -->
-            <div style="display:flex;align-items:center;gap:6px;flex-shrink:0;cursor:pointer;" onclick="showScreen('step2')">
+            <div style="display:flex;align-items:center;gap:6px;flex-shrink:0;cursor:pointer;" onclick="showScreenBack('step2')">
               <div style="width:22px;height:22px;border-radius:50%;background:#7E44FB;color:white;display:flex;align-items:center;justify-content:center;">
                 <i data-lucide="check" style="width:12px;height:12px;stroke-width:3;"></i>
               </div>
@@ -2363,8 +2363,9 @@ function addQuestionRow() {
     '<div style="padding:10px;border-right:1px solid #E6E6E6;display:flex;align-items:flex-start;">' +
       '<textarea placeholder="문항/영역 입력" style="width:100%;min-height:60px;border:1px solid transparent;border-radius:6px;padding:6px 8px;font-size:16px;font-family:inherit;resize:vertical;outline:none;color:#333;line-height:1.55;background:transparent;" onmouseover="this.style.borderColor=\'#D9D9D9\'" onmouseout="if(document.activeElement!==this)this.style.borderColor=\'transparent\'" onfocus="this.style.borderColor=\'#7E44FB\';this.style.background=\'#FDFCFF\'" onblur="this.style.borderColor=\'transparent\';this.style.background=\'transparent\'"></textarea>' +
     '</div>' +
-    '<div style="padding:10px;border-right:1px solid #E6E6E6;display:flex;align-items:flex-start;">' +
-      '<textarea placeholder="문항 내용을 입력하세요" style="width:100%;min-height:60px;border:1px solid transparent;border-radius:6px;padding:6px 8px;font-size:16px;font-family:inherit;resize:vertical;outline:none;color:#333;line-height:1.55;background:transparent;" onmouseover="this.style.borderColor=\'#D9D9D9\'" onmouseout="if(document.activeElement!==this)this.style.borderColor=\'transparent\'" onfocus="this.style.borderColor=\'#7E44FB\';this.style.background=\'#FDFCFF\'" onblur="this.style.borderColor=\'transparent\';this.style.background=\'transparent\'"></textarea>' +
+    '<div style="padding:10px;border-right:1px solid #E6E6E6;display:flex;flex-direction:column;gap:6px;">' +
+      '<textarea class="q-content-ta" placeholder="문항 내용을 입력하세요" style="width:100%;min-height:60px;border:1px solid transparent;border-radius:6px;padding:6px 8px;font-size:16px;font-family:inherit;resize:vertical;outline:none;color:#333;line-height:1.55;background:transparent;" onmouseover="this.style.borderColor=\'#D9D9D9\'" onmouseout="if(document.activeElement!==this)this.style.borderColor=\'transparent\'" onfocus="this.style.borderColor=\'#7E44FB\';this.style.background=\'#FDFCFF\'" onblur="this.style.borderColor=\'transparent\';this.style.background=\'transparent\'"></textarea>' +
+      '<button onclick="openFormula(this.previousElementSibling)" style="align-self:flex-start;display:flex;align-items:center;gap:4px;border:1px solid #D9D9D9;background:white;border-radius:6px;height:26px;padding:0 8px;cursor:pointer;font-size:12px;font-weight:700;color:#494949;font-family:inherit;" onmouseover="this.style.borderColor=\'#7E44FB\';this.style.color=\'#7E44FB\'" onmouseout="this.style.borderColor=\'#D9D9D9\';this.style.color=\'#494949\'"><span style="font-size:14px;">∑</span> 수식</button>' +
     '</div>' +
     '<div style="padding:10px;background:#FAFAFA;border-right:1px solid #E6E6E6;display:flex;align-items:flex-start;">' +
       '<span style="font-size:12px;color:#B3B3B3;line-height:1.6;">AI 가이드 없음</span>' +
