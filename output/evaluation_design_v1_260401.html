@@ -1633,7 +1633,7 @@ body { margin: 0; background: #EDF1FC; min-width: 1280px; }
           </button>
           <div style="display:flex;gap:12px;">
             <button style="display:flex;align-items:center;gap:8px;background:transparent;border:1px solid #B28FFD;border-radius:8px;height:40px;padding:0 16px;cursor:pointer;color:#7E44FB;font-size:16px;font-weight:700;font-family:inherit;" onclick="saveDraft()">임시 저장</button>
-            <button onclick="showScreen('list')" style="display:flex;align-items:center;gap:8px;background:#7E44FB;border:none;border-radius:8px;height:40px;padding:0 16px;cursor:pointer;color:white;font-size:16px;font-weight:700;font-family:inherit;">
+            <button onclick="completeDesign()" style="display:flex;align-items:center;gap:8px;background:#7E44FB;border:none;border-radius:8px;height:40px;padding:0 16px;cursor:pointer;color:white;font-size:16px;font-weight:700;font-family:inherit;">
               <i data-lucide="check" style="width:16px;height:16px;"></i> 설계 완료
             </button>
           </div>
@@ -2401,6 +2401,24 @@ function deleteRow(idx) {
     });
   }
 }
+
+// 4단계 설계 완료 → 목록 이동 + 성공 토스트
+function completeDesign() {
+  showScreen('list');
+  setTimeout(function() { showToast('설계가 완료되었습니다.', 'success'); }, 100);
+}
+
+// label 전체 영역 클릭 시 체크박스 토글 (이벤트 위임)
+document.addEventListener('click', function(e) {
+  var label = e.target.closest && e.target.closest('label');
+  if (!label) return;
+  var checkDiv = label.querySelector('[onclick^="toggleRubric"]');
+  if (!checkDiv) return;
+  // 체크박스 div 자체는 onclick으로 직접 처리되므로, 그 외 영역 클릭만 위임
+  if (!checkDiv.contains(e.target)) {
+    toggleRubric(checkDiv);
+  }
+});
 
 // 3단계 채점기준 체크박스 토글
 // el = 체크박스 div (onclick="toggleRubric(this)")
