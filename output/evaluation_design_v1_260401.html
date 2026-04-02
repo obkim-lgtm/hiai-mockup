@@ -1185,6 +1185,45 @@ body { margin: 0; background: #EDF1FC; min-width: 1280px; }
     </div>
     <div style="max-width:1200px;width:100%;margin:0 auto;padding:0 36px;">
       <div style="background:white;border-radius:0 0 20px 20px;box-shadow:0 4px 36px rgba(95,102,178,0.16);padding:28px 24px;">
+
+        <!-- ── 3단계 AI 로딩 상태 ── -->
+        <div id="s3-loading" style="display:none;">
+          <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:80px 24px 60px;gap:24px;">
+            <!-- 스피너 -->
+            <div style="position:relative;width:72px;height:72px;">
+              <div style="position:absolute;inset:0;border-radius:50%;border:5px solid #EDF1FC;"></div>
+              <div style="position:absolute;inset:0;border-radius:50%;border:5px solid transparent;border-top-color:#7E44FB;animation:spin 0.9s linear infinite;"></div>
+              <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;">
+                <i data-lucide="sparkles" style="width:24px;height:24px;color:#7E44FB;"></i>
+              </div>
+            </div>
+            <!-- 텍스트 -->
+            <div style="text-align:center;display:flex;flex-direction:column;gap:8px;">
+              <p style="font-size:18px;font-weight:800;color:#341761;margin:0;">AI가 문항-채점기준을 매핑하고 있어요</p>
+              <p style="font-size:14px;color:#808080;margin:0;line-height:1.6;">인식된 문항을 분석해 채점기준과 자동으로 연결합니다.<br>최대 <strong style="color:#494949;">3분</strong> 정도 소요될 수 있습니다.</p>
+            </div>
+            <!-- 진행 단계 표시 -->
+            <div style="display:flex;flex-direction:column;gap:10px;width:320px;">
+              <div id="s3-load-step1" style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:#F7F4FF;border-radius:8px;">
+                <div style="width:18px;height:18px;border-radius:50%;border:3px solid transparent;border-top-color:#7E44FB;animation:spin 0.9s linear infinite;flex-shrink:0;"></div>
+                <span style="font-size:14px;font-weight:700;color:#7E44FB;">문항 내용 분석 중...</span>
+              </div>
+              <div id="s3-load-step2" style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:#F8F8F8;border-radius:8px;opacity:0.45;">
+                <div style="width:18px;height:18px;border-radius:50%;background:#E6E6E6;flex-shrink:0;"></div>
+                <span style="font-size:14px;font-weight:700;color:#808080;">채점기준 라이브러리 검색 중...</span>
+              </div>
+              <div id="s3-load-step3" style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:#F8F8F8;border-radius:8px;opacity:0.45;">
+                <div style="width:18px;height:18px;border-radius:50%;background:#E6E6E6;flex-shrink:0;"></div>
+                <span style="font-size:14px;font-weight:700;color:#808080;">연결 결과 정리 중...</span>
+              </div>
+            </div>
+            <!-- 데모 버튼 -->
+            <button onclick="showStep3Result()" style="margin-top:8px;height:36px;padding:0 20px;background:#EDF1FC;border:none;border-radius:8px;font-size:14px;font-weight:700;color:#7E44FB;cursor:pointer;font-family:inherit;">(데모) 결과 보기</button>
+          </div>
+        </div>
+
+        <!-- ── 3단계 실제 콘텐츠 ── -->
+        <div id="s3-content" style="display:none;">
         <div style="margin-bottom:16px;">
           <h2 style="font-size:20px;font-weight:800;color:#000;margin:0 0 4px;">문항-채점기준 연결</h2>
           <p style="font-size:14px;color:#494949;margin:0;">인식된 문항에 해당하는 채점기준을 연결해 주세요.</p>
@@ -1414,6 +1453,7 @@ body { margin: 0; background: #EDF1FC; min-width: 1280px; }
             </button>
           </div>
         </div>
+        </div><!-- /s3-content -->
       </div>
     </div>
   </div>
@@ -1928,7 +1968,12 @@ function showScreen(name) {
   closeAllDropdowns();
   window.scrollTo(0, 0);
   lucide.createIcons();
-  if (name === 'step3') { _step3Dirty = false; }
+  if (name === 'step3') {
+    _step3Dirty = false;
+    // 목록에서 직접 진입 시 로딩 없이 콘텐츠 바로 표시
+    document.getElementById('s3-loading').style.display = 'none';
+    document.getElementById('s3-content').style.display = 'block';
+  }
   if (name === 'detail') {
     // 신규 작성 상태로 초기화
     document.getElementById('d1-name-input').value = '';
@@ -2139,12 +2184,11 @@ function showScreenBack(target) {
     closeAllDropdowns();
     window.scrollTo(0, 0);
     lucide.createIcons();
-    // 업로드 결과가 있으면 유지, 없으면 업로드 화면 표시 (팝업 없음)
-    var hasResult = document.getElementById('s2-result').style.display !== 'none';
-    if (!hasResult) {
-      document.getElementById('s2-upload').style.display = 'block';
-      document.getElementById('s2-loading').style.display = 'none';
-    }
+    // step3에서 돌아올 때 → 항상 인식 결과 상태로 표시
+    document.getElementById('s2-upload').style.display = 'none';
+    document.getElementById('s2-loading').style.display = 'none';
+    document.getElementById('s2-result').style.display = 'block';
+    restoreResultGuide();
   } else {
     showScreen(target);
   }
@@ -2193,7 +2237,58 @@ function checkStep2AndProceed() {
     showToast('활동지를 먼저 업로드해 주세요.', 'error');
     return;
   }
+  // step3 로딩 상태로 이동
   showScreen('step3');
+  document.getElementById('s3-loading').style.display = 'block';
+  document.getElementById('s3-content').style.display = 'none';
+  // 로딩 단계 애니메이션
+  _runStep3LoadingAnim();
+}
+
+var _s3LoadTimer = null;
+function _runStep3LoadingAnim() {
+  var step1 = document.getElementById('s3-load-step1');
+  var step2 = document.getElementById('s3-load-step2');
+  var step3 = document.getElementById('s3-load-step3');
+  // 초기화
+  [step1, step2, step3].forEach(function(s) { s.style.opacity = '0.45'; });
+  step1.style.opacity = '1';
+  step1.style.background = '#F7F4FF';
+  step1.querySelector('span').style.color = '#7E44FB';
+  step1.querySelector('div').style.cssText = 'width:18px;height:18px;border-radius:50%;border:3px solid transparent;border-top-color:#7E44FB;animation:spin 0.9s linear infinite;flex-shrink:0;';
+
+  if (_s3LoadTimer) clearTimeout(_s3LoadTimer);
+  _s3LoadTimer = setTimeout(function() {
+    // step1 완료, step2 시작
+    step1.style.background = '#F1F9F3';
+    step1.querySelector('div').style.cssText = 'width:18px;height:18px;border-radius:50%;background:#00AF3D;flex-shrink:0;display:flex;align-items:center;justify-content:center;';
+    step1.querySelector('div').innerHTML = '<svg width="10" height="10" viewBox="0 0 10 10" fill="none"><polyline points="1.5,5 4,7.5 8.5,2" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+    step1.querySelector('span').style.color = '#00AF3D';
+    step2.style.opacity = '1';
+    step2.style.background = '#F7F4FF';
+    step2.querySelector('span').style.color = '#7E44FB';
+    step2.querySelector('div').style.cssText = 'width:18px;height:18px;border-radius:50%;border:3px solid transparent;border-top-color:#7E44FB;animation:spin 0.9s linear infinite;flex-shrink:0;';
+    _s3LoadTimer = setTimeout(function() {
+      // step2 완료, step3 시작
+      step2.style.background = '#F1F9F3';
+      step2.querySelector('div').style.cssText = 'width:18px;height:18px;border-radius:50%;background:#00AF3D;flex-shrink:0;display:flex;align-items:center;justify-content:center;';
+      step2.querySelector('div').innerHTML = '<svg width="10" height="10" viewBox="0 0 10 10" fill="none"><polyline points="1.5,5 4,7.5 8.5,2" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+      step2.querySelector('span').style.color = '#00AF3D';
+      step3.style.opacity = '1';
+      step3.style.background = '#F7F4FF';
+      step3.querySelector('span').style.color = '#7E44FB';
+      step3.querySelector('div').style.cssText = 'width:18px;height:18px;border-radius:50%;border:3px solid transparent;border-top-color:#7E44FB;animation:spin 0.9s linear infinite;flex-shrink:0;';
+    }, 2200);
+  }, 2000);
+}
+
+function showStep3Result() {
+  if (_s3LoadTimer) { clearTimeout(_s3LoadTimer); _s3LoadTimer = null; }
+  document.getElementById('s3-loading').style.display = 'none';
+  document.getElementById('s3-content').style.display = 'block';
+  _step3Dirty = false;
+  setTimeout(initStep3Labels, 100);
+  lucide.createIcons();
 }
 
 // 토스트 메시지
