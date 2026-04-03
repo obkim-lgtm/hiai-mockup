@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>평가 홈 v6</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+  <style>
+    @import url('https://cdn.rawgit.com/moonspam/NanumSquareRound/master/nanumsquareround.min.css');
+    * { font-family: 'NanumSquareRound', -apple-system, sans-serif; box-sizing: border-box; }
+    body { margin: 0; background: #EDF1FC; }
+
+    /* Step bar */
+    .step-done  { background:#F7F4FF; border:1px solid #B28FFD; color:#7E44FB; border-radius:9999px; height:32px; display:inline-flex; align-items:center; justify-content:center; padding:0 16px; font-size:13px; font-weight:700; white-space:nowrap; flex-shrink:0; }
+    .step-now   { background:#7E44FB; border:1px solid #7E44FB; color:white; border-radius:9999px; height:32px; display:inline-flex; align-items:center; justify-content:center; padding:0 16px; font-size:13px; font-weight:700; white-space:nowrap; flex-shrink:0; }
+    .step-todo  { background:#F0F0F0; border:1px solid #CCCCCC; color:#808080; border-radius:9999px; height:32px; display:inline-flex; align-items:center; justify-content:center; padding:0 16px; font-size:13px; font-weight:700; white-space:nowrap; flex-shrink:0; }
+    .step-line-done { flex:1; height:1px; background:#B28FFD; min-width:12px; }
+    .step-line-todo { flex:1; height:1px; background:#CCCCCC; min-width:12px; }
+
+    /* Status badges */
+    .badge-ing   { background:#F1F9F3; color:#00AF3D; border-radius:100px; padding:3px 10px; font-size:12px; font-weight:700; white-space:nowrap; }
+    .badge-done  { background:#E0E0E0; color:#222222; border-radius:100px; padding:3px 10px; font-size:12px; font-weight:700; white-space:nowrap; }
+    .badge-draft { background:#FFEFEF; color:#DB3E51; border-radius:100px; padding:3px 10px; font-size:12px; font-weight:700; white-space:nowrap; }
+
+    /* Buttons */
+    .btn-primary   { background:#7E44FB; color:white; border:none; border-radius:8px; height:40px; padding:0 20px; font-size:14px; font-weight:700; cursor:pointer; font-family:inherit; display:inline-flex; align-items:center; gap:6px; white-space:nowrap; }
+    .btn-secondary { background:white; color:#7E44FB; border:1.5px solid #7E44FB; border-radius:8px; height:36px; padding:0 16px; font-size:14px; font-weight:700; cursor:pointer; font-family:inherit; display:inline-flex; align-items:center; gap:6px; white-space:nowrap; }
+    .btn-outline   { background:white; color:#494949; border:1px solid #D9D9D9; border-radius:8px; height:36px; padding:0 16px; font-size:14px; font-weight:700; cursor:pointer; font-family:inherit; display:inline-flex; align-items:center; gap:6px; white-space:nowrap; }
+    .btn-danger-outline { background:white; color:#DB3E51; border:1.5px solid #DB3E51; border-radius:8px; height:36px; padding:0 16px; font-size:14px; font-weight:700; cursor:pointer; font-family:inherit; display:inline-flex; align-items:center; gap:6px; white-space:nowrap; }
+    .btn-warn-outline  { background:white; color:#FF8C4C; border:1.5px solid #FF8C4C; border-radius:8px; height:36px; padding:0 16px; font-size:14px; font-weight:700; cursor:pointer; font-family:inherit; display:inline-flex; align-items:center; gap:6px; white-space:nowrap; }
+    .btn-ghost { background:transparent; color:#7E44FB; border:none; padding:0; font-size:14px; font-weight:700; cursor:pointer; font-family:inherit; display:inline-flex; align-items:center; gap:4px; white-space:nowrap; }
+    .btn-ghost:hover { text-decoration:underline; }
+
+    /* Tab */
+    .tab-active   { flex:1; height:60px; background:white; border-radius:20px 20px 0 0; display:flex; align-items:center; justify-content:center; cursor:pointer; }
+    .tab-inactive { flex:1; height:60px; background:#CBD6F4; border-radius:20px 20px 0 0; display:flex; align-items:center; justify-content:center; cursor:pointer; }
+
+    /* Todo chips */
+    .chip-red    { background:#FFEFEF; color:#DB3E51; border-radius:6px; padding:3px 10px; font-size:13px; font-weight:700; display:inline-flex; align-items:center; gap:4px; }
+    .chip-orange { background:#FFEDD5; color:#FF8C4C; border-radius:6px; padding:3px 10px; font-size:13px; font-weight:700; display:inline-flex; align-items:center; gap:4px; }
+    .chip-green  { background:#F1F9F3; color:#00AF3D; border-radius:6px; padding:3px 10px; font-size:13px; font-weight:700; display:inline-flex; align-items:center; gap:4px; }
+
+    /* Action card */
+    .action-card {
+      background: white;
+      border-radius: 14px;
+      padding: 20px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      border: 1px solid #E6E6E6;
+    }
+    .action-card.red-accent  { border-left: 5px solid #DB3E51; }
+    .action-card.orange-accent { border-left: 5px solid #FF8C4C; }
+
+    /* Eval card */
+    .eval-card {
+      background: white;
+      border-radius: 14px;
+      border: 1px solid #E6E6E6;
+      overflow: hidden;
+    }
+    .eval-card:hover { box-shadow: 0 4px 20px rgba(95,102,178,0.12); }
+    .eval-card-body  { padding: 22px 24px; }
+    .eval-card-footer { padding: 14px 24px; background: #F8F8F8; border-top: 1px solid #F0F0F0; display:flex; align-items:center; justify-content:space-between; }
+  </style>
+</head>
+<body>
+
+<!-- ===== GNB ===== -->
+<div style="background:white; height:98px; border-bottom:1px solid #D9D9D9; display:flex; align-items:center; justify-content:center; padding:0 36px;">
+  <div style="display:flex; align-items:center; justify-content:space-between; width:100%; max-width:1200px; padding:0 36px;">
+    <div style="display:flex; align-items:center; gap:8px; flex-shrink:0;">
+      <div style="width:58px; height:42px; overflow:hidden; position:relative; flex-shrink:0;">
+        <img src="https://www.figma.com/api/mcp/asset/1912ee9b-1085-47ed-bac3-d1ba486a4d29"
+             style="position:absolute; left:50%; transform:translateX(-50%); height:100%; width:auto; object-fit:cover;" alt="HiAI 로고">
+      </div>
+      <div style="position:relative; width:150px; height:41px; flex-shrink:0;">
+        <img src="https://www.figma.com/api/mcp/asset/10df409c-9977-4f51-8a26-5da2b4ff6473"
+             style="position:absolute; top:0; left:0; width:79.842px; height:16.284px;" alt="하이러닝 AI">
+        <img src="https://www.figma.com/api/mcp/asset/5b4c00f6-6783-4a90-b2c4-6cfbb5196468"
+             style="position:absolute; top:24.08px; left:0.31px; width:149.692px; height:16.422px;" alt="서논술형 평가 서비스">
+      </div>
+    </div>
+    <nav style="display:flex; gap:52px; align-items:center;">
+      <span style="font-size:20px; font-weight:800; color:#7E44FB; cursor:pointer;">나의 평가</span>
+      <span style="font-size:20px; font-weight:700; color:#000; cursor:pointer;">평가 자료실</span>
+      <span style="font-size:20px; font-weight:700; color:#000; cursor:pointer;">고객센터</span>
+    </nav>
+    <div style="display:flex; align-items:center; gap:12px; flex-shrink:0;">
+      <img src="https://www.figma.com/api/mcp/asset/93f8b7d8-e7e3-4f23-99d4-03f2d6adfef4"
+           style="width:36px; height:36px;" alt="AI 아이콘">
+      <span style="font-size:20px; font-weight:700; color:#000;">김동* 님</span>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 타이틀 바 ===== -->
+<div style="background:linear-gradient(to right, #6562f5 4%, #9b68f3 97.86%); height:86px; display:flex; align-items:center; justify-content:center; padding:0 36px;">
+  <div style="width:100%; max-width:1200px; padding:0 36px; display:flex; align-items:center; justify-content:space-between;">
+    <span style="font-size:28px; font-weight:800; color:white; line-height:1.35;">1학년 국어</span>
+    <div style="display:flex; align-items:center; gap:16px;">
+      <span style="font-size:14px; color:rgba(255,255,255,0.8);">이동수업반</span>
+      <span style="width:1px; height:14px; background:rgba(255,255,255,0.3);"></span>
+      <span style="font-size:14px; color:rgba(255,255,255,0.8);">13개 학급 · 382명</span>
+      <span style="width:1px; height:14px; background:rgba(255,255,255,0.3);"></span>
+      <span style="font-size:14px; color:rgba(255,255,255,0.8);">2025년 1학기</span>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 본문 ===== -->
+<div style="display:flex; flex-direction:column; align-items:center; padding:40px 36px; min-height:760px;">
+  <div style="width:100%; max-width:1200px;">
+
+    <!-- 탭 -->
+    <div style="display:flex; gap:12px;">
+      <div class="tab-active"><span style="font-size:20px; font-weight:800; color:#341761;">평가 홈</span></div>
+      <div class="tab-inactive"><span style="font-size:20px; font-weight:700; color:#000;">평가 대상</span></div>
+      <div class="tab-inactive"><span style="font-size:20px; font-weight:700; color:#000;">평가 설계</span></div>
+      <div class="tab-inactive"><span style="font-size:20px; font-weight:700; color:#000;">과제물 관리</span></div>
+      <div class="tab-inactive"><span style="font-size:20px; font-weight:700; color:#000;">AI 채점</span></div>
+      <div class="tab-inactive"><span style="font-size:20px; font-weight:700; color:#000;">평가 리포트</span></div>
+    </div>
+
+    <!-- 패널 전체 -->
+    <div style="background:white; border-radius:0 0 24px 24px; padding:32px 28px; box-shadow:0 4px 36px 0 rgba(95,102,178,0.16); display:flex; flex-direction:column; gap:28px;">
+
+      <!-- ====== 상단: 수업 정보 + 평가 대상 ====== -->
+      <div style="display:flex; gap:16px; align-items:stretch;">
+
+        <!-- 수업 정보 카드 -->
+        <div style="flex:1; background:#F8F8F8; border-radius:16px; padding:24px; display:flex; flex-direction:column; gap:20px;">
+          <div style="display:flex; align-items:center; justify-content:space-between;">
+            <span style="font-size:20px; font-weight:700; color:#333;">수업 정보</span>
+            <button class="btn-outline" style="height:32px; font-size:13px; padding:0 12px;">
+              <i data-lucide="pencil" style="width:13px; height:13px;"></i>
+              수업 수정
+            </button>
+          </div>
+          <div style="display:flex; gap:8px; flex-wrap:wrap;">
+            <span style="background:#F7F4FF; border:1px solid #E3E4F8; border-radius:6px; padding:4px 12px; font-size:14px; color:#7E44FB; font-weight:700;">국어</span>
+            <span style="background:#F8F8F8; border:1px solid #E6E6E6; border-radius:6px; padding:4px 12px; font-size:14px; color:#494949;">1학년</span>
+            <span style="background:#F8F8F8; border:1px solid #E6E6E6; border-radius:6px; padding:4px 12px; font-size:14px; color:#494949;">2025년 1학기</span>
+          </div>
+          <div style="display:flex; align-items:center; gap:8px;">
+            <span style="background:#F2F5FF; border:1px solid #E3EAFF; border-radius:6px; padding:4px 12px; font-size:14px; font-weight:700; color:#5890FF;">이동수업반</span>
+            <span style="font-size:14px; color:#808080;">13개 학급 · 382명</span>
+          </div>
+        </div>
+
+        <!-- 평가 대상 카드 -->
+        <div style="width:280px; flex-shrink:0; background:#F8F8F8; border-radius:16px; padding:24px; display:flex; flex-direction:column; justify-content:space-between; gap:20px;">
+          <div style="display:flex; flex-direction:column; gap:16px;">
+            <span style="font-size:20px; font-weight:700; color:#333;">평가 대상</span>
+            <div style="display:flex; flex-direction:column; gap:8px;">
+              <div style="display:flex; align-items:center; justify-content:space-between;">
+                <span style="font-size:14px; color:#808080;">총 학생</span>
+                <span style="font-size:20px; font-weight:800; color:#7E44FB;">87명</span>
+              </div>
+              <div style="height:1px; background:#E6E6E6;"></div>
+              <div style="display:flex; align-items:center; justify-content:space-between;">
+                <span style="font-size:14px; color:#808080;">등록 학급</span>
+                <span style="font-size:20px; font-weight:800; color:#7E44FB;">3개</span>
+              </div>
+            </div>
+          </div>
+          <button class="btn-secondary" style="width:100%; justify-content:center;">
+            <i data-lucide="users" style="width:16px; height:16px;"></i>
+            평가 대상 관리
+          </button>
+        </div>
+
+      </div>
+
+      <!-- ====== 평가 목록 ====== -->
+      <div>
+        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:16px;">
+          <span style="font-size:20px; font-weight:700; color:#333;">평가 현황</span>
+          <button class="btn-primary">
+            <i data-lucide="plus" style="width:16px; height:16px;"></i>
+            새 평가 만들기
+          </button>
+        </div>
+
+        <div style="display:flex; flex-direction:column; gap:10px;">
+
+          <!-- ── 카드 1: 임시저장 ── -->
+          <div class="eval-card">
+            <div class="eval-card-body">
+              <div style="display:flex; flex-direction:column; gap:16px;">
+                <div style="display:flex; align-items:center; gap:8px;">
+                  <span class="badge-draft">임시저장</span>
+                  <span style="font-size:16px; font-weight:700; color:#222;">1학기 국어 서술형 평가 3회</span>
+                </div>
+                <div style="display:flex; align-items:center; gap:0; max-width:600px;">
+                  <div class="step-now" style="position:relative;">
+                    평가 설계
+                    <span style="position:absolute; top:-6px; right:-6px; width:10px; height:10px; background:#DB3E51; border-radius:50%; border:2px solid white;"></span>
+                  </div>
+                  <div class="step-line-todo"></div>
+                  <div class="step-todo">과제물 제출</div>
+                  <div class="step-line-todo"></div>
+                  <div class="step-todo">채점 진행</div>
+                  <div class="step-line-todo"></div>
+                  <div class="step-todo">평가 리포트</div>
+                </div>
+              </div>
+            </div>
+            <div class="eval-card-footer">
+              <span style="font-size:13px; color:#808080;">평가 설계를 완료해야 다음 단계로 진행할 수 있어요.</span>
+              <button class="btn-ghost">평가 설계 완료하기 <i data-lucide="arrow-right" style="width:14px;height:14px;"></i></button>
+            </div>
+          </div>
+
+          <!-- ── 카드 2: 진행 중 - 과제물 제출 단계 (미제출 있음) ── -->
+          <div class="eval-card">
+            <div class="eval-card-body">
+              <div style="display:flex; flex-direction:column; gap:16px;">
+                <div style="display:flex; align-items:center; gap:8px;">
+                  <span class="badge-ing">진행 중</span>
+                  <span style="font-size:16px; font-weight:700; color:#222;">2학기 국어 논술 평가</span>
+                </div>
+                <div style="display:flex; align-items:center; gap:0; max-width:600px;">
+                  <div class="step-done">평가 설계</div>
+                  <div class="step-line-done"></div>
+                  <div class="step-now">과제물 제출</div>
+                  <div class="step-line-todo"></div>
+                  <div class="step-todo">채점 진행</div>
+                  <div class="step-line-todo"></div>
+                  <div class="step-todo">평가 리포트</div>
+                </div>
+              </div>
+            </div>
+            <div class="eval-card-footer">
+              <div style="display:flex; align-items:center; gap:16px;">
+                <span class="chip-red"><i data-lucide="alert-circle" style="width:13px;height:13px;"></i> 미제출 5명</span>
+                <span class="chip-green"><i data-lucide="check-circle" style="width:13px;height:13px;"></i> 제출 완료 77명</span>
+                <div style="display:flex; align-items:center; gap:8px;">
+                  <div style="width:120px; height:5px; background:#F0F0F0; border-radius:9999px; overflow:hidden;">
+                    <div style="width:93.9%; height:100%; background:#B28FFD; border-radius:9999px;"></div>
+                  </div>
+                  <span style="font-size:13px; color:#808080; font-weight:700;">77/82명</span>
+                </div>
+              </div>
+              <button class="btn-ghost">제출 현황 보기 <i data-lucide="arrow-right" style="width:14px;height:14px;"></i></button>
+            </div>
+          </div>
+
+          <!-- ── 카드 3: 진행 중 - 채점 단계 (미채점 있음) ── -->
+          <div class="eval-card">
+            <div class="eval-card-body">
+              <div style="display:flex; flex-direction:column; gap:16px;">
+                <div style="display:flex; align-items:center; gap:8px;">
+                  <span class="badge-ing">진행 중</span>
+                  <span style="font-size:16px; font-weight:700; color:#222;">1학기 국어 서술형 평가 1회</span>
+                </div>
+                <div style="display:flex; align-items:center; gap:0; max-width:600px;">
+                  <div class="step-done">평가 설계</div>
+                  <div class="step-line-done"></div>
+                  <div class="step-done">과제물 제출</div>
+                  <div class="step-line-done"></div>
+                  <div class="step-now">채점 진행</div>
+                  <div class="step-line-todo"></div>
+                  <div class="step-todo">평가 리포트</div>
+                </div>
+              </div>
+            </div>
+            <div class="eval-card-footer">
+              <div style="display:flex; align-items:center; gap:16px;">
+                <span class="chip-red"><i data-lucide="edit-3" style="width:13px;height:13px;"></i> 미채점 28건</span>
+                <span class="chip-green"><i data-lucide="check-circle" style="width:13px;height:13px;"></i> 채점 완료 54건</span>
+                <div style="display:flex; align-items:center; gap:8px;">
+                  <div style="width:120px; height:5px; background:#F0F0F0; border-radius:9999px; overflow:hidden;">
+                    <div style="width:65.8%; height:100%; background:#B28FFD; border-radius:9999px;"></div>
+                  </div>
+                  <span style="font-size:13px; color:#808080; font-weight:700;">54/82건</span>
+                </div>
+              </div>
+              <button class="btn-ghost">채점 이어하기 <i data-lucide="arrow-right" style="width:14px;height:14px;"></i></button>
+            </div>
+          </div>
+
+          <!-- ── 카드 4: 완료 ── -->
+          <div class="eval-card" style="opacity:0.75;">
+            <div class="eval-card-body">
+              <div style="display:flex; align-items:flex-start; justify-content:space-between; gap:16px;">
+                <div style="display:flex; flex-direction:column; gap:16px;">
+                  <div style="display:flex; align-items:center; gap:8px;">
+                    <span class="badge-done">완료</span>
+                    <span style="font-size:16px; font-weight:800; color:#494949;">1학기 국어 서술형 평가 2회</span>
+                  </div>
+                  <div style="display:flex; align-items:center; gap:0; max-width:600px;">
+                    <div class="step-done">평가 설계</div>
+                    <div class="step-line-done"></div>
+                    <div class="step-done">과제물 제출</div>
+                    <div class="step-line-done"></div>
+                    <div class="step-done">채점 진행</div>
+                    <div class="step-line-done"></div>
+                    <div class="step-done">평가 리포트</div>
+                  </div>
+                </div>
+            </div>
+            <div class="eval-card-footer">
+              <span style="font-size:13px; color:#494949;">채점 및 리포트 완료</span>
+              <button class="btn-ghost">평가 리포트 보기 <i data-lucide="arrow-right" style="width:14px;height:14px;"></i></button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+    <!-- /패널 전체 -->
+
+  </div>
+</div>
+
+<script>lucide.createIcons();</script>
+</body>
+</html>
