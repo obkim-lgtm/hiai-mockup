@@ -319,7 +319,7 @@ button[onclick*="openFormula"] { cursor:not-allowed!important; color:#B3B3B3!imp
 
             <!-- 카드 8: 정교한 평가 · 임시저장 (3단계) -->
             <div style="background:white;border:1.5px dashed #FFB74D;border-radius:12px;width:330px;padding:20px 20px 18px;position:relative;cursor:pointer;box-sizing:border-box;display:flex;flex-direction:column;gap:12px;"
-              onmouseover="this.style.borderColor='#FF8C4C'" onmouseout="this.style.borderColor='#FFB74D'" onclick="showScreen('step3')">
+              onmouseover="this.style.borderColor='#FF8C4C'" onmouseout="this.style.borderColor='#FFB74D'" onclick="showDetailFilledAdvanced('논설문 작성 평가')">
               <div style="display:flex;align-items:flex-start;justify-content:space-between;">
                 <span style="font-size:18px;font-weight:700;color:#000;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:240px;">논설문 작성 평가</span>
                 <button onclick="event.stopPropagation();toggleCardDropdown(event,'drop8')" style="width:28px;height:28px;border:none;background:none;cursor:pointer;border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:-2px;"
@@ -623,7 +623,7 @@ button[onclick*="openFormula"] { cursor:not-allowed!important; color:#B3B3B3!imp
                 <div id="rubric-filled" style="display:none;border:1px solid #D9D9D9;border-radius:12px;padding:20px;margin-bottom:12px;">
                   <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
                     <span style="font-size:16px;font-weight:700;color:#333;">채점기준 1</span>
-                    <button onclick="switchToEmptyRubric()" style="display:flex;align-items:center;gap:6px;background:white;border:none;border-radius:8px;height:36px;padding:0 8px;cursor:pointer;color:#808080;font-size:14px;font-weight:700;font-family:inherit;">
+                    <button onclick="tryDeleteRubric()" style="display:flex;align-items:center;gap:6px;background:white;border:none;border-radius:8px;height:36px;padding:0 8px;cursor:pointer;color:#808080;font-size:14px;font-weight:700;font-family:inherit;">
                       <i data-lucide="trash-2" style="width:16px;height:16px;"></i>
                       삭제
                     </button>
@@ -2370,6 +2370,7 @@ function showScreen(name) {
     document.getElementById('s3-content').style.display = 'block';
   }
   if (name === 'detail') {
+    _hasDownstreamData = false;
     // 신규 작성 상태로 초기화
     document.getElementById('d1-name-input').value = '';
     document.getElementById('d1-std-empty').style.display = 'flex';
@@ -3053,6 +3054,34 @@ function renderS3Detail(q) {
   lucide.createIcons();
 }
 
+// 1단계 채점기준 교체 경고 플래그 (2~4단계 데이터 존재 여부)
+var _hasDownstreamData = false;
+
+function showDetailFilledAdvanced(name) {
+  _hasDownstreamData = true;
+  showDetailFilled(name);
+}
+
+function tryDeleteRubric() {
+  if (_hasDownstreamData) {
+    document.getElementById('modal-rubric-reset').style.display = 'flex';
+    lucide.createIcons();
+  } else {
+    switchToEmptyRubric();
+  }
+}
+
+function confirmRubricReset() {
+  document.getElementById('modal-rubric-reset').style.display = 'none';
+  _hasDownstreamData = false;
+  switchToEmptyRubric();
+  setTimeout(function() { showToast('2~4단계 데이터가 초기화되었습니다.', 'error'); }, 100);
+}
+
+function closeRubricResetModal() {
+  document.getElementById('modal-rubric-reset').style.display = 'none';
+}
+
 // 채점기준 상태 토글
 function switchToFilledRubric() {
   document.getElementById('rubric-empty').style.display = 'none';
@@ -3200,6 +3229,25 @@ document.addEventListener('DOMContentLoaded', function() {
 <!-- ═══════════════════════════════════════
      3단계: 미연결 채점기준 경고 모달
 ═══════════════════════════════════════ -->
+<!-- ── 채점기준 교체 경고 모달 ── -->
+<div id="modal-rubric-reset" style="display:none;position:fixed;inset:0;z-index:700;background:rgba(0,0,0,0.45);align-items:center;justify-content:center;" onclick="if(event.target===this)closeRubricResetModal()">
+  <div style="background:white;border-radius:16px;width:460px;padding:28px 28px 24px;box-shadow:0 12px 40px rgba(0,0,0,0.18);">
+    <div style="display:flex;align-items:flex-start;gap:14px;margin-bottom:16px;">
+      <div style="width:40px;height:40px;border-radius:50%;background:#FFF3E8;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+        <i data-lucide="alert-triangle" style="width:20px;height:20px;color:#FF8C4C;"></i>
+      </div>
+      <div>
+        <h3 style="font-size:16px;font-weight:800;color:#000;margin:0 0 8px;">채점기준을 교체하면 2~4단계 데이터가 초기화됩니다</h3>
+        <p style="font-size:14px;color:#494949;margin:0;line-height:1.6;">문항 구성, 채점기준 연결, 모범답안 입력 내용이 모두 삭제됩니다.<br>교체 후에는 2단계부터 다시 작업해야 합니다.</p>
+      </div>
+    </div>
+    <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:20px;">
+      <button onclick="closeRubricResetModal()" style="height:40px;padding:0 18px;background:transparent;border:1px solid #D9D9D9;border-radius:8px;cursor:pointer;font-size:15px;font-weight:700;color:#494949;font-family:inherit;" onmouseover="this.style.background='#F8F8F8'" onmouseout="this.style.background='transparent'">취소</button>
+      <button onclick="confirmRubricReset()" style="height:40px;padding:0 18px;background:#DB3E51;border:none;border-radius:8px;cursor:pointer;font-size:15px;font-weight:700;color:white;font-family:inherit;" onmouseover="this.style.opacity='0.88'" onmouseout="this.style.opacity='1'">교체 진행</button>
+    </div>
+  </div>
+</div>
+
 <!-- ── 이탈 경고 모달 (이전 단계 클릭 시) ── -->
 <div id="modal-leave-warning" style="display:none;position:fixed;inset:0;z-index:700;background:rgba(0,0,0,0.45);align-items:center;justify-content:center;" onclick="if(event.target===this)closeleaveWarning()">
   <div style="background:white;border-radius:16px;width:440px;padding:28px 28px 24px;box-shadow:0 12px 40px rgba(0,0,0,0.18);">
