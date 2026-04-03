@@ -17,16 +17,37 @@ body { margin: 0; background: #EDF1FC; min-width: 1280px; }
 /* 2단계 문항 테이블 마지막 행 모서리 */
 #question-list .q-row:last-child > *:first-child { border-radius: 0 0 0 10px; }
 #question-list .q-row:last-child > *:last-child { border-radius: 0 0 10px 0; }
-/* 수식 버튼 비활성화 + 툴팁 */
-button[onclick*="openFormula"] { cursor:not-allowed!important; color:#B3B3B3!important; border-color:#E6E6E6!important; background:#F8F8F8!important; }
-.formula-wrap { position:relative; display:inline-flex; margin-top:6px; align-self:flex-start; }
-.formula-wrap::after { content:"준비 중입니다"; position:absolute; bottom:calc(100% + 5px); left:50%; transform:translateX(-50%); background:#333; color:white; font-size:11px; font-weight:700; padding:4px 9px; border-radius:4px; white-space:nowrap; pointer-events:none; opacity:0; transition:opacity .15s; }
-.formula-wrap:hover::after { opacity:1; }
+/* 세부 기준 td flex 처리 */
+#rubric-list td:last-child { display:flex; align-items:center; gap:6px; }
+#rubric-list td:last-child input[type=text] { flex:1; min-width:0; }
+/* rubric 카드 바디 stretch */
+.rubric-card-body { display:flex; gap:12px; align-items:stretch; }
+.rubric-textarea-wrap { width:190px; flex-shrink:0; display:flex; flex-direction:column; }
+.rubric-textarea-wrap textarea { flex:1; min-height:80px; height:auto; }
+/* 수식 툴팁 (fixed — overflow:hidden 우회) */
+#sym-tooltip { position:fixed; background:rgba(0,0,0,0.78); color:white; font-size:11px; font-weight:700; border-radius:6px; padding:5px 10px; white-space:nowrap; z-index:9000; pointer-events:none; display:none; }
+#sym-tooltip::after { content:''; position:absolute; top:100%; left:50%; transform:translateX(-50%); border:5px solid transparent; border-top-color:rgba(0,0,0,0.78); }
+/* 수식 입력 모달 */
+#formula-modal { display:none; position:fixed; inset:0; z-index:600; background:rgba(0,0,0,0.45); align-items:center; justify-content:center; }
+#formula-modal.open { display:flex; }
+.sym-btn { border:1px solid #D9D9D9; background:white; border-radius:6px; width:36px; height:36px; font-size:16px; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:background .1s, border-color .1s; }
+.sym-btn:hover { background:#F3EEFF; border-color:#C4AAFD; }
 /* 3단계 문항 목록 아이템 */
 .s3-q-item { display:flex; align-items:center; }
 .s3-q-item:hover { background:#F7F4FF; }
 .s3-q-item.active { background:#EDE7FF; border-left:3px solid #7E44FB; }
 .s3-q-item:not(.active) { border-left:3px solid transparent; }
+/* 채점기준 드래그 정렬 */
+.rubric-dnd-card { background:white; border:1px solid #D9D9D9; border-radius:12px; transition: box-shadow .15s, opacity .15s; }
+.rubric-dnd-card.is-dragging { opacity:.4; box-shadow:0 6px 24px rgba(126,68,251,.22); }
+.rubric-dnd-card.drop-above { border-top:3px solid #7E44FB !important; }
+.rubric-dnd-card.drop-below { border-bottom:3px solid #7E44FB !important; }
+.drag-handle { cursor:grab; color:#C0B3D6; display:flex; align-items:center; padding:2px 6px 2px 2px; border-radius:6px; flex-shrink:0; transition:color .12s, background .12s; user-select:none; }
+.drag-handle:hover { color:#7E44FB; background:#F3EEFF; }
+.drag-handle:active { cursor:grabbing; }
+/* 순서 변경 토스트 */
+#reorder-toast { position:fixed; bottom:32px; left:50%; transform:translateX(-50%) translateY(16px); background:#341761; color:white; font-size:14px; font-weight:700; padding:10px 20px; border-radius:100px; white-space:nowrap; opacity:0; transition:opacity .25s, transform .25s; pointer-events:none; z-index:9999; }
+#reorder-toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
 </style>
 </head>
 <body>
@@ -448,6 +469,7 @@ button[onclick*="openFormula"] { cursor:not-allowed!important; color:#B3B3B3!imp
               <div id="d1-step1-circle" style="width:26px;height:26px;border-radius:50%;background:#7E44FB;color:white;font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center;">1</div>
               <span style="font-size:14px;font-weight:800;color:#7E44FB;white-space:nowrap;">설계 기본 정보</span>
             </div>
+            <div id="d1-steps-2-4" style="display:flex;align-items:center;flex:1;overflow:hidden;">
             <div style="flex:1;height:1px;background:#B3B3B3;margin:0 10px;min-width:12px;"></div>
             <!-- step 2: LOCKED -->
             <div style="display:flex;align-items:center;gap:6px;flex-shrink:0;cursor:not-allowed;position:relative;"
@@ -481,6 +503,7 @@ button[onclick*="openFormula"] { cursor:not-allowed!important; color:#B3B3B3!imp
               </div>
               <span style="font-size:14px;color:#808080;white-space:nowrap;">모범답안 입력 <span style="font-size:11px;font-weight:400;">(선택)</span></span>
             </div>
+            </div><!-- /d1-steps-2-4 -->
           </div>
           <span id="d1-progress-count" style="font-size:12px;color:#7E44FB;font-weight:800;white-space:nowrap;margin-left:20px;">0 / 4 완료</span>
         </div>
@@ -594,102 +617,183 @@ button[onclick*="openFormula"] { cursor:not-allowed!important; color:#B3B3B3!imp
               </div>
               <div style="padding-left:52px;position:relative;">
                 <div style="position:absolute;left:15px;top:0;bottom:20px;width:2px;background:#E3E4F8;"></div>
-                <!-- 채점기준 카드 - 빈 상태 (default) -->
-                <div id="rubric-empty" style="border:1px solid #D9D9D9;border-radius:12px;padding:20px;margin-bottom:12px;">
-                  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
-                    <span style="font-size:16px;font-weight:700;color:#333;">채점기준 1</span>
-                    <button style="display:flex;align-items:center;gap:6px;background:white;border:none;border-radius:8px;height:36px;padding:0 8px;cursor:pointer;color:#808080;font-size:14px;font-weight:700;font-family:inherit;">
-                      <i data-lucide="trash-2" style="width:16px;height:16px;"></i>
-                      삭제
-                    </button>
-                  </div>
-                  <!-- 점선 빈 상태 박스 -->
-                  <div style="border:2px dashed #C4AAFD;border-radius:12px;padding:36px 24px;text-align:center;background:#FAF8FF;">
-                    <div style="font-size:16px;font-weight:800;color:#341761;margin-bottom:6px;">채점기준을 AI로 빠르게 만들어보세요!</div>
-                    <div style="font-size:14px;color:#494949;font-weight:400;margin-bottom:20px;line-height:1.55;">성취기준과 입력된 자료를 인식하여 AI가 초안을 생성합니다.</div>
-                    <button onclick="openAIDrawer()" style="display:inline-flex;align-items:center;gap:8px;background:#7E44FB;border:none;border-radius:8px;height:40px;padding:0 20px;cursor:pointer;color:white;font-size:16px;font-weight:700;font-family:inherit;">
-                      <i data-lucide="wand-sparkles" style="width:16px;height:16px;"></i>
-                      채점기준 AI 생성
-                    </button>
-                    <div style="font-size:14px;color:#808080;margin:14px 0 10px;">또는</div>
-                    <button onclick="switchToFilledRubric()" style="display:inline-flex;align-items:center;gap:6px;background:transparent;border:none;border-radius:8px;height:36px;padding:0 12px;cursor:pointer;color:#7E44FB;font-size:16px;font-weight:700;font-family:inherit;">
-                      <i data-lucide="plus" style="width:16px;height:16px;"></i>
-                      직접 추가
-                    </button>
-                  </div>
-                </div>
 
-                <!-- 채점기준 카드 - 채워진 상태 (숨김) -->
-                <div id="rubric-filled" style="display:none;border:1px solid #D9D9D9;border-radius:12px;padding:20px;margin-bottom:12px;">
-                  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
-                    <span style="font-size:16px;font-weight:700;color:#333;">채점기준 1</span>
-                    <button onclick="tryDeleteRubric()" style="display:flex;align-items:center;gap:6px;background:white;border:none;border-radius:8px;height:36px;padding:0 8px;cursor:pointer;color:#808080;font-size:14px;font-weight:700;font-family:inherit;">
-                      <i data-lucide="trash-2" style="width:16px;height:16px;"></i>
-                      삭제
-                    </button>
+                <!-- 순서 변경 안내 + 입력 예시 -->
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+                  <div style="display:inline-flex;align-items:center;gap:5px;">
+                    <i data-lucide="grip-vertical" style="width:13px;height:13px;color:#B3B3B3;"></i>
+                    <span style="font-size:13px;color:#808080;font-weight:400;">핸들을 드래그하면 순서를 바꿀 수 있어요</span>
                   </div>
-                  <div style="display:flex;gap:12px;">
-                    <!-- 채점기준 입력 -->
-                    <div style="width:180px;flex-shrink:0;">
-                      <textarea placeholder="채점기준을 직접 입력해 주세요." style="width:100%;height:132px;border:1px solid #D9D9D9;border-radius:8px;padding:10px 12px;font-size:16px;font-family:inherit;resize:none;outline:none;color:#333;line-height:1.55;"></textarea>
-                    </div>
-                    <!-- 배점 테이블 -->
-                    <div style="flex:1;">
-                      <div style="border:1px solid #D9D9D9;border-radius:8px;overflow:hidden;">
-                      <table style="width:100%;border-collapse:separate;border-spacing:0;">
-                        <tbody>
-                          <tr>
-                            <td style="width:52px;border-right:1px solid #D9D9D9;border-bottom:1px solid #D9D9D9;padding:10px 4px;text-align:center;">
-                              <input type="number" value="0" style="width:44px;border:none;text-align:center;font-size:16px;font-family:inherit;outline:none;color:#333;background:transparent;">
-                            </td>
-                            <td style="border-bottom:1px solid #D9D9D9;padding:10px 12px;"><input type="text" placeholder="해당 점수에 해당하는 세부 기준을 입력해 주세요." style="width:100%;border:none;font-size:14px;font-family:inherit;outline:none;color:#333;background:transparent;"></td>
-                          </tr>
-                          <tr>
-                            <td style="width:52px;border-right:1px solid #D9D9D9;border-bottom:1px solid #D9D9D9;padding:10px 4px;text-align:center;">
-                              <input type="number" value="0" style="width:44px;border:none;text-align:center;font-size:16px;font-family:inherit;outline:none;color:#333;background:transparent;">
-                            </td>
-                            <td style="border-bottom:1px solid #D9D9D9;padding:10px 12px;"><input type="text" placeholder="해당 점수에 해당하는 세부 기준을 입력해 주세요." style="width:100%;border:none;font-size:14px;font-family:inherit;outline:none;color:#333;background:transparent;"></td>
-                          </tr>
-                          <tr>
-                            <td style="width:52px;border-right:1px solid #D9D9D9;padding:10px 4px;text-align:center;">
-                              <input type="number" value="0" style="width:44px;border:none;text-align:center;font-size:16px;font-family:inherit;outline:none;color:#333;background:transparent;">
-                            </td>
-                            <td style="padding:10px 12px;"><input type="text" placeholder="해당 점수에 해당하는 세부 기준을 입력해 주세요." style="width:100%;border:none;font-size:14px;font-family:inherit;outline:none;color:#333;background:transparent;"></td>
-                          </tr>
-                        </tbody>
-                      </table>
-                      </div>
-                      <div style="display:flex;gap:12px;margin-top:10px;">
-                        <button style="display:flex;align-items:center;gap:6px;background:transparent;border:none;border-radius:8px;height:36px;padding:0 8px;cursor:pointer;color:#494949;font-size:14px;font-weight:700;font-family:inherit;">
-                          <i data-lucide="circle-plus" style="width:16px;height:16px;color:#808080;"></i>
-                          배점 추가
-                        </button>
-                        <button style="display:flex;align-items:center;gap:6px;background:transparent;border:none;border-radius:8px;height:36px;padding:0 8px;cursor:pointer;color:#494949;font-size:14px;font-weight:700;font-family:inherit;">
-                          <i data-lucide="circle-minus" style="width:16px;height:16px;color:#808080;"></i>
-                          배점 제거
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <!-- 하단 액션 버튼 (채워진 상태) -->
-                <div id="rubric-action-btns" style="display:none;gap:12px;margin-bottom:14px;align-items:center;">
-                  <button onclick="openAIDrawer()" style="display:flex;align-items:center;gap:8px;background:#7E44FB;border:none;border-radius:8px;height:36px;padding:0 16px;cursor:pointer;color:white;font-size:14px;font-weight:700;font-family:inherit;">
-                    <i data-lucide="wand-sparkles" style="width:14px;height:14px;"></i>
-                    채점기준 AI 생성
-                  </button>
-                  <button style="display:flex;align-items:center;gap:6px;background:transparent;border:none;border-radius:8px;height:36px;padding:0 12px;cursor:pointer;color:#7E44FB;font-size:14px;font-weight:700;font-family:inherit;">
-                    <i data-lucide="plus" style="width:14px;height:14px;"></i>
-                    직접 추가
-                  </button>
-                </div>
-
-                <!-- 입력 가이드 -->
-                <div style="display:flex;align-items:center;gap:8px;">
-                  <span style="font-size:14px;color:#494949;">어떻게 입력해야 하나요?</span>
                   <span style="font-size:14px;font-weight:700;color:#7E44FB;cursor:pointer;text-decoration:underline;text-underline-offset:2px;">채점기준 입력 예시</span>
                 </div>
+
+                <!-- ── 채점기준 카드 목록 (드래그 정렬) ── -->
+                <div id="rubric-list" style="display:flex;flex-direction:column;gap:12px;margin-bottom:14px;">
+
+                  <!-- 채점기준 카드 1 -->
+                  <div class="rubric-dnd-card" draggable="false" data-rubric-id="1">
+                    <!-- 카드 헤더 -->
+                    <div style="display:flex;align-items:center;padding:14px 14px 0 10px;gap:4px;">
+                      <div class="drag-handle" title="드래그하여 순서 변경" onmousedown="startDrag(event)" ontouchstart="startDrag(event)">
+                        <i data-lucide="grip-vertical" style="width:20px;height:20px;"></i>
+                      </div>
+                      <span class="rubric-num" style="font-size:16px;font-weight:700;color:#333;flex:1;margin-left:4px;">채점기준 1</span>
+                      <button onclick="copyRubricCard(this)" style="display:flex;align-items:center;gap:5px;background:transparent;border:none;border-radius:8px;height:34px;padding:0 8px;cursor:pointer;color:#808080;font-size:14px;font-weight:700;font-family:inherit;" onmouseover="this.style.background='#F8F8F8'" onmouseout="this.style.background='transparent'">
+                        <i data-lucide="copy" style="width:15px;height:15px;"></i>복사
+                      </button>
+                      <button onclick="deleteRubricCard(this)" style="display:flex;align-items:center;gap:5px;background:transparent;border:none;border-radius:8px;height:34px;padding:0 8px;cursor:pointer;color:#808080;font-size:14px;font-weight:700;font-family:inherit;" onmouseover="this.style.background='#F8F8F8'" onmouseout="this.style.background='transparent'">
+                        <i data-lucide="trash-2" style="width:15px;height:15px;"></i>삭제
+                      </button>
+                    </div>
+                    <!-- 카드 바디 -->
+                    <div class="rubric-card-body" style="padding:12px 14px 16px 34px;">
+                      <div class="rubric-textarea-wrap">
+                        <textarea style="width:100%;border:1px solid #D9D9D9;border-radius:8px;padding:10px 12px;font-size:16px;font-family:inherit;resize:none;outline:none;color:#333;line-height:1.55;" onfocus="this.style.borderColor='#7E44FB'" onblur="this.style.borderColor='#D9D9D9'">내용의 타당성과 근거 제시의 충실성을 평가한다.</textarea>                      </div>
+                      <div style="flex:1;">
+                        <div style="border:1px solid #D9D9D9;border-radius:8px;overflow:hidden;">
+                          <table style="width:100%;border-collapse:separate;border-spacing:0;">
+                            <thead>
+                              <tr style="background:#F8F8F8;">
+                                <th style="width:52px;border-right:1px solid #D9D9D9;border-bottom:1px solid #D9D9D9;padding:8px 4px;text-align:center;font-size:12px;font-weight:700;color:#808080;">배점</th>
+                                <th style="border-bottom:1px solid #D9D9D9;padding:8px 12px;text-align:left;font-size:12px;font-weight:700;color:#808080;">세부 기준</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <tr>
+                                <td style="width:52px;border-right:1px solid #D9D9D9;border-bottom:1px solid #D9D9D9;padding:9px 4px;text-align:center;"><input type="number" value="5" style="width:44px;border:none;text-align:center;font-size:16px;font-weight:700;font-family:inherit;outline:none;color:#333;background:transparent;"></td>
+                                <td style="border-bottom:1px solid #D9D9D9;padding:9px 12px;"><input type="text" value="내용이 타당하고 근거가 구체적이며 충실하게 제시됨" style="width:100%;border:none;font-size:16px;font-family:inherit;outline:none;color:#333;background:transparent;"><button onmouseenter="showSymTooltip(this)" onmouseleave="hideSymTooltip()" style="display:inline-flex;align-items:center;justify-content:center;border:1px solid #E6E6E6;background:#F8F8F8;border-radius:5px;width:26px;height:26px;font-size:14px;color:#B3B3B3;font-family:inherit;cursor:not-allowed;flex-shrink:0;">∑</button></td>
+                              </tr>
+                              <tr>
+                                <td style="width:52px;border-right:1px solid #D9D9D9;border-bottom:1px solid #D9D9D9;padding:9px 4px;text-align:center;"><input type="number" value="3" style="width:44px;border:none;text-align:center;font-size:16px;font-weight:700;font-family:inherit;outline:none;color:#333;background:transparent;"></td>
+                                <td style="border-bottom:1px solid #D9D9D9;padding:9px 12px;"><input type="text" value="내용은 적절하나 근거 제시가 불충분함" style="width:100%;border:none;font-size:16px;font-family:inherit;outline:none;color:#333;background:transparent;"><button onmouseenter="showSymTooltip(this)" onmouseleave="hideSymTooltip()" style="display:inline-flex;align-items:center;justify-content:center;border:1px solid #E6E6E6;background:#F8F8F8;border-radius:5px;width:26px;height:26px;font-size:14px;color:#B3B3B3;font-family:inherit;cursor:not-allowed;flex-shrink:0;">∑</button></td>
+                              </tr>
+                              <tr>
+                                <td style="width:52px;border-right:1px solid #D9D9D9;padding:9px 4px;text-align:center;"><input type="number" value="1" style="width:44px;border:none;text-align:center;font-size:16px;font-weight:700;font-family:inherit;outline:none;color:#333;background:transparent;"></td>
+                                <td style="padding:9px 12px;"><input type="text" value="내용이 주제와 관련성이 낮고 근거가 없음" style="width:100%;border:none;font-size:16px;font-family:inherit;outline:none;color:#333;background:transparent;"><button onmouseenter="showSymTooltip(this)" onmouseleave="hideSymTooltip()" style="display:inline-flex;align-items:center;justify-content:center;border:1px solid #E6E6E6;background:#F8F8F8;border-radius:5px;width:26px;height:26px;font-size:14px;color:#B3B3B3;font-family:inherit;cursor:not-allowed;flex-shrink:0;">∑</button></td>
+                              </tr>
+                            </tbody>
+                          </table>
+                        </div>
+                        <div style="display:flex;gap:8px;margin-top:8px;">
+                          <button style="display:flex;align-items:center;gap:5px;background:transparent;border:none;border-radius:8px;height:32px;padding:0 8px;cursor:pointer;color:#494949;font-size:13px;font-weight:700;font-family:inherit;" onmouseover="this.style.background='#F0F0F0'" onmouseout="this.style.background='transparent'"><i data-lucide="circle-plus" style="width:15px;height:15px;color:#808080;"></i>배점 추가</button>
+                          <button style="display:flex;align-items:center;gap:5px;background:transparent;border:none;border-radius:8px;height:32px;padding:0 8px;cursor:pointer;color:#494949;font-size:13px;font-weight:700;font-family:inherit;" onmouseover="this.style.background='#F0F0F0'" onmouseout="this.style.background='transparent'"><i data-lucide="circle-minus" style="width:15px;height:15px;color:#808080;"></i>배점 제거</button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- 채점기준 카드 2 -->
+                  <div class="rubric-dnd-card" draggable="false" data-rubric-id="2">
+                    <div style="display:flex;align-items:center;padding:14px 14px 0 10px;gap:4px;">
+                      <div class="drag-handle" title="드래그하여 순서 변경" onmousedown="startDrag(event)" ontouchstart="startDrag(event)">
+                        <i data-lucide="grip-vertical" style="width:20px;height:20px;"></i>
+                      </div>
+                      <span class="rubric-num" style="font-size:16px;font-weight:700;color:#333;flex:1;margin-left:4px;">채점기준 2</span>
+                      <button onclick="copyRubricCard(this)" style="display:flex;align-items:center;gap:5px;background:transparent;border:none;border-radius:8px;height:34px;padding:0 8px;cursor:pointer;color:#808080;font-size:14px;font-weight:700;font-family:inherit;" onmouseover="this.style.background='#F8F8F8'" onmouseout="this.style.background='transparent'">
+                        <i data-lucide="copy" style="width:15px;height:15px;"></i>복사
+                      </button>
+                      <button onclick="deleteRubricCard(this)" style="display:flex;align-items:center;gap:5px;background:transparent;border:none;border-radius:8px;height:34px;padding:0 8px;cursor:pointer;color:#808080;font-size:14px;font-weight:700;font-family:inherit;" onmouseover="this.style.background='#F8F8F8'" onmouseout="this.style.background='transparent'">
+                        <i data-lucide="trash-2" style="width:15px;height:15px;"></i>삭제
+                      </button>
+                    </div>
+                    <div class="rubric-card-body" style="padding:12px 14px 16px 34px;">
+                      <div class="rubric-textarea-wrap">
+                        <textarea style="width:100%;border:1px solid #D9D9D9;border-radius:8px;padding:10px 12px;font-size:16px;font-family:inherit;resize:none;outline:none;color:#333;line-height:1.55;" onfocus="this.style.borderColor='#7E44FB'" onblur="this.style.borderColor='#D9D9D9'">논리적 구성과 문단 간 연결의 자연스러움을 평가한다.</textarea>                      </div>
+                      <div style="flex:1;">
+                        <div style="border:1px solid #D9D9D9;border-radius:8px;overflow:hidden;">
+                          <table style="width:100%;border-collapse:separate;border-spacing:0;">
+                            <thead>
+                              <tr style="background:#F8F8F8;">
+                                <th style="width:52px;border-right:1px solid #D9D9D9;border-bottom:1px solid #D9D9D9;padding:8px 4px;text-align:center;font-size:12px;font-weight:700;color:#808080;">배점</th>
+                                <th style="border-bottom:1px solid #D9D9D9;padding:8px 12px;text-align:left;font-size:12px;font-weight:700;color:#808080;">세부 기준</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <tr>
+                                <td style="width:52px;border-right:1px solid #D9D9D9;border-bottom:1px solid #D9D9D9;padding:9px 4px;text-align:center;"><input type="number" value="5" style="width:44px;border:none;text-align:center;font-size:16px;font-weight:700;font-family:inherit;outline:none;color:#333;background:transparent;"></td>
+                                <td style="border-bottom:1px solid #D9D9D9;padding:9px 12px;"><input type="text" value="논리 구조가 명확하고 문단 연결이 자연스러움" style="width:100%;border:none;font-size:16px;font-family:inherit;outline:none;color:#333;background:transparent;"><button onmouseenter="showSymTooltip(this)" onmouseleave="hideSymTooltip()" style="display:inline-flex;align-items:center;justify-content:center;border:1px solid #E6E6E6;background:#F8F8F8;border-radius:5px;width:26px;height:26px;font-size:14px;color:#B3B3B3;font-family:inherit;cursor:not-allowed;flex-shrink:0;">∑</button></td>
+                              </tr>
+                              <tr>
+                                <td style="width:52px;border-right:1px solid #D9D9D9;border-bottom:1px solid #D9D9D9;padding:9px 4px;text-align:center;"><input type="number" value="3" style="width:44px;border:none;text-align:center;font-size:16px;font-weight:700;font-family:inherit;outline:none;color:#333;background:transparent;"></td>
+                                <td style="border-bottom:1px solid #D9D9D9;padding:9px 12px;"><input type="text" value="논리 구조는 있으나 연결이 다소 어색함" style="width:100%;border:none;font-size:16px;font-family:inherit;outline:none;color:#333;background:transparent;"><button onmouseenter="showSymTooltip(this)" onmouseleave="hideSymTooltip()" style="display:inline-flex;align-items:center;justify-content:center;border:1px solid #E6E6E6;background:#F8F8F8;border-radius:5px;width:26px;height:26px;font-size:14px;color:#B3B3B3;font-family:inherit;cursor:not-allowed;flex-shrink:0;">∑</button></td>
+                              </tr>
+                              <tr>
+                                <td style="width:52px;border-right:1px solid #D9D9D9;padding:9px 4px;text-align:center;"><input type="number" value="1" style="width:44px;border:none;text-align:center;font-size:16px;font-weight:700;font-family:inherit;outline:none;color:#333;background:transparent;"></td>
+                                <td style="padding:9px 12px;"><input type="text" value="문단 구분 없이 나열되거나 논리적 흐름 없음" style="width:100%;border:none;font-size:16px;font-family:inherit;outline:none;color:#333;background:transparent;"><button onmouseenter="showSymTooltip(this)" onmouseleave="hideSymTooltip()" style="display:inline-flex;align-items:center;justify-content:center;border:1px solid #E6E6E6;background:#F8F8F8;border-radius:5px;width:26px;height:26px;font-size:14px;color:#B3B3B3;font-family:inherit;cursor:not-allowed;flex-shrink:0;">∑</button></td>
+                              </tr>
+                            </tbody>
+                          </table>
+                        </div>
+                        <div style="display:flex;gap:8px;margin-top:8px;">
+                          <button style="display:flex;align-items:center;gap:5px;background:transparent;border:none;border-radius:8px;height:32px;padding:0 8px;cursor:pointer;color:#494949;font-size:13px;font-weight:700;font-family:inherit;" onmouseover="this.style.background='#F0F0F0'" onmouseout="this.style.background='transparent'"><i data-lucide="circle-plus" style="width:15px;height:15px;color:#808080;"></i>배점 추가</button>
+                          <button style="display:flex;align-items:center;gap:5px;background:transparent;border:none;border-radius:8px;height:32px;padding:0 8px;cursor:pointer;color:#494949;font-size:13px;font-weight:700;font-family:inherit;" onmouseover="this.style.background='#F0F0F0'" onmouseout="this.style.background='transparent'"><i data-lucide="circle-minus" style="width:15px;height:15px;color:#808080;"></i>배점 제거</button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- 채점기준 카드 3 -->
+                  <div class="rubric-dnd-card" draggable="false" data-rubric-id="3">
+                    <div style="display:flex;align-items:center;padding:14px 14px 0 10px;gap:4px;">
+                      <div class="drag-handle" title="드래그하여 순서 변경" onmousedown="startDrag(event)" ontouchstart="startDrag(event)">
+                        <i data-lucide="grip-vertical" style="width:20px;height:20px;"></i>
+                      </div>
+                      <span class="rubric-num" style="font-size:16px;font-weight:700;color:#333;flex:1;margin-left:4px;">채점기준 3</span>
+                      <button onclick="copyRubricCard(this)" style="display:flex;align-items:center;gap:5px;background:transparent;border:none;border-radius:8px;height:34px;padding:0 8px;cursor:pointer;color:#808080;font-size:14px;font-weight:700;font-family:inherit;" onmouseover="this.style.background='#F8F8F8'" onmouseout="this.style.background='transparent'">
+                        <i data-lucide="copy" style="width:15px;height:15px;"></i>복사
+                      </button>
+                      <button onclick="deleteRubricCard(this)" style="display:flex;align-items:center;gap:5px;background:transparent;border:none;border-radius:8px;height:34px;padding:0 8px;cursor:pointer;color:#808080;font-size:14px;font-weight:700;font-family:inherit;" onmouseover="this.style.background='#F8F8F8'" onmouseout="this.style.background='transparent'">
+                        <i data-lucide="trash-2" style="width:15px;height:15px;"></i>삭제
+                      </button>
+                    </div>
+                    <div class="rubric-card-body" style="padding:12px 14px 16px 34px;">
+                      <div class="rubric-textarea-wrap">
+                        <textarea style="width:100%;border:1px solid #D9D9D9;border-radius:8px;padding:10px 12px;font-size:16px;font-family:inherit;resize:none;outline:none;color:#333;line-height:1.55;" onfocus="this.style.borderColor='#7E44FB'" onblur="this.style.borderColor='#D9D9D9'">어휘 선택의 적절성과 문장 표현의 정확성을 평가한다.</textarea>                      </div>
+                      <div style="flex:1;">
+                        <div style="border:1px solid #D9D9D9;border-radius:8px;overflow:hidden;">
+                          <table style="width:100%;border-collapse:separate;border-spacing:0;">
+                            <thead>
+                              <tr style="background:#F8F8F8;">
+                                <th style="width:52px;border-right:1px solid #D9D9D9;border-bottom:1px solid #D9D9D9;padding:8px 4px;text-align:center;font-size:12px;font-weight:700;color:#808080;">배점</th>
+                                <th style="border-bottom:1px solid #D9D9D9;padding:8px 12px;text-align:left;font-size:12px;font-weight:700;color:#808080;">세부 기준</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <tr>
+                                <td style="width:52px;border-right:1px solid #D9D9D9;border-bottom:1px solid #D9D9D9;padding:9px 4px;text-align:center;"><input type="number" value="3" style="width:44px;border:none;text-align:center;font-size:16px;font-weight:700;font-family:inherit;outline:none;color:#333;background:transparent;"></td>
+                                <td style="border-bottom:1px solid #D9D9D9;padding:9px 12px;"><input type="text" value="어휘가 적절하고 문장 표현이 정확함" style="width:100%;border:none;font-size:16px;font-family:inherit;outline:none;color:#333;background:transparent;"><button onmouseenter="showSymTooltip(this)" onmouseleave="hideSymTooltip()" style="display:inline-flex;align-items:center;justify-content:center;border:1px solid #E6E6E6;background:#F8F8F8;border-radius:5px;width:26px;height:26px;font-size:14px;color:#B3B3B3;font-family:inherit;cursor:not-allowed;flex-shrink:0;">∑</button></td>
+                              </tr>
+                              <tr>
+                                <td style="width:52px;border-right:1px solid #D9D9D9;border-bottom:1px solid #D9D9D9;padding:9px 4px;text-align:center;"><input type="number" value="2" style="width:44px;border:none;text-align:center;font-size:16px;font-weight:700;font-family:inherit;outline:none;color:#333;background:transparent;"></td>
+                                <td style="border-bottom:1px solid #D9D9D9;padding:9px 12px;"><input type="text" value="일부 어휘가 부적절하거나 표현 오류가 있음" style="width:100%;border:none;font-size:16px;font-family:inherit;outline:none;color:#333;background:transparent;"><button onmouseenter="showSymTooltip(this)" onmouseleave="hideSymTooltip()" style="display:inline-flex;align-items:center;justify-content:center;border:1px solid #E6E6E6;background:#F8F8F8;border-radius:5px;width:26px;height:26px;font-size:14px;color:#B3B3B3;font-family:inherit;cursor:not-allowed;flex-shrink:0;">∑</button></td>
+                              </tr>
+                              <tr>
+                                <td style="width:52px;border-right:1px solid #D9D9D9;padding:9px 4px;text-align:center;"><input type="number" value="1" style="width:44px;border:none;text-align:center;font-size:16px;font-weight:700;font-family:inherit;outline:none;color:#333;background:transparent;"></td>
+                                <td style="padding:9px 12px;"><input type="text" value="어휘 선택이 부적절하고 표현 오류가 빈번함" style="width:100%;border:none;font-size:16px;font-family:inherit;outline:none;color:#333;background:transparent;"><button onmouseenter="showSymTooltip(this)" onmouseleave="hideSymTooltip()" style="display:inline-flex;align-items:center;justify-content:center;border:1px solid #E6E6E6;background:#F8F8F8;border-radius:5px;width:26px;height:26px;font-size:14px;color:#B3B3B3;font-family:inherit;cursor:not-allowed;flex-shrink:0;">∑</button></td>
+                              </tr>
+                            </tbody>
+                          </table>
+                        </div>
+                        <div style="display:flex;gap:8px;margin-top:8px;">
+                          <button style="display:flex;align-items:center;gap:5px;background:transparent;border:none;border-radius:8px;height:32px;padding:0 8px;cursor:pointer;color:#494949;font-size:13px;font-weight:700;font-family:inherit;" onmouseover="this.style.background='#F0F0F0'" onmouseout="this.style.background='transparent'"><i data-lucide="circle-plus" style="width:15px;height:15px;color:#808080;"></i>배점 추가</button>
+                          <button style="display:flex;align-items:center;gap:5px;background:transparent;border:none;border-radius:8px;height:32px;padding:0 8px;cursor:pointer;color:#494949;font-size:13px;font-weight:700;font-family:inherit;" onmouseover="this.style.background='#F0F0F0'" onmouseout="this.style.background='transparent'"><i data-lucide="circle-minus" style="width:15px;height:15px;color:#808080;"></i>배점 제거</button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                </div><!-- /rubric-list -->
+
+                <!-- 하단 액션 버튼 -->
+                <div style="display:flex;gap:12px;margin-bottom:16px;align-items:center;">
+                  <button onclick="openAIDrawer()" style="display:flex;align-items:center;gap:8px;background:#7E44FB;border:none;border-radius:8px;height:36px;padding:0 16px;cursor:pointer;color:white;font-size:14px;font-weight:700;font-family:inherit;">
+                    <i data-lucide="wand-sparkles" style="width:14px;height:14px;"></i>채점기준 AI 생성
+                  </button>
+                  <button style="display:flex;align-items:center;gap:6px;background:white;border:1px solid #D9D9D9;border-radius:8px;height:36px;padding:0 14px;cursor:pointer;color:#494949;font-size:14px;font-weight:700;font-family:inherit;" onmouseover="this.style.background='#F8F8F8'" onmouseout="this.style.background='white'">
+                    <i data-lucide="plus" style="width:14px;height:14px;"></i>직접 추가
+                  </button>
+                </div>
+
               </div>
             </div>
 
@@ -2377,6 +2481,7 @@ function showScreen(name) {
     document.getElementById('d1-std-empty').style.display = 'flex';
     document.getElementById('d1-std-filled').style.display = 'none';
     switchToEmptyRubric();
+    document.getElementById('d1-steps-2-4').style.display = 'flex';
     document.getElementById('d1-progress-count').textContent = '0 / 4 완료';
     var c1 = document.getElementById('d1-step1-circle');
     c1.style.background = '#7E44FB'; c1.style.border = 'none';
@@ -2614,10 +2719,9 @@ function showDetailFilled(name) {
     document.getElementById('d1-std-empty').style.display = 'none';
     document.getElementById('d1-std-filled').style.display = 'block';
     lucide.createIcons();
-    // 채점기준 완료 상태
-    switchToFilledRubric();
-    // 진행 카운터
-    document.getElementById('d1-progress-count').textContent = '1 / 4 완료';
+    // 간편한 평가: 2~4단계 숨김
+    document.getElementById('d1-steps-2-4').style.display = 'none';
+    document.getElementById('d1-progress-count').textContent = '1 / 1 완료';
     // step1 원 → 완료 (초록 체크)
     var c = document.getElementById('d1-step1-circle');
     c.style.background = '#00AF3D'; c.style.color = 'white'; c.style.fontSize = '12px';
@@ -3055,19 +3159,195 @@ function renderS3Detail(q) {
   lucide.createIcons();
 }
 
-// 채점기준 상태 토글
-function switchToFilledRubric() {
-  document.getElementById('rubric-empty').style.display = 'none';
-  document.getElementById('rubric-filled').style.display = 'block';
-  document.getElementById('rubric-action-btns').style.display = 'flex';
-  lucide.createIcons();
+// ── 채점기준 드래그 정렬 ──
+let _dragSrc = null;
+let _dragHandleActive = false;
+
+function startDrag(e) {
+  // 핸들 mousedown → 카드에 draggable 활성화
+  const card = e.currentTarget.closest('.rubric-dnd-card');
+  if (!card) return;
+  _dragHandleActive = true;
+  card.setAttribute('draggable', 'true');
+  // mouseup/touchend 시 draggable 해제
+  const cleanup = () => {
+    card.setAttribute('draggable', 'false');
+    _dragHandleActive = false;
+    document.removeEventListener('mouseup', cleanup);
+    document.removeEventListener('touchend', cleanup);
+  };
+  document.addEventListener('mouseup', cleanup);
+  document.addEventListener('touchend', cleanup);
 }
-function switchToEmptyRubric() {
-  document.getElementById('rubric-filled').style.display = 'none';
-  document.getElementById('rubric-action-btns').style.display = 'none';
-  document.getElementById('rubric-empty').style.display = 'block';
-  lucide.createIcons();
+
+function initRubricDnD() {
+  const list = document.getElementById('rubric-list');
+  if (!list) return;
+
+  list.addEventListener('dragstart', (e) => {
+    const card = e.target.closest('.rubric-dnd-card');
+    if (!card || !_dragHandleActive) { e.preventDefault(); return; }
+    _dragSrc = card;
+    setTimeout(() => card.classList.add('is-dragging'), 0);
+    e.dataTransfer.effectAllowed = 'move';
+  });
+
+  list.addEventListener('dragend', (e) => {
+    const card = e.target.closest('.rubric-dnd-card');
+    if (!card) return;
+    card.classList.remove('is-dragging');
+    card.setAttribute('draggable', 'false');
+    list.querySelectorAll('.rubric-dnd-card').forEach(c => {
+      c.classList.remove('drop-above', 'drop-below');
+    });
+    _dragHandleActive = false;
+    updateRubricNumbers();
+  });
+
+  list.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+    const card = e.target.closest('.rubric-dnd-card');
+    if (!card || card === _dragSrc) return;
+    list.querySelectorAll('.rubric-dnd-card').forEach(c => c.classList.remove('drop-above', 'drop-below'));
+    const rect = card.getBoundingClientRect();
+    const mid = rect.top + rect.height / 2;
+    if (e.clientY < mid) {
+      card.classList.add('drop-above');
+    } else {
+      card.classList.add('drop-below');
+    }
+  });
+
+  list.addEventListener('dragleave', (e) => {
+    const card = e.target.closest('.rubric-dnd-card');
+    if (card) card.classList.remove('drop-above', 'drop-below');
+  });
+
+  list.addEventListener('drop', (e) => {
+    e.preventDefault();
+    const card = e.target.closest('.rubric-dnd-card');
+    if (!card || card === _dragSrc) return;
+    const rect = card.getBoundingClientRect();
+    const mid = rect.top + rect.height / 2;
+    if (e.clientY < mid) {
+      list.insertBefore(_dragSrc, card);
+    } else {
+      list.insertBefore(_dragSrc, card.nextSibling);
+    }
+    list.querySelectorAll('.rubric-dnd-card').forEach(c => c.classList.remove('drop-above', 'drop-below'));
+    showReorderToast();
+  });
 }
+
+function updateRubricNumbers() {
+  const list = document.getElementById('rubric-list');
+  if (!list) return;
+  list.querySelectorAll('.rubric-dnd-card').forEach((card, i) => {
+    const numEl = card.querySelector('.rubric-num');
+    if (numEl) numEl.textContent = `채점기준 ${i + 1}`;
+  });
+}
+
+// 수식 버튼 툴팁
+function showSymTooltip(btn) {
+  const tt = document.getElementById('sym-tooltip');
+  if (!tt) return;
+  const r = btn.getBoundingClientRect();
+  tt.style.left = (r.left + r.width / 2) + 'px';
+  tt.style.top = (r.top - 10) + 'px';
+  tt.style.transform = 'translateX(-50%) translateY(-100%)';
+  tt.style.display = 'block';
+}
+function hideSymTooltip() {
+  const tt = document.getElementById('sym-tooltip');
+  if (tt) tt.style.display = 'none';
+}
+
+function showReorderToast(msg) {
+  const toast = document.getElementById('reorder-toast');
+  if (!toast) return;
+  toast.textContent = '✓ ' + (msg || '순서가 변경되었습니다');
+  toast.classList.add('show');
+  clearTimeout(toast._timer);
+  toast._timer = setTimeout(() => toast.classList.remove('show'), 2000);
+}
+
+// ── 채점기준 복사 ──
+function copyRubricCard(btn) {
+  const list = document.getElementById('rubric-list');
+  const card = btn.closest('.rubric-dnd-card');
+  const clone = card.cloneNode(true);
+  // 이벤트 재연결 (cloneNode는 inline handler는 유지됨)
+  clone.setAttribute('draggable', 'false');
+  card.after(clone);
+  updateRubricNumbers();
+  lucide.createIcons();
+  // 복사된 카드 하이라이트
+  clone.style.transition = 'box-shadow .3s';
+  clone.style.boxShadow = '0 0 0 2px #7E44FB';
+  setTimeout(() => { clone.style.boxShadow = ''; }, 1000);
+  showReorderToast('복사되었습니다');
+}
+
+// ── 수식 입력 모달 ──
+let _formulaTargetTextarea = null;
+
+function openFormulaModal(btn) {
+  _formulaTargetTextarea = btn.closest('div[style*="width:190px"]').querySelector('textarea');
+  const modal = document.getElementById('formula-modal');
+  const input = document.getElementById('formula-input');
+  const preview = document.getElementById('formula-preview');
+  input.value = '';
+  preview.textContent = '';
+  modal.classList.add('open');
+  lucide.createIcons();
+  setTimeout(() => input.focus(), 50);
+  input.oninput = () => { preview.textContent = input.value; };
+}
+
+function closeFormulaModal() {
+  document.getElementById('formula-modal').classList.remove('open');
+  _formulaTargetTextarea = null;
+}
+
+function insertSym(sym) {
+  const input = document.getElementById('formula-input');
+  const pos = input.selectionStart ?? input.value.length;
+  input.value = input.value.slice(0, pos) + sym + input.value.slice(pos);
+  input.setSelectionRange(pos + sym.length, pos + sym.length);
+  document.getElementById('formula-preview').textContent = input.value;
+  input.focus();
+}
+
+function confirmFormula() {
+  const val = document.getElementById('formula-input').value.trim();
+  if (!val) { closeFormulaModal(); return; }
+  if (_formulaTargetTextarea) {
+    const cur = _formulaTargetTextarea.value;
+    _formulaTargetTextarea.value = cur ? cur + '\n' + val : val;
+    _formulaTargetTextarea.focus();
+  }
+  closeFormulaModal();
+}
+
+function deleteRubricCard(btn) {
+  const card = btn.closest('.rubric-dnd-card');
+  const list = document.getElementById('rubric-list');
+  if (!card || !list) return;
+  if (list.querySelectorAll('.rubric-dnd-card').length <= 1) {
+    alert('채점기준은 최소 1개 이상 필요합니다.');
+    return;
+  }
+  card.style.opacity = '0';
+  card.style.transform = 'translateY(-6px)';
+  card.style.transition = 'opacity .2s, transform .2s';
+  setTimeout(() => { card.remove(); updateRubricNumbers(); }, 200);
+}
+
+// 채점기준 상태 토글 (레거시 — rubric-list 방식으로 대체, 호환성 유지)
+function switchToFilledRubric() { lucide.createIcons(); }
+function switchToEmptyRubric() { lucide.createIcons(); }
 
 // ── 3단계: label 전체 클릭 영역 활성화 ──
 function initStep3Labels() {
@@ -3193,6 +3473,7 @@ function selectAIMethod(method) {
 }
 document.addEventListener('DOMContentLoaded', function() {
   lucide.createIcons();
+  initRubricDnD();
 });
 var _hasDownstreamData = false;
 function showDetailFilledAdvanced(name) { showDetailFilled(name); _hasDownstreamData = true; }
@@ -3501,6 +3782,67 @@ function closeRubricResetModal() { document.getElementById('modal-rubric-reset')
         <button onclick="closeRubricResetModal()" style="flex:1;height:44px;background:white;color:#494949;border:1px solid #D9D9D9;border-radius:8px;font-size:16px;font-weight:700;cursor:pointer;">취소</button>
         <button onclick="confirmRubricReset()" style="flex:1;height:44px;background:#DB3E51;color:white;border:none;border-radius:8px;font-size:16px;font-weight:700;cursor:pointer;">교체 진행</button>
       </div>
+    </div>
+  </div>
+</div>
+
+<!-- 순서 변경 토스트 -->
+<div id="reorder-toast">✓ 순서가 변경되었습니다</div>
+
+<!-- 수식 버튼 툴팁 -->
+<div id="sym-tooltip">수식 입력은 준비 중입니다.</div>
+
+<!-- ── 수식 입력 모달 ── -->
+<div id="formula-modal" onclick="if(event.target===this)closeFormulaModal()">
+  <div style="background:white;border-radius:16px;width:480px;box-shadow:0 8px 32px rgba(0,0,0,0.18);overflow:hidden;">
+    <!-- 헤더 -->
+    <div style="padding:18px 20px 14px;border-bottom:1px solid #F0F0F0;display:flex;align-items:center;justify-content:space-between;">
+      <div>
+        <div style="font-size:16px;font-weight:800;color:#000;">수식 입력</div>
+        <div style="font-size:12px;color:#808080;margin-top:2px;">기호를 선택하거나 직접 입력하세요</div>
+      </div>
+      <button onclick="closeFormulaModal()" style="width:32px;height:32px;border:none;background:transparent;cursor:pointer;border-radius:8px;display:flex;align-items:center;justify-content:center;color:#808080;" onmouseover="this.style.background='#F0F0F0'" onmouseout="this.style.background='transparent'">
+        <i data-lucide="x" style="width:18px;height:18px;"></i>
+      </button>
+    </div>
+    <!-- 기호 팔레트 -->
+    <div style="padding:16px 20px 12px;">
+      <div style="font-size:12px;font-weight:700;color:#808080;margin-bottom:8px;">자주 쓰는 기호</div>
+      <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px;">
+        <button class="sym-btn" onclick="insertSym('+')" title="더하기">+</button>
+        <button class="sym-btn" onclick="insertSym('−')" title="빼기">−</button>
+        <button class="sym-btn" onclick="insertSym('×')" title="곱하기">×</button>
+        <button class="sym-btn" onclick="insertSym('÷')" title="나누기">÷</button>
+        <button class="sym-btn" onclick="insertSym('=')" title="등호">=</button>
+        <button class="sym-btn" onclick="insertSym('≠')" title="부등호">≠</button>
+        <button class="sym-btn" onclick="insertSym('≥')" title="크거나 같음">≥</button>
+        <button class="sym-btn" onclick="insertSym('≤')" title="작거나 같음">≤</button>
+        <button class="sym-btn" onclick="insertSym('>')" title="초과">&gt;</button>
+        <button class="sym-btn" onclick="insertSym('<')" title="미만">&lt;</button>
+        <button class="sym-btn" onclick="insertSym('±')" title="플러스마이너스">±</button>
+        <button class="sym-btn" onclick="insertSym('√')" title="루트">√</button>
+        <button class="sym-btn" onclick="insertSym('²')" title="제곱">x²</button>
+        <button class="sym-btn" onclick="insertSym('³')" title="세제곱">x³</button>
+        <button class="sym-btn" onclick="insertSym('∑')" title="시그마">∑</button>
+        <button class="sym-btn" onclick="insertSym('∞')" title="무한">∞</button>
+        <button class="sym-btn" onclick="insertSym('π')" title="파이">π</button>
+        <button class="sym-btn" onclick="insertSym('°')" title="도">°</button>
+        <button class="sym-btn" onclick="insertSym('%')" title="퍼센트">%</button>
+        <button class="sym-btn" onclick="insertSym('/')" title="분수 구분">/</button>
+      </div>
+      <!-- 직접 입력 -->
+      <div style="font-size:12px;font-weight:700;color:#808080;margin-bottom:8px;">수식 직접 입력</div>
+      <input id="formula-input" type="text" placeholder="예: 5×3÷2 = 7.5" style="width:100%;height:44px;border:1px solid #D9D9D9;border-radius:8px;padding:0 14px;font-size:16px;font-family:inherit;outline:none;color:#333;" onfocus="this.style.borderColor='#7E44FB'" onblur="this.style.borderColor='#D9D9D9'">
+      <!-- 미리보기 -->
+      <div style="margin-top:10px;min-height:40px;background:#F8F8F8;border-radius:8px;padding:10px 14px;display:flex;align-items:center;">
+        <span style="font-size:12px;color:#B3B3B3;margin-right:8px;">미리보기</span>
+        <span id="formula-preview" style="font-size:16px;color:#333;font-weight:700;letter-spacing:0.5px;"></span>
+      </div>
+    </div>
+    <!-- 푸터 -->
+    <div style="padding:12px 20px 18px;display:flex;justify-content:flex-end;gap:10px;">
+      <button onclick="closeFormulaModal()" style="height:40px;padding:0 20px;border:1px solid #D9D9D9;background:white;border-radius:8px;font-size:14px;font-weight:700;font-family:inherit;cursor:pointer;color:#494949;">취소</button>
+      <button onclick="confirmFormula()" style="height:40px;padding:0 20px;border:none;background:#7E44FB;border-radius:8px;font-size:14px;font-weight:700;font-family:inherit;cursor:pointer;color:white;">삽입</button>
     </div>
   </div>
 </div>

@@ -16,9 +16,13 @@ body { margin: 0; background: #EDF1FC; min-width: 1280px; }
 /* 2단계 문항 테이블 마지막 행 모서리 */
 #question-list .q-row:last-child > *:first-child { border-radius: 0 0 0 10px; }
 #question-list .q-row:last-child > *:last-child { border-radius: 0 0 10px 0; }
-/* 수식 버튼 비활성화 */
+/* 수식 버튼 비활성화 + 툴팁 */
 button[onclick*="openFormula"] { cursor:not-allowed!important; color:#B3B3B3!important; border-color:#E6E6E6!important; background:#F8F8F8!important; }
+.formula-wrap { position:relative; display:inline-flex; margin-top:6px; align-self:flex-start; }
+.formula-wrap::after { content:"준비 중입니다"; position:absolute; bottom:calc(100% + 5px); left:50%; transform:translateX(-50%); background:#333; color:white; font-size:11px; font-weight:700; padding:4px 9px; border-radius:4px; white-space:nowrap; pointer-events:none; opacity:0; transition:opacity .15s; }
+.formula-wrap:hover::after { opacity:1; }
 /* 3단계 문항 목록 아이템 */
+.s3-q-item { display:flex; align-items:center; }
 .s3-q-item:hover { background:#F7F4FF; }
 .s3-q-item.active { background:#EDE7FF; border-left:3px solid #7E44FB; }
 .s3-q-item:not(.active) { border-left:3px solid transparent; }
@@ -1020,7 +1024,7 @@ button[onclick*="openFormula"] { cursor:not-allowed!important; color:#B3B3B3!imp
               </div>
               <div style="display:flex;align-items:center;gap:6px;background:#F1F9F3;border-radius:8px;padding:10px 14px;">
                 <i data-lucide="check-circle" style="width:16px;height:16px;color:#00AF3D;flex-shrink:0;"></i>
-                <span style="font-size:14px;font-weight:700;color:#00AF3D;">문항 4개 인식 완료</span>
+                <span style="font-size:14px;font-weight:700;color:#00AF3D;">문항 6개 인식 완료</span>
               </div>
             </div>
 
@@ -1050,56 +1054,57 @@ button[onclick*="openFormula"] { cursor:not-allowed!important; color:#B3B3B3!imp
             <!-- 문항 목록 -->
             <div id="question-list" style="border:1px solid #E6E6E6;border-top:none;border-radius:0 0 10px 10px;overflow:visible;">
 
-              <!-- 문항 1 -->
-              <div class="q-row" data-idx="0" style="display:grid;grid-template-columns:32px 1fr 2fr 1fr 36px;border-bottom:1px solid #F0F0F0;align-items:stretch;">
-                <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;padding:6px 3px;background:#FAFAFA;border-right:1px solid #E6E6E6;">
-                  <button onclick="moveRow(0,-1)" style="width:24px;height:24px;border:none;background:transparent;border-radius:4px;cursor:pointer;display:flex;align-items:center;justify-content:center;" onmouseover="this.style.background='#F0F0F0'" onmouseout="this.style.background='transparent'"><i data-lucide="chevron-up" style="width:14px;height:14px;color:#B3B3B3;"></i></button>
-                  <button onclick="moveRow(0,1)" style="width:24px;height:24px;border:none;background:transparent;border-radius:4px;cursor:pointer;display:flex;align-items:center;justify-content:center;" onmouseover="this.style.background='#F0F0F0'" onmouseout="this.style.background='transparent'"><i data-lucide="chevron-down" style="width:14px;height:14px;color:#B3B3B3;"></i></button>
+              <!-- 대문항 1 -->
+              <div class="q-row" data-idx="0" style="display:grid;grid-template-columns:32px 1fr 2fr 1fr 36px;border-bottom:1px solid #DDD5FF;align-items:stretch;">
+                <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;padding:6px 3px;background:#EDE7FF;border-right:1px solid #DDD5FF;">
+                  <button onclick="moveRow(0,-1)" style="width:24px;height:24px;border:none;background:transparent;border-radius:4px;cursor:pointer;display:flex;align-items:center;justify-content:center;" onmouseover="this.style.background='#D4CCFF'" onmouseout="this.style.background='transparent'"><i data-lucide="chevron-up" style="width:14px;height:14px;color:#B3B3B3;"></i></button>
+                  <button onclick="moveRow(0,1)" style="width:24px;height:24px;border:none;background:transparent;border-radius:4px;cursor:pointer;display:flex;align-items:center;justify-content:center;" onmouseover="this.style.background='#D4CCFF'" onmouseout="this.style.background='transparent'"><i data-lucide="chevron-down" style="width:14px;height:14px;color:#B3B3B3;"></i></button>
                 </div>
-                <div style="padding:10px;border-right:1px solid #E6E6E6;display:flex;align-items:flex-start;">
-                  <textarea style="width:100%;min-height:60px;border:1px solid transparent;border-radius:6px;padding:6px 8px;font-size:16px;font-family:inherit;resize:vertical;outline:none;color:#333;line-height:1.55;background:transparent;" onmouseover="this.style.borderColor='#D9D9D9'" onmouseout="if(document.activeElement!==this)this.style.borderColor='transparent'" onfocus="this.style.borderColor='#7E44FB';this.style.background='#FDFCFF'" onblur="this.style.borderColor='transparent';this.style.background='transparent'">글쓰기</textarea>
+                <div style="padding:10px 12px;border-right:1px solid #DDD5FF;display:flex;align-items:center;background:#F7F4FF;">
+                  <span style="font-size:11px;font-weight:800;color:#7E44FB;background:#EDE7FF;border-radius:100px;padding:3px 9px;white-space:nowrap;">대문항 1</span>
                 </div>
-                <div style="padding:10px;border-right:1px solid #E6E6E6;display:flex;flex-direction:column;gap:6px;">
-                  <textarea class="q-content-ta" style="width:100%;min-height:60px;border:1px solid transparent;border-radius:6px;padding:6px 8px;font-size:16px;font-family:inherit;resize:vertical;outline:none;color:#333;line-height:1.55;background:transparent;" onmouseover="this.style.borderColor='#D9D9D9'" onmouseout="if(document.activeElement!==this)this.style.borderColor='transparent'" onfocus="this.style.borderColor='#7E44FB';this.style.background='#FDFCFF'" onblur="this.style.borderColor='transparent';this.style.background='transparent'">다음 글을 읽고 주인공의 심정을 이유와 함께 서술하시오.</textarea>
-                  <button onclick="openFormula(this.previousElementSibling)" style="align-self:flex-start;display:flex;align-items:center;gap:4px;border:1px solid #D9D9D9;background:white;border-radius:6px;height:26px;padding:0 8px;cursor:pointer;font-size:12px;font-weight:700;color:#494949;font-family:inherit;" onmouseover="this.style.borderColor='#7E44FB';this.style.color='#7E44FB'" onmouseout="this.style.borderColor='#D9D9D9';this.style.color='#494949'"><span style="font-size:14px;">∑</span> 수식</button>
+                <div style="padding:10px;border-right:1px solid #DDD5FF;background:#F7F4FF;display:flex;align-items:flex-start;">
+                  <textarea class="q-content-ta" style="width:100%;min-height:42px;border:1px solid transparent;border-radius:6px;padding:6px 8px;font-size:14px;font-family:inherit;resize:vertical;outline:none;color:#808080;line-height:1.55;background:transparent;font-style:italic;" onmouseover="this.style.borderColor='#C4AAFD'" onmouseout="if(document.activeElement!==this)this.style.borderColor='transparent'" onfocus="this.style.borderColor='#7E44FB';this.style.background='#FDFCFF'" onblur="this.style.borderColor='transparent';this.style.background='transparent'">다음 글을 읽고 물음에 답하시오.</textarea>
                 </div>
-                <div style="padding:10px;background:#FAFAFA;border-right:1px solid #E6E6E6;"><div style="font-size:13px;color:#808080;line-height:1.6;">주인공의 심정을 구체적인 이유와 함께 서술해야 하며, 단순 감정 표현만으로는 불충분합니다. 근거 문장 인용 시 가점 가능.</div></div>
-                <div style="display:flex;align-items:center;justify-content:center;background:#FAFAFA;">
-                  <button onclick="deleteRow(0)" style="width:28px;height:28px;border:none;background:transparent;border-radius:6px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#F0A0A8;" onmouseover="this.style.background='#FFF0F0';this.style.color='#DB3E51'" onmouseout="this.style.background='transparent';this.style.color='#F0A0A8'"><i data-lucide="trash-2" style="width:14px;height:14px;"></i></button>
+                <div style="padding:10px;background:#EDE7FF;border-right:1px solid #DDD5FF;display:flex;align-items:center;">
+                  <span style="font-size:12px;color:#9B68F3;font-style:italic;">지시문 · 채점 없음</span>
+                </div>
+                <div style="display:flex;align-items:center;justify-content:center;background:#EDE7FF;">
+                  <button onclick="deleteRow(0)" style="width:28px;height:28px;border:none;background:transparent;border-radius:6px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#C4AAFD;" onmouseover="this.style.background='#FFF0F0';this.style.color='#DB3E51'" onmouseout="this.style.background='transparent';this.style.color='#C4AAFD'"><i data-lucide="trash-2" style="width:14px;height:14px;"></i></button>
                 </div>
               </div>
 
-              <!-- 문항 2 (표 채우기) -->
-              <div class="q-row" data-idx="1" style="display:grid;grid-template-columns:32px 1fr 2fr 1fr 36px;border-bottom:1px solid #F0F0F0;align-items:stretch;">
+              <!-- 소문항 1-1 -->
+              <div class="q-row" data-idx="1" style="display:grid;grid-template-columns:32px 1fr 2fr 1fr 36px;border-bottom:1px solid #F0F0F0;border-left:3px solid #C4AAFD;align-items:stretch;">
                 <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;padding:6px 3px;background:#FAFAFA;border-right:1px solid #E6E6E6;">
                   <button onclick="moveRow(1,-1)" style="width:24px;height:24px;border:none;background:transparent;border-radius:4px;cursor:pointer;display:flex;align-items:center;justify-content:center;" onmouseover="this.style.background='#F0F0F0'" onmouseout="this.style.background='transparent'"><i data-lucide="chevron-up" style="width:14px;height:14px;color:#B3B3B3;"></i></button>
                   <button onclick="moveRow(1,1)" style="width:24px;height:24px;border:none;background:transparent;border-radius:4px;cursor:pointer;display:flex;align-items:center;justify-content:center;" onmouseover="this.style.background='#F0F0F0'" onmouseout="this.style.background='transparent'"><i data-lucide="chevron-down" style="width:14px;height:14px;color:#B3B3B3;"></i></button>
                 </div>
                 <div style="padding:10px;border-right:1px solid #E6E6E6;display:flex;align-items:flex-start;">
-                  <textarea style="width:100%;min-height:60px;border:1px solid transparent;border-radius:6px;padding:6px 8px;font-size:16px;font-family:inherit;resize:vertical;outline:none;color:#333;line-height:1.55;background:transparent;" onmouseover="this.style.borderColor='#D9D9D9'" onmouseout="if(document.activeElement!==this)this.style.borderColor='transparent'" onfocus="this.style.borderColor='#7E44FB';this.style.background='#FDFCFF'" onblur="this.style.borderColor='transparent';this.style.background='transparent'">분석하기</textarea>
+                  <textarea style="width:100%;min-height:60px;border:1px solid transparent;border-radius:6px;padding:6px 8px;font-size:16px;font-family:inherit;resize:vertical;outline:none;color:#333;line-height:1.55;background:transparent;" onmouseover="this.style.borderColor='#D9D9D9'" onmouseout="if(document.activeElement!==this)this.style.borderColor='transparent'" onfocus="this.style.borderColor='#7E44FB';this.style.background='#FDFCFF'" onblur="this.style.borderColor='transparent';this.style.background='transparent'">1-1 · 글쓰기</textarea>
                 </div>
                 <div style="padding:10px;border-right:1px solid #E6E6E6;display:flex;flex-direction:column;gap:6px;">
-                  <textarea class="q-content-ta" style="width:100%;min-height:60px;border:1px solid transparent;border-radius:6px;padding:6px 8px;font-size:16px;font-family:inherit;resize:vertical;outline:none;color:#333;line-height:1.55;background:transparent;" onmouseover="this.style.borderColor='#D9D9D9'" onmouseout="if(document.activeElement!==this)this.style.borderColor='transparent'" onfocus="this.style.borderColor='#7E44FB';this.style.background='#FDFCFF'" onblur="this.style.borderColor='transparent';this.style.background='transparent'">아래 표를 완성하시오.</textarea>
-                  <button onclick="openFormula(this.previousElementSibling)" style="align-self:flex-start;display:flex;align-items:center;gap:4px;border:1px solid #D9D9D9;background:white;border-radius:6px;height:26px;padding:0 8px;cursor:pointer;font-size:12px;font-weight:700;color:#494949;font-family:inherit;" onmouseover="this.style.borderColor='#7E44FB';this.style.color='#7E44FB'" onmouseout="this.style.borderColor='#D9D9D9';this.style.color='#494949'"><span style="font-size:14px;">∑</span> 수식</button>
+                  <textarea class="q-content-ta" style="width:100%;min-height:60px;border:1px solid transparent;border-radius:6px;padding:6px 8px;font-size:16px;font-family:inherit;resize:vertical;outline:none;color:#333;line-height:1.55;background:transparent;" onmouseover="this.style.borderColor='#D9D9D9'" onmouseout="if(document.activeElement!==this)this.style.borderColor='transparent'" onfocus="this.style.borderColor='#7E44FB';this.style.background='#FDFCFF'" onblur="this.style.borderColor='transparent';this.style.background='transparent'">주인공의 심정을 이유와 함께 서술하시오.</textarea>
+                  <span class="formula-wrap"><button onclick="openFormula(this)" style="display:inline-flex;align-items:center;gap:4px;border:1px solid #D9D9D9;background:white;border-radius:6px;height:26px;padding:0 8px;cursor:pointer;font-size:12px;font-weight:700;color:#494949;font-family:inherit;"><span style="font-size:14px;">∑</span> 수식</button></span>
                 </div>
-                <div style="padding:10px;background:#FAFAFA;border-right:1px solid #E6E6E6;"><div style="font-size:13px;color:#808080;line-height:1.6;">표의 각 칸에 해당하는 개념과 사례를 정확하게 기입해야 합니다. 빈칸은 감점 처리.</div></div>
+                <div style="padding:10px;background:#FAFAFA;border-right:1px solid #E6E6E6;"><div style="font-size:13px;color:#808080;line-height:1.6;">주인공의 심정을 구체적인 이유와 함께 서술해야 하며, 단순 감정 표현만으로는 불충분합니다. 근거 문장 인용 시 가점 가능.</div></div>
                 <div style="display:flex;align-items:center;justify-content:center;background:#FAFAFA;">
                   <button onclick="deleteRow(1)" style="width:28px;height:28px;border:none;background:transparent;border-radius:6px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#F0A0A8;" onmouseover="this.style.background='#FFF0F0';this.style.color='#DB3E51'" onmouseout="this.style.background='transparent';this.style.color='#F0A0A8'"><i data-lucide="trash-2" style="width:14px;height:14px;"></i></button>
                 </div>
               </div>
 
-              <!-- 문항 3 -->
-              <div class="q-row" data-idx="2" style="display:grid;grid-template-columns:32px 1fr 2fr 1fr 36px;border-bottom:1px solid #F0F0F0;align-items:stretch;">
+              <!-- 소문항 1-2 -->
+              <div class="q-row" data-idx="2" style="display:grid;grid-template-columns:32px 1fr 2fr 1fr 36px;border-bottom:1px solid #F0F0F0;border-left:3px solid #C4AAFD;align-items:stretch;">
                 <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;padding:6px 3px;background:#FAFAFA;border-right:1px solid #E6E6E6;">
                   <button onclick="moveRow(2,-1)" style="width:24px;height:24px;border:none;background:transparent;border-radius:4px;cursor:pointer;display:flex;align-items:center;justify-content:center;" onmouseover="this.style.background='#F0F0F0'" onmouseout="this.style.background='transparent'"><i data-lucide="chevron-up" style="width:14px;height:14px;color:#B3B3B3;"></i></button>
                   <button onclick="moveRow(2,1)" style="width:24px;height:24px;border:none;background:transparent;border-radius:4px;cursor:pointer;display:flex;align-items:center;justify-content:center;" onmouseover="this.style.background='#F0F0F0'" onmouseout="this.style.background='transparent'"><i data-lucide="chevron-down" style="width:14px;height:14px;color:#B3B3B3;"></i></button>
                 </div>
                 <div style="padding:10px;border-right:1px solid #E6E6E6;display:flex;align-items:flex-start;">
-                  <textarea style="width:100%;min-height:60px;border:1px solid transparent;border-radius:6px;padding:6px 8px;font-size:16px;font-family:inherit;resize:vertical;outline:none;color:#333;line-height:1.55;background:transparent;" onmouseover="this.style.borderColor='#D9D9D9'" onmouseout="if(document.activeElement!==this)this.style.borderColor='transparent'" onfocus="this.style.borderColor='#7E44FB';this.style.background='#FDFCFF'" onblur="this.style.borderColor='transparent';this.style.background='transparent'">표현 방법</textarea>
+                  <textarea style="width:100%;min-height:60px;border:1px solid transparent;border-radius:6px;padding:6px 8px;font-size:16px;font-family:inherit;resize:vertical;outline:none;color:#333;line-height:1.55;background:transparent;" onmouseover="this.style.borderColor='#D9D9D9'" onmouseout="if(document.activeElement!==this)this.style.borderColor='transparent'" onfocus="this.style.borderColor='#7E44FB';this.style.background='#FDFCFF'" onblur="this.style.borderColor='transparent';this.style.background='transparent'">1-2 · 표현 방법</textarea>
                 </div>
                 <div style="padding:10px;border-right:1px solid #E6E6E6;display:flex;flex-direction:column;gap:6px;">
                   <textarea class="q-content-ta" style="width:100%;min-height:60px;border:1px solid transparent;border-radius:6px;padding:6px 8px;font-size:16px;font-family:inherit;resize:vertical;outline:none;color:#333;line-height:1.55;background:transparent;" onmouseover="this.style.borderColor='#D9D9D9'" onmouseout="if(document.activeElement!==this)this.style.borderColor='transparent'" onfocus="this.style.borderColor='#7E44FB';this.style.background='#FDFCFF'" onblur="this.style.borderColor='transparent';this.style.background='transparent'">위 글에서 사용된 표현 방법 2가지를 쓰고, 각각의 효과를 설명하시오.</textarea>
-                  <button onclick="openFormula(this.previousElementSibling)" style="align-self:flex-start;display:flex;align-items:center;gap:4px;border:1px solid #D9D9D9;background:white;border-radius:6px;height:26px;padding:0 8px;cursor:pointer;font-size:12px;font-weight:700;color:#494949;font-family:inherit;" onmouseover="this.style.borderColor='#7E44FB';this.style.color='#7E44FB'" onmouseout="this.style.borderColor='#D9D9D9';this.style.color='#494949'"><span style="font-size:14px;">∑</span> 수식</button>
+                  <span class="formula-wrap"><button onclick="openFormula(this)" style="display:inline-flex;align-items:center;gap:4px;border:1px solid #D9D9D9;background:white;border-radius:6px;height:26px;padding:0 8px;cursor:pointer;font-size:12px;font-weight:700;color:#494949;font-family:inherit;"><span style="font-size:14px;">∑</span> 수식</button></span>
                 </div>
                 <div style="padding:10px;background:#FAFAFA;border-right:1px solid #E6E6E6;"><div style="font-size:13px;color:#808080;line-height:1.6;">비유법·의성어·의태어 등 정확한 용어를 사용해야 하며, 표현 방법과 효과가 논리적으로 연결되어야 합니다.</div></div>
                 <div style="display:flex;align-items:center;justify-content:center;background:#FAFAFA;">
@@ -1107,22 +1112,99 @@ button[onclick*="openFormula"] { cursor:not-allowed!important; color:#B3B3B3!imp
                 </div>
               </div>
 
-              <!-- 문항 4 -->
-              <div class="q-row" data-idx="3" style="display:grid;grid-template-columns:32px 1fr 2fr 1fr 36px;align-items:stretch;">
+              <!-- 대문항 2 -->
+              <div class="q-row" data-idx="3" style="display:grid;grid-template-columns:32px 1fr 2fr 1fr 36px;border-bottom:1px solid #DDD5FF;border-top:3px solid #F0F0F0;align-items:stretch;">
+                <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;padding:6px 3px;background:#EDE7FF;border-right:1px solid #DDD5FF;">
+                  <button onclick="moveRow(3,-1)" style="width:24px;height:24px;border:none;background:transparent;border-radius:4px;cursor:pointer;display:flex;align-items:center;justify-content:center;" onmouseover="this.style.background='#D4CCFF'" onmouseout="this.style.background='transparent'"><i data-lucide="chevron-up" style="width:14px;height:14px;color:#B3B3B3;"></i></button>
+                  <button onclick="moveRow(3,1)" style="width:24px;height:24px;border:none;background:transparent;border-radius:4px;cursor:pointer;display:flex;align-items:center;justify-content:center;" onmouseover="this.style.background='#D4CCFF'" onmouseout="this.style.background='transparent'"><i data-lucide="chevron-down" style="width:14px;height:14px;color:#B3B3B3;"></i></button>
+                </div>
+                <div style="padding:10px 12px;border-right:1px solid #DDD5FF;display:flex;align-items:center;background:#F7F4FF;">
+                  <span style="font-size:11px;font-weight:800;color:#7E44FB;background:#EDE7FF;border-radius:100px;padding:3px 9px;white-space:nowrap;">대문항 2</span>
+                </div>
+                <div style="padding:10px;border-right:1px solid #DDD5FF;background:#F7F4FF;display:flex;align-items:flex-start;">
+                  <textarea class="q-content-ta" style="width:100%;min-height:42px;border:1px solid transparent;border-radius:6px;padding:6px 8px;font-size:14px;font-family:inherit;resize:vertical;outline:none;color:#808080;line-height:1.55;background:transparent;font-style:italic;" onmouseover="this.style.borderColor='#C4AAFD'" onmouseout="if(document.activeElement!==this)this.style.borderColor='transparent'" onfocus="this.style.borderColor='#7E44FB';this.style.background='#FDFCFF'" onblur="this.style.borderColor='transparent';this.style.background='transparent'">아래 내용을 읽고 물음에 답하시오.</textarea>
+                </div>
+                <div style="padding:10px;background:#EDE7FF;border-right:1px solid #DDD5FF;display:flex;align-items:center;">
+                  <span style="font-size:12px;color:#9B68F3;font-style:italic;">지시문 · 채점 없음</span>
+                </div>
+                <div style="display:flex;align-items:center;justify-content:center;background:#EDE7FF;">
+                  <button onclick="deleteRow(3)" style="width:28px;height:28px;border:none;background:transparent;border-radius:6px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#C4AAFD;" onmouseover="this.style.background='#FFF0F0';this.style.color='#DB3E51'" onmouseout="this.style.background='transparent';this.style.color='#C4AAFD'"><i data-lucide="trash-2" style="width:14px;height:14px;"></i></button>
+                </div>
+              </div>
+
+              <!-- 소문항 2-1 -->
+              <div class="q-row" data-idx="4" style="display:grid;grid-template-columns:32px 1fr 2fr 1fr 36px;border-bottom:1px solid #F0F0F0;border-left:3px solid #C4AAFD;align-items:stretch;">
                 <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;padding:6px 3px;background:#FAFAFA;border-right:1px solid #E6E6E6;">
-                  <button onclick="moveRow(3,-1)" style="width:24px;height:24px;border:none;background:transparent;border-radius:4px;cursor:pointer;display:flex;align-items:center;justify-content:center;" onmouseover="this.style.background='#F0F0F0'" onmouseout="this.style.background='transparent'"><i data-lucide="chevron-up" style="width:14px;height:14px;color:#B3B3B3;"></i></button>
-                  <button onclick="moveRow(3,1)" style="width:24px;height:24px;border:none;background:transparent;border-radius:4px;cursor:pointer;display:flex;align-items:center;justify-content:center;" onmouseover="this.style.background='#F0F0F0'" onmouseout="this.style.background='transparent'"><i data-lucide="chevron-down" style="width:14px;height:14px;color:#B3B3B3;"></i></button>
+                  <button onclick="moveRow(4,-1)" style="width:24px;height:24px;border:none;background:transparent;border-radius:4px;cursor:pointer;display:flex;align-items:center;justify-content:center;" onmouseover="this.style.background='#F0F0F0'" onmouseout="this.style.background='transparent'"><i data-lucide="chevron-up" style="width:14px;height:14px;color:#B3B3B3;"></i></button>
+                  <button onclick="moveRow(4,1)" style="width:24px;height:24px;border:none;background:transparent;border-radius:4px;cursor:pointer;display:flex;align-items:center;justify-content:center;" onmouseover="this.style.background='#F0F0F0'" onmouseout="this.style.background='transparent'"><i data-lucide="chevron-down" style="width:14px;height:14px;color:#B3B3B3;"></i></button>
                 </div>
                 <div style="padding:10px;border-right:1px solid #E6E6E6;display:flex;align-items:flex-start;">
-                  <textarea style="width:100%;min-height:60px;border:1px solid transparent;border-radius:6px;padding:6px 8px;font-size:16px;font-family:inherit;resize:vertical;outline:none;color:#333;line-height:1.55;background:transparent;" onmouseover="this.style.borderColor='#D9D9D9'" onmouseout="if(document.activeElement!==this)this.style.borderColor='transparent'" onfocus="this.style.borderColor='#7E44FB';this.style.background='#FDFCFF'" onblur="this.style.borderColor='transparent';this.style.background='transparent'">의견 쓰기</textarea>
+                  <textarea style="width:100%;min-height:60px;border:1px solid transparent;border-radius:6px;padding:6px 8px;font-size:16px;font-family:inherit;resize:vertical;outline:none;color:#333;line-height:1.55;background:transparent;" onmouseover="this.style.borderColor='#D9D9D9'" onmouseout="if(document.activeElement!==this)this.style.borderColor='transparent'" onfocus="this.style.borderColor='#7E44FB';this.style.background='#FDFCFF'" onblur="this.style.borderColor='transparent';this.style.background='transparent'">2-1 · 분석하기</textarea>
                 </div>
                 <div style="padding:10px;border-right:1px solid #E6E6E6;display:flex;flex-direction:column;gap:6px;">
-                  <textarea class="q-content-ta" style="width:100%;min-height:60px;border:1px solid transparent;border-radius:6px;padding:6px 8px;font-size:16px;font-family:inherit;resize:vertical;outline:none;color:#333;line-height:1.55;background:transparent;" onmouseover="this.style.borderColor='#D9D9D9'" onmouseout="if(document.activeElement!==this)this.style.borderColor='transparent'" onfocus="this.style.borderColor='#7E44FB';this.style.background='#FDFCFF'" onblur="this.style.borderColor='transparent';this.style.background='transparent'">이 글을 읽고 환경 보호에 대한 자신의 의견을 논리적으로 서술하시오. (150자 이상)</textarea>
-                  <button onclick="openFormula(this.previousElementSibling)" style="align-self:flex-start;display:flex;align-items:center;gap:4px;border:1px solid #D9D9D9;background:white;border-radius:6px;height:26px;padding:0 8px;cursor:pointer;font-size:12px;font-weight:700;color:#494949;font-family:inherit;" onmouseover="this.style.borderColor='#7E44FB';this.style.color='#7E44FB'" onmouseout="this.style.borderColor='#D9D9D9';this.style.color='#494949'"><span style="font-size:14px;">∑</span> 수식</button>
+                  <textarea class="q-content-ta" style="width:100%;min-height:60px;border:1px solid transparent;border-radius:6px;padding:6px 8px;font-size:16px;font-family:inherit;resize:vertical;outline:none;color:#333;line-height:1.55;background:transparent;" onmouseover="this.style.borderColor='#D9D9D9'" onmouseout="if(document.activeElement!==this)this.style.borderColor='transparent'" onfocus="this.style.borderColor='#7E44FB';this.style.background='#FDFCFF'" onblur="this.style.borderColor='transparent';this.style.background='transparent'">아래 표를 완성하시오.</textarea>
+                  <span class="formula-wrap"><button onclick="openFormula(this)" style="display:inline-flex;align-items:center;gap:4px;border:1px solid #D9D9D9;background:white;border-radius:6px;height:26px;padding:0 8px;cursor:pointer;font-size:12px;font-weight:700;color:#494949;font-family:inherit;"><span style="font-size:14px;">∑</span> 수식</button></span>
+                </div>
+                <div style="padding:10px;background:#FAFAFA;border-right:1px solid #E6E6E6;"><div style="font-size:13px;color:#808080;line-height:1.6;">표의 각 칸에 해당하는 개념과 사례를 정확하게 기입해야 합니다. 빈칸은 감점 처리.</div></div>
+                <div style="display:flex;align-items:center;justify-content:center;background:#FAFAFA;">
+                  <button onclick="deleteRow(4)" style="width:28px;height:28px;border:none;background:transparent;border-radius:6px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#F0A0A8;" onmouseover="this.style.background='#FFF0F0';this.style.color='#DB3E51'" onmouseout="this.style.background='transparent';this.style.color='#F0A0A8'"><i data-lucide="trash-2" style="width:14px;height:14px;"></i></button>
+                </div>
+              </div>
+
+              <!-- 소문항 2-2 -->
+              <div class="q-row" data-idx="5" style="display:grid;grid-template-columns:32px 1fr 2fr 1fr 36px;border-bottom:1px solid #F0F0F0;border-left:3px solid #C4AAFD;align-items:stretch;">
+                <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;padding:6px 3px;background:#FAFAFA;border-right:1px solid #E6E6E6;">
+                  <button onclick="moveRow(5,-1)" style="width:24px;height:24px;border:none;background:transparent;border-radius:4px;cursor:pointer;display:flex;align-items:center;justify-content:center;" onmouseover="this.style.background='#F0F0F0'" onmouseout="this.style.background='transparent'"><i data-lucide="chevron-up" style="width:14px;height:14px;color:#B3B3B3;"></i></button>
+                  <button onclick="moveRow(5,1)" style="width:24px;height:24px;border:none;background:transparent;border-radius:4px;cursor:pointer;display:flex;align-items:center;justify-content:center;" onmouseover="this.style.background='#F0F0F0'" onmouseout="this.style.background='transparent'"><i data-lucide="chevron-down" style="width:14px;height:14px;color:#B3B3B3;"></i></button>
+                </div>
+                <div style="padding:10px;border-right:1px solid #E6E6E6;display:flex;align-items:flex-start;">
+                  <textarea style="width:100%;min-height:60px;border:1px solid transparent;border-radius:6px;padding:6px 8px;font-size:16px;font-family:inherit;resize:vertical;outline:none;color:#333;line-height:1.55;background:transparent;" onmouseover="this.style.borderColor='#D9D9D9'" onmouseout="if(document.activeElement!==this)this.style.borderColor='transparent'" onfocus="this.style.borderColor='#7E44FB';this.style.background='#FDFCFF'" onblur="this.style.borderColor='transparent';this.style.background='transparent'">2-2 · 의견 쓰기</textarea>
+                </div>
+                <div style="padding:10px;border-right:1px solid #E6E6E6;display:flex;flex-direction:column;gap:6px;">
+                  <textarea class="q-content-ta" style="width:100%;min-height:60px;border:1px solid transparent;border-radius:6px;padding:6px 8px;font-size:16px;font-family:inherit;resize:vertical;outline:none;color:#333;line-height:1.55;background:transparent;" onmouseover="this.style.borderColor='#D9D9D9'" onmouseout="if(document.activeElement!==this)this.style.borderColor='transparent'" onfocus="this.style.borderColor='#7E44FB';this.style.background='#FDFCFF'" onblur="this.style.borderColor='transparent';this.style.background='transparent'">위 내용을 바탕으로 환경 문제에 대한 의견을 논리적으로 서술하시오.</textarea>
+                  <span class="formula-wrap"><button onclick="openFormula(this)" style="display:inline-flex;align-items:center;gap:4px;border:1px solid #D9D9D9;background:white;border-radius:6px;height:26px;padding:0 8px;cursor:pointer;font-size:12px;font-weight:700;color:#494949;font-family:inherit;"><span style="font-size:14px;">∑</span> 수식</button></span>
                 </div>
                 <div style="padding:10px;background:#FAFAFA;border-right:1px solid #E6E6E6;"><div style="font-size:13px;color:#808080;line-height:1.6;">환경 보호 필요성을 주장하고 이를 뒷받침하는 근거 2가지 이상을 제시해야 합니다. 글자 수 미달 시 감점.</div></div>
                 <div style="display:flex;align-items:center;justify-content:center;background:#FAFAFA;">
-                  <button onclick="deleteRow(3)" style="width:28px;height:28px;border:none;background:transparent;border-radius:6px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#F0A0A8;" onmouseover="this.style.background='#FFF0F0';this.style.color='#DB3E51'" onmouseout="this.style.background='transparent';this.style.color='#F0A0A8'"><i data-lucide="trash-2" style="width:14px;height:14px;"></i></button>
+                  <button onclick="deleteRow(5)" style="width:28px;height:28px;border:none;background:transparent;border-radius:6px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#F0A0A8;" onmouseover="this.style.background='#FFF0F0';this.style.color='#DB3E51'" onmouseout="this.style.background='transparent';this.style.color='#F0A0A8'"><i data-lucide="trash-2" style="width:14px;height:14px;"></i></button>
+                </div>
+              </div>
+
+              <!-- 문항 3 -->
+              <div class="q-row" data-idx="6" style="display:grid;grid-template-columns:32px 1fr 2fr 1fr 36px;border-bottom:1px solid #F0F0F0;border-top:3px solid #F0F0F0;align-items:stretch;">
+                <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;padding:6px 3px;background:#FAFAFA;border-right:1px solid #E6E6E6;">
+                  <button onclick="moveRow(6,-1)" style="width:24px;height:24px;border:none;background:transparent;border-radius:4px;cursor:pointer;display:flex;align-items:center;justify-content:center;" onmouseover="this.style.background='#F0F0F0'" onmouseout="this.style.background='transparent'"><i data-lucide="chevron-up" style="width:14px;height:14px;color:#B3B3B3;"></i></button>
+                  <button onclick="moveRow(6,1)" style="width:24px;height:24px;border:none;background:transparent;border-radius:4px;cursor:pointer;display:flex;align-items:center;justify-content:center;" onmouseover="this.style.background='#F0F0F0'" onmouseout="this.style.background='transparent'"><i data-lucide="chevron-down" style="width:14px;height:14px;color:#B3B3B3;"></i></button>
+                </div>
+                <div style="padding:10px;border-right:1px solid #E6E6E6;display:flex;align-items:flex-start;">
+                  <textarea style="width:100%;min-height:60px;border:1px solid transparent;border-radius:6px;padding:6px 8px;font-size:16px;font-family:inherit;resize:vertical;outline:none;color:#333;line-height:1.55;background:transparent;" onmouseover="this.style.borderColor='#D9D9D9'" onmouseout="if(document.activeElement!==this)this.style.borderColor='transparent'" onfocus="this.style.borderColor='#7E44FB';this.style.background='#FDFCFF'" onblur="this.style.borderColor='transparent';this.style.background='transparent'">3 · 논술하기</textarea>
+                </div>
+                <div style="padding:10px;border-right:1px solid #E6E6E6;display:flex;flex-direction:column;gap:6px;">
+                  <textarea class="q-content-ta" style="width:100%;min-height:60px;border:1px solid transparent;border-radius:6px;padding:6px 8px;font-size:16px;font-family:inherit;resize:vertical;outline:none;color:#333;line-height:1.55;background:transparent;" onmouseover="this.style.borderColor='#D9D9D9'" onmouseout="if(document.activeElement!==this)this.style.borderColor='transparent'" onfocus="this.style.borderColor='#7E44FB';this.style.background='#FDFCFF'" onblur="this.style.borderColor='transparent';this.style.background='transparent'">이 글을 읽고 환경 보호에 대한 자신의 의견을 논리적으로 서술하시오. (150자 이상)</textarea>
+                  <span class="formula-wrap"><button onclick="openFormula(this)" style="display:inline-flex;align-items:center;gap:4px;border:1px solid #D9D9D9;background:white;border-radius:6px;height:26px;padding:0 8px;cursor:pointer;font-size:12px;font-weight:700;color:#494949;font-family:inherit;"><span style="font-size:14px;">∑</span> 수식</button></span>
+                </div>
+                <div style="padding:10px;background:#FAFAFA;border-right:1px solid #E6E6E6;"><div style="font-size:13px;color:#808080;line-height:1.6;">환경 보호에 대한 자신의 의견을 명확히 서술하고, 근거를 논리적으로 2가지 이상 제시해야 합니다. 글자 수 미달 시 감점.</div></div>
+                <div style="display:flex;align-items:center;justify-content:center;background:#FAFAFA;">
+                  <button onclick="deleteRow(6)" style="width:28px;height:28px;border:none;background:transparent;border-radius:6px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#F0A0A8;" onmouseover="this.style.background='#FFF0F0';this.style.color='#DB3E51'" onmouseout="this.style.background='transparent';this.style.color='#F0A0A8'"><i data-lucide="trash-2" style="width:14px;height:14px;"></i></button>
+                </div>
+              </div>
+
+              <!-- 문항 4 -->
+              <div class="q-row" data-idx="7" style="display:grid;grid-template-columns:32px 1fr 2fr 1fr 36px;align-items:stretch;">
+                <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;padding:6px 3px;background:#FAFAFA;border-right:1px solid #E6E6E6;">
+                  <button onclick="moveRow(7,-1)" style="width:24px;height:24px;border:none;background:transparent;border-radius:4px;cursor:pointer;display:flex;align-items:center;justify-content:center;" onmouseover="this.style.background='#F0F0F0'" onmouseout="this.style.background='transparent'"><i data-lucide="chevron-up" style="width:14px;height:14px;color:#B3B3B3;"></i></button>
+                  <button onclick="moveRow(7,1)" style="width:24px;height:24px;border:none;background:transparent;border-radius:4px;cursor:pointer;display:flex;align-items:center;justify-content:center;" onmouseover="this.style.background='#F0F0F0'" onmouseout="this.style.background='transparent'"><i data-lucide="chevron-down" style="width:14px;height:14px;color:#B3B3B3;"></i></button>
+                </div>
+                <div style="padding:10px;border-right:1px solid #E6E6E6;display:flex;align-items:flex-start;">
+                  <textarea style="width:100%;min-height:60px;border:1px solid transparent;border-radius:6px;padding:6px 8px;font-size:16px;font-family:inherit;resize:vertical;outline:none;color:#333;line-height:1.55;background:transparent;" onmouseover="this.style.borderColor='#D9D9D9'" onmouseout="if(document.activeElement!==this)this.style.borderColor='transparent'" onfocus="this.style.borderColor='#7E44FB';this.style.background='#FDFCFF'" onblur="this.style.borderColor='transparent';this.style.background='transparent'">4 · 비교하기</textarea>
+                </div>
+                <div style="padding:10px;border-right:1px solid #E6E6E6;display:flex;flex-direction:column;gap:6px;">
+                  <textarea class="q-content-ta" style="width:100%;min-height:60px;border:1px solid transparent;border-radius:6px;padding:6px 8px;font-size:16px;font-family:inherit;resize:vertical;outline:none;color:#333;line-height:1.55;background:transparent;" onmouseover="this.style.borderColor='#D9D9D9'" onmouseout="if(document.activeElement!==this)this.style.borderColor='transparent'" onfocus="this.style.borderColor='#7E44FB';this.style.background='#FDFCFF'" onblur="this.style.borderColor='transparent';this.style.background='transparent'">두 작품의 공통된 주제를 찾고, 각 작품에서 주제를 표현한 방식의 차이를 서술하시오.</textarea>
+                  <span class="formula-wrap"><button onclick="openFormula(this)" style="display:inline-flex;align-items:center;gap:4px;border:1px solid #D9D9D9;background:white;border-radius:6px;height:26px;padding:0 8px;cursor:pointer;font-size:12px;font-weight:700;color:#494949;font-family:inherit;"><span style="font-size:14px;">∑</span> 수식</button></span>
+                </div>
+                <div style="padding:10px;background:#FAFAFA;border-right:1px solid #E6E6E6;"><div style="font-size:13px;color:#808080;line-height:1.6;">두 작품의 공통 주제를 먼저 밝히고, 표현 방식의 차이를 각 작품에서 구체적으로 서술해야 합니다.</div></div>
+                <div style="display:flex;align-items:center;justify-content:center;background:#FAFAFA;">
+                  <button onclick="deleteRow(7)" style="width:28px;height:28px;border:none;background:transparent;border-radius:6px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#F0A0A8;" onmouseover="this.style.background='#FFF0F0';this.style.color='#DB3E51'" onmouseout="this.style.background='transparent';this.style.color='#F0A0A8'"><i data-lucide="trash-2" style="width:14px;height:14px;"></i></button>
                 </div>
               </div>
 
@@ -1277,16 +1359,7 @@ button[onclick*="openFormula"] { cursor:not-allowed!important; color:#B3B3B3!imp
         <div style="display:flex;gap:0;background:white;border-radius:16px;overflow:hidden;min-height:520px;border:1px solid #E6E6E6;">
 
           <!-- 왼쪽: 문항 목록 패널 -->
-          <div style="width:288px;flex-shrink:0;border-right:1px solid #E6E6E6;display:flex;flex-direction:column;background:white;">
-            <!-- 연결 현황 요약 -->
-            <div style="padding:14px 16px;border-bottom:1px solid #F0F0F0;background:#F7F4FF;">
-              <div style="font-size:12px;font-weight:800;color:#341761;margin-bottom:8px;">연결 현황</div>
-              <div style="display:flex;gap:5px;flex-wrap:wrap;">
-                <span id="s3-stat-done" style="display:inline-flex;align-items:center;gap:3px;background:#F1F9F3;border-radius:100px;padding:2px 8px;font-size:11px;font-weight:700;color:#00AF3D;">✓ 연결완료 2</span>
-                <span id="s3-stat-warn" style="display:inline-flex;align-items:center;gap:3px;background:#FFF8E6;border:1px solid #FFD966;border-radius:100px;padding:2px 8px;font-size:11px;font-weight:700;color:#B07D00;">⚠ 확인필요 1</span>
-                <span id="s3-stat-none" style="display:inline-flex;align-items:center;gap:3px;background:#FFF0EF;border:1px solid #F0C0C4;border-radius:100px;padding:2px 8px;font-size:11px;font-weight:700;color:#DB3E51;">✗ 미연결 2</span>
-              </div>
-            </div>
+          <div style="width:220px;flex-shrink:0;border-right:1px solid #E6E6E6;display:flex;flex-direction:column;background:white;">
             <!-- 문항 목록 -->
             <div style="flex:1;overflow-y:auto;" id="s3-qlist">
               <!-- 대문항 1 -->
@@ -1294,23 +1367,13 @@ button[onclick*="openFormula"] { cursor:not-allowed!important; color:#B3B3B3!imp
                 <div style="font-size:10px;font-weight:800;color:#B3B3B3;letter-spacing:.5px;margin-bottom:3px;">대문항 1</div>
                 <div style="font-size:12px;color:#494949;line-height:1.4;">다음 글을 읽고 물음에 답하시오.</div>
               </div>
-              <div id="s3-qi-1-1" onclick="selectQuestion('1-1')" class="s3-q-item" style="padding:10px 14px 10px 17px;border-bottom:1px solid #F5F5F5;cursor:pointer;">
-                <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:6px;">
-                  <div style="flex:1;min-width:0;">
-                    <div style="font-size:11px;color:#B3B3B3;margin-bottom:2px;">1-1 · 글쓰기</div>
-                    <div style="font-size:13px;color:#333;line-height:1.4;overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;">주인공의 심정을 이유와 함께 서술하시오.</div>
-                  </div>
-                  <span class="s3-qi-badge" data-qid="1-1" style="flex-shrink:0;display:inline-flex;align-items:center;background:#F1F9F3;border-radius:100px;padding:2px 7px;font-size:10px;font-weight:700;color:#00AF3D;white-space:nowrap;margin-top:1px;">연결완료</span>
-                </div>
+              <div id="s3-qi-1-1" onclick="selectQuestion('1-1')" class="s3-q-item" style="padding:9px 12px 9px 17px;border-bottom:1px solid #F5F5F5;cursor:pointer;">
+                <span style="font-size:13px;font-weight:800;color:#333;">1-1 · 글쓰기</span>
+                <span class="s3-qi-badge" data-qid="1-1" style="flex-shrink:0;display:inline-flex;align-items:center;background:#F1F9F3;border-radius:100px;padding:2px 7px;font-size:10px;font-weight:700;color:#00AF3D;white-space:nowrap;margin-left:auto;">연결완료</span>
               </div>
-              <div id="s3-qi-1-2" onclick="selectQuestion('1-2')" class="s3-q-item" style="padding:10px 14px 10px 17px;border-bottom:1px solid #F5F5F5;cursor:pointer;">
-                <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:6px;">
-                  <div style="flex:1;min-width:0;">
-                    <div style="font-size:11px;color:#B3B3B3;margin-bottom:2px;">1-2 · 표현 방법</div>
-                    <div style="font-size:13px;color:#333;line-height:1.4;overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;">위 글에서 사용된 표현 방법 2가지를 쓰고, 각각의 효과를 설명하시오.</div>
-                  </div>
-                  <span class="s3-qi-badge" data-qid="1-2" style="flex-shrink:0;display:inline-flex;align-items:center;background:#FFF8E6;border:1px solid #FFD966;border-radius:100px;padding:2px 7px;font-size:10px;font-weight:700;color:#B07D00;white-space:nowrap;margin-top:1px;">확인필요</span>
-                </div>
+              <div id="s3-qi-1-2" onclick="selectQuestion('1-2')" class="s3-q-item" style="padding:9px 12px 9px 17px;border-bottom:1px solid #F5F5F5;cursor:pointer;">
+                <span style="font-size:13px;font-weight:800;color:#333;">1-2 · 표현 방법</span>
+                <span class="s3-qi-badge" data-qid="1-2" style="flex-shrink:0;display:inline-flex;align-items:center;background:#F1F9F3;border-radius:100px;padding:2px 7px;font-size:10px;font-weight:700;color:#00AF3D;white-space:nowrap;margin-left:auto;">연결완료</span>
               </div>
 
               <!-- 대문항 2 -->
@@ -1318,37 +1381,23 @@ button[onclick*="openFormula"] { cursor:not-allowed!important; color:#B3B3B3!imp
                 <div style="font-size:10px;font-weight:800;color:#B3B3B3;letter-spacing:.5px;margin-bottom:3px;">대문항 2</div>
                 <div style="font-size:12px;color:#494949;line-height:1.4;">아래 내용을 읽고 물음에 답하시오.</div>
               </div>
-              <div id="s3-qi-2-1" onclick="selectQuestion('2-1')" class="s3-q-item" style="padding:10px 14px 10px 17px;border-bottom:1px solid #F5F5F5;cursor:pointer;">
-                <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:6px;">
-                  <div style="flex:1;min-width:0;">
-                    <div style="font-size:11px;color:#B3B3B3;margin-bottom:2px;">2-1 · 분석하기</div>
-                    <div style="font-size:13px;color:#333;line-height:1.4;overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;">아래 표를 완성하시오.</div>
-                  </div>
-                  <span class="s3-qi-badge" data-qid="2-1" style="flex-shrink:0;display:inline-flex;align-items:center;background:#F1F9F3;border-radius:100px;padding:2px 7px;font-size:10px;font-weight:700;color:#00AF3D;white-space:nowrap;margin-top:1px;">연결완료</span>
-                </div>
+              <div id="s3-qi-2-1" onclick="selectQuestion('2-1')" class="s3-q-item" style="padding:9px 12px 9px 17px;border-bottom:1px solid #F5F5F5;cursor:pointer;">
+                <span style="font-size:13px;font-weight:800;color:#333;">2-1 · 분석하기</span>
+                <span class="s3-qi-badge" data-qid="2-1" style="flex-shrink:0;display:inline-flex;align-items:center;background:#F1F9F3;border-radius:100px;padding:2px 7px;font-size:10px;font-weight:700;color:#00AF3D;white-space:nowrap;margin-left:auto;">연결완료</span>
               </div>
-              <div id="s3-qi-2-2" onclick="selectQuestion('2-2')" class="s3-q-item" style="padding:10px 14px 10px 17px;border-bottom:1px solid #F5F5F5;cursor:pointer;">
-                <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:6px;">
-                  <div style="flex:1;min-width:0;">
-                    <div style="font-size:11px;color:#B3B3B3;margin-bottom:2px;">2-2 · 의견 쓰기</div>
-                    <div style="font-size:13px;color:#333;line-height:1.4;overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;">위 내용을 바탕으로 환경 문제에 대한 의견을 논리적으로 서술하시오.</div>
-                  </div>
-                  <span class="s3-qi-badge" data-qid="2-2" style="flex-shrink:0;display:inline-flex;align-items:center;background:#FFF0EF;border:1px solid #F0C0C4;border-radius:100px;padding:2px 7px;font-size:10px;font-weight:700;color:#DB3E51;white-space:nowrap;margin-top:1px;">미연결</span>
-                </div>
+              <div id="s3-qi-2-2" onclick="selectQuestion('2-2')" class="s3-q-item" style="padding:9px 12px 9px 17px;border-bottom:1px solid #F5F5F5;cursor:pointer;">
+                <span style="font-size:13px;font-weight:800;color:#333;">2-2 · 의견 쓰기</span>
+                <span class="s3-qi-badge" data-qid="2-2" style="flex-shrink:0;display:inline-flex;align-items:center;background:#FFF0EF;border:1px solid #F0C0C4;border-radius:100px;padding:2px 7px;font-size:10px;font-weight:700;color:#DB3E51;white-space:nowrap;margin-left:auto;">미연결</span>
               </div>
 
               <!-- 일반 문항 -->
-              <div style="padding:8px 14px 6px;background:#F8F8F8;border-bottom:1px solid #EFEFEF;border-top:4px solid #F0F0F0;">
-                <div style="font-size:10px;font-weight:800;color:#B3B3B3;letter-spacing:.5px;">일반 문항</div>
+              <div id="s3-qi-3" onclick="selectQuestion('3')" class="s3-q-item" style="padding:9px 12px 9px 12px;border-bottom:1px solid #F5F5F5;border-top:4px solid #F0F0F0;cursor:pointer;">
+                <span style="font-size:13px;font-weight:800;color:#333;">3 · 논술하기</span>
+                <span class="s3-qi-badge" data-qid="3" style="flex-shrink:0;display:inline-flex;align-items:center;background:#FFF0EF;border:1px solid #F0C0C4;border-radius:100px;padding:2px 7px;font-size:10px;font-weight:700;color:#DB3E51;white-space:nowrap;margin-left:auto;">미연결</span>
               </div>
-              <div id="s3-qi-3" onclick="selectQuestion('3')" class="s3-q-item" style="padding:10px 14px 10px 17px;border-bottom:1px solid #F5F5F5;cursor:pointer;">
-                <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:6px;">
-                  <div style="flex:1;min-width:0;">
-                    <div style="font-size:11px;color:#B3B3B3;margin-bottom:2px;">문항 3 · 논술하기</div>
-                    <div style="font-size:13px;color:#333;line-height:1.4;overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;">이 글을 읽고 환경 보호에 대한 자신의 의견을 논리적으로 서술하시오. (150자 이상)</div>
-                  </div>
-                  <span class="s3-qi-badge" data-qid="3" style="flex-shrink:0;display:inline-flex;align-items:center;background:#FFF0EF;border:1px solid #F0C0C4;border-radius:100px;padding:2px 7px;font-size:10px;font-weight:700;color:#DB3E51;white-space:nowrap;margin-top:1px;">미연결</span>
-                </div>
+              <div id="s3-qi-4" onclick="selectQuestion('4')" class="s3-q-item" style="padding:9px 12px 9px 12px;border-bottom:1px solid #F5F5F5;cursor:pointer;">
+                <span style="font-size:13px;font-weight:800;color:#333;">4 · 비교하기</span>
+                <span class="s3-qi-badge" data-qid="4" style="flex-shrink:0;display:inline-flex;align-items:center;background:#FFF8E6;border:1px solid #FFD966;border-radius:100px;padding:2px 7px;font-size:10px;font-weight:700;color:#B07D00;white-space:nowrap;margin-left:auto;">확인필요</span>
               </div>
             </div>
           </div>
@@ -1640,14 +1689,9 @@ button[onclick*="openFormula"] { cursor:not-allowed!important; color:#B3B3B3!imp
               <p style="font-size:15px;font-weight:800;color:#000;margin:0 0 4px;">엑셀로 한 번에 입력하기</p>
               <p style="font-size:13px;color:#808080;margin:0;">양식을 내려받아 문항별 모범답안을 채운 후 업로드하세요.</p>
             </div>
-            <div style="display:flex;gap:10px;flex-shrink:0;">
-              <button style="display:flex;align-items:center;gap:6px;height:38px;padding:0 16px;background:white;border:1px solid #D9D9D9;border-radius:8px;cursor:pointer;font-size:14px;font-weight:700;color:#494949;font-family:inherit;" onmouseover="this.style.background='#F8F8F8'" onmouseout="this.style.background='white'">
-                <i data-lucide="download" style="width:15px;height:15px;"></i> 엑셀 양식 다운로드
-              </button>
-              <button style="display:flex;align-items:center;gap:6px;height:38px;padding:0 16px;background:#00AF3D;border:none;border-radius:8px;cursor:pointer;font-size:14px;font-weight:700;color:white;font-family:inherit;" onmouseover="this.style.opacity='0.88'" onmouseout="this.style.opacity='1'">
-                <i data-lucide="upload" style="width:15px;height:15px;"></i> 작성 후 업로드
-              </button>
-            </div>
+            <button onclick="showScreen('step4-excel')" style="display:flex;align-items:center;gap:6px;height:38px;padding:0 16px;background:#00AF3D;border:none;border-radius:8px;cursor:pointer;font-size:14px;font-weight:700;color:white;font-family:inherit;flex-shrink:0;" onmouseover="this.style.opacity='0.88'" onmouseout="this.style.opacity='1'">
+              <i data-lucide="upload" style="width:15px;height:15px;"></i> 답안 엑셀 업로드
+            </button>
           </div>
 
           <!-- 구분선 -->
@@ -1657,54 +1701,96 @@ button[onclick*="openFormula"] { cursor:not-allowed!important; color:#B3B3B3!imp
             <div style="flex:1;height:1px;background:#E6E6E6;"></div>
           </div>
 
-          <!-- 문항별 입력 -->
-          <div style="display:flex;flex-direction:column;gap:12px;">
+          <!-- 안내 문구 -->
+          <div style="display:flex;align-items:flex-start;gap:8px;padding:10px 14px;background:#EDF1FC;border-radius:8px;margin-bottom:16px;">
+            <svg width="15" height="15" viewBox="0 0 15 15" fill="none" style="flex-shrink:0;margin-top:1px;"><circle cx="7.5" cy="7.5" r="6.5" stroke="#5890FF" stroke-width="1.5"/><line x1="7.5" y1="6.5" x2="7.5" y2="11" stroke="#5890FF" stroke-width="1.5" stroke-linecap="round"/><circle cx="7.5" cy="4.5" r="0.8" fill="#5890FF"/></svg>
+            <span style="font-size:13px;color:#3A68D8;line-height:1.6;">그림·연결하기 등 자유 형식의 문항은 텍스트로 모범답안 입력이 어렵습니다. 해당 문항은 비워두셔도 다음 단계로 진행할 수 있습니다.</span>
+          </div>
 
-            <!-- 문항 1 -->
-            <div style="background:white;border:1px solid #E6E6E6;border-radius:10px;overflow:hidden;">
-              <div style="background:#F8F8F8;padding:12px 16px;border-bottom:1px solid #E6E6E6;display:flex;align-items:center;gap:10px;">
-                <span style="font-size:12px;font-weight:800;background:#F7F4FF;color:#7E44FB;border-radius:100px;padding:3px 10px;white-space:nowrap;">글쓰기</span>
-                <span style="font-size:14px;color:#333;font-weight:400;">다음 글을 읽고 주인공의 심정을 이유와 함께 서술하시오.</span>
+          <!-- 문항별 입력 -->
+          <div style="display:flex;flex-direction:column;gap:10px;">
+
+            <!-- 대문항 1 -->
+            <div style="display:flex;align-items:center;gap:8px;padding:9px 14px;background:#F7F4FF;border:1px solid #C4AAFD;border-radius:8px;">
+              <span style="font-size:11px;font-weight:800;color:#7E44FB;background:#EDE7FF;border-radius:100px;padding:2px 9px;white-space:nowrap;flex-shrink:0;">대문항 1</span>
+              <span style="font-size:13px;color:#808080;font-style:italic;">다음 글을 읽고 물음에 답하시오.</span>
+            </div>
+
+            <!-- 소문항 1-1 -->
+            <div style="background:white;border:1px solid #E6E6E6;border-left:3px solid #C4AAFD;border-radius:10px;overflow:hidden;">
+              <div style="background:#F8F8F8;padding:12px 16px;border-bottom:1px solid #E6E6E6;display:flex;align-items:center;gap:8px;">
+                <span style="font-size:12px;font-weight:800;background:#F7F4FF;color:#7E44FB;border-radius:100px;padding:3px 10px;white-space:nowrap;flex-shrink:0;">1-1 · 글쓰기</span>
+                <span style="font-size:14px;color:#333;font-weight:400;">주인공의 심정을 이유와 함께 서술하시오.</span>
               </div>
               <div style="padding:14px 16px;display:flex;flex-direction:column;gap:0;">
-                <textarea placeholder="모범답안을 입력해 주세요. (없으면 비워두셔도 됩니다)" style="width:100%;min-height:80px;border:1px solid #D9D9D9;border-radius:8px;padding:10px 12px;font-size:16px;font-family:inherit;resize:vertical;outline:none;color:#333;line-height:1.55;box-sizing:border-box;" onfocus="this.style.borderColor='#7E44FB'" onblur="this.style.borderColor='#D9D9D9'"></textarea>
-                <button onclick="openFormula(this.previousElementSibling)" style="margin-top:6px;align-self:flex-start;display:inline-flex;align-items:center;gap:4px;border:1px solid #D9D9D9;background:white;border-radius:6px;height:26px;padding:0 8px;cursor:pointer;font-size:12px;font-weight:700;color:#494949;font-family:inherit;" onmouseover="this.style.borderColor='#7E44FB';this.style.color='#7E44FB'" onmouseout="this.style.borderColor='#D9D9D9';this.style.color='#494949'"><span style="font-size:14px;">∑</span> 수식</button>
+                <textarea placeholder="모범답안을 입력해 주세요. (없으면 비워두셔도 됩니다)" style="width:100%;min-height:80px;border:1px solid #D9D9D9;border-radius:8px;padding:10px 12px;font-size:16px;font-family:inherit;resize:vertical;outline:none;color:#333;line-height:1.55;box-sizing:border-box;" onfocus="this.style.borderColor='#7E44FB'" onblur="this.style.borderColor='#D9D9D9'" oninput="_step3Dirty=true"></textarea>
+                <span class="formula-wrap"><button onclick="openFormula(this)" style="display:inline-flex;align-items:center;gap:4px;border:1px solid #D9D9D9;background:white;border-radius:6px;height:26px;padding:0 8px;cursor:pointer;font-size:12px;font-weight:700;color:#494949;font-family:inherit;"><span style="font-size:14px;">∑</span> 수식</button></span>
               </div>
             </div>
 
-            <!-- 문항 2 -->
-            <div style="background:white;border:1px solid #E6E6E6;border-radius:10px;overflow:hidden;">
-              <div style="background:#F8F8F8;padding:12px 16px;border-bottom:1px solid #E6E6E6;display:flex;align-items:center;gap:10px;">
-                <span style="font-size:12px;font-weight:800;background:#F7F4FF;color:#7E44FB;border-radius:100px;padding:3px 10px;white-space:nowrap;">분석하기</span>
+            <!-- 소문항 1-2 -->
+            <div style="background:white;border:1px solid #E6E6E6;border-left:3px solid #C4AAFD;border-radius:10px;overflow:hidden;">
+              <div style="background:#F8F8F8;padding:12px 16px;border-bottom:1px solid #E6E6E6;display:flex;align-items:center;gap:8px;">
+                <span style="font-size:12px;font-weight:800;background:#F7F4FF;color:#7E44FB;border-radius:100px;padding:3px 10px;white-space:nowrap;flex-shrink:0;">1-2 · 표현 방법</span>
+                <span style="font-size:14px;color:#333;font-weight:400;">위 글에서 사용된 표현 방법 2가지를 쓰고, 각각의 효과를 설명하시오.</span>
+              </div>
+              <div style="padding:14px 16px;display:flex;flex-direction:column;gap:0;">
+                <textarea placeholder="모범답안을 입력해 주세요. (없으면 비워두셔도 됩니다)" style="width:100%;min-height:80px;border:1px solid #D9D9D9;border-radius:8px;padding:10px 12px;font-size:16px;font-family:inherit;resize:vertical;outline:none;color:#333;line-height:1.55;box-sizing:border-box;" onfocus="this.style.borderColor='#7E44FB'" onblur="this.style.borderColor='#D9D9D9'" oninput="_step3Dirty=true"></textarea>
+                <span class="formula-wrap"><button onclick="openFormula(this)" style="display:inline-flex;align-items:center;gap:4px;border:1px solid #D9D9D9;background:white;border-radius:6px;height:26px;padding:0 8px;cursor:pointer;font-size:12px;font-weight:700;color:#494949;font-family:inherit;"><span style="font-size:14px;">∑</span> 수식</button></span>
+              </div>
+            </div>
+
+            <!-- 대문항 2 -->
+            <div style="display:flex;align-items:center;gap:8px;padding:9px 14px;background:#F7F4FF;border:1px solid #C4AAFD;border-radius:8px;margin-top:4px;">
+              <span style="font-size:11px;font-weight:800;color:#7E44FB;background:#EDE7FF;border-radius:100px;padding:2px 9px;white-space:nowrap;flex-shrink:0;">대문항 2</span>
+              <span style="font-size:13px;color:#808080;font-style:italic;">아래 내용을 읽고 물음에 답하시오.</span>
+            </div>
+
+            <!-- 소문항 2-1 -->
+            <div style="background:white;border:1px solid #E6E6E6;border-left:3px solid #C4AAFD;border-radius:10px;overflow:hidden;">
+              <div style="background:#F8F8F8;padding:12px 16px;border-bottom:1px solid #E6E6E6;display:flex;align-items:center;gap:8px;">
+                <span style="font-size:12px;font-weight:800;background:#F7F4FF;color:#7E44FB;border-radius:100px;padding:3px 10px;white-space:nowrap;flex-shrink:0;">2-1 · 분석하기</span>
                 <span style="font-size:14px;color:#333;font-weight:400;">아래 표를 완성하시오.</span>
               </div>
               <div style="padding:14px 16px;display:flex;flex-direction:column;gap:0;">
-                <textarea placeholder="모범답안을 입력해 주세요. (없으면 비워두셔도 됩니다)" style="width:100%;min-height:80px;border:1px solid #D9D9D9;border-radius:8px;padding:10px 12px;font-size:16px;font-family:inherit;resize:vertical;outline:none;color:#333;line-height:1.55;box-sizing:border-box;" onfocus="this.style.borderColor='#7E44FB'" onblur="this.style.borderColor='#D9D9D9'"></textarea>
-                <button onclick="openFormula(this.previousElementSibling)" style="margin-top:6px;align-self:flex-start;display:inline-flex;align-items:center;gap:4px;border:1px solid #D9D9D9;background:white;border-radius:6px;height:26px;padding:0 8px;cursor:pointer;font-size:12px;font-weight:700;color:#494949;font-family:inherit;" onmouseover="this.style.borderColor='#7E44FB';this.style.color='#7E44FB'" onmouseout="this.style.borderColor='#D9D9D9';this.style.color='#494949'"><span style="font-size:14px;">∑</span> 수식</button>
+                <textarea placeholder="모범답안을 입력해 주세요. (없으면 비워두셔도 됩니다)" style="width:100%;min-height:80px;border:1px solid #D9D9D9;border-radius:8px;padding:10px 12px;font-size:16px;font-family:inherit;resize:vertical;outline:none;color:#333;line-height:1.55;box-sizing:border-box;" onfocus="this.style.borderColor='#7E44FB'" onblur="this.style.borderColor='#D9D9D9'" oninput="_step3Dirty=true"></textarea>
+                <span class="formula-wrap"><button onclick="openFormula(this)" style="display:inline-flex;align-items:center;gap:4px;border:1px solid #D9D9D9;background:white;border-radius:6px;height:26px;padding:0 8px;cursor:pointer;font-size:12px;font-weight:700;color:#494949;font-family:inherit;"><span style="font-size:14px;">∑</span> 수식</button></span>
+              </div>
+            </div>
+
+            <!-- 소문항 2-2 -->
+            <div style="background:white;border:1px solid #E6E6E6;border-left:3px solid #C4AAFD;border-radius:10px;overflow:hidden;">
+              <div style="background:#F8F8F8;padding:12px 16px;border-bottom:1px solid #E6E6E6;display:flex;align-items:center;gap:8px;">
+                <span style="font-size:12px;font-weight:800;background:#F7F4FF;color:#7E44FB;border-radius:100px;padding:3px 10px;white-space:nowrap;flex-shrink:0;">2-2 · 의견 쓰기</span>
+                <span style="font-size:14px;color:#333;font-weight:400;">위 내용을 바탕으로 환경 문제에 대한 의견을 논리적으로 서술하시오.</span>
+              </div>
+              <div style="padding:14px 16px;display:flex;flex-direction:column;gap:0;">
+                <textarea placeholder="모범답안을 입력해 주세요. (없으면 비워두셔도 됩니다)" style="width:100%;min-height:80px;border:1px solid #D9D9D9;border-radius:8px;padding:10px 12px;font-size:16px;font-family:inherit;resize:vertical;outline:none;color:#333;line-height:1.55;box-sizing:border-box;" onfocus="this.style.borderColor='#7E44FB'" onblur="this.style.borderColor='#D9D9D9'" oninput="_step3Dirty=true"></textarea>
+                <span class="formula-wrap"><button onclick="openFormula(this)" style="display:inline-flex;align-items:center;gap:4px;border:1px solid #D9D9D9;background:white;border-radius:6px;height:26px;padding:0 8px;cursor:pointer;font-size:12px;font-weight:700;color:#494949;font-family:inherit;"><span style="font-size:14px;">∑</span> 수식</button></span>
               </div>
             </div>
 
             <!-- 문항 3 -->
-            <div style="background:white;border:1px solid #E6E6E6;border-radius:10px;overflow:hidden;">
+            <div style="background:white;border:1px solid #E6E6E6;border-radius:10px;overflow:hidden;margin-top:4px;">
               <div style="background:#F8F8F8;padding:12px 16px;border-bottom:1px solid #E6E6E6;display:flex;align-items:center;gap:10px;">
-                <span style="font-size:12px;font-weight:800;background:#F7F4FF;color:#7E44FB;border-radius:100px;padding:3px 10px;white-space:nowrap;">표현 방법</span>
-                <span style="font-size:14px;color:#333;font-weight:400;">위 글에서 사용된 표현 방법 2가지를 쓰고, 각각의 효과를 설명하시오.</span>
+                <span style="font-size:12px;font-weight:800;background:#F7F4FF;color:#7E44FB;border-radius:100px;padding:3px 10px;white-space:nowrap;">3 · 논술하기</span>
+                <span style="font-size:14px;color:#333;font-weight:400;">이 글을 읽고 환경 보호에 대한 자신의 의견을 논리적으로 서술하시오. (150자 이상)</span>
               </div>
               <div style="padding:14px 16px;display:flex;flex-direction:column;gap:0;">
-                <textarea placeholder="모범답안을 입력해 주세요. (없으면 비워두셔도 됩니다)" style="width:100%;min-height:80px;border:1px solid #D9D9D9;border-radius:8px;padding:10px 12px;font-size:16px;font-family:inherit;resize:vertical;outline:none;color:#333;line-height:1.55;box-sizing:border-box;" onfocus="this.style.borderColor='#7E44FB'" onblur="this.style.borderColor='#D9D9D9'"></textarea>
-                <button onclick="openFormula(this.previousElementSibling)" style="margin-top:6px;align-self:flex-start;display:inline-flex;align-items:center;gap:4px;border:1px solid #D9D9D9;background:white;border-radius:6px;height:26px;padding:0 8px;cursor:pointer;font-size:12px;font-weight:700;color:#494949;font-family:inherit;" onmouseover="this.style.borderColor='#7E44FB';this.style.color='#7E44FB'" onmouseout="this.style.borderColor='#D9D9D9';this.style.color='#494949'"><span style="font-size:14px;">∑</span> 수식</button>
+                <textarea placeholder="모범답안을 입력해 주세요. (없으면 비워두셔도 됩니다)" style="width:100%;min-height:80px;border:1px solid #D9D9D9;border-radius:8px;padding:10px 12px;font-size:16px;font-family:inherit;resize:vertical;outline:none;color:#333;line-height:1.55;box-sizing:border-box;" onfocus="this.style.borderColor='#7E44FB'" onblur="this.style.borderColor='#D9D9D9'" oninput="_step3Dirty=true"></textarea>
+                <span class="formula-wrap"><button onclick="openFormula(this)" style="display:inline-flex;align-items:center;gap:4px;border:1px solid #D9D9D9;background:white;border-radius:6px;height:26px;padding:0 8px;cursor:pointer;font-size:12px;font-weight:700;color:#494949;font-family:inherit;"><span style="font-size:14px;">∑</span> 수식</button></span>
               </div>
             </div>
 
             <!-- 문항 4 -->
             <div style="background:white;border:1px solid #E6E6E6;border-radius:10px;overflow:hidden;">
               <div style="background:#F8F8F8;padding:12px 16px;border-bottom:1px solid #E6E6E6;display:flex;align-items:center;gap:10px;">
-                <span style="font-size:12px;font-weight:800;background:#F7F4FF;color:#7E44FB;border-radius:100px;padding:3px 10px;white-space:nowrap;">의견 쓰기</span>
-                <span style="font-size:14px;color:#333;font-weight:400;">이 글을 읽고 환경 보호에 대한 자신의 의견을 논리적으로 서술하시오. (150자 이상)</span>
+                <span style="font-size:12px;font-weight:800;background:#F7F4FF;color:#7E44FB;border-radius:100px;padding:3px 10px;white-space:nowrap;">4 · 비교하기</span>
+                <span style="font-size:14px;color:#333;font-weight:400;">두 작품의 공통된 주제를 찾고, 각 작품에서 주제를 표현한 방식의 차이를 서술하시오.</span>
               </div>
               <div style="padding:14px 16px;display:flex;flex-direction:column;gap:0;">
-                <textarea placeholder="모범답안을 입력해 주세요. (없으면 비워두셔도 됩니다)" style="width:100%;min-height:80px;border:1px solid #D9D9D9;border-radius:8px;padding:10px 12px;font-size:16px;font-family:inherit;resize:vertical;outline:none;color:#333;line-height:1.55;box-sizing:border-box;" onfocus="this.style.borderColor='#7E44FB'" onblur="this.style.borderColor='#D9D9D9'"></textarea>
-                <button onclick="openFormula(this.previousElementSibling)" style="margin-top:6px;align-self:flex-start;display:inline-flex;align-items:center;gap:4px;border:1px solid #D9D9D9;background:white;border-radius:6px;height:26px;padding:0 8px;cursor:pointer;font-size:12px;font-weight:700;color:#494949;font-family:inherit;" onmouseover="this.style.borderColor='#7E44FB';this.style.color='#7E44FB'" onmouseout="this.style.borderColor='#D9D9D9';this.style.color='#494949'"><span style="font-size:14px;">∑</span> 수식</button>
+                <textarea placeholder="모범답안을 입력해 주세요. (없으면 비워두셔도 됩니다)" style="width:100%;min-height:80px;border:1px solid #D9D9D9;border-radius:8px;padding:10px 12px;font-size:16px;font-family:inherit;resize:vertical;outline:none;color:#333;line-height:1.55;box-sizing:border-box;" onfocus="this.style.borderColor='#7E44FB'" onblur="this.style.borderColor='#D9D9D9'" oninput="_step3Dirty=true"></textarea>
+                <span class="formula-wrap"><button onclick="openFormula(this)" style="display:inline-flex;align-items:center;gap:4px;border:1px solid #D9D9D9;background:white;border-radius:6px;height:26px;padding:0 8px;cursor:pointer;font-size:12px;font-weight:700;color:#494949;font-family:inherit;"><span style="font-size:14px;">∑</span> 수식</button></span>
               </div>
             </div>
 
@@ -1726,6 +1812,230 @@ button[onclick*="openFormula"] { cursor:not-allowed!important; color:#B3B3B3!imp
     </div>
   </div>
 </div><!-- /screen-step4 -->
+
+
+<!-- ═══════════════════════════════════════
+     SCREEN: 엑셀 업로드 (step4-excel)
+═══════════════════════════════════════ -->
+<div id="screen-step4-excel" class="screen">
+  <header style="background:white;height:98px;border-bottom:1px solid #D9D9D9;display:flex;align-items:center;padding:0 36px;position:sticky;top:0;z-index:100;">
+    <div style="max-width:1200px;width:100%;margin:0 auto;display:flex;align-items:center;justify-content:space-between;padding:0 36px;">
+      <div style="display:flex;align-items:center;gap:8px;">
+        <div style="width:58px;height:42px;overflow:hidden;position:relative;flex-shrink:0;">
+          <img src="https://www.figma.com/api/mcp/asset/120f2a0b-1162-4ca7-83ed-b073b3e6beb2" style="position:absolute;left:50%;transform:translateX(-50%);height:100%;width:auto;object-fit:cover;" alt="HiAI 로고">
+        </div>
+        <div style="position:relative;width:150px;height:41px;">
+          <img src="https://www.figma.com/api/mcp/asset/411901ed-746a-41a9-ad79-6f82091c2143" style="position:absolute;top:0;left:0;width:79.842px;height:16.284px;" alt="하이러닝 AI">
+          <img src="https://www.figma.com/api/mcp/asset/d29946a5-a3fb-462c-bb59-6f53d50de74d" style="position:absolute;top:24.08px;left:0.31px;width:149.692px;height:16.422px;" alt="서논술형 평가 서비스">
+        </div>
+      </div>
+      <nav style="display:flex;gap:52px;align-items:center;">
+        <a href="#" style="font-size:20px;font-weight:800;color:#7E44FB;text-decoration:none;">나의 평가</a>
+        <a href="#" style="font-size:20px;font-weight:700;color:#000;text-decoration:none;">평가 자료실</a>
+        <a href="#" style="font-size:20px;font-weight:700;color:#000;text-decoration:none;">고객센터</a>
+      </nav>
+      <div style="display:flex;align-items:center;gap:12px;">
+        <div style="width:36px;height:36px;background:#EDF1FC;border-radius:50%;display:flex;align-items:center;justify-content:center;">
+          <i data-lucide="user" style="width:20px;height:20px;color:#7E44FB;"></i>
+        </div>
+        <span style="font-size:20px;font-weight:700;">김동* 님</span>
+      </div>
+    </div>
+  </header>
+  <div style="background:linear-gradient(90deg,#6562F5 4%,#9B68F3 97.86%);height:86px;display:flex;align-items:center;padding:0 36px;">
+    <div style="max-width:1200px;width:100%;margin:0 auto;padding:0 36px;display:flex;align-items:center;gap:12px;">
+      <div onclick="showScreen('step4')" style="width:36px;height:36px;background:rgba(255,255,255,0.2);border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;">
+        <i data-lucide="arrow-left" style="width:20px;height:20px;color:white;"></i>
+      </div>
+      <span style="font-size:28px;font-weight:800;color:white;">1학년 국어</span>
+      <div style="width:1px;height:24px;background:rgba(255,255,255,0.4);margin:0 4px;"></div>
+      <span style="font-size:24px;font-weight:700;color:white;">답안 엑셀 업로드</span>
+    </div>
+  </div>
+
+  <div style="max-width:1200px;width:100%;margin:0 auto;padding:36px 72px 80px;">
+    <div style="background:white;border-radius:20px;box-shadow:0 4px 36px rgba(95,102,178,0.16);padding:32px;">
+
+      <!-- ── 상태 A: 업로드 대기 ── -->
+      <div id="s4ex-upload">
+
+        <!-- 안내 -->
+        <div style="display:flex;align-items:flex-start;gap:14px;padding:16px 20px;background:#F7F4FF;border:1px solid #C4AAFD;border-radius:12px;margin-bottom:24px;">
+          <div style="width:40px;height:40px;background:#EDE7FF;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;">
+            <i data-lucide="file-spreadsheet" style="width:20px;height:20px;color:#7E44FB;"></i>
+          </div>
+          <div>
+            <p style="font-size:14px;font-weight:800;color:#341761;margin:0 0 6px;">양식 파일을 다운받아 문항별 모범답안을 작성한 후 업로드하세요.</p>
+            <p style="font-size:13px;color:#808080;margin:0 0 6px;line-height:1.6;">양식에는 이 평가의 문항이 미리 채워져 있습니다. 각 문항 옆 답안 칸을 작성한 뒤 저장하고 업로드하세요.</p>
+            <p style="font-size:13px;color:#9B68F3;margin:0;line-height:1.8;">· 모든 문항을 입력하지 않아도 됩니다. 일부만 입력해도 저장 가능합니다.<br>· 양식에 없는 행을 추가하면 해당 행은 저장 시 자동으로 제외됩니다.</p>
+          </div>
+        </div>
+
+        <!-- 양식 다운로드 버튼 -->
+        <div style="display:flex;justify-content:flex-end;margin-bottom:14px;">
+          <button onclick="" style="display:flex;align-items:center;gap:6px;height:36px;padding:0 16px;background:white;border:1px solid #7E44FB;border-radius:8px;cursor:pointer;font-size:14px;font-weight:700;color:#7E44FB;font-family:inherit;" onmouseover="this.style.background='#F7F4FF'" onmouseout="this.style.background='white'">
+            <i data-lucide="download" style="width:15px;height:15px;"></i> 양식 다운로드
+          </button>
+        </div>
+
+        <!-- 드롭존 -->
+        <div onclick="simulateExcelUpload()" style="border:2px dashed #C4AAFD;border-radius:12px;padding:56px 24px;display:flex;flex-direction:column;align-items:center;gap:14px;cursor:pointer;background:#FDFCFF;transition:background .15s;" onmouseover="this.style.background='#F7F4FF';this.style.borderColor='#9B68F3'" onmouseout="this.style.background='#FDFCFF';this.style.borderColor='#C4AAFD'">
+          <div style="width:56px;height:56px;background:#F2ECFF;border-radius:50%;display:flex;align-items:center;justify-content:center;">
+            <i data-lucide="file-up" style="width:26px;height:26px;color:#7E44FB;"></i>
+          </div>
+          <div style="text-align:center;">
+            <p style="font-size:16px;font-weight:800;color:#341761;margin:0 0 6px;">엑셀 파일을 여기에 끌어다 놓거나 클릭하세요</p>
+            <p style="font-size:14px;color:#808080;margin:0;">.xlsx · .xls · 최대 10MB</p>
+          </div>
+          <button style="height:38px;padding:0 24px;background:#7E44FB;color:white;border:none;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;">파일 선택</button>
+        </div>
+      </div>
+
+      <!-- ── 상태 B: 유효성 검사 결과 ── -->
+      <div id="s4ex-result" style="display:none;">
+
+        <!-- 파일 정보 + 재업로드 -->
+        <div style="display:flex;align-items:center;gap:12px;padding:12px 16px;border:1px solid #D9D9D9;border-radius:8px;background:#F8F8F8;margin-bottom:20px;">
+          <i data-lucide="file-spreadsheet" style="width:18px;height:18px;color:#7E44FB;flex-shrink:0;"></i>
+          <span style="flex:1;font-size:14px;font-weight:700;color:#333;">모범답안_1학년국어_수정본.xlsx</span>
+          <span style="font-size:12px;color:#808080;">24KB</span>
+          <button onclick="resetExcelUpload()" style="display:flex;align-items:center;gap:5px;background:#FFF5F6;border:1px solid #F0C0C4;border-radius:6px;height:30px;padding:0 10px;cursor:pointer;color:#DB3E51;font-size:12px;font-weight:700;font-family:inherit;" onmouseover="this.style.background='#FFE8EB'" onmouseout="this.style.background='#FFF5F6'">
+            <i data-lucide="refresh-cw" style="width:12px;height:12px;"></i>파일 교체
+          </button>
+        </div>
+
+        <!-- 요약 배너 -->
+        <div style="display:flex;align-items:flex-start;gap:10px;padding:14px 16px;background:#FFF8E6;border:1px solid #FFD966;border-radius:10px;margin-bottom:20px;">
+          <i data-lucide="alert-triangle" style="width:16px;height:16px;color:#B07D00;flex-shrink:0;margin-top:1px;"></i>
+          <div>
+            <p style="font-size:14px;font-weight:800;color:#7A5A00;margin:0 0 3px;">3개 문항에 답안이 입력되었습니다. 1개 오류 항목은 저장 시 제외됩니다.</p>
+            <p style="font-size:13px;color:#B07D00;margin:0;">오류 항목을 확인하고 저장하거나, 파일을 수정 후 다시 업로드하세요.</p>
+          </div>
+        </div>
+
+        <!-- 검사 결과 테이블 -->
+        <div style="border:1px solid #E6E6E6;border-radius:12px;overflow:hidden;margin-bottom:24px;">
+          <!-- 헤더 -->
+          <div style="display:grid;grid-template-columns:140px 1fr 100px;background:#F8F8F8;border-bottom:1px solid #E6E6E6;">
+            <div style="padding:10px 16px;font-size:12px;font-weight:800;color:#808080;border-right:1px solid #E6E6E6;">문항</div>
+            <div style="padding:10px 16px;font-size:12px;font-weight:800;color:#808080;border-right:1px solid #E6E6E6;">업로드된 모범답안</div>
+            <div style="padding:10px 16px;font-size:12px;font-weight:800;color:#808080;">검사 결과</div>
+          </div>
+
+          <!-- 1-1: 입력됨 -->
+          <div style="display:grid;grid-template-columns:140px 1fr 100px;border-bottom:1px solid #F0F0F0;align-items:stretch;">
+            <div style="padding:12px 16px;border-right:1px solid #F0F0F0;display:flex;align-items:center;">
+              <span style="font-size:12px;font-weight:800;background:#F7F4FF;color:#7E44FB;border-radius:100px;padding:2px 9px;">1-1 · 글쓰기</span>
+            </div>
+            <div style="padding:12px 16px;border-right:1px solid #F0F0F0;">
+              <p style="font-size:13px;color:#333;margin:0;line-height:1.55;">주인공은 오랫동안 기다리던 친구가 오지 않아 외롭고 쓸쓸한 심정이었다. 본문의 "빈 의자를 바라보며 한숨을 쉬었다"는 표현에서 이를 알 수 있다.</p>
+            </div>
+            <div style="padding:12px 16px;display:flex;align-items:center;">
+              <span style="font-size:12px;font-weight:700;color:#00AF3D;background:#F1F9F3;border-radius:100px;padding:2px 9px;">✓ 정상</span>
+            </div>
+          </div>
+
+          <!-- 1-2: 비어있음 (정상) -->
+          <div style="display:grid;grid-template-columns:140px 1fr 100px;border-bottom:1px solid #F0F0F0;align-items:stretch;background:#FAFAFA;">
+            <div style="padding:12px 16px;border-right:1px solid #F0F0F0;display:flex;align-items:center;">
+              <span style="font-size:12px;font-weight:800;background:#F7F4FF;color:#7E44FB;border-radius:100px;padding:2px 9px;">1-2 · 표현 방법</span>
+            </div>
+            <div style="padding:12px 16px;border-right:1px solid #F0F0F0;display:flex;align-items:center;">
+              <span style="font-size:13px;color:#B3B3B3;font-style:italic;">비어있음</span>
+            </div>
+            <div style="padding:12px 16px;display:flex;align-items:center;">
+              <span style="font-size:12px;font-weight:700;color:#808080;background:#F0F0F0;border-radius:100px;padding:2px 9px;">— 미입력</span>
+            </div>
+          </div>
+
+          <!-- 2-1: 입력됨 -->
+          <div style="display:grid;grid-template-columns:140px 1fr 100px;border-bottom:1px solid #F0F0F0;align-items:stretch;">
+            <div style="padding:12px 16px;border-right:1px solid #F0F0F0;display:flex;align-items:center;">
+              <span style="font-size:12px;font-weight:800;background:#F7F4FF;color:#7E44FB;border-radius:100px;padding:2px 9px;">2-1 · 분석하기</span>
+            </div>
+            <div style="padding:12px 16px;border-right:1px solid #F0F0F0;">
+              <p style="font-size:13px;color:#333;margin:0;line-height:1.55;">표의 첫 번째 칸에는 사막화, 두 번째 칸에는 해수면 상승, 세 번째 칸에는 생태계 파괴를 기입한다.</p>
+            </div>
+            <div style="padding:12px 16px;display:flex;align-items:center;">
+              <span style="font-size:12px;font-weight:700;color:#00AF3D;background:#F1F9F3;border-radius:100px;padding:2px 9px;">✓ 정상</span>
+            </div>
+          </div>
+
+          <!-- 2-2: 비어있음 -->
+          <div style="display:grid;grid-template-columns:140px 1fr 100px;border-bottom:1px solid #F0F0F0;align-items:stretch;background:#FAFAFA;">
+            <div style="padding:12px 16px;border-right:1px solid #F0F0F0;display:flex;align-items:center;">
+              <span style="font-size:12px;font-weight:800;background:#F7F4FF;color:#7E44FB;border-radius:100px;padding:2px 9px;">2-2 · 의견 쓰기</span>
+            </div>
+            <div style="padding:12px 16px;border-right:1px solid #F0F0F0;display:flex;align-items:center;">
+              <span style="font-size:13px;color:#B3B3B3;font-style:italic;">비어있음</span>
+            </div>
+            <div style="padding:12px 16px;display:flex;align-items:center;">
+              <span style="font-size:12px;font-weight:700;color:#808080;background:#F0F0F0;border-radius:100px;padding:2px 9px;">— 미입력</span>
+            </div>
+          </div>
+
+          <!-- 문항 3: 입력됨 -->
+          <div style="display:grid;grid-template-columns:140px 1fr 100px;border-bottom:1px solid #F0F0F0;align-items:stretch;">
+            <div style="padding:12px 16px;border-right:1px solid #F0F0F0;display:flex;align-items:center;">
+              <span style="font-size:12px;font-weight:800;background:#F7F4FF;color:#7E44FB;border-radius:100px;padding:2px 9px;">3 · 논술하기</span>
+            </div>
+            <div style="padding:12px 16px;border-right:1px solid #F0F0F0;">
+              <p style="font-size:13px;color:#333;margin:0;line-height:1.55;">환경 보호는 우리 모두의 책임이다. 첫째, 일회용품 사용을 줄여야 한다. 둘째, 에너지 절약을 생활화해야 한다. 이를 통해 지속가능한 지구 환경을 후손에게 물려줄 수 있다.</p>
+            </div>
+            <div style="padding:12px 16px;display:flex;align-items:center;">
+              <span style="font-size:12px;font-weight:700;color:#00AF3D;background:#F1F9F3;border-radius:100px;padding:2px 9px;">✓ 정상</span>
+            </div>
+          </div>
+
+          <!-- 문항 4: 비어있음 -->
+          <div style="display:grid;grid-template-columns:140px 1fr 100px;border-bottom:1px solid #E6E6E6;align-items:stretch;background:#FAFAFA;">
+            <div style="padding:12px 16px;border-right:1px solid #F0F0F0;display:flex;align-items:center;">
+              <span style="font-size:12px;font-weight:800;background:#F7F4FF;color:#7E44FB;border-radius:100px;padding:2px 9px;">4 · 비교하기</span>
+            </div>
+            <div style="padding:12px 16px;border-right:1px solid #F0F0F0;display:flex;align-items:center;">
+              <span style="font-size:13px;color:#B3B3B3;font-style:italic;">비어있음</span>
+            </div>
+            <div style="padding:12px 16px;display:flex;align-items:center;">
+              <span style="font-size:12px;font-weight:700;color:#808080;background:#F0F0F0;border-radius:100px;padding:2px 9px;">— 미입력</span>
+            </div>
+          </div>
+
+          <!-- 오류 행: 양식에 없는 문항 -->
+          <div style="display:grid;grid-template-columns:140px 1fr 100px;align-items:stretch;background:#FFF5F6;">
+            <div style="padding:12px 16px;border-right:1px solid #F0C0C4;display:flex;align-items:center;">
+              <div>
+                <span style="font-size:12px;font-weight:800;background:#FFF0EF;color:#DB3E51;border-radius:100px;padding:2px 9px;display:inline-block;margin-bottom:4px;">문항 7</span>
+                <p style="font-size:11px;color:#DB3E51;margin:0;">양식에 없는 문항</p>
+              </div>
+            </div>
+            <div style="padding:12px 16px;border-right:1px solid #F0C0C4;">
+              <p style="font-size:13px;color:#808080;margin:0 0 4px;line-height:1.55;">두 인물의 갈등 원인을 서술하시오.</p>
+              <p style="font-size:12px;color:#DB3E51;margin:0;">이 문항은 현재 평가 양식에 존재하지 않습니다. 저장 시 제외됩니다.</p>
+            </div>
+            <div style="padding:12px 16px;display:flex;align-items:center;">
+              <span style="font-size:12px;font-weight:700;color:#DB3E51;background:#FFF0EF;border:1px solid #F0C0C4;border-radius:100px;padding:2px 9px;">⚠ 오류</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 액션 버튼 -->
+        <div style="display:flex;align-items:center;justify-content:space-between;">
+          <button onclick="resetExcelUpload()" style="display:flex;align-items:center;gap:6px;background:transparent;border:1px solid #D9D9D9;border-radius:8px;height:40px;padding:0 16px;cursor:pointer;color:#494949;font-size:16px;font-weight:700;font-family:inherit;">
+            <i data-lucide="arrow-left" style="width:16px;height:16px;"></i> 다시 업로드
+          </button>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <p style="font-size:13px;color:#808080;margin:0;">오류 1개 항목은 제외하고 저장됩니다.</p>
+            <button onclick="saveExcelAnswers()" style="display:flex;align-items:center;gap:8px;background:#7E44FB;border:none;border-radius:8px;height:40px;padding:0 20px;cursor:pointer;color:white;font-size:16px;font-weight:700;font-family:inherit;">
+              <i data-lucide="check" style="width:16px;height:16px;"></i> 저장
+            </button>
+          </div>
+        </div>
+
+      </div><!-- /s4ex-result -->
+
+    </div>
+  </div>
+</div><!-- /screen-step4-excel -->
 
 
 <!-- ═══════════════════════════════════════
@@ -2078,6 +2388,9 @@ function showScreen(name) {
   }
   if (name === 'step3') {
     setTimeout(initStep3Labels, 100);
+  }
+  if (name === 'step4') {
+    _step3Dirty = false;
   }
 }
 function toggleAddDropdown(e) {
@@ -2557,29 +2870,34 @@ function toggleRubric(el) {
 // 우측 패널 체크 상태 → 좌측 목록 뱃지 + 미연결 경고 업데이트
 function updateCardStatus(el) {
   if (!_s3CurrentQ) return;
-  // 현재 체크 상태 수집
+  // 현재 체크 상태 수집 + data에 반영
   var panel = document.getElementById('s3-detail-content');
   var boxes = panel ? panel.querySelectorAll('[data-rubric-cd]') : [];
   var hasLinked = false;
+  var q = _s3Data.find(function(q){ return q.id === _s3CurrentQ; });
+  if (q) q.checked = [];
   boxes.forEach(function(box) {
-    if (box.getAttribute('data-checked') === 'true') hasLinked = true;
-    // data에도 반영
-    var rid = box.getAttribute('data-rubric-cd');
-    var q = _s3Data.find(function(q){ return q.id === _s3CurrentQ; });
-    if (q) {
-      var r = q.rubrics.find(function(r){ return r.id === rid; });
-      if (r) r.checked = (box.getAttribute('data-checked') === 'true');
-    }
+    var isChecked = box.getAttribute('data-checked') === 'true';
+    if (isChecked) hasLinked = true;
+    if (q && isChecked) q.checked.push(box.getAttribute('data-rubric-cd'));
+  });
+  // 확인필요 여부: 체크된 항목이 모두 lowConf
+  var isWarn = hasLinked && q && q.checked.every(function(rid) {
+    var r = _s3AllRubrics.find(function(r){ return r.id === rid; });
+    return r && r.lowConf;
   });
   // 좌측 뱃지 업데이트
   var leftBadge = document.querySelector('.s3-qi-badge[data-qid="' + _s3CurrentQ + '"]');
   if (leftBadge) {
-    if (hasLinked) {
-      leftBadge.style.cssText = 'flex-shrink:0;display:inline-flex;align-items:center;background:#F1F9F3;border-radius:100px;padding:2px 7px;font-size:10px;font-weight:700;color:#00AF3D;white-space:nowrap;margin-top:1px;';
-      leftBadge.textContent = '연결완료';
-    } else {
-      leftBadge.style.cssText = 'flex-shrink:0;display:inline-flex;align-items:center;background:#FFF0EF;border:1px solid #F0C0C4;border-radius:100px;padding:2px 7px;font-size:10px;font-weight:700;color:#DB3E51;white-space:nowrap;margin-top:1px;';
+    if (!hasLinked) {
+      leftBadge.style.cssText = 'flex-shrink:0;display:inline-flex;align-items:center;background:#FFF0EF;border:1px solid #F0C0C4;border-radius:100px;padding:2px 7px;font-size:10px;font-weight:700;color:#DB3E51;white-space:nowrap;margin-left:auto;';
       leftBadge.textContent = '미연결';
+    } else if (isWarn) {
+      leftBadge.style.cssText = 'flex-shrink:0;display:inline-flex;align-items:center;background:#FFF8E6;border:1px solid #FFD966;border-radius:100px;padding:2px 7px;font-size:10px;font-weight:700;color:#B07D00;white-space:nowrap;margin-left:auto;';
+      leftBadge.textContent = '확인필요';
+    } else {
+      leftBadge.style.cssText = 'flex-shrink:0;display:inline-flex;align-items:center;background:#F1F9F3;border-radius:100px;padding:2px 7px;font-size:10px;font-weight:700;color:#00AF3D;white-space:nowrap;margin-left:auto;';
+      leftBadge.textContent = '연결완료';
     }
   }
   // 우측 패널 내 상태 뱃지 + 경고
@@ -2602,9 +2920,13 @@ function updateCardStatus(el) {
 function s3UpdateStats() {
   var done=0, warn=0, none=0;
   _s3Data.forEach(function(q) {
-    var hasLink = q.rubrics.some(function(r){ return r.checked; });
-    var allLowConf = q.rubrics.some(function(r){ return r.checked && r.lowConf; });
-    if (hasLink && allLowConf && !q.rubrics.some(function(r){ return r.checked && !r.lowConf; })) warn++;
+    if (q.noRubric) return;
+    var hasLink = q.checked.length > 0;
+    var allLowConf = hasLink && q.checked.every(function(rid) {
+      var r = _s3AllRubrics.find(function(r){ return r.id === rid; });
+      return r && r.lowConf;
+    });
+    if (hasLink && allLowConf) warn++;
     else if (hasLink) done++;
     else none++;
   });
@@ -2616,44 +2938,31 @@ function s3UpdateStats() {
   if (sn) sn.textContent = '✗ 미연결 ' + none;
 }
 
+// ── 3단계 전체 채점기준 (고정 순서) ──
+var _s3AllRubrics = [
+  { id:'r1', text:'글쓰기 능력 — 심정 표현의 구체성', score:7 },
+  { id:'r2', text:'논리적 서술 — 근거 제시', score:5 },
+  { id:'r5', text:'분석 능력 — 개념·사례 구분', score:5 },
+  { id:'r6', text:'논술 구성력 — 서론/본론/결론', score:8 },
+  { id:'r4', text:'표현 능력 — 용어 정확성', score:3 },
+  { id:'r3', text:'어휘 사용 능력', score:3, lowConf:true }
+];
+
 // ── 3단계 문항 데이터 ──
+// aiPicks: AI 추천 rubric id 목록 (표시용), checked: 실제 선택된 id 목록
 var _s3Data = [
   { id:'1-1', label:'1-1', cat:'글쓰기', text:'주인공의 심정을 이유와 함께 서술하시오.',
-    rubrics:[
-      { id:'r1', text:'글쓰기 능력 — 심정 표현의 구체성', score:7, aiPick:true, checked:true },
-      { id:'r2', text:'논리적 서술 — 근거 제시', score:5, aiPick:true, checked:true },
-      { id:'r3', text:'어휘 사용 능력', score:3, aiPick:false, checked:false },
-      { id:'r4', text:'표현 능력 — 용어 정확성', score:3, aiPick:false, checked:false }
-    ]
-  },
+    aiPicks:['r1','r2'], checked:['r1','r2'] },
   { id:'1-2', label:'1-2', cat:'표현 방법', text:'위 글에서 사용된 표현 방법 2가지를 쓰고, 각각의 효과를 설명하시오.',
-    rubrics:[
-      { id:'r4', text:'표현 능력 — 용어 정확성', score:3, aiPick:true, checked:true, lowConf:true },
-      { id:'r1', text:'글쓰기 능력 — 심정 표현의 구체성', score:7, aiPick:false, checked:false },
-      { id:'r2', text:'논리적 서술 — 근거 제시', score:5, aiPick:false, checked:false }
-    ]
-  },
+    aiPicks:['r4'], checked:['r4'] },
   { id:'2-1', label:'2-1', cat:'분석하기', text:'아래 표를 완성하시오.',
-    rubrics:[
-      { id:'r5', text:'분석 능력 — 개념·사례 구분', score:5, aiPick:true, checked:true },
-      { id:'r1', text:'글쓰기 능력 — 심정 표현의 구체성', score:7, aiPick:false, checked:false },
-      { id:'r4', text:'표현 능력 — 용어 정확성', score:3, aiPick:false, checked:false }
-    ]
-  },
+    aiPicks:['r5'], checked:['r5'] },
   { id:'2-2', label:'2-2', cat:'의견 쓰기', text:'위 내용을 바탕으로 환경 문제에 대한 의견을 논리적으로 서술하시오.',
-    rubrics:[
-      { id:'r2', text:'논리적 서술 — 근거 제시', score:5, aiPick:false, checked:false },
-      { id:'r6', text:'논술 구성력 — 서론/본론/결론', score:8, aiPick:false, checked:false },
-      { id:'r1', text:'글쓰기 능력 — 심정 표현의 구체성', score:7, aiPick:false, checked:false }
-    ]
-  },
-  { id:'3', label:'문항 3', cat:'논술하기', text:'이 글을 읽고 환경 보호에 대한 자신의 의견을 논리적으로 서술하시오. (150자 이상)',
-    rubrics:[
-      { id:'r2', text:'논리적 서술 — 근거 제시', score:5, aiPick:false, checked:false },
-      { id:'r6', text:'논술 구성력 — 서론/본론/결론', score:8, aiPick:false, checked:false },
-      { id:'r4', text:'표현 능력 — 용어 정확성', score:3, aiPick:false, checked:false }
-    ]
-  }
+    aiPicks:[], checked:[] },
+  { id:'3', label:'3', cat:'논술하기', text:'이 글을 읽고 환경 보호에 대한 자신의 의견을 논리적으로 서술하시오. (150자 이상)',
+    aiPicks:[], checked:[] },
+  { id:'4', label:'4', cat:'비교하기', text:'두 작품의 공통된 주제를 찾고, 각 작품에서 주제를 표현한 방식의 차이를 서술하시오.',
+    aiPicks:['r3'], checked:['r3'] }
 ];
 var _s3CurrentQ = null;
 
@@ -2673,21 +2982,21 @@ function selectQuestion(qid) {
 }
 
 function renderS3Detail(q) {
-  var hasAI = q.rubrics.some(function(r){ return r.aiPick; });
-  var hasLinked = q.rubrics.some(function(r){ return r.checked; });
-  var isWarn = hasLinked && q.rubrics.some(function(r){ return r.checked && r.lowConf; }) &&
-               !q.rubrics.some(function(r){ return r.checked && !r.lowConf; });
+  var hasLinked = q.checked.length > 0;
+  var isWarn = hasLinked && q.checked.every(function(rid) {
+    var r = _s3AllRubrics.find(function(r){ return r.id === rid; });
+    return r && r.lowConf;
+  });
 
-  var badgeHtml = hasLinked
-    ? '<span id="s3-detail-badge" style="display:inline-flex;align-items:center;gap:4px;background:#F1F9F3;border-radius:100px;padding:2px 10px;font-size:12px;font-weight:700;color:#00AF3D;"><svg width="11" height="11" viewBox="0 0 11 11" fill="none"><polyline points="1,5.5 4,8.5 10,2" stroke="#00AF3D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>연결 완료</span>'
-    : '<span id="s3-detail-badge" style="display:inline-flex;align-items:center;gap:4px;background:#FDEDF0;border:1px solid #F0C0C4;border-radius:100px;padding:2px 10px;font-size:12px;font-weight:700;color:#DB3E51;"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><circle cx="5" cy="5" r="4" stroke="#DB3E51" stroke-width="1.5"/><line x1="3.2" y1="3.2" x2="6.8" y2="6.8" stroke="#DB3E51" stroke-width="1.5" stroke-linecap="round"/><line x1="6.8" y1="3.2" x2="3.2" y2="6.8" stroke="#DB3E51" stroke-width="1.5" stroke-linecap="round"/></svg>미연결</span>';
-
-  var warnBannerHtml = isWarn
-    ? '<div style="display:flex;align-items:flex-start;gap:8px;padding:10px 14px;background:#FFFDF0;border:1px solid #FFD966;border-radius:8px;"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" style="flex-shrink:0;margin-top:1px;"><path d="M7 2L13 12H1L7 2Z" stroke="#B07D00" stroke-width="1.5" stroke-linejoin="round"/><line x1="7" y1="6" x2="7" y2="9" stroke="#B07D00" stroke-width="1.5" stroke-linecap="round"/><circle cx="7" cy="10.5" r="0.75" fill="#B07D00"/></svg><span style="font-size:12px;color:#B07D00;line-height:1.5;">AI가 이 문항의 채점기준을 낮은 신뢰도로 연결했습니다. 연결이 적절한지 확인해 주세요.</span></div>'
-    : '';
+  var badgeHtml = !hasLinked
+    ? '<span id="s3-detail-badge" style="display:inline-flex;align-items:center;gap:4px;background:#FDEDF0;border:1px solid #F0C0C4;border-radius:100px;padding:2px 10px;font-size:12px;font-weight:700;color:#DB3E51;"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><circle cx="5" cy="5" r="4" stroke="#DB3E51" stroke-width="1.5"/><line x1="3.2" y1="3.2" x2="6.8" y2="6.8" stroke="#DB3E51" stroke-width="1.5" stroke-linecap="round"/><line x1="6.8" y1="3.2" x2="3.2" y2="6.8" stroke="#DB3E51" stroke-width="1.5" stroke-linecap="round"/></svg>미연결</span>'
+    : isWarn
+    ? '<span id="s3-detail-badge" style="display:inline-flex;align-items:center;gap:4px;background:#FFF8E6;border:1px solid #FFD966;border-radius:100px;padding:2px 10px;font-size:12px;font-weight:700;color:#B07D00;">⚠ 확인 필요</span>'
+    : '<span id="s3-detail-badge" style="display:inline-flex;align-items:center;gap:4px;background:#F1F9F3;border-radius:100px;padding:2px 10px;font-size:12px;font-weight:700;color:#00AF3D;"><svg width="11" height="11" viewBox="0 0 11 11" fill="none"><polyline points="1,5.5 4,8.5 10,2" stroke="#00AF3D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>연결 완료</span>';
 
   function rubricItemHtml(r) {
-    var checked = r.checked;
+    var checked = q.checked.indexOf(r.id) !== -1;
+    var isAI = q.aiPicks.indexOf(r.id) !== -1;
     var checkStyle = checked
       ? 'width:18px;height:18px;border-radius:4px;background:#7E44FB;border:1.5px solid #7E44FB;display:flex;align-items:center;justify-content:center;flex-shrink:0;pointer-events:none;'
       : 'width:18px;height:18px;border-radius:4px;background:white;border:1.5px solid #D9D9D9;display:flex;align-items:center;justify-content:center;flex-shrink:0;pointer-events:none;';
@@ -2696,7 +3005,7 @@ function renderS3Detail(q) {
       ? 'display:flex;align-items:center;gap:10px;padding:10px 12px;border:1.5px solid #7E44FB;border-radius:8px;background:#FAF8FF;cursor:pointer;'
       : 'display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid #E6E6E6;border-radius:8px;background:white;cursor:pointer;';
     var textStyle = checked ? 'font-size:14px;font-weight:800;color:#333;' : 'font-size:14px;color:#808080;font-weight:400;';
-    var aiBadge = r.aiPick
+    var aiBadge = isAI
       ? (r.lowConf
           ? '<span style="font-size:11px;font-weight:700;color:#B07D00;background:#FFF8E6;border-radius:100px;padding:2px 7px;flex-shrink:0;white-space:nowrap;">낮은 신뢰도</span>'
           : '<span style="font-size:11px;font-weight:700;color:#7E44FB;background:#EDE7FF;border-radius:100px;padding:2px 7px;flex-shrink:0;white-space:nowrap;">AI 추천</span>')
@@ -2708,17 +3017,9 @@ function renderS3Detail(q) {
       + '</label>';
   }
 
-  var aiRubrics = q.rubrics.filter(function(r){ return r.aiPick; });
-  var etcRubrics = q.rubrics.filter(function(r){ return !r.aiPick; });
-
-  var aiSection = aiRubrics.length
-    ? '<div style="margin-bottom:16px;"><p style="font-size:12px;font-weight:800;color:#7E44FB;margin:0 0 8px;display:flex;align-items:center;gap:5px;"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><circle cx="6" cy="6" r="5" fill="#7E44FB"/><path d="M4 6.5L5.5 8L8.5 5" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>AI 추천</p>'
-      + aiRubrics.map(rubricItemHtml).join('') + '</div>'
-    : '';
-  var etcSection = etcRubrics.length
-    ? '<div><p style="font-size:12px;font-weight:800;color:#808080;margin:0 0 8px;">기타 채점기준</p>'
-      + etcRubrics.map(rubricItemHtml).join('') + '</div>'
-    : '';
+  var rubricsHtml = '<div style="display:flex;flex-direction:column;gap:6px;">'
+    + _s3AllRubrics.map(rubricItemHtml).join('')
+    + '</div>';
 
   var warnFooter = '<div id="s3-detail-warn" style="display:' + (hasLinked ? 'none' : 'flex') + ';align-items:flex-start;gap:8px;padding:10px 12px;background:#FFF5F6;border:1px solid #F0C0C4;border-radius:8px;margin-top:4px;"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" style="flex-shrink:0;margin-top:1px;"><circle cx="7" cy="7" r="6" stroke="#DB3E51" stroke-width="1.5"/><line x1="7" y1="4" x2="7" y2="7.5" stroke="#DB3E51" stroke-width="1.5" stroke-linecap="round"/><circle cx="7" cy="9.5" r="0.75" fill="#DB3E51"/></svg><span style="font-size:12px;color:#DB3E51;line-height:1.5;">채점기준 미연결 — AI 채점이 불가합니다. 의도적 생략이라면 다음 단계로 이동할 수 있습니다.</span></div>';
 
@@ -2729,9 +3030,7 @@ function renderS3Detail(q) {
     + '</div>'
     + badgeHtml
     + '</div>'
-    + (isWarn ? warnBannerHtml + '<div style="height:12px;"></div>' : '')
-    + aiSection
-    + etcSection
+    + rubricsHtml
     + warnFooter;
 
   var content = document.getElementById('s3-detail-content');
@@ -2814,8 +3113,37 @@ function restoreResultGuide() {
 // ── 수식 입력기 (준비 중) ──
 var formulaTarget = null;
 
-function openFormula(ta) {
-  showToast('수식 입력 기능은 현재 준비 중입니다.', 'info');
+function openFormula(ta) {}
+
+// ── 엑셀 업로드 플로우 ──
+function simulateExcelUpload() {
+  document.getElementById('s4ex-upload').style.display = 'none';
+  document.getElementById('s4ex-result').style.display = 'block';
+  lucide.createIcons();
+}
+
+function resetExcelUpload() {
+  document.getElementById('s4ex-result').style.display = 'none';
+  document.getElementById('s4ex-upload').style.display = 'block';
+  lucide.createIcons();
+}
+
+function saveExcelAnswers() {
+  // 유효한 답안을 4단계 textarea에 채워 넣기 (인덱스 순: 1-1, 1-2, 2-1, 2-2, 3, 4)
+  var answers = [
+    '주인공은 오랫동안 기다리던 친구가 오지 않아 외롭고 쓸쓸한 심정이었다. 본문의 "빈 의자를 바라보며 한숨을 쉬었다"는 표현에서 이를 알 수 있다.',
+    '',
+    '표의 첫 번째 칸에는 사막화, 두 번째 칸에는 해수면 상승, 세 번째 칸에는 생태계 파괴를 기입한다.',
+    '',
+    '환경 보호는 우리 모두의 책임이다. 첫째, 일회용품 사용을 줄여야 한다. 둘째, 에너지 절약을 생활화해야 한다. 이를 통해 지속가능한 지구 환경을 후손에게 물려줄 수 있다.',
+    ''
+  ];
+  var tas = document.querySelectorAll('#screen-step4 textarea');
+  tas.forEach(function(ta, i) {
+    if (answers[i] !== undefined && answers[i] !== '') ta.value = answers[i];
+  });
+  showScreen('step4');
+  setTimeout(function() { showToast('3개 문항의 답안이 저장되었습니다.', 'success'); }, 100);
 }
 function closeFormula() {
   document.getElementById('formula-panel').style.display = 'none';
