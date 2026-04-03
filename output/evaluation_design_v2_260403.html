@@ -3195,7 +3195,7 @@ document.addEventListener('DOMContentLoaded', function() {
   lucide.createIcons();
 });
 var _hasDownstreamData = false;
-function showDetailFilledAdvanced(name) { _hasDownstreamData = true; showDetailFilled(name); }
+function showDetailFilledAdvanced(name) { showDetailFilled(name); _hasDownstreamData = true; }
 function tryDeleteRubric() {
   if (_hasDownstreamData) { document.getElementById('modal-rubric-reset').style.display = 'flex'; lucide.createIcons(); }
   else { switchToEmptyRubric(); }
