@@ -241,7 +241,10 @@
       <!-- ====== 평가 목록 ====== -->
       <div>
         <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:16px;">
-          <span style="font-size:20px; font-weight:700; color:#333;">평가 현황</span>
+          <div style="display:flex; align-items:baseline; gap:8px;">
+            <span style="font-size:20px; font-weight:700; color:#333;">평가 현황</span>
+            <span style="font-size:13px; color:#B3B3B3; font-weight:400;">최근 수정 순</span>
+          </div>
           <div style="position:relative;" id="new-eval-btn-wrap">
             <button class="btn-primary" onclick="toggleNewEvalDropdown(event)">
               <i data-lucide="plus" style="width:16px; height:16px;"></i>
@@ -278,75 +281,16 @@
 
         <div id="evals-filled" style="display:flex; flex-direction:column; gap:10px;">
 
-          <!-- ── 카드 1: 임시저장 ── -->
+          <!-- ── 1위: 채점 진행 중 (오늘 수정) ── -->
           <div class="eval-card">
             <div class="eval-card-body">
               <div style="display:flex; flex-direction:column; gap:16px;">
-                <div style="display:flex; align-items:center; gap:8px;">
-                  <span class="badge-draft">임시저장</span>
-                  <span style="font-size:16px; font-weight:700; color:#222;">1학기 국어 서술형 평가 3회</span>
-                </div>
-                <div style="display:flex; align-items:center; gap:0; max-width:600px;">
-                  <div class="step-now" style="position:relative;">
-                    평가 설계
-                    <span style="position:absolute; top:-6px; right:-6px; width:10px; height:10px; background:#DB3E51; border-radius:50%; border:2px solid white;"></span>
+                <div style="display:flex; align-items:center; justify-content:space-between;">
+                  <div style="display:flex; align-items:center; gap:8px;">
+                    <span class="badge-ing">진행 중</span>
+                    <span style="font-size:16px; font-weight:700; color:#222;">1학기 국어 서술형 평가 1회</span>
                   </div>
-                  <div class="step-line-todo"></div>
-                  <div class="step-todo">과제물 제출</div>
-                  <div class="step-line-todo"></div>
-                  <div class="step-todo">채점 진행</div>
-                  <div class="step-line-todo"></div>
-                  <div class="step-todo">평가 리포트</div>
-                </div>
-              </div>
-            </div>
-            <div class="eval-card-footer">
-              <span style="font-size:13px; color:#808080;">평가 설계를 완료해야 다음 단계로 진행할 수 있어요.</span>
-              <button class="btn-ghost">평가 설계 완료하기 <i data-lucide="arrow-right" style="width:14px;height:14px;"></i></button>
-            </div>
-          </div>
-
-          <!-- ── 카드 2: 진행 중 - 과제물 제출 단계 (미제출 있음) ── -->
-          <div class="eval-card">
-            <div class="eval-card-body">
-              <div style="display:flex; flex-direction:column; gap:16px;">
-                <div style="display:flex; align-items:center; gap:8px;">
-                  <span class="badge-ing">진행 중</span>
-                  <span style="font-size:16px; font-weight:700; color:#222;">2학기 국어 논술 평가</span>
-                </div>
-                <div style="display:flex; align-items:center; gap:0; max-width:600px;">
-                  <div class="step-done">평가 설계</div>
-                  <div class="step-line-done"></div>
-                  <div class="step-now">과제물 제출</div>
-                  <div class="step-line-todo"></div>
-                  <div class="step-todo">채점 진행</div>
-                  <div class="step-line-todo"></div>
-                  <div class="step-todo">평가 리포트</div>
-                </div>
-              </div>
-            </div>
-            <div class="eval-card-footer">
-              <div style="display:flex; align-items:center; gap:16px;">
-                <span class="chip-red"><i data-lucide="alert-circle" style="width:13px;height:13px;"></i> 미제출 5명</span>
-                <span class="chip-green"><i data-lucide="check-circle" style="width:13px;height:13px;"></i> 제출 완료 77명</span>
-                <div style="display:flex; align-items:center; gap:8px;">
-                  <div style="width:120px; height:5px; background:#F0F0F0; border-radius:9999px; overflow:hidden;">
-                    <div style="width:93.9%; height:100%; background:#B28FFD; border-radius:9999px;"></div>
-                  </div>
-                  <span style="font-size:13px; color:#808080; font-weight:700;">77/82명</span>
-                </div>
-              </div>
-              <button class="btn-ghost">제출 현황 보기 <i data-lucide="arrow-right" style="width:14px;height:14px;"></i></button>
-            </div>
-          </div>
-
-          <!-- ── 카드 3: 진행 중 - 채점 단계 (미채점 있음) ── -->
-          <div class="eval-card">
-            <div class="eval-card-body">
-              <div style="display:flex; flex-direction:column; gap:16px;">
-                <div style="display:flex; align-items:center; gap:8px;">
-                  <span class="badge-ing">진행 중</span>
-                  <span style="font-size:16px; font-weight:700; color:#222;">1학기 국어 서술형 평가 1회</span>
+                  <span style="font-size:12px; color:#B3B3B3;">오늘 수정</span>
                 </div>
                 <div style="display:flex; align-items:center; gap:0; max-width:600px;">
                   <div class="step-done">평가 설계</div>
@@ -374,29 +318,187 @@
             </div>
           </div>
 
-          <!-- ── 카드 4: 완료 ── -->
+          <!-- ── 2위: 과제물 제출 중 (3일 전 수정) ── -->
+          <div class="eval-card">
+            <div class="eval-card-body">
+              <div style="display:flex; flex-direction:column; gap:16px;">
+                <div style="display:flex; align-items:center; justify-content:space-between;">
+                  <div style="display:flex; align-items:center; gap:8px;">
+                    <span class="badge-ing">진행 중</span>
+                    <span style="font-size:16px; font-weight:700; color:#222;">2학기 국어 논술 평가</span>
+                  </div>
+                  <span style="font-size:12px; color:#B3B3B3;">3일 전 수정</span>
+                </div>
+                <div style="display:flex; align-items:center; gap:0; max-width:600px;">
+                  <div class="step-done">평가 설계</div>
+                  <div class="step-line-done"></div>
+                  <div class="step-now">과제물 제출</div>
+                  <div class="step-line-todo"></div>
+                  <div class="step-todo">채점 진행</div>
+                  <div class="step-line-todo"></div>
+                  <div class="step-todo">평가 리포트</div>
+                </div>
+              </div>
+            </div>
+            <div class="eval-card-footer">
+              <div style="display:flex; align-items:center; gap:16px;">
+                <span class="chip-red"><i data-lucide="alert-circle" style="width:13px;height:13px;"></i> 미제출 5명</span>
+                <span class="chip-green"><i data-lucide="check-circle" style="width:13px;height:13px;"></i> 제출 완료 77명</span>
+                <div style="display:flex; align-items:center; gap:8px;">
+                  <div style="width:120px; height:5px; background:#F0F0F0; border-radius:9999px; overflow:hidden;">
+                    <div style="width:93.9%; height:100%; background:#B28FFD; border-radius:9999px;"></div>
+                  </div>
+                  <span style="font-size:13px; color:#808080; font-weight:700;">77/82명</span>
+                </div>
+              </div>
+              <button class="btn-ghost">제출 현황 보기 <i data-lucide="arrow-right" style="width:14px;height:14px;"></i></button>
+            </div>
+          </div>
+
+          <!-- ── 3위: 임시저장 (5일 전 수정) ── -->
+          <div class="eval-card">
+            <div class="eval-card-body">
+              <div style="display:flex; flex-direction:column; gap:16px;">
+                <div style="display:flex; align-items:center; justify-content:space-between;">
+                  <div style="display:flex; align-items:center; gap:8px;">
+                    <span class="badge-draft">임시저장</span>
+                    <span style="font-size:16px; font-weight:700; color:#222;">1학기 국어 서술형 평가 3회</span>
+                  </div>
+                  <span style="font-size:12px; color:#B3B3B3;">5일 전 수정</span>
+                </div>
+                <div style="display:flex; align-items:center; gap:0; max-width:600px;">
+                  <div class="step-now" style="position:relative;">
+                    평가 설계
+                    <span style="position:absolute; top:-6px; right:-6px; width:10px; height:10px; background:#DB3E51; border-radius:50%; border:2px solid white;"></span>
+                  </div>
+                  <div class="step-line-todo"></div>
+                  <div class="step-todo">과제물 제출</div>
+                  <div class="step-line-todo"></div>
+                  <div class="step-todo">채점 진행</div>
+                  <div class="step-line-todo"></div>
+                  <div class="step-todo">평가 리포트</div>
+                </div>
+              </div>
+            </div>
+            <div class="eval-card-footer">
+              <span style="font-size:13px; color:#808080;">평가 설계를 완료해야 다음 단계로 진행할 수 있어요.</span>
+              <button class="btn-ghost">평가 설계 완료하기 <i data-lucide="arrow-right" style="width:14px;height:14px;"></i></button>
+            </div>
+          </div>
+
+          <!-- ── 4위: 완료 (2주 전 수정) ── -->
           <div class="eval-card" style="opacity:0.75;">
             <div class="eval-card-body">
-              <div style="display:flex; align-items:flex-start; justify-content:space-between; gap:16px;">
-                <div style="display:flex; flex-direction:column; gap:16px;">
+              <div style="display:flex; flex-direction:column; gap:16px;">
+                <div style="display:flex; align-items:center; justify-content:space-between;">
                   <div style="display:flex; align-items:center; gap:8px;">
                     <span class="badge-done">완료</span>
-                    <span style="font-size:16px; font-weight:800; color:#494949;">1학기 국어 서술형 평가 2회</span>
+                    <span style="font-size:16px; font-weight:700; color:#494949;">1학기 국어 서술형 평가 2회</span>
                   </div>
-                  <div style="display:flex; align-items:center; gap:0; max-width:600px;">
-                    <div class="step-done">평가 설계</div>
-                    <div class="step-line-done"></div>
-                    <div class="step-done">과제물 제출</div>
-                    <div class="step-line-done"></div>
-                    <div class="step-done">채점 진행</div>
-                    <div class="step-line-done"></div>
-                    <div class="step-done">평가 리포트</div>
-                  </div>
+                  <span style="font-size:12px; color:#B3B3B3;">2주 전 수정</span>
                 </div>
+                <div style="display:flex; align-items:center; gap:0; max-width:600px;">
+                  <div class="step-done">평가 설계</div>
+                  <div class="step-line-done"></div>
+                  <div class="step-done">과제물 제출</div>
+                  <div class="step-line-done"></div>
+                  <div class="step-done">채점 진행</div>
+                  <div class="step-line-done"></div>
+                  <div class="step-done">평가 리포트</div>
+                </div>
+              </div>
             </div>
             <div class="eval-card-footer">
               <span style="font-size:13px; color:#494949;">채점 및 리포트 완료</span>
               <button class="btn-ghost">평가 리포트 보기 <i data-lucide="arrow-right" style="width:14px;height:14px;"></i></button>
+            </div>
+          </div>
+
+          <!-- ── 5위: 완료 (1달 전 수정) ── -->
+          <div class="eval-card" style="opacity:0.75;">
+            <div class="eval-card-body">
+              <div style="display:flex; flex-direction:column; gap:16px;">
+                <div style="display:flex; align-items:center; justify-content:space-between;">
+                  <div style="display:flex; align-items:center; gap:8px;">
+                    <span class="badge-done">완료</span>
+                    <span style="font-size:16px; font-weight:700; color:#494949;">1학기 국어 수행평가</span>
+                  </div>
+                  <span style="font-size:12px; color:#B3B3B3;">1달 전 수정</span>
+                </div>
+                <div style="display:flex; align-items:center; gap:0; max-width:600px;">
+                  <div class="step-done">평가 설계</div>
+                  <div class="step-line-done"></div>
+                  <div class="step-done">과제물 제출</div>
+                  <div class="step-line-done"></div>
+                  <div class="step-done">채점 진행</div>
+                  <div class="step-line-done"></div>
+                  <div class="step-done">평가 리포트</div>
+                </div>
+              </div>
+            </div>
+            <div class="eval-card-footer">
+              <span style="font-size:13px; color:#494949;">채점 및 리포트 완료</span>
+              <button class="btn-ghost">평가 리포트 보기 <i data-lucide="arrow-right" style="width:14px;height:14px;"></i></button>
+            </div>
+          </div>
+
+          <!-- ── 더 보기 버튼 ── -->
+          <div id="load-more-wrap" style="display:flex; justify-content:center; padding:4px 0;">
+            <button onclick="loadMore()" style="height:40px; padding:0 24px; font-size:14px; font-weight:700; font-family:inherit; border:1px solid #D9D9D9; border-radius:8px; background:white; color:#494949; cursor:pointer; display:flex; align-items:center; gap:6px;"
+              onmouseover="this.style.background='#F7F4FF'; this.style.borderColor='#B28FFD'; this.style.color='#7E44FB';"
+              onmouseout="this.style.background='white'; this.style.borderColor='#D9D9D9'; this.style.color='#494949';">
+              <i data-lucide="chevron-down" style="width:15px; height:15px;"></i>
+              더 보기
+            </button>
+          </div>
+
+          <!-- ── 추가 5개 (더 보기 클릭 시 노출) ── -->
+          <div id="extra-evals" style="display:none; flex-direction:column; gap:10px;">
+            <div class="eval-card" style="opacity:0.75;">
+              <div class="eval-card-body">
+                <div style="display:flex; flex-direction:column; gap:16px;">
+                  <div style="display:flex; align-items:center; justify-content:space-between;">
+                    <div style="display:flex; align-items:center; gap:8px;">
+                      <span class="badge-done">완료</span>
+                      <span style="font-size:16px; font-weight:700; color:#494949;">2학기 국어 독서 논술 평가</span>
+                    </div>
+                    <span style="font-size:12px; color:#B3B3B3;">2달 전 수정</span>
+                  </div>
+                  <div style="display:flex; align-items:center; gap:0; max-width:600px;">
+                    <div class="step-done">평가 설계</div><div class="step-line-done"></div>
+                    <div class="step-done">과제물 제출</div><div class="step-line-done"></div>
+                    <div class="step-done">채점 진행</div><div class="step-line-done"></div>
+                    <div class="step-done">평가 리포트</div>
+                  </div>
+                </div>
+              </div>
+              <div class="eval-card-footer">
+                <span style="font-size:13px; color:#494949;">채점 및 리포트 완료</span>
+                <button class="btn-ghost">평가 리포트 보기 <i data-lucide="arrow-right" style="width:14px;height:14px;"></i></button>
+              </div>
+            </div>
+            <div class="eval-card" style="opacity:0.75;">
+              <div class="eval-card-body">
+                <div style="display:flex; flex-direction:column; gap:16px;">
+                  <div style="display:flex; align-items:center; justify-content:space-between;">
+                    <div style="display:flex; align-items:center; gap:8px;">
+                      <span class="badge-done">완료</span>
+                      <span style="font-size:16px; font-weight:700; color:#494949;">1학기 국어 어휘·문법 평가</span>
+                    </div>
+                    <span style="font-size:12px; color:#B3B3B3;">3달 전 수정</span>
+                  </div>
+                  <div style="display:flex; align-items:center; gap:0; max-width:600px;">
+                    <div class="step-done">평가 설계</div><div class="step-line-done"></div>
+                    <div class="step-done">과제물 제출</div><div class="step-line-done"></div>
+                    <div class="step-done">채점 진행</div><div class="step-line-done"></div>
+                    <div class="step-done">평가 리포트</div>
+                  </div>
+                </div>
+              </div>
+              <div class="eval-card-footer">
+                <span style="font-size:13px; color:#494949;">채점 및 리포트 완료</span>
+                <button class="btn-ghost">평가 리포트 보기 <i data-lucide="arrow-right" style="width:14px;height:14px;"></i></button>
+              </div>
             </div>
           </div>
 
@@ -873,6 +975,13 @@
     if (!selectedType) return;
     document.getElementById('modal-type').style.display = 'none';
     location.href = 'evaluation_design_v3_260403.html?screen=' + (selectedType === 'precise' ? 'detail' : 'simple');
+  }
+
+  /* ── 더 보기 ── */
+  function loadMore() {
+    document.getElementById('extra-evals').style.display = 'flex';
+    document.getElementById('load-more-wrap').style.display = 'none';
+    lucide.createIcons();
   }
 
   /* ── 토스트 ── */
