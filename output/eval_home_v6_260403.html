@@ -189,10 +189,23 @@
       <div>
         <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:16px;">
           <span style="font-size:20px; font-weight:700; color:#333;">평가 현황</span>
-          <button class="btn-primary">
-            <i data-lucide="plus" style="width:16px; height:16px;"></i>
-            새 평가 만들기
-          </button>
+          <div style="position:relative;">
+            <button class="btn-primary" onclick="toggleNewEvalDropdown(event)">
+              <i data-lucide="plus" style="width:16px; height:16px;"></i>
+              새 평가 만들기
+            </button>
+            <div id="new-eval-dropdown" style="display:none; position:absolute; right:0; top:48px; background:white; border:1px solid #D9D9D9; border-radius:8px; box-shadow:0 0 1px rgba(73,73,73,1),0 8px 32px rgba(95,102,178,0.16); min-width:200px; z-index:50; padding:4px;">
+              <button onclick="location.href='evaluation_design_v3_260403.html'"
+                style="display:flex; width:100%; height:38px; align-items:center; padding:0 12px; background:none; border:none; border-radius:4px; font-size:14px; font-weight:700; color:#494949; cursor:pointer; font-family:inherit; text-align:left; white-space:nowrap;"
+                onmouseover="this.style.background='#F7F4FF'" onmouseout="this.style.background='none'">새로 만들기</button>
+              <button
+                style="display:flex; width:100%; height:38px; align-items:center; padding:0 12px; background:none; border:none; border-radius:4px; font-size:14px; font-weight:700; color:#494949; cursor:pointer; font-family:inherit; text-align:left; white-space:nowrap;"
+                onmouseover="this.style.background='#F7F4FF'" onmouseout="this.style.background='none'">복사해서 만들기</button>
+              <button
+                style="display:flex; width:100%; height:38px; align-items:center; padding:0 12px; background:none; border:none; border-radius:4px; font-size:14px; font-weight:700; color:#494949; cursor:pointer; font-family:inherit; text-align:left; white-space:nowrap;"
+                onmouseover="this.style.background='#F7F4FF'" onmouseout="this.style.background='none'">평가 자료실에서 가져오기</button>
+            </div>
+          </div>
         </div>
 
         <div style="display:flex; flex-direction:column; gap:10px;">
@@ -414,6 +427,17 @@
   </div>
 </div>
 
-<script>lucide.createIcons();</script>
+<script>
+  lucide.createIcons();
+
+  function toggleNewEvalDropdown(e) {
+    e.stopPropagation();
+    const d = document.getElementById('new-eval-dropdown');
+    d.style.display = d.style.display === 'none' ? 'block' : 'none';
+  }
+  document.addEventListener('click', () => {
+    document.getElementById('new-eval-dropdown').style.display = 'none';
+  });
+</script>
 </body>
 </html>
