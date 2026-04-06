@@ -947,8 +947,8 @@ body { margin: 0; background: #EDF1FC; min-width: 1280px; }
           <i data-lucide="link" style="width:18px;height:18px;color:#7E44FB;"></i>
         </div>
         <div>
-          <div style="font-size:15px;font-weight:800;color:#000;margin-bottom:4px;">이 단계의 목적</div>
-          <div style="font-size:14px;color:#494949;line-height:1.6;">문항과 학생 답변을 정확히 구분하고, <strong>문항별 채점기준을 연결</strong>하기 위한 단계입니다.</div>
+          <div style="font-size:15px;font-weight:800;color:#000;margin-bottom:4px;">다음 단계를 위한 준비예요</div>
+          <div style="font-size:14px;color:#494949;line-height:1.6;">인식된 문항에 <strong>채점기준을 연결</strong>해 두면, AI가 학생 답안을 문항별로 정확하게 채점할 수 있습니다.</div>
         </div>
       </div>
     </div>
@@ -1103,7 +1103,63 @@ body { margin: 0; background: #EDF1FC; min-width: 1280px; }
                 <p style="font-size:16px;font-weight:800;color:#341761;margin:0 0 6px;">활동지를 분석하고 있어요</p>
                 <p style="font-size:14px;color:#808080;margin:0;font-weight:400;">문항 인식까지 최대 3분 정도 소요됩니다.</p>
               </div>
-              <button onclick="simulateResult()" style="height:36px;padding:0 20px;background:#EDF1FC;border:none;border-radius:8px;font-size:14px;font-weight:700;color:#7E44FB;cursor:pointer;font-family:inherit;">(데모) 결과 보기</button>
+              <div style="display:flex;gap:8px;">
+                <button onclick="simulateResult()" style="height:36px;padding:0 20px;background:#EDF1FC;border:none;border-radius:8px;font-size:14px;font-weight:700;color:#7E44FB;cursor:pointer;font-family:inherit;">(데모) 결과 보기</button>
+                <button onclick="simulateAiFail()" style="height:36px;padding:0 20px;background:#FFF0F0;border:none;border-radius:8px;font-size:14px;font-weight:700;color:#DB3E51;cursor:pointer;font-family:inherit;">(데모) 인식 실패</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── 상태 D: 수동 입력 ── -->
+        <div id="s2-manual" style="display:none;background:#F8F8F8;border-radius:16px;padding:24px;">
+          <div style="background:white;border-radius:12px;padding:24px;">
+            <!-- 헤더 -->
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;">
+              <div style="display:flex;align-items:center;gap:8px;flex:1;">
+                <div style="display:flex;align-items:center;gap:6px;padding:8px 14px;background:#F2ECFF;border-radius:8px;">
+                  <i data-lucide="pencil" style="width:15px;height:15px;color:#7E44FB;flex-shrink:0;"></i>
+                  <span style="font-size:14px;font-weight:700;color:#7E44FB;">직접 입력 모드</span>
+                </div>
+                <span style="font-size:13px;color:#808080;">또는</span>
+                <button onclick="resetUpload()" style="display:flex;align-items:center;gap:5px;background:white;border:1px solid #D9D9D9;border-radius:8px;height:34px;padding:0 14px;cursor:pointer;color:#494949;font-size:13px;font-weight:700;font-family:inherit;" onmouseover="this.style.background='#F8F8F8'" onmouseout="this.style.background='white'">
+                  <i data-lucide="upload-cloud" style="width:14px;height:14px;"></i>파일 재업로드
+                </button>
+              </div>
+              <button onclick="document.getElementById('s2-manual').style.display='none';document.getElementById('s2-result').style.display='block';lucide.createIcons();" style="height:34px;padding:0 18px;background:#7E44FB;color:white;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;">(데모) 입력 완료</button>
+            </div>
+            <!-- 안내 배너 -->
+            <div style="padding:12px 14px;background:#F2ECFF;border-radius:8px;margin-bottom:20px;display:flex;gap:8px;align-items:flex-start;">
+              <i data-lucide="info" style="width:15px;height:15px;color:#7E44FB;flex-shrink:0;margin-top:1px;"></i>
+              <p style="font-size:13px;color:#494949;margin:0;line-height:1.6;">문항 번호와 내용을 직접 입력해 주세요. 대문항(지시문)은 채점 없이 구분용으로만 사용됩니다. 입력 후 다음 단계로 이동할 수 있습니다.</p>
+            </div>
+            <!-- 문항 입력 행들 -->
+            <div style="display:flex;flex-direction:column;gap:10px;">
+              <div style="display:grid;grid-template-columns:100px 1fr 120px 36px;gap:8px;align-items:center;padding:8px 12px;background:#F8F8F8;border-radius:8px;font-size:12px;font-weight:800;color:#808080;">
+                <span>문항 번호</span><span>문항 내용</span><span>유형</span><span></span>
+              </div>
+              <!-- 샘플 행 1 -->
+              <div style="display:grid;grid-template-columns:100px 1fr 120px 36px;gap:8px;align-items:center;padding:10px 12px;border:1px solid #E6E6E6;border-radius:8px;background:white;">
+                <input type="text" value="1-1" style="height:32px;border:1px solid #D9D9D9;border-radius:6px;padding:0 10px;font-size:14px;font-weight:700;font-family:inherit;outline:none;width:100%;">
+                <input type="text" value="다음 글을 읽고 글쓴이의 주장을 분석하시오." style="height:32px;border:1px solid #D9D9D9;border-radius:6px;padding:0 10px;font-size:14px;font-family:inherit;outline:none;width:100%;">
+                <select style="height:32px;border:1px solid #D9D9D9;border-radius:6px;padding:0 8px;font-size:13px;font-family:inherit;outline:none;width:100%;">
+                  <option selected>서술형</option><option>논술형</option><option>선택형</option>
+                </select>
+                <button style="width:32px;height:32px;background:transparent;border:none;cursor:pointer;color:#DB3E51;display:flex;align-items:center;justify-content:center;border-radius:6px;" onmouseover="this.style.background='#FFF0F0'" onmouseout="this.style.background='transparent'"><i data-lucide="trash-2" style="width:15px;height:15px;"></i></button>
+              </div>
+              <!-- 샘플 행 2 -->
+              <div style="display:grid;grid-template-columns:100px 1fr 120px 36px;gap:8px;align-items:center;padding:10px 12px;border:1px solid #E6E6E6;border-radius:8px;background:white;">
+                <input type="text" value="1-2" style="height:32px;border:1px solid #D9D9D9;border-radius:6px;padding:0 10px;font-size:14px;font-weight:700;font-family:inherit;outline:none;width:100%;">
+                <input type="text" value="표현 방법의 효과를 설명하시오." style="height:32px;border:1px solid #D9D9D9;border-radius:6px;padding:0 10px;font-size:14px;font-family:inherit;outline:none;width:100%;">
+                <select style="height:32px;border:1px solid #D9D9D9;border-radius:6px;padding:0 8px;font-size:13px;font-family:inherit;outline:none;width:100%;">
+                  <option selected>서술형</option><option>논술형</option><option>선택형</option>
+                </select>
+                <button style="width:32px;height:32px;background:transparent;border:none;cursor:pointer;color:#DB3E51;display:flex;align-items:center;justify-content:center;border-radius:6px;" onmouseover="this.style.background='#FFF0F0'" onmouseout="this.style.background='transparent'"><i data-lucide="trash-2" style="width:15px;height:15px;"></i></button>
+              </div>
+              <!-- 문항 추가 버튼 -->
+              <button style="width:100%;height:40px;background:white;border:1.5px dashed #C4AAFD;border-radius:8px;color:#7E44FB;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:6px;" onmouseover="this.style.background='#F7F4FF'" onmouseout="this.style.background='white'">
+                <i data-lucide="plus" style="width:15px;height:15px;"></i>문항 추가
+              </button>
             </div>
           </div>
         </div>
@@ -1731,8 +1787,12 @@ body { margin: 0; background: #EDF1FC; min-width: 1280px; }
     <div style="max-width:1200px;width:100%;margin:0 auto;padding:0 36px;">
       <div style="background:white;border-radius:0 0 20px 20px;box-shadow:0 4px 36px rgba(95,102,178,0.16);padding:28px 24px;">
         <div style="margin-bottom:16px;">
-          <h2 style="font-size:20px;font-weight:800;color:#000;margin:0 0 4px;">문항별 모범답안</h2>
-          <p style="font-size:14px;color:#494949;margin:0;">각 문항의 모범답안을 입력하면 AI 채점 정확도가 높아집니다.</p>
+          <h2 style="font-size:20px;font-weight:800;color:#000;margin:0 0 4px;">문항별 모범답안 <span style="font-size:13px;font-weight:700;color:#808080;margin-left:6px;">선택</span></h2>
+          <p style="font-size:14px;color:#494949;margin:0 0 10px;">정답이 명확한 문항만 입력해 주세요. 서논술형처럼 다양한 답이 가능한 문항은 비워도 됩니다.</p>
+          <div style="display:flex;align-items:flex-start;gap:6px;padding:10px 14px;background:#F8F8F8;border-radius:8px;">
+            <i data-lucide="info" style="width:14px;height:14px;color:#808080;flex-shrink:0;margin-top:1px;"></i>
+            <p style="font-size:13px;color:#808080;margin:0;line-height:1.6;">모범답안은 AI 채점 참고용으로만 사용됩니다. 입력하지 않아도 채점은 진행되며, 나중에 언제든지 추가할 수 있습니다.</p>
+          </div>
         </div>
         <!-- 진행 현황 바 -->
         <div style="background:#EDF1FC;border-radius:12px;padding:14px 20px;display:flex;align-items:center;margin-bottom:24px;">
@@ -1769,14 +1829,6 @@ body { margin: 0; background: #EDF1FC; min-width: 1280px; }
             </div>
           </div>
           <span style="font-size:12px;color:#7E44FB;font-weight:800;white-space:nowrap;margin-left:20px;">3 / 4 완료</span>
-        </div>
-        <!-- 배너: 직접 입력 안내 -->
-        <div style="padding:14px 16px;background:#FFF8F0;border:1px solid #FFD0A0;border-radius:10px;display:flex;gap:10px;align-items:flex-start;margin-bottom:20px;">
-          <i data-lucide="info" style="width:16px;height:16px;color:#FF8C4C;flex-shrink:0;margin-top:2px;"></i>
-          <div style="font-size:14px;color:#7A4A00;line-height:1.65;">
-            <strong>모범답안을 입력하면 AI 채점 정확도가 높아집니다.</strong><br>
-            정답이 명확한 문항은 모범답안을 입력해 주세요. 서술형처럼 정답이 없는 문항은 비워두셔도 됩니다.
-          </div>
         </div>
 
         <!-- 컨텐츠 -->
@@ -1976,7 +2028,7 @@ body { margin: 0; background: #EDF1FC; min-width: 1280px; }
         </div>
 
         <!-- 드롭존 -->
-        <div onclick="simulateExcelUpload()" style="border:2px dashed #C4AAFD;border-radius:12px;padding:56px 24px;display:flex;flex-direction:column;align-items:center;gap:14px;cursor:pointer;background:#FDFCFF;transition:background .15s;" onmouseover="this.style.background='#F7F4FF';this.style.borderColor='#9B68F3'" onmouseout="this.style.background='#FDFCFF';this.style.borderColor='#C4AAFD'">
+        <div onclick="tryExcelUpload()" style="border:2px dashed #C4AAFD;border-radius:12px;padding:56px 24px;display:flex;flex-direction:column;align-items:center;gap:14px;cursor:pointer;background:#FDFCFF;transition:background .15s;" onmouseover="this.style.background='#F7F4FF';this.style.borderColor='#9B68F3'" onmouseout="this.style.background='#FDFCFF';this.style.borderColor='#C4AAFD'">
           <div style="width:56px;height:56px;background:#F2ECFF;border-radius:50%;display:flex;align-items:center;justify-content:center;">
             <i data-lucide="file-up" style="width:26px;height:26px;color:#7E44FB;"></i>
           </div>
@@ -2482,6 +2534,7 @@ function showScreen(name) {
     document.getElementById('s2-upload').style.display = 'block';
     document.getElementById('s2-loading').style.display = 'none';
     document.getElementById('s2-result').style.display = 'none';
+    document.getElementById('s2-manual').style.display = 'none';
     setTimeout(openStep2Guide, 200);
   }
   if (name === 'step3') {
@@ -2659,6 +2712,7 @@ function resetUpload() {
   document.getElementById('s2-upload').style.display = 'block';
   document.getElementById('s2-loading').style.display = 'none';
   document.getElementById('s2-result').style.display = 'none';
+  document.getElementById('s2-manual').style.display = 'none';
 }
 
 // 이전 단계 이탈 경고
@@ -3475,9 +3529,44 @@ function confirmRubricReset() {
   document.getElementById('modal-rubric-reset').style.display = 'none';
   _hasDownstreamData = false;
   switchToEmptyRubric();
-  setTimeout(function() { showToast('2~4단계 데이터가 초기화되었습니다.', 'error'); }, 100);
+  setTimeout(function() { showToast('3단계 연결이 해제되었습니다. 3단계에서 AI 매핑을 다시 실행해 주세요.', 'error'); }, 100);
 }
 function closeRubricResetModal() { document.getElementById('modal-rubric-reset').style.display = 'none'; }
+
+// ── 엑셀 업로드 방식 선택 ──
+var _hasExistingAnswers = false;
+function tryExcelUpload() {
+  if (_hasExistingAnswers) {
+    document.getElementById('modal-excel-mode').style.display = 'flex';
+    lucide.createIcons();
+  } else {
+    simulateExcelUpload();
+  }
+}
+function closeExcelModeModal() { document.getElementById('modal-excel-mode').style.display = 'none'; }
+function doExcelUpload(mode) {
+  document.getElementById('modal-excel-mode').style.display = 'none';
+  simulateExcelUpload();
+  setTimeout(function() {
+    var label = mode === 'overwrite' ? '덮어쓰기' : '추가하기';
+    showToast('엑셀 파일이 업로드되었습니다. (' + label + ')', 'success');
+  }, 200);
+}
+
+// ── 2단계 AI 인식 실패 ──
+function simulateAiFail() {
+  document.getElementById('s2-loading').style.display = 'none';
+  document.getElementById('modal-ai-fail').style.display = 'flex';
+  lucide.createIcons();
+}
+function closeAiFailModal() { document.getElementById('modal-ai-fail').style.display = 'none'; }
+function showManualInput() {
+  document.getElementById('s2-upload').style.display = 'none';
+  document.getElementById('s2-loading').style.display = 'none';
+  document.getElementById('s2-result').style.display = 'none';
+  document.getElementById('s2-manual').style.display = 'block';
+  lucide.createIcons();
+}
 </script>
 
 <!-- ═══════════════════════════════════════
@@ -3759,18 +3848,73 @@ function closeRubricResetModal() { document.getElementById('modal-rubric-reset')
 
 <!-- 채점기준 교체 경고 모달 -->
 <div id="modal-rubric-reset" style="display:none;position:fixed;inset:0;z-index:700;background:rgba(0,0,0,0.45);align-items:center;justify-content:center;" onclick="if(event.target===this)closeRubricResetModal()">
-  <div style="background:white;border-radius:16px;padding:36px 40px;width:480px;max-width:90vw;">
+  <div style="background:white;border-radius:16px;padding:36px 40px;width:500px;max-width:90vw;">
     <div style="display:flex;flex-direction:column;align-items:center;gap:16px;text-align:center;">
       <div style="width:56px;height:56px;background:#FFF3E0;border-radius:50%;display:flex;align-items:center;justify-content:center;">
         <i data-lucide="alert-triangle" style="width:28px;height:28px;color:#FF8C4C;"></i>
       </div>
       <div>
         <p style="font-size:18px;font-weight:800;color:#000;margin:0 0 8px;">채점기준을 교체하시겠습니까?</p>
-        <p style="font-size:14px;color:#494949;margin:0;line-height:1.6;">채점기준을 교체하면 <strong>2~4단계 데이터가 초기화</strong>됩니다.<br>이 작업은 되돌릴 수 없습니다.</p>
+        <p style="font-size:14px;color:#494949;margin:0;line-height:1.7;">채점기준을 교체하면 <strong>3단계 연결이 전체 해제</strong>됩니다.<br>2·4단계 데이터는 유지됩니다.</p>
       </div>
-      <div style="display:flex;gap:12px;width:100%;margin-top:8px;">
+      <div style="width:100%;padding:12px 16px;background:#FFF8E6;border:1px solid #FFD966;border-radius:8px;text-align:left;">
+        <div style="display:flex;align-items:flex-start;gap:8px;">
+          <i data-lucide="info" style="width:15px;height:15px;color:#B07D00;flex-shrink:0;margin-top:1px;"></i>
+          <p style="font-size:13px;color:#7A5A00;margin:0;line-height:1.6;">교체 후 3단계에서 AI 매핑 버튼을 클릭하면 새 채점기준으로 자동 연결을 다시 수행합니다. 버튼을 누르기 전까지 모든 문항은 미연결 상태로 표시됩니다.</p>
+        </div>
+      </div>
+      <div style="display:flex;gap:12px;width:100%;margin-top:4px;">
         <button onclick="closeRubricResetModal()" style="flex:1;height:44px;background:white;color:#494949;border:1px solid #D9D9D9;border-radius:8px;font-size:16px;font-weight:700;cursor:pointer;">취소</button>
         <button onclick="confirmRubricReset()" style="flex:1;height:44px;background:#DB3E51;color:white;border:none;border-radius:8px;font-size:16px;font-weight:700;cursor:pointer;">교체 진행</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 엑셀 업로드 방식 선택 모달 -->
+<div id="modal-excel-mode" style="display:none;position:fixed;inset:0;z-index:700;background:rgba(0,0,0,0.45);align-items:center;justify-content:center;" onclick="if(event.target===this)closeExcelModeModal()">
+  <div style="background:white;border-radius:16px;padding:36px 40px;width:480px;max-width:90vw;">
+    <div style="display:flex;flex-direction:column;gap:20px;">
+      <div style="text-align:center;">
+        <div style="width:48px;height:48px;background:#F2ECFF;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;">
+          <i data-lucide="file-spreadsheet" style="width:22px;height:22px;color:#7E44FB;"></i>
+        </div>
+        <p style="font-size:18px;font-weight:800;color:#000;margin:0 0 6px;">업로드 방식을 선택하세요</p>
+        <p style="font-size:14px;color:#808080;margin:0;">이미 직접 입력한 모범답안이 있습니다.</p>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <button onclick="doExcelUpload('overwrite')" style="width:100%;padding:16px 20px;background:white;border:1.5px solid #D9D9D9;border-radius:10px;cursor:pointer;text-align:left;font-family:inherit;" onmouseover="this.style.borderColor='#7E44FB';this.style.background='#FDFCFF'" onmouseout="this.style.borderColor='#D9D9D9';this.style.background='white'">
+          <div style="font-size:15px;font-weight:800;color:#000;margin-bottom:3px;">덮어쓰기</div>
+          <div style="font-size:13px;color:#808080;">기존에 입력된 모든 답안을 지우고 엑셀 내용으로 교체합니다.</div>
+        </button>
+        <button onclick="doExcelUpload('merge')" style="width:100%;padding:16px 20px;background:white;border:1.5px solid #D9D9D9;border-radius:10px;cursor:pointer;text-align:left;font-family:inherit;" onmouseover="this.style.borderColor='#7E44FB';this.style.background='#FDFCFF'" onmouseout="this.style.borderColor='#D9D9D9';this.style.background='white'">
+          <div style="font-size:15px;font-weight:800;color:#000;margin-bottom:3px;">추가하기</div>
+          <div style="font-size:13px;color:#808080;">엑셀에 입력된 답안만 업데이트하고, 나머지 기존 답안은 유지합니다.</div>
+        </button>
+      </div>
+      <button onclick="closeExcelModeModal()" style="width:100%;height:40px;background:transparent;border:none;color:#808080;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;">취소</button>
+    </div>
+  </div>
+</div>
+
+<!-- 2단계 AI 인식 실패 모달 -->
+<div id="modal-ai-fail" style="display:none;position:fixed;inset:0;z-index:700;background:rgba(0,0,0,0.45);align-items:center;justify-content:center;">
+  <div style="background:white;border-radius:16px;padding:36px 40px;width:480px;max-width:90vw;">
+    <div style="display:flex;flex-direction:column;align-items:center;gap:16px;text-align:center;">
+      <div style="width:56px;height:56px;background:#FFF0F0;border-radius:50%;display:flex;align-items:center;justify-content:center;">
+        <i data-lucide="scan-x" style="width:28px;height:28px;color:#DB3E51;"></i>
+      </div>
+      <div>
+        <p style="font-size:18px;font-weight:800;color:#000;margin:0 0 8px;">문항을 인식하지 못했어요</p>
+        <p style="font-size:14px;color:#494949;margin:0;line-height:1.7;">활동지에서 문항을 자동으로 인식하지 못했습니다.<br>다른 파일로 다시 업로드하거나, 문항을 직접 입력할 수 있습니다.</p>
+      </div>
+      <div style="display:flex;gap:10px;width:100%;margin-top:4px;">
+        <button onclick="closeAiFailModal();resetUpload();" style="flex:1;height:44px;background:white;color:#494949;border:1px solid #D9D9D9;border-radius:8px;font-size:15px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;font-family:inherit;">
+          <i data-lucide="upload-cloud" style="width:16px;height:16px;"></i>재업로드
+        </button>
+        <button onclick="closeAiFailModal();showManualInput();" style="flex:1;height:44px;background:#7E44FB;color:white;border:none;border-radius:8px;font-size:15px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;font-family:inherit;">
+          <i data-lucide="pencil" style="width:16px;height:16px;"></i>직접 입력
+        </button>
       </div>
     </div>
   </div>
