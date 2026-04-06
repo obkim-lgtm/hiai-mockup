@@ -635,7 +635,7 @@
   function confirmType() {
     if (!selectedType) return;
     document.getElementById('modal-type').style.display = 'none';
-    location.href = 'evaluation_design_v3_260403.html';
+    location.href = 'evaluation_design_v3_260403.html?screen=' + (selectedType === 'precise' ? 'detail' : 'simple');
   }
 </script>
 </body>
