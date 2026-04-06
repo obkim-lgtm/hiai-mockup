@@ -141,6 +141,46 @@
 
 ---
 
+## Toast (알림 메시지) 스펙
+
+> Figma: `vOYXokKNMGec80BpDbIiJI` node `965-40814` / `965-40823`
+
+### 타입별 스펙
+
+| 타입 | 배경 | 텍스트 색상 | 아이콘 (Lucide) |
+|------|------|-------------|-----------------|
+| **success** | `#00AF3D` | white | `circle-check-big` 20×20 white |
+| **error** | `#DB3E51` | `#F8F8F8` | `circle-alert` 20×20 white |
+| **info** | white | `#333` | AlertIcon 28×28 (별도 이미지) |
+| **warning** | white | `#333` | AlertIcon 28×28 (별도 이미지) |
+
+### 공통 구조
+```
+padding: 16px(상하) 24px(우) 16px(좌)   ← success/error
+gap: 12px  |  border-radius: 8px  |  width: 384px
+box-shadow: 0 0 1px #494949, 0 8px 32px rgba(95,102,178,0.16)
+font: NanumSquareRound Bold 16px, line-height: 1.55
+```
+
+### HTML 패턴
+```html
+<!-- 토스트 엘리먼트 (fixed, z-index:9999) -->
+<div id="toast" class="toast toast-success">
+  <i id="toast-icon" data-lucide="circle-check-big" style="width:20px;height:20px;color:white;flex-shrink:0;"></i>
+  <span id="toast-msg">메시지</span>
+</div>
+```
+```javascript
+// 호출 방법
+showToast('success', '저장되었습니다.');
+showToast('error', '오류가 발생했습니다.');
+```
+- 노출 시간: 2500ms 후 자동 사라짐
+- 위치: `position:fixed; bottom:80px; left:50%; transform:translateX(-50%)`
+- 애니메이션: opacity + translateY(12px→0) 0.2s ease
+
+---
+
 ## 버튼 스타일
 
 | 종류 | 배경 | 텍스트 | Border | 용도 |

@@ -82,6 +82,22 @@
   .radio-item.disabled { color:#B3B3B3; cursor:not-allowed; }
   .radio-item input[type=radio] { accent-color:#7E44FB; width:18px; height:18px; }
   .radio-item.disabled input[type=radio] { accent-color:#B3B3B3; cursor:not-allowed; }
+
+  /* Toast */
+  .toast {
+    position:fixed; bottom:80px; left:50%; transform:translateX(-50%) translateY(12px);
+    font-size:16px; font-weight:700; font-family:inherit;
+    padding:16px 24px 16px 16px; border-radius:8px; z-index:9999;
+    width:384px; max-width:90vw;
+    display:flex; align-items:center; gap:12px;
+    opacity:0; transition:opacity 0.2s ease, transform 0.2s ease;
+    pointer-events:none;
+    box-shadow:0 0 1px #494949, 0 8px 32px rgba(95,102,178,0.16);
+    line-height:1.55;
+  }
+  .toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+  .toast.toast-success { background:#00AF3D; color:white; }
+  .toast.toast-error   { background:#DB3E51; color:#F8F8F8; }
   </style>
 </head>
 <body>
@@ -564,7 +580,7 @@
       <button style="height:40px; padding:0 16px; font-size:16px; font-weight:700; font-family:inherit; border:1px solid #B28FFD; background:transparent; color:#7E44FB; border-radius:8px; cursor:pointer;"
         onclick="document.getElementById('editClassModal').classList.remove('open')">취소</button>
       <button class="btn-primary" style="height:40px; font-size:16px;"
-        onclick="document.getElementById('editClassModal').classList.remove('open')">저장</button>
+        onclick="document.getElementById('editClassModal').classList.remove('open'); showToast('success', '수업 정보가 수정되었습니다.')">저장</button>
     </div>
 
   </div>
@@ -737,6 +753,12 @@
   </div>
 </div>
 
+<!-- ===== 토스트 ===== -->
+<div id="toast" class="toast toast-success">
+  <i id="toast-icon" data-lucide="circle-check-big" style="width:20px; height:20px; color:white; flex-shrink:0;"></i>
+  <span id="toast-msg">수업 정보가 수정되었습니다.</span>
+</div>
+
 <!-- ===== 목업 뷰 전환 플로팅 패널 ===== -->
 <div style="position:fixed; bottom:28px; right:28px; z-index:9000; background:#1E1E2E; border-radius:14px; padding:10px 14px; display:flex; align-items:center; gap:10px; box-shadow:0 4px 20px rgba(0,0,0,0.3);">
   <span style="font-size:11px; font-weight:700; color:#9090A8; white-space:nowrap; letter-spacing:0.04em;">MOCKUP</span>
@@ -851,6 +873,23 @@
     if (!selectedType) return;
     document.getElementById('modal-type').style.display = 'none';
     location.href = 'evaluation_design_v3_260403.html?screen=' + (selectedType === 'precise' ? 'detail' : 'simple');
+  }
+
+  /* ── 토스트 ── */
+  var toastTimer;
+  function showToast(type, msg) {
+    var t = document.getElementById('toast');
+    var icon = document.getElementById('toast-icon');
+    var msgEl = document.getElementById('toast-msg');
+    type = type || 'success';
+    msg = msg || (type === 'success' ? '저장되었습니다.' : '오류가 발생했습니다.');
+    t.className = 'toast toast-' + type;
+    icon.setAttribute('data-lucide', type === 'success' ? 'circle-check-big' : 'circle-alert');
+    msgEl.textContent = msg;
+    lucide.createIcons();
+    clearTimeout(toastTimer);
+    t.classList.add('show');
+    toastTimer = setTimeout(function(){ t.classList.remove('show'); }, 2500);
   }
 
   /* ── 뷰 토글 ── */
