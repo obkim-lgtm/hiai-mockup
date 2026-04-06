@@ -22,12 +22,6 @@
   2. 해당 파일을 preview 서버로 바로 띄운다.
 - 별도 빌드 없이 HTML 파일만으로 어디서든 열 수 있어야 한다.
 
-## 파비콘 (필수)
-모든 HiAI 목업 HTML 파일 `<head>`에 반드시 아래 파비콘을 포함한다:
-```html
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%237E44FB'/><text x='16' y='22' text-anchor='middle' font-size='18' font-weight='bold' fill='white' font-family='sans-serif'>H</text></svg>">
-```
-
 ## 목업 제작 원칙
 - 캡처 화면의 레이아웃, 색상, 폰트, 간격을 최대한 분석하여 반영한다.
 - 명시된 지침이 캡처와 충돌하면 **지침을 우선**한다.
