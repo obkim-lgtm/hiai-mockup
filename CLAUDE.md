@@ -106,6 +106,44 @@
 > ⚠️ Figma MCP 에셋 URL은 **7일 후 만료**된다.
 > 새 세션에서 작업 시 `get_design_context(fileKey=vOYXokKNMGec80BpDbIiJI, nodeId=1722:21861)` 로 URL을 재발급하여 교체한다.
 
+### 파비콘 (favicon)
+- **반드시** `screens/favicon_src.png` 를 파비콘으로 사용한다.
+- 새로 생성하거나 다른 아이콘으로 대체 절대 금지.
+- 모든 목업 HTML `<head>`에 아래 한 줄 포함:
+```html
+<link rel="icon" href="../screens/favicon_src.png" type="image/png">
+```
+> output/ 하위 파일 기준 상대경로. index.html에서 직접 참조 시 `href="screens/favicon_src.png"`
+
+---
+
+## Dialog (모달 팝업) 스펙
+
+> Figma: `vOYXokKNMGec80BpDbIiJI` node `2749:3489`
+
+### 구조
+```
+[헤더]  pt:24px, px:24px, pb:16px
+  타이틀 (H3 18px Bold, color:#222631)
+  X 닫기 버튼 (absolute, top:11px, right:11px, 36×36px, radius:6px)
+
+[바디]  px:24px, pb:24px — 콘텐츠 자유 구성
+
+[푸터]  px:24px, pt:8px, pb:16px, 버튼 우측 정렬, gap:12px
+  취소: border #B28FFD, text #7E44FB, bg transparent, h:40px, radius:8px
+  확인/저장: bg #7E44FB, text white, h:40px, radius:8px
+```
+
+### 컨테이너
+- `background: white`, `border-radius: 24px`
+- `box-shadow: 0 4px 12px rgba(95,102,178,0.16)`
+- 오버레이: `background: rgba(0,0,0,0.4)`, `position:fixed; inset:0; z-index:1000`
+- 오버레이 클릭 시 닫힘 처리 권장
+
+### 비활성 필드 (수정 불가)
+- input/select: `background:#F8F8F8; border:1px solid #E6E6E6; color:#B3B3B3; cursor:not-allowed`
+- 필드 레이블 옆 "수정 불가" 뱃지: `background:#F0F0F0; color:#B3B3B3; font-size:11px; border-radius:4px; padding:1px 6px`
+
 ---
 
 ## 버튼 스타일
