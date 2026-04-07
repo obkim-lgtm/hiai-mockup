@@ -119,10 +119,13 @@ function TitleBar(){
 }
 function Tabs(){
   const tabs=["평가 홈","평가 대상","평가 설계","과제물 관리","AI 채점","평가 리포트"];
+  const urls=["eval_home_v6_260403.html",null,"evaluation_design_v3_260403.html",null,"scoring_detail_v1.html",null];
   return (
     <div style={{display:"flex",gap:12}}>
       {tabs.map((t,i)=>(
-        <div key={i} className={i===5?"tab-active":"tab-inactive"}>
+        <div key={i} className={i===5?"tab-active":"tab-inactive"}
+          onClick={urls[i]?()=>location.href=urls[i]:undefined}
+          style={{cursor:urls[i]?"pointer":"default"}}>
           <span style={{fontSize:20,fontWeight:i===5?800:700,color:i===5?"#341761":"#000"}}>{t}</span>
         </div>
       ))}
