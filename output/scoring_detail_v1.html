@@ -75,6 +75,17 @@
   .toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(12px);background:#00AF3D;color:#fff;padding:16px 24px 16px 16px;border-radius:8px;display:flex;align-items:center;gap:12px;font-weight:800;box-shadow:0 8px 32px rgba(95,102,178,.16);opacity:0;transition:opacity .2s,transform .2s;z-index:9999;pointer-events:none;width:384px}
   .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 
+  /* ── 피드백 모달 ── */
+  .fb-overlay{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:4000;display:none;align-items:center;justify-content:center}
+  .fb-overlay.show{display:flex}
+  .fb-box{background:#fff;border-radius:24px;width:520px;max-width:90vw;box-shadow:0 4px 12px rgba(95,102,178,.16);overflow:hidden}
+  .fb-box.lg{width:560px}
+  .fb-emoji-card{flex:1;height:72px;border-radius:12px;border:1.5px solid #E6E6E6;background:#fff;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;font-family:inherit;transition:border-color .15s,background .15s}
+  .fb-emoji-card:hover{border-color:#B28FFD;background:#FAF7FF}
+  .fb-emoji-card.selected{border-color:#7E44FB;background:#F7F4FF}
+  .fb-info-row{display:flex;align-items:flex-start;gap:12px;padding:12px 14px;background:#FAF7FF;border:1px solid #EADCFF;border-radius:10px}
+  .fb-info-row .ic{flex-shrink:0;width:28px;height:28px;border-radius:50%;background:#7E44FB;color:#fff;display:flex;align-items:center;justify-content:center}
+
   /* ── 항목 설정 모달 ── */
   .item-modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:3000;display:none;align-items:center;justify-content:center}
   .item-modal-overlay.show{display:flex}
@@ -215,7 +226,7 @@
         <div class="title-desc">채점을 실시하고 결과를 엑셀로 내려받거나 출력해 활용할 수 있습니다.</div>
       </div>
       <div class="action-group">
-        <button class="btn btn-sec"><i data-lucide="file-down" style="width:18px;height:18px"></i>채점 결과 다운로드</button>
+        <button class="btn btn-sec" onclick="openFbIntro()"><i data-lucide="file-down" style="width:18px;height:18px"></i>채점 결과 다운로드</button>
         <button class="btn btn-pri glow" onclick="openPrint()">
           <i data-lucide="printer" style="width:18px;height:18px"></i>
           결과지 인쇄 · 배부
@@ -227,8 +238,8 @@
     <div class="callout">
       <div class="ic"><i data-lucide="sparkles" style="width:18px;height:18px"></i></div>
       <div class="txt">
-        채점이 끝났다면 우측 상단의 <strong>「결과지 인쇄 · 배부」</strong> 버튼으로 학생별 피드백을 바로 인쇄해 나눠주세요.
-        점수만 필요하다면 <strong>「채점 결과 다운로드」</strong>를 이용하세요.
+        채점이 끝났다면 <strong>「결과지 인쇄 · 배부」</strong>로 학생별 피드백을 바로 인쇄해 보세요.
+        점수와 선생님 작성 피드백을 파일로 받으려면 <strong>「채점 결과 다운로드」</strong>를 이용하세요.
       </div>
     </div>
 
@@ -545,6 +556,56 @@ function applyItems(){
 }
 
 render();
+
+function openFbIntro(){document.getElementById('fbIntro').classList.add('show');setTimeout(function(){lucide.createIcons();},10);}
+function closeFbIntro(){document.getElementById('fbIntro').classList.remove('show');}
+function fbToast(msg){var t=document.getElementById('fbToast');if(!t){t=document.createElement('div');t.id='fbToast';t.style.cssText='position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#00AF3D;color:#fff;padding:14px 24px;border-radius:8px;font-weight:700;z-index:9999;box-shadow:0 8px 32px rgba(95,102,178,.16)';document.body.appendChild(t);}t.textContent=msg;t.style.display='block';clearTimeout(t._h);t._h=setTimeout(function(){t.style.display='none';},2500);}
+function downloadWithoutFeedback(){closeFbIntro();fbToast('채점 결과를 다운로드합니다.');}
+function openFbForm(){closeFbIntro();document.getElementById('fbForm').classList.add('show');setTimeout(function(){lucide.createIcons();},10);}
+function closeFbForm(){document.getElementById('fbForm').classList.remove('show');}
+function selectFbEmoji(el){document.querySelectorAll('#fbForm .fb-emoji-card').forEach(function(c){c.classList.remove('selected');});el.classList.add('selected');}
+function submitFb(){closeFbForm();fbToast('의견이 전송되었습니다. 감사합니다!');setTimeout(function(){fbToast('채점 결과를 다운로드합니다.');},1200);}
 </script>
+
+<!-- Feedback Intro Modal -->
+<div class="fb-overlay" id="fbIntro" onclick="if(event.target===this)closeFbIntro()">
+  <div class="fb-box" style="position:relative">
+    <button onclick="closeFbIntro()" style="position:absolute;top:11px;right:11px;width:36px;height:36px;border-radius:6px;border:none;background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#808080" onmouseover="this.style.background='#F0F0F0'" onmouseout="this.style.background='transparent'"><i data-lucide="x" style="width:18px;height:18px"></i></button>
+    <div style="padding:24px 24px 16px">
+      <div style="font-size:18px;font-weight:700;color:#222631">채점 결과를 다운로드하기 전에</div>
+      <div style="font-size:14px;color:#494949;margin-top:6px">잠깐 의견을 남겨주시면 AI 채점이 더 똑똑해져요.</div>
+    </div>
+    <div style="padding:0 24px 20px;display:flex;flex-direction:column;gap:10px">
+      <div class="fb-info-row"><div class="ic"><i data-lucide="repeat" style="width:16px;height:16px"></i></div><div style="font-size:14px;color:#222631;line-height:1.55"><b>수행평가 1건당 1회만</b> 응답하시면 됩니다.</div></div>
+      <div class="fb-info-row"><div class="ic"><i data-lucide="sparkles" style="width:16px;height:16px"></i></div><div style="font-size:14px;color:#222631;line-height:1.55">남겨주신 의견은 <b>AI 채점 모델 개선</b>에 활용됩니다.</div></div>
+      <div class="fb-info-row"><div class="ic"><i data-lucide="home" style="width:16px;height:16px"></i></div><div style="font-size:14px;color:#222631;line-height:1.55">지금 건너뛰셔도 <b>평가 홈</b>에서 언제든 남기실 수 있어요.</div></div>
+    </div>
+    <div style="padding:8px 24px 20px;display:flex;justify-content:flex-end;gap:12px">
+      <button class="btn" style="height:40px;background:#fff;color:#7E44FB;border:1px solid #B28FFD" onclick="downloadWithoutFeedback()">의견 없이 다운로드</button>
+      <button class="btn btn-pri" style="height:40px" onclick="openFbForm()">의견 남기고 다운로드</button>
+    </div>
+  </div>
+</div>
+
+<!-- Feedback Form Modal -->
+<div class="fb-overlay" id="fbForm" onclick="if(event.target===this)closeFbForm()">
+  <div class="fb-box lg" style="position:relative">
+    <button onclick="closeFbForm()" style="position:absolute;top:11px;right:11px;width:36px;height:36px;border-radius:6px;border:none;background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#808080" onmouseover="this.style.background='#F0F0F0'" onmouseout="this.style.background='transparent'"><i data-lucide="x" style="width:18px;height:18px"></i></button>
+    <div style="padding:24px 24px 16px"><div style="font-size:18px;font-weight:700;color:#222631">AI 채점, 어떠셨나요?</div><div style="font-size:13px;color:#808080;margin-top:6px">이번 수행평가의 AI 채점 만족도를 알려주세요.</div></div>
+    <div style="padding:0 24px 20px">
+      <div style="display:flex;gap:10px;margin-bottom:16px">
+        <button type="button" class="fb-emoji-card" onclick="selectFbEmoji(this)"><span style="font-size:26px">😊</span><span style="font-size:12px;color:#494949;font-weight:700">만족</span></button>
+        <button type="button" class="fb-emoji-card" onclick="selectFbEmoji(this)"><span style="font-size:26px">😐</span><span style="font-size:12px;color:#494949;font-weight:700">보통</span></button>
+        <button type="button" class="fb-emoji-card" onclick="selectFbEmoji(this)"><span style="font-size:26px">😞</span><span style="font-size:12px;color:#494949;font-weight:700">불만족</span></button>
+      </div>
+      <select style="width:100%;height:40px;border:1px solid #D9D9D9;border-radius:8px;padding:0 12px;font-family:inherit;font-size:14px;color:#494949;background:#fff;margin-bottom:10px"><option>카테고리 선택 (선택)</option><option>채점 정확도</option><option>채점 기준 반영</option><option>피드백 품질</option><option>처리 속도</option><option>기타</option></select>
+      <textarea placeholder="자유롭게 의견을 남겨주세요. (선택)" style="width:100%;height:100px;border:1px solid #D9D9D9;border-radius:8px;padding:10px 12px;font-family:inherit;font-size:14px;resize:none"></textarea>
+    </div>
+    <div style="padding:8px 24px 20px;display:flex;justify-content:flex-end;gap:12px">
+      <button class="btn" style="height:40px;background:#fff;color:#7E44FB;border:1px solid #B28FFD" onclick="closeFbForm()">취소</button>
+      <button class="btn btn-pri" style="height:40px" onclick="submitFb()">의견 보내고 다운로드</button>
+    </div>
+  </div>
+</div>
 </body>
 </html>
