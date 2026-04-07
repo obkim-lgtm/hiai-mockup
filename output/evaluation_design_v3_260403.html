@@ -128,7 +128,7 @@ body { margin: 0; background: #EDF1FC; min-width: 1280px; }
       <div style="background:white;border-radius:0 0 20px 20px;box-shadow:0 4px 36px rgba(95,102,178,0.16);padding:28px 24px;">
 
         <!-- 헤딩 + 설계 추가 버튼 -->
-        <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:24px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;">
           <div>
             <h2 style="font-size:24px;font-weight:700;color:#333;margin:0 0 8px 0;">평가 설계</h2>
             <p style="font-size:16px;color:#333;margin:0;font-weight:400;line-height:1.55;">평가를 실시할 과제를 설계해 주세요. 설계 내용에 따라 과제 제출 방식이 설정되고 AI 채점이 진행됩니다.</p>
@@ -1109,7 +1109,7 @@ body { margin: 0; background: #EDF1FC; min-width: 1280px; }
                 <p style="font-size:16px;font-weight:800;color:#341761;margin:0 0 6px;">활동지를 분석하고 있어요</p>
                 <p style="font-size:14px;color:#808080;margin:0;font-weight:400;">문항 인식까지 최대 3분 정도 소요됩니다.</p>
               </div>
-              <button onclick="simulateResult()" style="height:36px;padding:0 20px;background:#EDF1FC;border:none;border-radius:8px;font-size:14px;font-weight:700;color:#7E44FB;cursor:pointer;font-family:inherit;">(데모) 결과 보기</button>
+              <button onclick="simulateResult()" style="height:36px;padding:0 16px;background:#EDF1FC;border:none;border-radius:8px;font-size:14px;font-weight:700;color:#7E44FB;cursor:pointer;font-family:inherit;">(데모) 결과 보기</button>
             </div>
           </div>
         </div>
@@ -1411,7 +1411,7 @@ body { margin: 0; background: #EDF1FC; min-width: 1280px; }
               </div>
             </div>
             <!-- 데모 버튼 -->
-            <button onclick="showStep3Result()" style="margin-top:8px;height:36px;padding:0 20px;background:#EDF1FC;border:none;border-radius:8px;font-size:14px;font-weight:700;color:#7E44FB;cursor:pointer;font-family:inherit;">(데모) 결과 보기</button>
+            <button onclick="showStep3Result()" style="margin-top:8px;height:36px;padding:0 16px;background:#EDF1FC;border:none;border-radius:8px;font-size:14px;font-weight:700;color:#7E44FB;cursor:pointer;font-family:inherit;">(데모) 결과 보기</button>
           </div>
         </div>
 
@@ -1978,7 +1978,7 @@ body { margin: 0; background: #EDF1FC; min-width: 1280px; }
 
         <!-- 양식 다운로드 버튼 -->
         <div style="display:flex;justify-content:flex-end;margin-bottom:14px;">
-          <button onclick="" style="display:flex;align-items:center;gap:6px;height:44px;padding:0 20px;background:white;border:1px solid #D9D9D9;border-radius:8px;cursor:pointer;font-size:14px;font-weight:700;color:#494949;font-family:inherit;" onmouseover="this.style.background='#F8F8F8'" onmouseout="this.style.background='white'">
+          <button onclick="" style="display:flex;align-items:center;gap:6px;height:36px;padding:0 16px;background:white;border:1px solid #D9D9D9;border-radius:8px;cursor:pointer;font-size:14px;font-weight:700;color:#494949;font-family:inherit;" onmouseover="this.style.background='#F8F8F8'" onmouseout="this.style.background='white'">
             <i data-lucide="download" style="width:15px;height:15px;"></i> 양식 다운로드
           </button>
         </div>
@@ -2130,7 +2130,7 @@ body { margin: 0; background: #EDF1FC; min-width: 1280px; }
           </button>
           <div style="display:flex;align-items:center;gap:8px;">
             <p style="font-size:13px;color:#808080;margin:0;">오류 1개 항목은 제외하고 저장됩니다.</p>
-            <button onclick="showScreenBack('step4')" style="display:flex;align-items:center;gap:8px;background:#7E44FB;border:none;border-radius:8px;height:40px;padding:0 20px;cursor:pointer;color:white;font-size:16px;font-weight:700;font-family:inherit;">
+            <button onclick="showScreenBack('step4')" style="display:flex;align-items:center;gap:8px;background:#7E44FB;border:none;border-radius:8px;height:36px;padding:0 16px;cursor:pointer;color:white;font-size:16px;font-weight:700;font-family:inherit;">
               <i data-lucide="check" style="width:16px;height:16px;"></i> 저장
             </button>
           </div>
@@ -2452,9 +2452,9 @@ body { margin: 0; background: #EDF1FC; min-width: 1280px; }
 
     <!-- 고정 푸터 -->
     <div style="padding:16px 24px;flex-shrink:0;display:flex;justify-content:flex-end;gap:10px;border-top:1px solid #F0F0F0;">
-      <button onclick="closeTypeModal()" style="height:40px;padding:0 20px;border:1px solid #D9D9D9;background:white;border-radius:8px;font-size:14px;font-weight:700;color:#494949;cursor:pointer;font-family:inherit;">취소</button>
+      <button onclick="closeTypeModal()" style="height:36px;padding:0 16px;border:1px solid #D9D9D9;background:white;border-radius:8px;font-size:14px;font-weight:700;color:#494949;cursor:pointer;font-family:inherit;">취소</button>
       <button id="btn-type-confirm" onclick="confirmType()"
-        style="height:40px;padding:0 20px;border:none;background:#B3B3B3;border-radius:8px;font-size:14px;font-weight:700;color:white;cursor:not-allowed;font-family:inherit;transition:background .15s;">방식을 선택해 주세요</button>
+        style="height:36px;padding:0 16px;border:none;background:#B3B3B3;border-radius:8px;font-size:14px;font-weight:700;color:white;cursor:not-allowed;font-family:inherit;transition:background .15s;">방식을 선택해 주세요</button>
     </div>
 
   </div>
@@ -3518,8 +3518,8 @@ function closeRubricResetModal() { document.getElementById('modal-rubric-reset')
       </div>
     </div>
     <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:20px;">
-      <button onclick="saveDraftAndLeave()" style="height:40px;padding:0 18px;background:transparent;border:1px solid #B28FFD;border-radius:8px;cursor:pointer;font-size:15px;font-weight:700;color:#7E44FB;font-family:inherit;" onmouseover="this.style.background='#F7F4FF'" onmouseout="this.style.background='transparent'">임시저장 후 이동</button>
-      <button onclick="executePendingNav()" style="height:40px;padding:0 18px;background:#7E44FB;border:none;border-radius:8px;cursor:pointer;font-size:15px;font-weight:700;color:white;font-family:inherit;" onmouseover="this.style.opacity='0.88'" onmouseout="this.style.opacity='1'">저장 없이 이동</button>
+      <button onclick="saveDraftAndLeave()" style="height:36px;padding:0 16px;background:transparent;border:1px solid #B28FFD;border-radius:8px;cursor:pointer;font-size:15px;font-weight:700;color:#7E44FB;font-family:inherit;" onmouseover="this.style.background='#F7F4FF'" onmouseout="this.style.background='transparent'">임시저장 후 이동</button>
+      <button onclick="executePendingNav()" style="height:36px;padding:0 16px;background:#7E44FB;border:none;border-radius:8px;cursor:pointer;font-size:15px;font-weight:700;color:white;font-family:inherit;" onmouseover="this.style.opacity='0.88'" onmouseout="this.style.opacity='1'">저장 없이 이동</button>
     </div>
   </div>
 </div>
@@ -3767,7 +3767,7 @@ function closeRubricResetModal() { document.getElementById('modal-rubric-reset')
 
     <!-- 하단 버튼 -->
     <div style="padding:16px 24px;border-top:1px solid #F0F0F0;flex-shrink:0;display:flex;justify-content:flex-end;">
-      <button onclick="closeAIDrawer();switchToFilledRubric();" style="display:flex;align-items:center;gap:8px;background:#7E44FB;border:none;border-radius:8px;height:44px;padding:0 24px;cursor:pointer;color:white;font-size:16px;font-weight:700;font-family:inherit;">
+      <button onclick="closeAIDrawer();switchToFilledRubric();" style="display:flex;align-items:center;gap:8px;background:#7E44FB;border:none;border-radius:8px;height:36px;padding:0 16px;cursor:pointer;color:white;font-size:16px;font-weight:700;font-family:inherit;">
         <i data-lucide="wand-sparkles" style="width:16px;height:16px;"></i>
         채점기준 AI 생성
       </button>
@@ -3788,8 +3788,8 @@ function closeRubricResetModal() { document.getElementById('modal-rubric-reset')
         <p style="font-size:14px;color:#494949;margin:0;line-height:1.6;">채점기준을 교체하면 <strong>2~4단계 데이터가 초기화</strong>됩니다.<br>이 작업은 되돌릴 수 없습니다.</p>
       </div>
       <div style="display:flex;gap:12px;width:100%;margin-top:8px;">
-        <button onclick="closeRubricResetModal()" style="flex:1;height:44px;background:white;color:#494949;border:1px solid #D9D9D9;border-radius:8px;font-size:16px;font-weight:700;cursor:pointer;">취소</button>
-        <button onclick="confirmRubricReset()" style="flex:1;height:44px;background:#DB3E51;color:white;border:none;border-radius:8px;font-size:16px;font-weight:700;cursor:pointer;">교체 진행</button>
+        <button onclick="closeRubricResetModal()" style="flex:1;height:36px;background:white;color:#494949;border:1px solid #D9D9D9;border-radius:8px;font-size:16px;font-weight:700;cursor:pointer;">취소</button>
+        <button onclick="confirmRubricReset()" style="flex:1;height:36px;background:#DB3E51;color:white;border:none;border-radius:8px;font-size:16px;font-weight:700;cursor:pointer;">교체 진행</button>
       </div>
     </div>
   </div>
@@ -3850,8 +3850,8 @@ function closeRubricResetModal() { document.getElementById('modal-rubric-reset')
     </div>
     <!-- 푸터 -->
     <div style="padding:12px 20px 18px;display:flex;justify-content:flex-end;gap:10px;">
-      <button onclick="closeFormulaModal()" style="height:40px;padding:0 20px;border:1px solid #D9D9D9;background:white;border-radius:8px;font-size:14px;font-weight:700;font-family:inherit;cursor:pointer;color:#494949;">취소</button>
-      <button onclick="confirmFormula()" style="height:40px;padding:0 20px;border:none;background:#7E44FB;border-radius:8px;font-size:14px;font-weight:700;font-family:inherit;cursor:pointer;color:white;">삽입</button>
+      <button onclick="closeFormulaModal()" style="height:36px;padding:0 16px;border:1px solid #D9D9D9;background:white;border-radius:8px;font-size:14px;font-weight:700;font-family:inherit;cursor:pointer;color:#494949;">취소</button>
+      <button onclick="confirmFormula()" style="height:36px;padding:0 16px;border:none;background:#7E44FB;border-radius:8px;font-size:14px;font-weight:700;font-family:inherit;cursor:pointer;color:white;">삽입</button>
     </div>
   </div>
 </div>

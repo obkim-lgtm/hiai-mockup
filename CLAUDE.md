@@ -28,6 +28,17 @@
 - 기본 형식: **단일 HTML 파일** (인라인 CSS + Tailwind CDN) — 빌드 불필요, 어느 PC에서나 브라우저로 바로 열림
 - 아이콘: Lucide CDN (`<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js">`) 사용
 - 반응형은 명시적으로 요청받은 경우에만 추가한다.
+
+### ⚠️ 디자인 시스템 검증 필수 (컴포넌트 구현 전)
+새 컴포넌트를 추가하거나 기존 컴포넌트를 수정할 때, **반드시 Figma MCP로 실제 토큰 값을 확인한 뒤 구현**한다.
+
+```
+get_design_context(fileKey=<관련 파일키>, nodeId=<컴포넌트 nodeId>)
+```
+
+- 스크린샷 육안 비교만으로 값을 추정하지 않는다 — 압축 아티팩트로 오판 가능
+- 색상·radius·spacing·font-size 등 수치가 필요한 속성은 반드시 Figma 소스에서 확인
+- 주요 컴포넌트 nodeId는 이 파일 하단 **컴포넌트 참조** 섹션 및 `context.md` 참조
 - 기획 논의가 끝나면 바로 코드로 진입 (중간 설명 최소화)
 
 ## 산출물 구성 원칙
@@ -181,20 +192,63 @@ showToast('error', '오류가 발생했습니다.');
 
 ---
 
+## 패널 (콘텐츠 컨테이너) 스펙
+
+> Figma: `344b7XVs8E9KaFBhgAEhtW` node `3271:24976`
+
+```css
+/* 탭 바로 아래 메인 콘텐츠 패널 */
+background: white;
+border-radius: 0 0 20px 20px;     /* 탭과 연결되는 하단 패널 */
+padding: 28px 24px;                /* py=28px, px=24px — 반드시 준수 */
+box-shadow: 0 4px 36px rgba(95,102,178,0.16);
+```
+
+### Heading_title_set (패널 헤더 타이틀 행)
+
+> Figma: `344b7XVs8E9KaFBhgAEhtW` node `3271:24976` → `items-center`
+
+패널 상단에 제목(H1 24px) + 설명 텍스트(좌측) / 버튼 그룹(우측)이 함께 있는 행은 반드시:
+
+```css
+display: flex;
+justify-content: space-between;
+align-items: center;   /* ← 반드시 center. flex-start 금지 */
+```
+
+> ⚠️ `align-items:flex-start` 로 하면 버튼이 타이틀 텍스트 상단에만 붙어 시각적으로 위로 떠 보임.
+> 카드 내부 아이콘+긴 텍스트 조합처럼 top-align이 의도적인 경우와 혼동 금지.
+
+> ⚠️ `px-[40px]` 등 임의 확장 금지. 좌우 패딩은 항상 `24px`.
+
+---
+
 ## 버튼 스타일
+
+> Figma: `vOYXokKNMGec80BpDbIiJI` node `2474:1703` / `344b7XVs8E9KaFBhgAEhtW` node `3271:25003`
 
 | 종류 | 배경 | 텍스트 | Border | 용도 |
 |------|------|--------|--------|------|
 | **Primary** | `#7E44FB` | white | — | 주요 CTA (화면당 1개 원칙) |
-| **Secondary** | white | `#7E44FB` | `#7E44FB` | 보조 액션 |
+| **Secondary** | white | `#7E44FB` | `#B28FFD` | 보조 액션 |
 | **Outline** | white | `#494949` | `#D9D9D9` | 취소·일반 |
 | **Danger** | `#DB3E51` | white | — | 삭제·위험 |
 | **Green** | `#00AF3D` | white | — | 업로드·완료 |
 | **Ghost/Link** | transparent | `#7E44FB` | — | 텍스트 링크형 |
 
+```css
+/* 공통 버튼 토큰 (Figma 기준) */
+height: 36px;
+padding: 0 16px;       /* spacing/4 — 패널 헤더 CTA */
+/* padding: 0 12px;   ← spacing/3 — 컨트롤바 등 좁은 영역 */
+border-radius: 8px;    /* radius/lg */
+font: NanumSquareRound Bold 16px;
+gap: 8px;              /* 아이콘-텍스트 간격 */
+```
+
 - **border-radius**: 8px (일반 버튼) / 20px (pill/circle형)
-- **사이즈**: sm(28~32px h) / md(36~40px h) / lg(44~48px h)
-- **아이콘+텍스트** 조합 시 아이콘은 좌측, gap 8px
+- **높이**: 36px (md, 기본) — `44px` 등 임의 확장 금지
+- **아이콘+텍스트** 조합 시 아이콘은 좌측, gap 8px, 아이콘 크기 20×20px
 
 ---
 
