@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<link rel="icon" href="screens/favicon_src.png" type="image/png" />
+<title>학생 평가 리포트 v1 (React + Recharts)</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/prop-types@15.8.1/prop-types.min.js"></script>
+<script src="https://unpkg.com/recharts@2.12.7/umd/Recharts.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<style>
+  @import url('https://cdn.rawgit.com/moonspam/NanumSquareRound/master/nanumsquareround.min.css');
+  *{font-family:'NanumSquareRound',-apple-system,sans-serif;box-sizing:border-box}
+  body{margin:0;background:#EDF1FC;color:#222}
+  .panel{background:#fff;border:1px solid #E6E6E6;border-radius:14px}
+  .chip{display:inline-flex;align-items:center;justify-content:center;height:24px;padding:0 8px;border-radius:6px;font-size:12px;font-weight:800}
+  .chip-strong{background:#F1F9F3;color:#00AF3D}
+  .chip-weak{background:#FFEFEF;color:#DB3E51}
+  .chip-mid{background:#F2F5FF;color:#5890FF}
+  .tag{display:inline-flex;align-items:center;height:26px;padding:0 10px;border-radius:100px;font-size:12px;font-weight:800;background:#F7F4FF;color:#7E44FB}
+  .tab-active  {flex:1;height:60px;background:white;border-radius:20px 20px 0 0;display:flex;align-items:center;justify-content:center;cursor:pointer;}
+  .tab-inactive{flex:1;height:60px;background:#CBD6F4;border-radius:20px 20px 0 0;display:flex;align-items:center;justify-content:center;cursor:pointer;}
+  .btn-pri{background:#7E44FB;color:#fff;border:0;border-radius:8px;height:36px;padding:0 16px;font-size:13px;font-weight:800;cursor:pointer;display:inline-flex;align-items:center;gap:6px}
+  .btn-out{background:#fff;color:#494949;border:1px solid #D9D9D9;border-radius:8px;height:32px;padding:0 12px;font-size:12px;font-weight:800;cursor:pointer}
+  .btn-out.on{color:#7E44FB;border-color:#7E44FB;background:#F7F4FF}
+  .mini-bar{height:6px;border-radius:999px;background:#EFEAFE;position:relative;overflow:hidden}
+  .mini-bar > span{position:absolute;left:0;top:0;bottom:0;background:#7E44FB;border-radius:999px}
+  .marker{position:absolute;top:-3px;width:2px;height:12px;background:#222;border-radius:1px}
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script type="text/babel">
+const { useState, useMemo } = React;
+const { ResponsiveContainer, LineChart, Line, CartesianGrid, XAxis, YAxis, Tooltip, Legend,
+        RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, ReferenceLine } = Recharts;
+
+// ───────── Figma 에셋 ─────────
+const ASSETS = {
+  logoIcon:  "https://www.figma.com/api/mcp/asset/94bcb641-29f2-478e-a56f-f7e9c39153d3",
+  logoText1: "https://www.figma.com/api/mcp/asset/4787797c-4f21-4cab-9201-31a40934c37e",
+  logoText2: "https://www.figma.com/api/mcp/asset/a86454ba-731d-4c88-b232-74f8e2ab0c64",
+  aiIcon:    "https://www.figma.com/api/mcp/asset/9f7e059a-12a4-40b7-ab5b-2623dfdbbbd6",
+  back:      "https://www.figma.com/api/mcp/asset/a09068e4-f527-4908-902b-b581237aea6c",
+  divider:   "https://www.figma.com/api/mcp/asset/a6581a5a-21f2-4b76-804b-15d1db5dc1e4",
+};
+
+// ───────── 디자인 시스템 헤더 컴포넌트 ─────────
+function GnbTeacher(){
+  return (
+    <div style={{background:"#fff",height:98,borderBottom:"1px solid #D9D9D9",display:"flex",alignItems:"center",justifyContent:"center",padding:"0 36px"}}>
+      <div style={{flex:"1 0 0",maxWidth:1200,minWidth:960,display:"flex",alignItems:"center",justifyContent:"space-between",padding:"0 36px"}}>
+        {/* logo */}
+        <div style={{display:"flex",alignItems:"center",gap:8}}>
+          <div style={{width:58,height:42,overflow:"hidden",position:"relative",flexShrink:0}}>
+            <img src={ASSETS.logoIcon} alt="HiAI" style={{position:"absolute",left:"50%",transform:"translateX(-50%)",height:"100%",width:"auto",objectFit:"cover"}}/>
+          </div>
+          <div style={{position:"relative",width:150,height:41}}>
+            <img src={ASSETS.logoText1} alt="하이러닝 AI" style={{position:"absolute",top:0,left:0,width:79.842,height:16.284}}/>
+            <img src={ASSETS.logoText2} alt="서논술형 평가 서비스" style={{position:"absolute",top:24.08,left:0.31,width:149.692,height:16.422}}/>
+          </div>
+        </div>
+        {/* menu */}
+        <div style={{display:"flex",alignItems:"center",gap:52,fontFamily:"NanumSquareRound",fontSize:20}}>
+          <div style={{color:"#7E44FB",fontWeight:800,lineHeight:1.25}}>나의 평가</div>
+          <div style={{color:"#000",fontWeight:700,lineHeight:1.25}}>평가 자료실</div>
+          <div style={{color:"#000",fontWeight:700,lineHeight:1.25}}>고객센터</div>
+        </div>
+        {/* profile */}
+        <div style={{display:"flex",alignItems:"center",gap:12}}>
+          <img src={ASSETS.aiIcon} alt="" style={{width:36,height:36}}/>
+          <div style={{fontSize:20,fontWeight:700}}>김동* 님</div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function TitleBarTeacher(){
+  return (
+    <div style={{background:"linear-gradient(to right,#6562f5 4%,#9b68f3 97.86%)",height:86,display:"flex",alignItems:"center",justifyContent:"center",padding:"0 36px"}}>
+      <div style={{flex:"1 0 0",maxWidth:1200,minWidth:960,display:"flex",alignItems:"center",padding:"0 36px"}}>
+        <div style={{display:"flex",alignItems:"center",gap:12,flex:"1 0 0"}}>
+          <img src={ASSETS.back} alt="back" style={{width:36,height:36}}/>
+          <div style={{display:"flex",alignItems:"center",gap:16}}>
+            <div style={{fontFamily:"NanumSquareRound",fontWeight:800,fontSize:28,color:"#fff",lineHeight:1.25}}>1학년 국어</div>
+            <div style={{width:1,height:24,background:"rgba(255,255,255,0.5)"}}/>
+            <div style={{fontFamily:"NanumSquareRound",fontWeight:700,fontSize:24,color:"#fff",lineHeight:1.25}}>리포트 상세</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function MyHomeTabs({active=5}){
+  const tabs = ["평가 홈","평가 대상","평가 설계","과제물 관리","AI 채점","평가 리포트"];
+  return (
+    <div style={{display:"flex",gap:12}}>
+      {tabs.map((t,i)=>{
+        const isActive = i===active;
+        return (
+          <div key={i} className={isActive?"tab-active":"tab-inactive"}>
+            <span style={{fontSize:20,fontWeight:isActive?800:700,color:isActive?"#341761":"#000"}}>{t}</span>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+// ───────── 더미 데이터 ─────────
+const STUDENT = {
+  id:"10201", name:"김하나", grade:"1학년 2반 1번",
+  total: 60, max: 100, missing:0, classRank:"상위 38%", gradeRank:"상위 42%",
+  tags:[
+    {text:"자료 활용 우수",  type:"strong"},
+    {text:"논리적 서술",    type:"strong"},
+    {text:"경험 연결 보강 필요", type:"weak"},
+    {text:"근거 제시 반복 부족", type:"weak"},
+  ],
+};
+
+// 과제별 추이 — me/cls/grade
+const TREND = [
+  { name:"미래사회 시나리오", me:70, cls:72, grade:75 },
+  { name:"독후감 1차",       me:60, cls:68, grade:71 },
+  { name:"독후감 2차",       me:50, cls:66, grade:70 },
+  { name:"독후감 3차",       me:55, cls:69, grade:72 },
+];
+
+// 평가 결과(과제 카드)
+const ASSIGNMENTS = [
+  {
+    id:"a1", title:"미래 사회 예측 시나리오", date:"25.04.28", score:10, max:30,
+    rubric:[
+      { name:"다양한 자료를 활용", me:5, max:5, classDist:[1,2,3,5,9], status:"strong" },
+      { name:"자신의 경험을 반영", me:2, max:5, classDist:[2,5,9,3,1], status:"weak" },
+      { name:"논리적 근거 제시",  me:3, max:5, classDist:[1,3,8,5,3], status:"mid" },
+    ],
+    ai:{
+      strength:"자료 인용이 풍부하고 도입부 구조가 명확함.",
+      growth:"본인의 경험과 주장을 연결하는 근거가 약함.",
+      next:"'경험–주장 연결' 한 문장 쓰기 연습 권장."
+    }
+  },
+  {
+    id:"a2", title:"독후감 1차 과제", date:"25.05.10", score:10, max:30,
+    rubric:[
+      { name:"다양한 자료를 활용", me:5, max:5, classDist:[1,2,4,5,8], status:"strong" },
+      { name:"자신의 경험을 반영", me:3, max:5, classDist:[2,4,7,4,3], status:"mid" },
+      { name:"논리적 근거 제시",  me:2, max:5, classDist:[3,6,6,3,2], status:"weak" },
+    ],
+    ai:{
+      strength:"문장 호흡이 안정적이고 구조 인식이 좋음.",
+      growth:"주장에 대한 근거 두 줄 이상 확장 필요.",
+      next:"PREP(주장-이유-사례-주장) 템플릿 적용 연습."
+    }
+  },
+  {
+    id:"a3", title:"독후감 2차 과제", date:"25.05.28", score:10, max:30, dropped:true,
+    rubric:[
+      { name:"다양한 자료를 활용", me:5, max:5, classDist:[1,3,4,4,8], status:"strong" },
+      { name:"자신의 경험을 반영", me:3, max:5, classDist:[2,4,8,4,2], status:"mid" },
+      { name:"논리적 근거 제시",  me:2, max:5, classDist:[3,7,5,3,2], status:"weak" },
+    ],
+    ai:{
+      strength:"독해 후 핵심 메시지 추출은 정확.",
+      growth:"직전 과제 대비 점수 하락(-10). 근거 항목 반복 약점.",
+      next:"근거 두 가지 제시 후 본인 사례로 확장하는 연습."
+    }
+  },
+];
+
+// ───────── 작은 컴포넌트 ─────────
+const StatusChip = ({s}) => {
+  if(s==="strong") return <span className="chip chip-strong">강점</span>;
+  if(s==="weak")   return <span className="chip chip-weak">성장필요</span>;
+  return <span className="chip chip-mid">보통</span>;
+};
+
+const DistributionBar = ({dist, mePos}) => {
+  const total = dist.reduce((a,b)=>a+b,0);
+  return (
+    <div style={{display:"flex",alignItems:"flex-end",gap:3,height:34,position:"relative"}}>
+      {dist.map((v,i)=>{
+        const h = (v/Math.max(...dist))*30;
+        const isMe = i+1===mePos;
+        return (
+          <div key={i} style={{flex:1,display:"flex",flexDirection:"column",alignItems:"center",gap:2}}>
+            <div style={{width:"100%",height:h,background:isMe?"#7E44FB":"#E0D6FB",borderRadius:3}} />
+            <div style={{fontSize:10,color:isMe?"#7E44FB":"#B3B3B3",fontWeight:800}}>{i+1}</div>
+          </div>
+        );
+      })}
+    </div>
+  );
+};
+
+// ───────── 화면 ─────────
+function App(){
+  const [compare,setCompare] = useState("cls"); // cls | grade | prev
+  const [showAI,setShowAI] = useState(true);
+
+  const trendData = TREND.map((d,i)=>{
+    const prev = i>0?TREND[i-1].me:null;
+    return { ...d, prev };
+  });
+
+  return (
+    <div style={{minHeight:"100vh"}}>
+      <GnbTeacher/>
+      <TitleBarTeacher/>
+
+      <div style={{display:"flex",flexDirection:"column",alignItems:"center",padding:"40px 36px",minHeight:760}}>
+       <div style={{width:"100%",maxWidth:1200}}>
+        <MyHomeTabs active={5}/>
+        <div style={{background:"white",borderRadius:"0 0 16px 16px",border:"1px solid #E6E6E6",padding:32}}>
+          {/* 헤더 */}
+          <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:8}}>
+            <div>
+              <div style={{fontSize:22,fontWeight:900}}>{STUDENT.id} {STUDENT.name} 평가 리포트</div>
+              <div style={{fontSize:13,color:"#808080",marginTop:4}}>학생별 평가 결과를 정리한 리포트를 조회할 수 있습니다.</div>
+            </div>
+            <div style={{display:"flex",gap:8}}>
+              <button className="btn-out">← 이전 학생</button>
+              <button className="btn-out">다음 학생 →</button>
+              <button className="btn-pri">📥 PDF 내보내기</button>
+            </div>
+          </div>
+
+          <div style={{display:"flex",gap:8,margin:"16px 0 24px"}}>
+            <div style={{display:"flex",alignItems:"center",gap:8,padding:"0 14px",height:40,border:"1px solid #D9D9D9",borderRadius:8,fontSize:13,fontWeight:800}}>대상 검색 <span style={{color:"#7E44FB"}}>1-2 ▾</span></div>
+            <div style={{display:"flex",alignItems:"center",gap:8,padding:"0 14px",height:40,border:"1px solid #D9D9D9",borderRadius:8,fontSize:13,fontWeight:800}}>10201 김하나 ▾</div>
+          </div>
+
+          {/* ① 학생 요약 카드 */}
+          <div className="panel" style={{marginBottom:20,overflow:"hidden"}}>
+           <div style={{padding:24,display:"grid",gridTemplateColumns:"200px 1fr",gap:0}}>
+            {/* 프로필 */}
+            <div style={{display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",borderRight:"1px dashed #E6E6E6",padding:"8px 24px 8px 8px"}}>
+              <div style={{width:84,height:84,borderRadius:"50%",background:"radial-gradient(circle,#FFF3B0,#FCE38A)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:36}}>🐣</div>
+              <div style={{fontSize:18,fontWeight:900,marginTop:10}}>{STUDENT.name}</div>
+              <div style={{fontSize:12,color:"#808080",marginTop:2}}>{STUDENT.grade}</div>
+            </div>
+            {/* KPI 영역 */}
+            <div style={{display:"flex",alignItems:"center",padding:"8px 24px",gap:0}}>
+              {/* 원형 게이지 */}
+              {(()=>{
+                const pct = STUDENT.total / STUDENT.max;
+                const r = 46, cx = 56, cy = 56;
+                const circ = 2 * Math.PI * r;
+                const dash = pct * circ;
+                return (
+                  <div style={{flexShrink:0,marginRight:20,position:"relative",width:112,height:112}}>
+                    <svg width="112" height="112" style={{transform:"rotate(-90deg)"}}>
+                      <circle cx={cx} cy={cy} r={r} fill="none" stroke="#F0EEFF" strokeWidth="10"/>
+                      <circle cx={cx} cy={cy} r={r} fill="none" stroke="#7E44FB" strokeWidth="10"
+                        strokeDasharray={`${dash} ${circ}`} strokeLinecap="round"/>
+                    </svg>
+                    <div style={{position:"absolute",inset:0,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center"}}>
+                      <div style={{fontSize:22,fontWeight:900,color:"#7E44FB",lineHeight:1}}>{STUDENT.total}</div>
+                      <div style={{fontSize:11,color:"#B3B3B3",fontWeight:700}}>/ {STUDENT.max}점</div>
+                    </div>
+                  </div>
+                );
+              })()}
+              {/* 나머지 KPI */}
+              <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",flex:1,gap:0}}>
+                {[
+                  {label:"반 내 위치",   value:STUDENT.classRank,  color:"#222"},
+                  {label:"학년 내 위치", value:STUDENT.gradeRank,  color:"#222"},
+                  {label:"미제출/미응시", value:`${STUDENT.missing}건`, color:STUDENT.missing>0?"#DB3E51":"#222"},
+                ].map((k,i)=>(
+                  <div key={i} style={{display:"flex",flexDirection:"column",justifyContent:"center",padding:"0 20px",borderLeft:"1px dashed #E6E6E6"}}>
+                    <div style={{fontSize:12,color:"#808080",fontWeight:800,marginBottom:8}}>{k.label}</div>
+                    <div style={{fontSize:22,fontWeight:900,color:k.color,lineHeight:1}}>{k.value}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+           </div>
+           {/* 특성 요약 strip */}
+           <div style={{borderTop:"1px solid #F0F0F0",background:"#FAFAFA",padding:"14px 24px",display:"flex",alignItems:"center",gap:16}}>
+             <div style={{fontSize:12,fontWeight:900,color:"#808080",whiteSpace:"nowrap",flexShrink:0}}>AI 특성 요약</div>
+             <div style={{width:1,height:18,background:"#E6E6E6",flexShrink:0}}/>
+             <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
+               {STUDENT.tags.map((t)=>{
+                 const isStrong = t.type==="strong";
+                 return (
+                   <span key={t.text} style={{display:"inline-flex",alignItems:"center",gap:5,height:28,padding:"0 12px",borderRadius:100,fontSize:13,fontWeight:800,
+                     background:isStrong?"#F1F9F3":"#FFEFEF",color:isStrong?"#00AF3D":"#DB3E51"}}>
+                     <span style={{fontSize:10}}>{isStrong?"▲":"▼"}</span>{t.text}
+                   </span>
+                 );
+               })}
+             </div>
+           </div>
+          </div>
+
+          {/* ② 추이 라인 차트 */}
+          <div className="panel" style={{padding:24,marginBottom:20}}>
+            <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:12}}>
+              <div style={{fontSize:15,fontWeight:900,color:"#341761"}}>📈 과제별 점수 추이</div>
+              <div style={{display:"flex",gap:6}}>
+                <button className={"btn-out"+(compare==="cls"?" on":"")}    onClick={()=>setCompare("cls")}>반 평균과 비교</button>
+                <button className={"btn-out"+(compare==="grade"?" on":"")}  onClick={()=>setCompare("grade")}>학년 평균과 비교</button>
+                <button className={"btn-out"+(compare==="prev"?" on":"")}   onClick={()=>setCompare("prev")}>직전 점수와 비교</button>
+              </div>
+            </div>
+            <div style={{height:260}}>
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart data={trendData} margin={{top:10,right:20,left:0,bottom:0}}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#EEE"/>
+                  <XAxis dataKey="name" tick={{fontSize:12,fill:"#494949"}}/>
+                  <YAxis domain={[0,100]} tick={{fontSize:12,fill:"#808080"}}/>
+                  <Tooltip/>
+                  <Legend wrapperStyle={{fontSize:12}}/>
+                  <Line type="monotone" dataKey="me"   stroke="#7E44FB" strokeWidth={3} dot={{r:5}} name={STUDENT.name}/>
+                  {compare==="cls"   && <Line type="monotone" dataKey="cls"   stroke="#B3B3B3" strokeDasharray="5 4" name="반 평균"/>}
+                  {compare==="grade" && <Line type="monotone" dataKey="grade" stroke="#5890FF" strokeDasharray="5 4" name="학년 평균"/>}
+                  {compare==="prev"  && <Line type="monotone" dataKey="prev"  stroke="#FF8C4C" strokeDasharray="5 4" name="직전 점수"/>}
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+
+          {/* ③ 평가 결과 카드 */}
+          <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",margin:"8px 0 12px"}}>
+            <div style={{fontSize:15,fontWeight:900,color:"#341761"}}>📝 과제별 평가 결과</div>
+            <div style={{fontSize:12,color:"#808080"}}>총 {ASSIGNMENTS.length}개 과제</div>
+          </div>
+
+          <div style={{display:"flex",flexDirection:"column",gap:14}}>
+            {ASSIGNMENTS.map(a=>(
+              <div key={a.id} className="panel" style={{padding:22}}>
+                <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:14}}>
+                  <div style={{display:"flex",alignItems:"center",gap:10}}>
+                    <span style={{fontSize:11,color:"#808080",fontWeight:800}}>{a.date}</span>
+                    <span style={{fontSize:16,fontWeight:900}}>{a.title}</span>
+                    {a.dropped && <span className="chip chip-weak">▼ 직전 대비 -10</span>}
+                  </div>
+                  <div style={{fontSize:14,fontWeight:900,color:"#7E44FB"}}>{a.score} <span style={{color:"#B3B3B3",fontSize:12}}>/ {a.max}점</span></div>
+                </div>
+
+                {/* 루브릭 표 */}
+                <div style={{display:"grid",gridTemplateColumns:"1.4fr 0.5fr 1.6fr 0.5fr",gap:14,alignItems:"center",fontSize:12,color:"#808080",fontWeight:800,paddingBottom:6,borderBottom:"1px solid #F0F0F0"}}>
+                  <div>채점 기준</div><div>점수</div><div>반 분포 (●내 위치)</div><div>판정</div>
+                </div>
+                {a.rubric.map((r,i)=>(
+                  <div key={i} style={{display:"grid",gridTemplateColumns:"1.4fr 0.5fr 1.6fr 0.5fr",gap:14,alignItems:"center",padding:"12px 0",borderBottom:"1px dashed #F0F0F0"}}>
+                    <div style={{fontSize:14,fontWeight:700}}>{r.name}</div>
+                    <div style={{fontSize:14,fontWeight:900,color:"#7E44FB"}}>{r.me}<span style={{color:"#B3B3B3",fontSize:11,fontWeight:700}}>/{r.max}</span></div>
+                    <DistributionBar dist={r.classDist} mePos={r.me}/>
+                    <div><StatusChip s={r.status}/></div>
+                  </div>
+                ))}
+
+                {/* AI 코멘트 */}
+                {showAI && (
+                  <div style={{marginTop:16,display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:10}}>
+                    {[
+                      {icon:"✅", label:"강점",        color:"#00AF3D", bg:"#F1F9F3", text:a.ai.strength},
+                      {icon:"📈", label:"성장 포인트",  color:"#FF8C4C", bg:"#FFF8F3", text:a.ai.growth},
+                      {icon:"💡", label:"다음 학습 제안",color:"#5890FF", bg:"#F2F7FF", text:a.ai.next},
+                    ].map((item,i)=>(
+                      <div key={i} style={{background:item.bg,borderRadius:10,padding:"14px 16px",borderLeft:`4px solid ${item.color}`}}>
+                        <div style={{fontSize:12,color:item.color,fontWeight:900,marginBottom:8,display:"flex",alignItems:"center",gap:5}}>
+                          <span>{item.icon}</span><span>{item.label}</span>
+                        </div>
+                        <div style={{fontSize:13,lineHeight:1.65,color:"#333"}}>{item.text}</div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+
+          {/* ④ 평가 종합 의견 */}
+          <div className="panel" style={{marginTop:20,overflow:"hidden"}}>
+            <div style={{padding:"18px 24px 14px",display:"flex",justifyContent:"space-between",alignItems:"center",borderBottom:"1px solid #F0F0F0"}}>
+              <div style={{display:"flex",alignItems:"center",gap:8}}>
+                <div style={{width:4,height:18,background:"#7E44FB",borderRadius:2}}/>
+                <div style={{fontSize:15,fontWeight:900,color:"#341761"}}>평가 종합 의견</div>
+                <span style={{fontSize:11,color:"#808080",fontWeight:700,background:"#F0F0F0",padding:"2px 8px",borderRadius:4}}>AI 생성</span>
+              </div>
+              <button className={"btn-out"+(showAI?" on":"")} onClick={()=>setShowAI(!showAI)}>
+                {showAI?"숨기기":"펼치기"}
+              </button>
+            </div>
+
+            {showAI && (
+              <div style={{padding:"20px 24px",display:"flex",flexDirection:"column",gap:16}}>
+
+                {/* 성취 패턴 */}
+                <div style={{display:"flex",gap:12,alignItems:"flex-start"}}>
+                  <div style={{width:28,height:28,borderRadius:8,background:"#F1F9F3",display:"flex",alignItems:"center",justifyContent:"center",fontSize:14,flexShrink:0}}>📊</div>
+                  <div>
+                    <div style={{fontSize:13,fontWeight:900,color:"#00AF3D",marginBottom:4}}>성취 패턴</div>
+                    <div style={{fontSize:14,lineHeight:1.7,color:"#333"}}>
+                      3개 과제 모두 만점 대비 평균 <b>56%</b>를 받았으며, 반 평균(68%)보다 꾸준히 낮은 수준입니다.
+                      전체 과제에서 반 평균을 넘긴 적이 없었지만(0/3회),
+                      미제출·미응시 없이 모든 과제에 성실히 참여했다는 점은 긍정적입니다.
+                    </div>
+                  </div>
+                </div>
+
+                {/* 추세 분석 */}
+                <div style={{display:"flex",gap:12,alignItems:"flex-start"}}>
+                  <div style={{width:28,height:28,borderRadius:8,background:"#FFEFEF",display:"flex",alignItems:"center",justifyContent:"center",fontSize:14,flexShrink:0}}>⚠️</div>
+                  <div>
+                    <div style={{fontSize:13,fontWeight:900,color:"#DB3E51",marginBottom:4}}>추세 알림</div>
+                    <div style={{fontSize:14,lineHeight:1.7,color:"#333"}}>
+                      받은 점수가 <b>70% → 60% → 50%</b>로 3회 연속 낮아지고 있습니다.
+                      반 평균과의 점수 차이도 점점 벌어지고 있어(–2%p → –8%p → –16%p) 지금이 개입하기 좋은 시점입니다.
+                      다음 과제 제출 전 짧은 피드백 면담을 권장합니다.
+                    </div>
+                  </div>
+                </div>
+
+                {/* 교사 액션 제안 */}
+                <div style={{display:"flex",gap:12,alignItems:"flex-start"}}>
+                  <div style={{width:28,height:28,borderRadius:8,background:"#F2F7FF",display:"flex",alignItems:"center",justifyContent:"center",fontSize:14,flexShrink:0}}>🎯</div>
+                  <div>
+                    <div style={{fontSize:13,fontWeight:900,color:"#5890FF",marginBottom:4}}>다음 지도 제안</div>
+                    <div style={{fontSize:14,lineHeight:1.7,color:"#333"}}>
+                      매 과제 AI 피드백에서 <b>"본인 경험·사례 연결 부족"</b>과 <b>"주장에 대한 근거 확장 필요"</b>가 반복 언급되고 있습니다.
+                      구조화된 글쓰기 틀(예: 주장 → 근거 → 사례 → 재주장)을 명시적으로 제공하고,
+                      다음 과제 전 짧은 구조 연습(150자 내외)을 선행 활동으로 부여하는 것을 권장합니다.
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+            )}
+          </div>
+
+          <div style={{height:24}}/>
+        </div>
+        <div style={{height:48}}/>
+       </div>
+      </div>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App/>);
+</script>
+</body>
+</html>

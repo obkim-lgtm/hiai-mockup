@@ -1,11 +1,65 @@
 <!DOCTYPE html>
-<html>
+<html lang="ko">
 <head>
-<meta charset="UTF-8">
-<meta http-equiv="refresh" content="0; url=output/evaluation_design_v1_260401.html">
-<title>HiAI Mockup</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HiAI Mockup Index</title>
+  <link rel="icon" href="screens/favicon_src.png" type="image/png">
+  <style>
+    body {
+      font-family: 'NanumSquareRound', -apple-system, sans-serif;
+      background: #F8F8F8;
+      margin: 0;
+      padding: 48px;
+      color: #333333;
+    }
+    h1 { font-size: 24px; font-weight: 800; margin-bottom: 8px; color: #7E44FB; }
+    p.desc { font-size: 14px; color: #808080; margin-bottom: 40px; }
+    .section { margin-bottom: 32px; }
+    .section h2 { font-size: 14px; font-weight: 700; color: #B3B3B3; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 12px; }
+    .card {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      background: white;
+      border: 1px solid #E6E6E6;
+      border-radius: 10px;
+      padding: 16px 24px;
+      margin-right: 12px;
+      margin-bottom: 12px;
+      text-decoration: none;
+      color: #333333;
+      font-size: 15px;
+      font-weight: 700;
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+    .card:hover { border-color: #7E44FB; box-shadow: 0 0 0 3px #F2ECFF; }
+    .dot { width: 8px; height: 8px; border-radius: 50%; background: #7E44FB; }
+  </style>
 </head>
 <body>
-<p><a href="output/evaluation_design_v1_260401.html">평가 설계 목업으로 이동</a></p>
+  <h1>HiAI 목업 인덱스</h1>
+  <p class="desc">최신 버전 목업 파일 목록 · output/ 폴더 기준</p>
+
+  <div class="section">
+    <h2>평가 홈</h2>
+    <a class="card" href="output/eval_home_v6_260403.html">
+      <span class="dot"></span> eval_home_v6_260403
+    </a>
+  </div>
+
+  <div class="section">
+    <h2>평가 설계</h2>
+    <a class="card" href="output/evaluation_design_v3_260403.html">
+      <span class="dot"></span> evaluation_design_v3_260403
+    </a>
+  </div>
+
+  <div class="section">
+    <h2>평가 리포트</h2>
+    <a class="card" href="output/student_report_v1.html">
+      <span class="dot"></span> student_report_v1
+    </a>
+  </div>
 </body>
 </html>
