@@ -66,6 +66,14 @@
     .eval-card:hover { box-shadow: 0 4px 20px rgba(95,102,178,0.12); }
     .eval-card-body  { padding: 22px 24px; }
     .eval-card-footer { padding: 14px 24px; background: #F8F8F8; border-top: 1px solid #F0F0F0; display:flex; align-items:center; justify-content:space-between; }
+    .fb-bar { padding: 14px 24px; background:#FFFBF5; border-top:1px solid #FCE9CC; display:flex; align-items:center; justify-content:space-between; gap:16px; }
+    .fb-bar.done { background:#F8F8F8; border-top-color:#F0F0F0; }
+    .fb-bar-label { font-size:13px; font-weight:700; color:#B8651A; display:flex; align-items:center; gap:6px; }
+    .fb-bar.done .fb-bar-label { color:#808080; font-weight:400; }
+    .fb-summary-banner { background:linear-gradient(to right,#FFFBF5,#FFF8EE); border:1px solid #FCE9CC; border-radius:10px; padding:12px 18px; display:flex; align-items:center; justify-content:space-between; margin-bottom:4px; }
+    .fb-emoji-card { flex:1; height:72px; border-radius:12px; border:1.5px solid #E6E6E6; background:white; cursor:pointer; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; font-family:inherit; transition:border-color .15s,background .15s; }
+    .fb-emoji-card:hover { border-color:#B28FFD; background:#FAF7FF; }
+    .fb-emoji-card.selected { border-color:#7E44FB; background:#F7F4FF; }
   /* Modal */
   .modal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.4); z-index:1000; align-items:center; justify-content:center; }
   .modal-overlay.open { display:flex; }
@@ -294,6 +302,16 @@
 
         <div id="evals-filled" style="display:flex; flex-direction:column; gap:10px;">
 
+          <!-- 채점 만족도 요약 배너 -->
+          <div class="fb-summary-banner">
+            <div style="display:flex; align-items:center; gap:10px;">
+              <i data-lucide="message-square-heart" style="width:18px; height:18px; color:#FF8C4C;"></i>
+              <span style="font-size:14px; font-weight:700; color:#333;">완료된 평가 <span style="color:#FF8C4C;">2건 중 1건</span>에 채점 만족도 의견을 남기셨어요</span>
+              <span style="font-size:12px; color:#808080;">선생님 의견은 다음 채점 품질 개선에 반영됩니다</span>
+            </div>
+            <span style="font-size:12px; color:#B8651A; font-weight:700;">🙌 감사합니다</span>
+          </div>
+
           <!-- ── 1위: 채점 진행 중 (오늘 수정) ── -->
           <div class="eval-card">
             <div class="eval-card-body">
@@ -421,9 +439,16 @@
                 </div>
               </div>
             </div>
-            <div class="eval-card-footer">
-              <span style="font-size:13px; color:#494949;">채점 및 리포트 완료</span>
-              <button class="btn-ghost">평가 리포트 보기 <i data-lucide="arrow-right" style="width:14px;height:14px;"></i></button>
+            <div class="fb-bar">
+              <div class="fb-bar-label">
+                <i data-lucide="sparkles" style="width:14px; height:14px;"></i>
+                AI 채점 만족도 의견을 들려주세요
+              </div>
+              <div style="display:flex; align-items:center; gap:16px;">
+                <button class="btn-ghost" onclick="openFeedbackModal()"><i data-lucide="message-square-text" style="width:14px;height:14px;"></i> 의견 남기기</button>
+                <div style="width:1px; height:14px; background:#D9D9D9;"></div>
+                <button class="btn-ghost">평가 리포트 보기 <i data-lucide="arrow-right" style="width:14px;height:14px;"></i></button>
+              </div>
             </div>
           </div>
 
@@ -449,8 +474,13 @@
                 </div>
               </div>
             </div>
-            <div class="eval-card-footer">
-              <span style="font-size:13px; color:#494949;">채점 및 리포트 완료</span>
+            <div class="fb-bar done">
+              <div style="display:flex; align-items:center; gap:10px;">
+                <i data-lucide="check-circle-2" style="width:16px; height:16px; color:#00AF3D;"></i>
+                <span class="fb-bar-label">의견 주셔서 감사합니다</span>
+                <span style="font-size:18px;">😀</span>
+                <span style="font-size:12px; color:#B3B3B3;">· 채점 기준이 안 맞음</span>
+              </div>
               <button class="btn-ghost">평가 리포트 보기 <i data-lucide="arrow-right" style="width:14px;height:14px;"></i></button>
             </div>
           </div>
@@ -1100,6 +1130,76 @@
       document.getElementById('modal-library').style.display = 'none';
     }
   }
+
+  /* ── 채점 만족도 피드백 모달 ── */
+  function openFeedbackModal() {
+    document.getElementById('modal-feedback').classList.add('open');
+    lucide.createIcons();
+  }
+  function closeFeedbackModal(e) {
+    if (!e || e.target === document.getElementById('modal-feedback')) {
+      document.getElementById('modal-feedback').classList.remove('open');
+    }
+  }
+  function selectFbEmoji(el) {
+    document.querySelectorAll('#modal-feedback .fb-emoji-card').forEach(b => b.classList.remove('selected'));
+    el.classList.add('selected');
+  }
+  function submitFeedback() {
+    document.getElementById('modal-feedback').classList.remove('open');
+    showToast('success', '의견이 전송되었습니다. 감사합니다!');
+  }
 </script>
+
+<!-- ===== 채점 만족도 피드백 모달 ===== -->
+<div id="modal-feedback" class="modal-overlay" onclick="closeFeedbackModal(event)">
+  <div class="modal-box" style="width:560px;">
+    <div style="padding:24px 24px 16px; position:relative;">
+      <div style="font-size:18px; font-weight:800; color:#222631;">AI 채점 만족도 의견</div>
+      <div style="font-size:13px; color:#808080; margin-top:6px;">1학기 국어 서술형 평가 2회 · 의견은 채점 품질 개선에 반영됩니다</div>
+      <button onclick="document.getElementById('modal-feedback').classList.remove('open')" style="position:absolute;top:11px;right:11px;width:36px;height:36px;border-radius:6px;background:transparent;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;">
+        <i data-lucide="x" style="width:18px; height:18px; color:#808080;"></i>
+      </button>
+    </div>
+    <div style="padding:0 24px 24px; display:flex; flex-direction:column; gap:20px;">
+      <div>
+        <div class="field-label">전반적인 만족도</div>
+        <div style="display:flex; gap:10px; margin-top:8px;">
+          <button class="fb-emoji-card" onclick="selectFbEmoji(this)">
+            <span style="font-size:28px;">😀</span><span style="font-size:12px; font-weight:700; color:#494949;">만족</span>
+          </button>
+          <button class="fb-emoji-card" onclick="selectFbEmoji(this)">
+            <span style="font-size:28px;">😐</span><span style="font-size:12px; font-weight:700; color:#494949;">보통</span>
+          </button>
+          <button class="fb-emoji-card" onclick="selectFbEmoji(this)">
+            <span style="font-size:28px;">😞</span><span style="font-size:12px; font-weight:700; color:#494949;">불만</span>
+          </button>
+        </div>
+      </div>
+      <div>
+        <div class="field-label">아쉬운 점이 있다면 <span style="font-size:12px; color:#B3B3B3; font-weight:400;">(선택)</span></div>
+        <select class="field-select" style="margin-top:8px;">
+          <option value="">선택해 주세요</option>
+          <option>채점 기준이 안 맞음</option>
+          <option>점수가 너무 후함</option>
+          <option>점수가 너무 짬</option>
+          <option>근거 설명이 부족함</option>
+          <option>기타</option>
+        </select>
+      </div>
+      <div>
+        <div class="field-label">자세한 의견 <span style="font-size:12px; color:#B3B3B3; font-weight:400;">(선택)</span></div>
+        <textarea placeholder="채점 결과에 대해 더 알려주실 의견이 있다면 자유롭게 적어주세요." style="margin-top:8px; width:100%; min-height:120px; border:1px solid #D9D9D9; border-radius:8px; padding:12px; font-size:15px; font-family:inherit; color:#333; resize:vertical; line-height:1.55;"></textarea>
+      </div>
+    </div>
+    <div style="padding:8px 24px 16px; display:flex; justify-content:space-between; align-items:center; border-top:1px solid #F0F0F0;">
+      <button onclick="document.getElementById('modal-feedback').classList.remove('open')" style="background:none;border:none;font-size:13px;color:#B3B3B3;cursor:pointer;font-family:inherit;font-weight:700;">건너뛰기</button>
+      <div style="display:flex; gap:12px;">
+        <button class="btn-secondary" style="height:40px;" onclick="document.getElementById('modal-feedback').classList.remove('open')">취소</button>
+        <button class="btn-primary" style="height:40px;" onclick="submitFeedback()">의견 보내기</button>
+      </div>
+    </div>
+  </div>
+</div>
 </body>
 </html>
