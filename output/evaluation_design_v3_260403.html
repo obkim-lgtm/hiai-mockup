@@ -38,8 +38,14 @@ body { margin: 0; background: #EDF1FC; min-width: 1280px; }
 .s3-q-item.active { background:#EDE7FF; border-left:3px solid #7E44FB; }
 .s3-q-item:not(.active) { border-left:3px solid transparent; }
 /* 채점기준 드래그 정렬 */
-.rubric-dnd-card { background:white; border:1px solid #D9D9D9; border-radius:12px; transition: box-shadow .15s; }
-/* 복제 토스트 */
+.rubric-dnd-card { background:white; border:1px solid #D9D9D9; border-radius:12px; transition: box-shadow .15s, opacity .15s; }
+.rubric-dnd-card.is-dragging { opacity:.4; box-shadow:0 6px 24px rgba(126,68,251,.22); }
+.rubric-dnd-card.drop-above { border-top:3px solid #7E44FB !important; }
+.rubric-dnd-card.drop-below { border-bottom:3px solid #7E44FB !important; }
+.drag-handle { cursor:grab; color:#C0B3D6; display:flex; align-items:center; padding:2px 6px 2px 2px; border-radius:6px; flex-shrink:0; transition:color .12s, background .12s; user-select:none; }
+.drag-handle:hover { color:#7E44FB; background:#F3EEFF; }
+.drag-handle:active { cursor:grabbing; }
+/* 순서 변경 토스트 */
 #reorder-toast { position:fixed; bottom:32px; left:50%; transform:translateX(-50%) translateY(16px); background:#341761; color:white; font-size:14px; font-weight:700; padding:10px 20px; border-radius:100px; white-space:nowrap; opacity:0; transition:opacity .25s, transform .25s; pointer-events:none; z-index:9999; }
 #reorder-toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
 </style>
@@ -107,7 +113,7 @@ body { margin: 0; background: #EDF1FC; min-width: 1280px; }
         <div style="flex:1;height:60px;background:white;border-radius:20px 20px 0 0;display:flex;align-items:center;justify-content:center;cursor:pointer;">
           <span style="font-size:20px;font-weight:800;color:#341761;">평가 설계</span>
         </div>
-        <div style="flex:1;height:60px;background:#CBD6F4;border-radius:20px 20px 0 0;display:flex;align-items:center;justify-content:center;cursor:pointer;">
+        <div style="flex:1;height:60px;background:#CBD6F4;border-radius:20px 20px 0 0;display:flex;align-items:center;justify-content:center;cursor:pointer;" onclick="location.href='task_ocr_review_v1.html'">
           <span style="font-size:20px;font-weight:700;color:#000;">과제물 관리</span>
         </div>
         <div style="flex:1;height:60px;background:#CBD6F4;border-radius:20px 20px 0 0;display:flex;align-items:center;justify-content:center;cursor:pointer;" onclick="location.href='scoring_detail_v1.html'">
@@ -433,7 +439,7 @@ body { margin: 0; background: #EDF1FC; min-width: 1280px; }
       <div style="flex:1;height:60px;background:white;border-radius:20px 20px 0 0;display:flex;align-items:center;justify-content:center;cursor:pointer;">
         <span style="font-size:20px;font-weight:800;color:#341761;">평가 설계</span>
       </div>
-      <div style="flex:1;height:60px;background:#CBD6F4;border-radius:20px 20px 0 0;display:flex;align-items:center;justify-content:center;cursor:pointer;">
+      <div style="flex:1;height:60px;background:#CBD6F4;border-radius:20px 20px 0 0;display:flex;align-items:center;justify-content:center;cursor:pointer;" onclick="location.href='task_ocr_review_v1.html'">
         <span style="font-size:20px;font-weight:700;color:#000;">과제물 관리</span>
       </div>
       <div style="flex:1;height:60px;background:#CBD6F4;border-radius:20px 20px 0 0;display:flex;align-items:center;justify-content:center;cursor:pointer;" onclick="location.href='scoring_detail_v1.html'">
@@ -612,8 +618,12 @@ body { margin: 0; background: #EDF1FC; min-width: 1280px; }
               <div style="padding-left:52px;position:relative;">
                 <div style="position:absolute;left:15px;top:0;bottom:20px;width:2px;background:#E3E4F8;"></div>
 
-                <!-- 입력 예시 -->
-                <div style="display:flex;justify-content:flex-end;margin-bottom:14px;">
+                <!-- 순서 변경 안내 + 입력 예시 -->
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+                  <div style="display:inline-flex;align-items:center;gap:5px;">
+                    <i data-lucide="grip-vertical" style="width:13px;height:13px;color:#B3B3B3;"></i>
+                    <span style="font-size:13px;color:#808080;font-weight:400;">핸들을 드래그하면 순서를 바꿀 수 있어요</span>
+                  </div>
                   <span style="font-size:14px;font-weight:700;color:#7E44FB;cursor:pointer;text-decoration:underline;text-underline-offset:2px;">채점기준 입력 예시</span>
                 </div>
 
@@ -623,10 +633,13 @@ body { margin: 0; background: #EDF1FC; min-width: 1280px; }
                   <!-- 채점기준 카드 1 -->
                   <div class="rubric-dnd-card" draggable="false" data-rubric-id="1">
                     <!-- 카드 헤더 -->
-                    <div style="display:flex;align-items:center;padding:14px 14px 0 14px;gap:4px;">
-                      <span class="rubric-num" style="font-size:16px;font-weight:700;color:#333;flex:1;">채점기준 1</span>
-                      <button onclick="duplicateRubricCard(this)" style="display:flex;align-items:center;gap:5px;background:transparent;border:none;border-radius:8px;height:34px;padding:0 8px;cursor:pointer;color:#808080;font-size:14px;font-weight:700;font-family:inherit;" onmouseover="this.style.background='#F8F8F8'" onmouseout="this.style.background='transparent'">
-                        <i data-lucide="copy-plus" style="width:15px;height:15px;"></i>복제
+                    <div style="display:flex;align-items:center;padding:14px 14px 0 10px;gap:4px;">
+                      <div class="drag-handle" title="드래그하여 순서 변경" onmousedown="startDrag(event)" ontouchstart="startDrag(event)">
+                        <i data-lucide="grip-vertical" style="width:20px;height:20px;"></i>
+                      </div>
+                      <span class="rubric-num" style="font-size:16px;font-weight:700;color:#333;flex:1;margin-left:4px;">채점기준 1</span>
+                      <button onclick="copyRubricCard(this)" style="display:flex;align-items:center;gap:5px;background:transparent;border:none;border-radius:8px;height:34px;padding:0 8px;cursor:pointer;color:#808080;font-size:14px;font-weight:700;font-family:inherit;" onmouseover="this.style.background='#F8F8F8'" onmouseout="this.style.background='transparent'">
+                        <i data-lucide="copy" style="width:15px;height:15px;"></i>복사
                       </button>
                       <button onclick="deleteRubricCard(this)" style="display:flex;align-items:center;gap:5px;background:transparent;border:none;border-radius:8px;height:34px;padding:0 8px;cursor:pointer;color:#808080;font-size:14px;font-weight:700;font-family:inherit;" onmouseover="this.style.background='#F8F8F8'" onmouseout="this.style.background='transparent'">
                         <i data-lucide="trash-2" style="width:15px;height:15px;"></i>삭제
@@ -671,10 +684,13 @@ body { margin: 0; background: #EDF1FC; min-width: 1280px; }
 
                   <!-- 채점기준 카드 2 -->
                   <div class="rubric-dnd-card" draggable="false" data-rubric-id="2">
-                    <div style="display:flex;align-items:center;padding:14px 14px 0 14px;gap:4px;">
-                      <span class="rubric-num" style="font-size:16px;font-weight:700;color:#333;flex:1;">채점기준 2</span>
-                      <button onclick="duplicateRubricCard(this)" style="display:flex;align-items:center;gap:5px;background:transparent;border:none;border-radius:8px;height:34px;padding:0 8px;cursor:pointer;color:#808080;font-size:14px;font-weight:700;font-family:inherit;" onmouseover="this.style.background='#F8F8F8'" onmouseout="this.style.background='transparent'">
-                        <i data-lucide="copy-plus" style="width:15px;height:15px;"></i>복제
+                    <div style="display:flex;align-items:center;padding:14px 14px 0 10px;gap:4px;">
+                      <div class="drag-handle" title="드래그하여 순서 변경" onmousedown="startDrag(event)" ontouchstart="startDrag(event)">
+                        <i data-lucide="grip-vertical" style="width:20px;height:20px;"></i>
+                      </div>
+                      <span class="rubric-num" style="font-size:16px;font-weight:700;color:#333;flex:1;margin-left:4px;">채점기준 2</span>
+                      <button onclick="copyRubricCard(this)" style="display:flex;align-items:center;gap:5px;background:transparent;border:none;border-radius:8px;height:34px;padding:0 8px;cursor:pointer;color:#808080;font-size:14px;font-weight:700;font-family:inherit;" onmouseover="this.style.background='#F8F8F8'" onmouseout="this.style.background='transparent'">
+                        <i data-lucide="copy" style="width:15px;height:15px;"></i>복사
                       </button>
                       <button onclick="deleteRubricCard(this)" style="display:flex;align-items:center;gap:5px;background:transparent;border:none;border-radius:8px;height:34px;padding:0 8px;cursor:pointer;color:#808080;font-size:14px;font-weight:700;font-family:inherit;" onmouseover="this.style.background='#F8F8F8'" onmouseout="this.style.background='transparent'">
                         <i data-lucide="trash-2" style="width:15px;height:15px;"></i>삭제
@@ -718,10 +734,13 @@ body { margin: 0; background: #EDF1FC; min-width: 1280px; }
 
                   <!-- 채점기준 카드 3 -->
                   <div class="rubric-dnd-card" draggable="false" data-rubric-id="3">
-                    <div style="display:flex;align-items:center;padding:14px 14px 0 14px;gap:4px;">
-                      <span class="rubric-num" style="font-size:16px;font-weight:700;color:#333;flex:1;">채점기준 3</span>
-                      <button onclick="duplicateRubricCard(this)" style="display:flex;align-items:center;gap:5px;background:transparent;border:none;border-radius:8px;height:34px;padding:0 8px;cursor:pointer;color:#808080;font-size:14px;font-weight:700;font-family:inherit;" onmouseover="this.style.background='#F8F8F8'" onmouseout="this.style.background='transparent'">
-                        <i data-lucide="copy-plus" style="width:15px;height:15px;"></i>복제
+                    <div style="display:flex;align-items:center;padding:14px 14px 0 10px;gap:4px;">
+                      <div class="drag-handle" title="드래그하여 순서 변경" onmousedown="startDrag(event)" ontouchstart="startDrag(event)">
+                        <i data-lucide="grip-vertical" style="width:20px;height:20px;"></i>
+                      </div>
+                      <span class="rubric-num" style="font-size:16px;font-weight:700;color:#333;flex:1;margin-left:4px;">채점기준 3</span>
+                      <button onclick="copyRubricCard(this)" style="display:flex;align-items:center;gap:5px;background:transparent;border:none;border-radius:8px;height:34px;padding:0 8px;cursor:pointer;color:#808080;font-size:14px;font-weight:700;font-family:inherit;" onmouseover="this.style.background='#F8F8F8'" onmouseout="this.style.background='transparent'">
+                        <i data-lucide="copy" style="width:15px;height:15px;"></i>복사
                       </button>
                       <button onclick="deleteRubricCard(this)" style="display:flex;align-items:center;gap:5px;background:transparent;border:none;border-radius:8px;height:34px;padding:0 8px;cursor:pointer;color:#808080;font-size:14px;font-weight:700;font-family:inherit;" onmouseover="this.style.background='#F8F8F8'" onmouseout="this.style.background='transparent'">
                         <i data-lucide="trash-2" style="width:15px;height:15px;"></i>삭제
@@ -991,9 +1010,9 @@ body { margin: 0; background: #EDF1FC; min-width: 1280px; }
       <div style="flex:1;height:60px;background:#CBD6F4;border-radius:20px 20px 0 0;display:flex;align-items:center;justify-content:center;cursor:pointer;" onclick="location.href='eval_home_v6_260403.html'"><span style="font-size:20px;font-weight:700;color:#000;">평가 홈</span></div>
       <div style="flex:1;height:60px;background:#CBD6F4;border-radius:20px 20px 0 0;display:flex;align-items:center;justify-content:center;"><span style="font-size:20px;font-weight:700;color:#000;">평가 대상</span></div>
       <div style="flex:1;height:60px;background:white;border-radius:20px 20px 0 0;display:flex;align-items:center;justify-content:center;"><span style="font-size:20px;font-weight:800;color:#341761;">평가 설계</span></div>
-      <div style="flex:1;height:60px;background:#CBD6F4;border-radius:20px 20px 0 0;display:flex;align-items:center;justify-content:center;"><span style="font-size:20px;font-weight:700;color:#000;">과제물 관리</span></div>
-      <div style="flex:1;height:60px;background:#CBD6F4;border-radius:20px 20px 0 0;display:flex;align-items:center;justify-content:center;cursor:pointer;" onclick="location.href='scoring_detail_v1.html'"><span style="font-size:20px;font-weight:700;color:#000;">AI 채점</span></div>
-      <div style="flex:1;height:60px;background:#CBD6F4;border-radius:20px 20px 0 0;display:flex;align-items:center;justify-content:center;cursor:pointer;" onclick="location.href='report_list_v1.html'"><span style="font-size:20px;font-weight:700;color:#000;">평가 리포트</span></div>
+      <div style="flex:1;height:60px;background:#CBD6F4;border-radius:20px 20px 0 0;display:flex;align-items:center;justify-content:center;cursor:pointer;" onclick="location.href='task_ocr_review_v1.html'"><span style="font-size:20px;font-weight:700;color:#000;">과제물 관리</span></div>
+      <div style="flex:1;height:60px;background:#CBD6F4;border-radius:20px 20px 0 0;display:flex;align-items:center;justify-content:center;"><span style="font-size:20px;font-weight:700;color:#000;">AI 채점</span></div>
+      <div style="flex:1;height:60px;background:#CBD6F4;border-radius:20px 20px 0 0;display:flex;align-items:center;justify-content:center;"><span style="font-size:20px;font-weight:700;color:#000;">평가 리포트</span></div>
     </div>
     <div style="max-width:1200px;width:100%;margin:0 auto;padding:0 36px;">
       <div style="background:white;border-radius:0 0 20px 20px;box-shadow:0 4px 36px rgba(95,102,178,0.16);padding:28px 24px;">
@@ -1353,9 +1372,9 @@ body { margin: 0; background: #EDF1FC; min-width: 1280px; }
       <div style="flex:1;height:60px;background:#CBD6F4;border-radius:20px 20px 0 0;display:flex;align-items:center;justify-content:center;cursor:pointer;" onclick="location.href='eval_home_v6_260403.html'"><span style="font-size:20px;font-weight:700;color:#000;">평가 홈</span></div>
       <div style="flex:1;height:60px;background:#CBD6F4;border-radius:20px 20px 0 0;display:flex;align-items:center;justify-content:center;"><span style="font-size:20px;font-weight:700;color:#000;">평가 대상</span></div>
       <div style="flex:1;height:60px;background:white;border-radius:20px 20px 0 0;display:flex;align-items:center;justify-content:center;"><span style="font-size:20px;font-weight:800;color:#341761;">평가 설계</span></div>
-      <div style="flex:1;height:60px;background:#CBD6F4;border-radius:20px 20px 0 0;display:flex;align-items:center;justify-content:center;"><span style="font-size:20px;font-weight:700;color:#000;">과제물 관리</span></div>
-      <div style="flex:1;height:60px;background:#CBD6F4;border-radius:20px 20px 0 0;display:flex;align-items:center;justify-content:center;cursor:pointer;" onclick="location.href='scoring_detail_v1.html'"><span style="font-size:20px;font-weight:700;color:#000;">AI 채점</span></div>
-      <div style="flex:1;height:60px;background:#CBD6F4;border-radius:20px 20px 0 0;display:flex;align-items:center;justify-content:center;cursor:pointer;" onclick="location.href='report_list_v1.html'"><span style="font-size:20px;font-weight:700;color:#000;">평가 리포트</span></div>
+      <div style="flex:1;height:60px;background:#CBD6F4;border-radius:20px 20px 0 0;display:flex;align-items:center;justify-content:center;cursor:pointer;" onclick="location.href='task_ocr_review_v1.html'"><span style="font-size:20px;font-weight:700;color:#000;">과제물 관리</span></div>
+      <div style="flex:1;height:60px;background:#CBD6F4;border-radius:20px 20px 0 0;display:flex;align-items:center;justify-content:center;"><span style="font-size:20px;font-weight:700;color:#000;">AI 채점</span></div>
+      <div style="flex:1;height:60px;background:#CBD6F4;border-radius:20px 20px 0 0;display:flex;align-items:center;justify-content:center;"><span style="font-size:20px;font-weight:700;color:#000;">평가 리포트</span></div>
     </div>
     <div style="max-width:1200px;width:100%;margin:0 auto;padding:0 36px;">
       <div style="background:white;border-radius:0 0 20px 20px;box-shadow:0 4px 36px rgba(95,102,178,0.16);padding:28px 24px;">
@@ -1711,9 +1730,9 @@ body { margin: 0; background: #EDF1FC; min-width: 1280px; }
       <div style="flex:1;height:60px;background:#CBD6F4;border-radius:20px 20px 0 0;display:flex;align-items:center;justify-content:center;cursor:pointer;" onclick="location.href='eval_home_v6_260403.html'"><span style="font-size:20px;font-weight:700;color:#000;">평가 홈</span></div>
       <div style="flex:1;height:60px;background:#CBD6F4;border-radius:20px 20px 0 0;display:flex;align-items:center;justify-content:center;"><span style="font-size:20px;font-weight:700;color:#000;">평가 대상</span></div>
       <div style="flex:1;height:60px;background:white;border-radius:20px 20px 0 0;display:flex;align-items:center;justify-content:center;"><span style="font-size:20px;font-weight:800;color:#341761;">평가 설계</span></div>
-      <div style="flex:1;height:60px;background:#CBD6F4;border-radius:20px 20px 0 0;display:flex;align-items:center;justify-content:center;"><span style="font-size:20px;font-weight:700;color:#000;">과제물 관리</span></div>
-      <div style="flex:1;height:60px;background:#CBD6F4;border-radius:20px 20px 0 0;display:flex;align-items:center;justify-content:center;cursor:pointer;" onclick="location.href='scoring_detail_v1.html'"><span style="font-size:20px;font-weight:700;color:#000;">AI 채점</span></div>
-      <div style="flex:1;height:60px;background:#CBD6F4;border-radius:20px 20px 0 0;display:flex;align-items:center;justify-content:center;cursor:pointer;" onclick="location.href='report_list_v1.html'"><span style="font-size:20px;font-weight:700;color:#000;">평가 리포트</span></div>
+      <div style="flex:1;height:60px;background:#CBD6F4;border-radius:20px 20px 0 0;display:flex;align-items:center;justify-content:center;cursor:pointer;" onclick="location.href='task_ocr_review_v1.html'"><span style="font-size:20px;font-weight:700;color:#000;">과제물 관리</span></div>
+      <div style="flex:1;height:60px;background:#CBD6F4;border-radius:20px 20px 0 0;display:flex;align-items:center;justify-content:center;"><span style="font-size:20px;font-weight:700;color:#000;">AI 채점</span></div>
+      <div style="flex:1;height:60px;background:#CBD6F4;border-radius:20px 20px 0 0;display:flex;align-items:center;justify-content:center;"><span style="font-size:20px;font-weight:700;color:#000;">평가 리포트</span></div>
     </div>
     <div style="max-width:1200px;width:100%;margin:0 auto;padding:0 36px;">
       <div style="background:white;border-radius:0 0 20px 20px;box-shadow:0 4px 36px rgba(95,102,178,0.16);padding:28px 24px;">
@@ -2170,9 +2189,9 @@ body { margin: 0; background: #EDF1FC; min-width: 1280px; }
       <div style="flex:1;height:60px;background:#CBD6F4;border-radius:20px 20px 0 0;display:flex;align-items:center;justify-content:center;cursor:pointer;" onclick="location.href='eval_home_v6_260403.html'"><span style="font-size:20px;font-weight:700;color:#000;">평가 홈</span></div>
       <div style="flex:1;height:60px;background:#CBD6F4;border-radius:20px 20px 0 0;display:flex;align-items:center;justify-content:center;"><span style="font-size:20px;font-weight:700;color:#000;">평가 대상</span></div>
       <div style="flex:1;height:60px;background:white;border-radius:20px 20px 0 0;display:flex;align-items:center;justify-content:center;"><span style="font-size:20px;font-weight:800;color:#341761;">평가 설계</span></div>
-      <div style="flex:1;height:60px;background:#CBD6F4;border-radius:20px 20px 0 0;display:flex;align-items:center;justify-content:center;"><span style="font-size:20px;font-weight:700;color:#000;">과제물 관리</span></div>
-      <div style="flex:1;height:60px;background:#CBD6F4;border-radius:20px 20px 0 0;display:flex;align-items:center;justify-content:center;cursor:pointer;" onclick="location.href='scoring_detail_v1.html'"><span style="font-size:20px;font-weight:700;color:#000;">AI 채점</span></div>
-      <div style="flex:1;height:60px;background:#CBD6F4;border-radius:20px 20px 0 0;display:flex;align-items:center;justify-content:center;cursor:pointer;" onclick="location.href='report_list_v1.html'"><span style="font-size:20px;font-weight:700;color:#000;">평가 리포트</span></div>
+      <div style="flex:1;height:60px;background:#CBD6F4;border-radius:20px 20px 0 0;display:flex;align-items:center;justify-content:center;cursor:pointer;" onclick="location.href='task_ocr_review_v1.html'"><span style="font-size:20px;font-weight:700;color:#000;">과제물 관리</span></div>
+      <div style="flex:1;height:60px;background:#CBD6F4;border-radius:20px 20px 0 0;display:flex;align-items:center;justify-content:center;"><span style="font-size:20px;font-weight:700;color:#000;">AI 채점</span></div>
+      <div style="flex:1;height:60px;background:#CBD6F4;border-radius:20px 20px 0 0;display:flex;align-items:center;justify-content:center;"><span style="font-size:20px;font-weight:700;color:#000;">평가 리포트</span></div>
     </div>
     <div style="max-width:1200px;width:100%;margin:0 auto;padding:0 36px;">
       <div style="background:white;border-radius:0 0 20px 20px;box-shadow:0 4px 36px rgba(95,102,178,0.16);padding:28px 24px;">
@@ -3140,6 +3159,86 @@ function renderS3Detail(q) {
   lucide.createIcons();
 }
 
+// ── 채점기준 드래그 정렬 ──
+let _dragSrc = null;
+let _dragHandleActive = false;
+
+function startDrag(e) {
+  // 핸들 mousedown → 카드에 draggable 활성화
+  const card = e.currentTarget.closest('.rubric-dnd-card');
+  if (!card) return;
+  _dragHandleActive = true;
+  card.setAttribute('draggable', 'true');
+  // mouseup/touchend 시 draggable 해제
+  const cleanup = () => {
+    card.setAttribute('draggable', 'false');
+    _dragHandleActive = false;
+    document.removeEventListener('mouseup', cleanup);
+    document.removeEventListener('touchend', cleanup);
+  };
+  document.addEventListener('mouseup', cleanup);
+  document.addEventListener('touchend', cleanup);
+}
+
+function initRubricDnD() {
+  const list = document.getElementById('rubric-list');
+  if (!list) return;
+
+  list.addEventListener('dragstart', (e) => {
+    const card = e.target.closest('.rubric-dnd-card');
+    if (!card || !_dragHandleActive) { e.preventDefault(); return; }
+    _dragSrc = card;
+    setTimeout(() => card.classList.add('is-dragging'), 0);
+    e.dataTransfer.effectAllowed = 'move';
+  });
+
+  list.addEventListener('dragend', (e) => {
+    const card = e.target.closest('.rubric-dnd-card');
+    if (!card) return;
+    card.classList.remove('is-dragging');
+    card.setAttribute('draggable', 'false');
+    list.querySelectorAll('.rubric-dnd-card').forEach(c => {
+      c.classList.remove('drop-above', 'drop-below');
+    });
+    _dragHandleActive = false;
+    updateRubricNumbers();
+  });
+
+  list.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+    const card = e.target.closest('.rubric-dnd-card');
+    if (!card || card === _dragSrc) return;
+    list.querySelectorAll('.rubric-dnd-card').forEach(c => c.classList.remove('drop-above', 'drop-below'));
+    const rect = card.getBoundingClientRect();
+    const mid = rect.top + rect.height / 2;
+    if (e.clientY < mid) {
+      card.classList.add('drop-above');
+    } else {
+      card.classList.add('drop-below');
+    }
+  });
+
+  list.addEventListener('dragleave', (e) => {
+    const card = e.target.closest('.rubric-dnd-card');
+    if (card) card.classList.remove('drop-above', 'drop-below');
+  });
+
+  list.addEventListener('drop', (e) => {
+    e.preventDefault();
+    const card = e.target.closest('.rubric-dnd-card');
+    if (!card || card === _dragSrc) return;
+    const rect = card.getBoundingClientRect();
+    const mid = rect.top + rect.height / 2;
+    if (e.clientY < mid) {
+      list.insertBefore(_dragSrc, card);
+    } else {
+      list.insertBefore(_dragSrc, card.nextSibling);
+    }
+    list.querySelectorAll('.rubric-dnd-card').forEach(c => c.classList.remove('drop-above', 'drop-below'));
+    showReorderToast();
+  });
+}
 
 function updateRubricNumbers() {
   const list = document.getElementById('rubric-list');
@@ -3165,27 +3264,30 @@ function hideSymTooltip() {
   if (tt) tt.style.display = 'none';
 }
 
-function showDuplicateToast() {
+function showReorderToast(msg) {
   const toast = document.getElementById('reorder-toast');
   if (!toast) return;
-  toast.textContent = '✓ 복제되었습니다';
+  toast.textContent = '✓ ' + (msg || '순서가 변경되었습니다');
   toast.classList.add('show');
   clearTimeout(toast._timer);
   toast._timer = setTimeout(() => toast.classList.remove('show'), 2000);
 }
 
-// ── 채점기준 복제 ──
-function duplicateRubricCard(btn) {
+// ── 채점기준 복사 ──
+function copyRubricCard(btn) {
+  const list = document.getElementById('rubric-list');
   const card = btn.closest('.rubric-dnd-card');
   const clone = card.cloneNode(true);
+  // 이벤트 재연결 (cloneNode는 inline handler는 유지됨)
+  clone.setAttribute('draggable', 'false');
   card.after(clone);
   updateRubricNumbers();
   lucide.createIcons();
-  // 복제된 카드 하이라이트
+  // 복사된 카드 하이라이트
   clone.style.transition = 'box-shadow .3s';
   clone.style.boxShadow = '0 0 0 2px #7E44FB';
   setTimeout(() => { clone.style.boxShadow = ''; }, 1000);
-  showDuplicateToast();
+  showReorderToast('복사되었습니다');
 }
 
 // ── 수식 입력 모달 ──
@@ -3371,6 +3473,7 @@ function selectAIMethod(method) {
 }
 document.addEventListener('DOMContentLoaded', function() {
   lucide.createIcons();
+  initRubricDnD();
 });
 var _hasDownstreamData = false;
 function showDetailFilledAdvanced(name) { showDetailFilled(name); _hasDownstreamData = true; }
@@ -3692,8 +3795,8 @@ function closeRubricResetModal() { document.getElementById('modal-rubric-reset')
   </div>
 </div>
 
-<!-- 복제 토스트 -->
-<div id="reorder-toast"></div>
+<!-- 순서 변경 토스트 -->
+<div id="reorder-toast">✓ 순서가 변경되었습니다</div>
 
 <!-- 수식 버튼 툴팁 -->
 <div id="sym-tooltip">수식 입력은 준비 중입니다.</div>

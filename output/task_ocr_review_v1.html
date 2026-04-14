@@ -1,0 +1,827 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" href="../screens/favicon_src.png" type="image/png">
+  <title>과제물 관리 — OCR 확인</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+  <style>
+    @import url('https://cdn.rawgit.com/moonspam/NanumSquareRound/master/nanumsquareround.min.css');
+    *{ font-family:'NanumSquareRound',-apple-system,sans-serif; box-sizing:border-box; }
+    body{ margin:0; background:#EDF1FC; color:#222; font-size:16px; min-width:1280px; }
+    a{ text-decoration:none; color:inherit; }
+
+    /* 탭 */
+    .tabs{ display:flex; gap:12px; }
+    .tab{ flex:1; height:60px; background:#CBD6F4; border-radius:20px 20px 0 0; display:flex; align-items:center; justify-content:center; color:#000; font-weight:700; font-size:20px; cursor:pointer; }
+    .tab.on{ background:#fff; color:#341761; font-weight:800; }
+    .panel{ background:#fff; border-radius:0 0 20px 20px; padding:28px 24px; box-shadow:0 4px 36px rgba(95,102,178,.16); }
+
+    /* 뱃지 */
+    .badge{ display:inline-flex; align-items:center; justify-content:center; border-radius:100px; padding:3px 10px; font-size:12px; font-weight:800; }
+    .badge-green{ background:#F1F9F3; color:#00AF3D; }
+    .badge-red{ background:#FFEFEF; color:#DB3E51; }
+    .badge-purple{ background:#F7F4FF; color:#7E44FB; }
+    .badge-gray{ background:#F8F8F8; color:#808080; }
+    .badge-orange{ background:#FFEDD5; color:#FF8C4C; }
+    .badge-blue{ background:#F2F5FF; color:#5890FF; }
+
+    /* 버튼 */
+    .btn{ height:40px; border-radius:8px; font-weight:700; font-size:16px; font-family:inherit; cursor:pointer; display:inline-flex; align-items:center; gap:8px; padding:0 16px; border:none; transition:opacity .15s; }
+    .btn:hover{ opacity:.88; }
+    .btn-primary{ background:#7E44FB; color:white; }
+    .btn-secondary{ background:white; color:#7E44FB; border:1.5px solid #B28FFD; }
+    .btn-outline{ background:white; color:#494949; border:1px solid #D9D9D9; }
+    .btn-green{ background:#00AF3D; color:white; }
+    .btn-ghost{ background:transparent; color:#7E44FB; border:none; padding:0 8px; }
+    .btn-sm{ height:36px; font-size:14px; padding:0 12px; }
+
+    /* 테이블 */
+    .tbl{ width:100%; border-collapse:collapse; }
+    .tbl th{ background:#F8F8F8; font-size:14px; font-weight:800; color:#808080; padding:12px 16px; text-align:left; border-bottom:1px solid #E6E6E6; }
+    .tbl td{ font-size:14px; padding:12px 16px; border-bottom:1px solid #F0F0F0; color:#333; }
+    .tbl tr:hover td{ background:#FDFCFF; }
+
+    /* OCR 비교 뷰 */
+    .scan-viewer{ background:#F0F0F0; border-radius:12px; overflow:hidden; display:flex; flex-direction:column; }
+    .scan-toolbar{ display:flex; align-items:center; justify-content:space-between; padding:10px 16px; background:#333; color:white; font-size:14px; font-weight:700; }
+    .scan-body{ flex:1; overflow:auto; display:flex; align-items:flex-start; justify-content:center; padding:16px; background:#666; min-height:600px; }
+    .scan-page{ background:white; box-shadow:0 2px 12px rgba(0,0,0,.3); max-width:100%; }
+
+    .ocr-textarea{ width:100%; min-height:520px; border:1px solid #E6E6E6; border-radius:10px; padding:16px 18px; font-size:15px; font-family:inherit; resize:vertical; outline:none; color:#333; line-height:1.75; background:white; }
+    .ocr-textarea:focus{ border-color:#7E44FB; box-shadow:0 0 0 2px rgba(126,68,251,.12); }
+
+    .img-placeholder{ background:#F8F8F8; border:1px dashed #D9D9D9; border-radius:8px; padding:14px 16px; margin:8px 0; color:#808080; font-size:14px; font-style:italic; display:flex; align-items:center; gap:8px; }
+
+    .page-divider{ display:flex; align-items:center; gap:12px; margin:12px 0; color:#B3B3B3; font-size:12px; font-weight:700; }
+    .page-divider::before,.page-divider::after{ content:''; flex:1; height:1px; background:#E6E6E6; }
+
+    /* 학생 네비게이터 */
+    .student-nav{ display:flex; align-items:center; justify-content:space-between; padding:14px 20px; background:#F7F4FF; border-radius:12px; margin-bottom:20px; }
+    .student-nav-center{ display:flex; align-items:center; gap:16px; }
+    .student-dot{ width:10px; height:10px; border-radius:50%; }
+    .student-dot.done{ background:#7E44FB; }
+    .student-dot.current{ background:#7E44FB; box-shadow:0 0 0 3px rgba(126,68,251,.3); }
+    .student-dot.todo{ background:#D9D9D9; }
+    .student-dot.skip{ background:transparent; border:2px solid #D9D9D9; }
+
+    /* 토스트 */
+    .toast{ position:fixed; bottom:80px; left:50%; transform:translateX(-50%) translateY(12px); opacity:0; width:384px; padding:16px 24px 16px 16px; border-radius:8px; display:flex; align-items:center; gap:12px; font-size:16px; font-weight:700; box-shadow:0 0 1px #494949, 0 8px 32px rgba(95,102,178,.16); z-index:9999; transition:opacity .2s ease, transform .2s ease; pointer-events:none; }
+    .toast.show{ opacity:1; transform:translateX(-50%) translateY(0); }
+    .toast-success{ background:#00AF3D; color:white; }
+    .toast-error{ background:#DB3E51; color:#F8F8F8; }
+
+    /* 스크린 전환 */
+    .screen{ display:none; }
+    .screen.active{ display:block; }
+  </style>
+</head>
+<body>
+
+<!-- ===== GNB ===== -->
+<div style="background:white; height:98px; border-bottom:1px solid #D9D9D9; display:flex; align-items:center; justify-content:center; padding:0 36px;">
+  <div style="display:flex; align-items:center; justify-content:space-between; width:100%; max-width:1200px; padding:0 36px;">
+    <div style="display:flex; align-items:center; gap:8px; flex-shrink:0;">
+      <div style="width:58px; height:42px; overflow:hidden; position:relative; flex-shrink:0;">
+        <img src="https://www.figma.com/api/mcp/asset/1912ee9b-1085-47ed-bac3-d1ba486a4d29" style="position:absolute; left:50%; transform:translateX(-50%); height:100%; width:auto; object-fit:cover;" alt="HiAI 로고">
+      </div>
+      <div style="position:relative; width:150px; height:41px; flex-shrink:0;">
+        <img src="https://www.figma.com/api/mcp/asset/10df409c-9977-4f51-8a26-5da2b4ff6473" style="position:absolute; top:0; left:0; width:79.842px; height:16.284px;" alt="하이러닝 AI">
+        <img src="https://www.figma.com/api/mcp/asset/5b4c00f6-6783-4a90-b2c4-6cfbb5196468" style="position:absolute; top:24.08px; left:0.31px; width:149.692px; height:16.422px;" alt="서논술형 평가 서비스">
+      </div>
+    </div>
+    <nav style="display:flex; gap:52px; align-items:center;">
+      <span style="font-size:20px; font-weight:800; color:#7E44FB; cursor:pointer;">나의 평가</span>
+      <span style="font-size:20px; font-weight:700; color:#000; cursor:pointer;">평가 자료실</span>
+      <span style="font-size:20px; font-weight:700; color:#000; cursor:pointer;">고객센터</span>
+    </nav>
+    <div style="display:flex; align-items:center; gap:12px; flex-shrink:0;">
+      <img src="https://www.figma.com/api/mcp/asset/93f8b7d8-e7e3-4f23-99d4-03f2d6adfef4" style="width:36px; height:36px;" alt="AI 아이콘">
+      <span style="font-size:20px; font-weight:700; color:#000;">김동* 님</span>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 화면 0: 과제물 관리 목록 (TASKS-001) ===== -->
+<div id="screen-task" class="screen active">
+
+  <!-- 타이틀 바 -->
+  <div style="background:linear-gradient(to right,#6562f5 4%,#9b68f3 97.86%);height:86px;display:flex;align-items:center;justify-content:center;padding:0 36px;">
+    <div style="width:100%;max-width:1200px;padding:0 36px;">
+      <span style="font-size:28px;font-weight:800;color:white;line-height:1.35;">1학년 국어</span>
+    </div>
+  </div>
+
+  <!-- 탭 + 패널 -->
+  <div style="max-width:1200px;margin:0 auto;padding:0 36px;">
+    <div style="padding-top:28px;">
+      <div class="tabs">
+        <div class="tab" onclick="location.href='eval_home_v6_260403.html'">평가 홈</div>
+        <div class="tab">평가 대상</div>
+        <div class="tab" onclick="location.href='evaluation_design_v3_260403.html'">평가 설계</div>
+        <div class="tab on">과제물 관리</div>
+        <div class="tab" onclick="location.href='scoring_detail_v1.html'">AI 채점</div>
+        <div class="tab" onclick="location.href='report_list_v1.html'">평가 리포트</div>
+      </div>
+      <div class="panel" style="min-height:500px;">
+        <!-- 헤더 -->
+        <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:24px;">
+          <h2 style="font-size:24px;font-weight:800;color:#222;margin:0;">과제물 관리</h2>
+          <p style="font-size:16px;color:#494949;margin:0;line-height:1.55;">과제 제출 현황을 확인하거나 선생님이 직접 파일을 업로드할 수 있습니다.</p>
+        </div>
+
+        <!-- 회색 섹션 배경 -->
+        <div style="background:#F8F8F8;border-radius:16px;padding:28px 24px;display:flex;flex-direction:column;gap:24px;">
+
+          <!-- 카드 1: 미래사회 예측 시나리오 -->
+          <div style="background:white;border-radius:16px;padding:24px;display:flex;flex-direction:column;gap:20px;">
+            <h3 style="font-size:20px;font-weight:700;color:#333;margin:0;">미래사회 예측 시나리오</h3>
+            <table class="tbl">
+              <thead>
+                <tr>
+                  <th style="width:94px;text-align:center;">상태</th>
+                  <th style="width:94px;text-align:center;">반</th>
+                  <th>제출 현황</th>
+                  <th style="width:94px;text-align:center;">미제출</th>
+                  <th style="width:194px;text-align:center;">과제 제출 관리</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="text-align:center;"><span class="badge badge-blue">진행</span></td>
+                  <td style="text-align:center;">1-1</td>
+                  <td>
+                    <div style="display:flex;align-items:center;gap:12px;">
+                      <div style="flex:1;height:16px;background:#F2ECFF;border-radius:4px;overflow:hidden;">
+                        <div style="width:40%;height:100%;background:#7E44FB;opacity:0.72;"></div>
+                      </div>
+                      <span style="font-size:16px;color:#333;min-width:45px;text-align:right;">40%</span>
+                    </div>
+                  </td>
+                  <td style="text-align:center;font-size:16px;color:#333;">9</td>
+                  <td style="text-align:center;">
+                    <button onclick="showScreen('screen-list')" style="background:none;border:none;cursor:pointer;font-family:inherit;font-size:16px;font-weight:700;color:#7E44FB;display:inline-flex;align-items:center;gap:4px;padding:4px 8px;border-radius:8px;" onmouseover="this.style.background='#F7F4FF'" onmouseout="this.style.background='none'">
+                      과제 제출 상세 <i data-lucide="chevron-right" style="width:16px;height:16px;"></i>
+                    </button>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="text-align:center;"><span class="badge badge-red">마감</span></td>
+                  <td style="text-align:center;">1-2</td>
+                  <td>
+                    <div style="display:flex;align-items:center;gap:12px;">
+                      <div style="flex:1;height:16px;background:#F2ECFF;border-radius:4px;overflow:hidden;">
+                        <div style="width:40%;height:100%;background:#7E44FB;opacity:0.72;"></div>
+                      </div>
+                      <span style="font-size:16px;color:#333;min-width:45px;text-align:right;">40%</span>
+                    </div>
+                  </td>
+                  <td style="text-align:center;font-size:16px;color:#333;">9</td>
+                  <td style="text-align:center;">
+                    <button onclick="showScreen('screen-list')" style="background:none;border:none;cursor:pointer;font-family:inherit;font-size:16px;font-weight:700;color:#7E44FB;display:inline-flex;align-items:center;gap:4px;padding:4px 8px;border-radius:8px;" onmouseover="this.style.background='#F7F4FF'" onmouseout="this.style.background='none'">
+                      과제 제출 상세 <i data-lucide="chevron-right" style="width:16px;height:16px;"></i>
+                    </button>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="text-align:center;"><span class="badge badge-gray">예정</span></td>
+                  <td style="text-align:center;">1-3</td>
+                  <td>
+                    <div style="display:flex;align-items:center;gap:12px;">
+                      <div style="flex:1;height:16px;background:#F2ECFF;border-radius:4px;overflow:hidden;">
+                        <div style="width:40%;height:100%;background:#7E44FB;opacity:0.72;"></div>
+                      </div>
+                      <span style="font-size:16px;color:#333;min-width:45px;text-align:right;">40%</span>
+                    </div>
+                  </td>
+                  <td style="text-align:center;font-size:16px;color:#333;">9</td>
+                  <td style="text-align:center;">
+                    <button onclick="showScreen('screen-list')" style="background:none;border:none;cursor:pointer;font-family:inherit;font-size:16px;font-weight:700;color:#7E44FB;display:inline-flex;align-items:center;gap:4px;padding:4px 8px;border-radius:8px;" onmouseover="this.style.background='#F7F4FF'" onmouseout="this.style.background='none'">
+                      과제 제출 상세 <i data-lucide="chevron-right" style="width:16px;height:16px;"></i>
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- 카드 2: 과제물 없는 과제 -->
+          <div style="background:white;border-radius:16px;padding:24px;display:flex;flex-direction:column;gap:20px;">
+            <h3 style="font-size:20px;font-weight:700;color:#333;margin:0;">과제물 없는 과제</h3>
+            <table class="tbl">
+              <thead>
+                <tr>
+                  <th style="width:94px;text-align:center;">상태</th>
+                  <th style="width:94px;text-align:center;">반</th>
+                  <th>기간</th>
+                  <th>제출 현황</th>
+                  <th style="width:94px;text-align:center;">미제출</th>
+                  <th style="width:194px;text-align:center;">과제 제출 관리</th>
+                </tr>
+              </thead>
+            </table>
+            <!-- 빈 상태 -->
+            <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:160px;gap:16px;">
+              <p style="font-size:16px;font-weight:700;color:#808080;text-align:center;line-height:1.55;margin:0;">
+                과제 제출 없음으로 설정된 평가 과제입니다.<br>선생님이 직접 채점을 진행할 수 있습니다.
+              </p>
+              <button class="btn btn-primary btn-sm">
+                <i data-lucide="arrow-right" style="width:16px;height:16px;"></i>수동 채점하기
+              </button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+    <div style="height:60px;"></div>
+  </div>
+</div>
+
+<!-- ===== 화면 1: 학급 제출 상세 (OCR 상태 포함) ===== -->
+<div id="screen-list" class="screen">
+
+  <!-- 타이틀 바 -->
+  <div style="background:linear-gradient(to right, #6562f5 4%, #9b68f3 97.86%); height:86px; display:flex; align-items:center; justify-content:center; padding:0 36px;">
+    <div style="width:100%; max-width:1200px; padding:0 36px; display:flex; align-items:center; gap:16px;">
+      <i data-lucide="arrow-left" style="width:28px; height:28px; color:white; cursor:pointer; flex-shrink:0;" onclick="showScreen('screen-task')"></i>
+      <span style="font-size:28px; font-weight:800; color:white; line-height:1.35;">1학년 국어</span>
+      <div style="width:1px; height:28px; background:rgba(255,255,255,.4); margin:0 4px;"></div>
+      <span style="font-size:20px; font-weight:700; color:rgba(255,255,255,.85);">과제 제출 상세</span>
+    </div>
+  </div>
+
+  <!-- 탭 + 패널 -->
+  <div style="max-width:1200px; margin:0 auto; padding:0 36px;">
+    <div style="padding-top:28px;">
+      <div class="tabs">
+        <div class="tab" onclick="location.href='eval_home_v6_260403.html'">평가 홈</div>
+        <div class="tab">평가 대상</div>
+        <div class="tab" onclick="location.href='evaluation_design_v3_260403.html'">평가 설계</div>
+        <div class="tab on">과제물 관리</div>
+        <div class="tab" onclick="location.href='scoring_detail_v1.html'">AI 채점</div>
+        <div class="tab" onclick="location.href='report_list_v1.html'">평가 리포트</div>
+      </div>
+      <div class="panel" style="min-height:500px;">
+        <!-- 헤더 -->
+        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:8px;">
+          <h2 style="font-size:24px; font-weight:800; color:#222; margin:0;">1-1반 과제 제출 상세</h2>
+          <div style="display:flex; gap:10px;">
+            <button class="btn btn-secondary btn-sm" onclick="goToOCR(0)">
+              <i data-lucide="scan-text" style="width:16px; height:16px;"></i>OCR 결과 확인
+            </button>
+            <button class="btn btn-primary btn-sm">
+              <i data-lucide="upload" style="width:16px; height:16px;"></i>학급 PDF 업로드
+            </button>
+          </div>
+        </div>
+        <p style="font-size:14px; color:#808080; margin:0 0 20px;">[미래사회 예측 시나리오] 과제 제출 현황을 확인하고 파일을 직접 업로드할 수 있습니다.</p>
+
+        <!-- 미제출 경고 -->
+        <div style="display:flex; align-items:center; gap:10px; padding:12px 16px; background:#FFEFEF; border-radius:8px; margin-bottom:20px;">
+          <span class="badge badge-red" style="font-size:13px;">미제출 학생</span>
+          <span style="font-size:14px; color:#DB3E51; font-weight:700;">한지우(10106), 조민재(10107), 윤하은(10108)</span>
+        </div>
+
+        <!-- 테이블 -->
+        <table class="tbl">
+          <thead>
+            <tr>
+              <th style="width:70px; text-align:center;">상태</th>
+              <th style="width:80px;">학번</th>
+              <th style="width:90px;">이름</th>
+              <th>최근 제출 일시</th>
+              <th style="width:70px; text-align:center;">파일 수</th>
+              <th style="width:100px; text-align:center;">OCR 상태</th>
+              <th style="width:120px; text-align:center;">과제 제출 관리</th>
+            </tr>
+          </thead>
+          <tbody id="student-table-body">
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div style="height:60px;"></div>
+  </div>
+</div>
+
+<!-- ===== 화면 2: OCR 확인/수정 (채점 상세 스타일 전체화면) ===== -->
+<div id="screen-ocr" class="screen">
+
+  <!-- 상단 고정 바 (채점 상세와 동일 패턴) -->
+  <div style="position:sticky;top:0;z-index:50;background:white;border-bottom:1px solid #E6E6E6;display:flex;align-items:center;justify-content:space-between;padding:0 20px;height:56px;gap:16px;">
+
+    <!-- 좌측: 뒤로가기 + 학생 드롭다운 -->
+    <div style="display:flex;align-items:center;gap:12px;min-width:0;">
+      <button onclick="goToList()" style="display:flex;align-items:center;gap:6px;background:#F0F0F0;border:none;border-radius:8px;padding:6px 12px;cursor:pointer;font-family:inherit;font-size:14px;font-weight:700;color:#494949;white-space:nowrap;" onmouseover="this.style.background='#E6E6E6'" onmouseout="this.style.background='#F0F0F0'">
+        <i data-lucide="arrow-left" style="width:15px;height:15px;"></i>목록으로
+      </button>
+      <!-- 학생 드롭다운 -->
+      <div style="position:relative;">
+        <button id="nav-dropdown-btn" onclick="toggleStudentDropdown()" style="display:flex;align-items:center;gap:8px;background:white;border:1.5px solid #B28FFD;border-radius:8px;padding:6px 12px;cursor:pointer;font-family:inherit;min-width:200px;justify-content:space-between;" onmouseover="this.style.borderColor='#7E44FB'" onmouseout="this.style.borderColor='#B28FFD'">
+          <span id="nav-student-name" style="font-size:16px;font-weight:800;color:#341761;">김서윤 (10101)</span>
+          <i data-lucide="chevrons-up-down" style="width:15px;height:15px;color:#7E44FB;flex-shrink:0;"></i>
+        </button>
+        <div id="nav-dropdown" style="display:none;position:absolute;top:calc(100% + 6px);left:0;background:white;border:1px solid #E6E6E6;border-radius:10px;box-shadow:0 4px 20px rgba(95,102,178,.18);z-index:200;overflow:hidden;min-width:240px;">
+          <div id="nav-dropdown-list" style="max-height:320px;overflow-y:auto;"></div>
+        </div>
+      </div>
+      <span id="nav-confirm-count" style="font-size:13px;color:#7E44FB;font-weight:800;white-space:nowrap;"></span>
+    </div>
+
+    <!-- 우측: 이전/다음 + 액션 버튼 -->
+    <div style="display:flex;align-items:center;gap:8px;flex-shrink:0;">
+      <button class="btn btn-outline btn-sm" id="btn-prev" onclick="navStudent(-1)">
+        <i data-lucide="chevron-left" style="width:15px;height:15px;"></i>이전 학생
+      </button>
+      <button class="btn btn-outline btn-sm" id="btn-next" onclick="navStudent(1)">
+        다음 학생<i data-lucide="chevron-right" style="width:15px;height:15px;"></i>
+      </button>
+      <div style="width:1px;height:24px;background:#E6E6E6;margin:0 4px;"></div>
+      <button class="btn btn-secondary btn-sm" id="btn-confirm" onclick="confirmCurrent()">
+        <i data-lucide="check" style="width:15px;height:15px;"></i>확인 완료
+      </button>
+      <button class="btn btn-primary btn-sm" id="btn-save-next" onclick="saveAndNext()">
+        저장 후 다음<i data-lucide="chevron-right" style="width:15px;height:15px;"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- 좌우 대조 영역 (전체 화면 높이) -->
+  <div style="display:flex;height:calc(100vh - 98px - 56px);">
+
+    <!-- 좌측: 원본 스캔 (채점 상세 좌측 비율 참고) -->
+    <div style="width:56%;min-width:0;display:flex;flex-direction:column;border-right:1px solid #E6E6E6;">
+      <!-- 페이지 네비게이션 바 -->
+      <div style="display:flex;align-items:center;justify-content:center;gap:12px;background:#3A3A3A;padding:8px 16px;flex-shrink:0;">
+        <!-- 페이지 이동 -->
+        <button onclick="navPage(-1)" style="background:none;border:none;cursor:pointer;color:white;display:flex;align-items:center;padding:4px;" title="이전 페이지">
+          <i data-lucide="chevron-left" style="width:18px;height:18px;"></i>
+        </button>
+        <span id="scan-page-info" style="font-size:14px;font-weight:700;color:white;min-width:60px;text-align:center;">3 / 14</span>
+        <button onclick="navPage(1)" style="background:none;border:none;cursor:pointer;color:white;display:flex;align-items:center;padding:4px;" title="다음 페이지">
+          <i data-lucide="chevron-right" style="width:18px;height:18px;"></i>
+        </button>
+        <!-- 구분선 -->
+        <div style="width:1px;height:16px;background:rgba(255,255,255,.2);"></div>
+        <!-- 회전 -->
+        <button onclick="rotateScan(-90)" style="background:none;border:none;cursor:pointer;color:#ccc;display:flex;align-items:center;padding:4px;border-radius:4px;" title="왼쪽 회전" onmouseover="this.style.color='white'" onmouseout="this.style.color='#ccc'">
+          <i data-lucide="rotate-ccw" style="width:16px;height:16px;"></i>
+        </button>
+        <button onclick="rotateScan(90)" style="background:none;border:none;cursor:pointer;color:#ccc;display:flex;align-items:center;padding:4px;border-radius:4px;" title="오른쪽 회전" onmouseover="this.style.color='white'" onmouseout="this.style.color='#ccc'">
+          <i data-lucide="rotate-cw" style="width:16px;height:16px;"></i>
+        </button>
+        <!-- 구분선 -->
+        <div style="width:1px;height:16px;background:rgba(255,255,255,.2);"></div>
+        <!-- 확대/축소 -->
+        <button onclick="changeScanZoom(-10)" style="background:none;border:none;cursor:pointer;color:#ccc;display:flex;align-items:center;padding:4px;border-radius:4px;" title="축소" onmouseover="this.style.color='white'" onmouseout="this.style.color='#ccc'">
+          <i data-lucide="minus" style="width:16px;height:16px;"></i>
+        </button>
+        <span id="scan-zoom-info" style="font-size:13px;color:white;font-weight:700;min-width:40px;text-align:center;cursor:pointer;" onclick="resetScanZoom()" title="클릭하여 100% 초기화">100%</span>
+        <button onclick="changeScanZoom(10)" style="background:none;border:none;cursor:pointer;color:#ccc;display:flex;align-items:center;padding:4px;border-radius:4px;" title="확대" onmouseover="this.style.color='white'" onmouseout="this.style.color='#ccc'">
+          <i data-lucide="plus" style="width:16px;height:16px;"></i>
+        </button>
+      </div>
+      <!-- 스캔 이미지 본문 -->
+      <div id="scan-viewport" style="flex:1;overflow:auto;background:#666;display:flex;align-items:flex-start;justify-content:center;padding:20px;">
+        <div id="scan-page-content" style="background:white;box-shadow:0 2px 16px rgba(0,0,0,.35);width:520px;min-height:700px;padding:48px 44px;font-size:18px;line-height:2.0;color:#333;transform-origin:top center;transition:transform 0.2s;"></div>
+      </div>
+    </div>
+
+    <!-- 우측: OCR 결과 패널 -->
+    <div style="width:44%;min-width:0;display:flex;flex-direction:column;background:white;">
+      <!-- 패널 헤더 -->
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 20px 12px;border-bottom:1px solid #F0F0F0;flex-shrink:0;">
+        <div style="display:flex;align-items:center;gap:8px;">
+          <i data-lucide="scan-text" style="width:16px;height:16px;color:#7E44FB;"></i>
+          <span style="font-size:16px;font-weight:800;color:#222;">OCR 인식 결과</span>
+        </div>
+      </div>
+      <!-- 안내 배너 -->
+      <div id="ocr-guide-banner" style="padding:10px 20px;background:#F7F4FF;border-bottom:1px solid #EDE7FF;display:flex;gap:8px;align-items:flex-start;flex-shrink:0;">
+        <i data-lucide="pencil-line" style="width:14px;height:14px;color:#7E44FB;flex-shrink:0;margin-top:2px;"></i>
+        <span style="font-size:13px;color:#494949;line-height:1.6;flex:1;"><strong>인식된 텍스트가 원본과 맞는지 확인해 주세요.</strong> 직접 수정할 수 있으며, 이미지 영역은 회색으로 구분됩니다.</span>
+        <button onclick="this.parentElement.style.display='none'" style="border:none;background:transparent;cursor:pointer;color:#B3B3B3;padding:0;flex-shrink:0;" onmouseover="this.style.color='#7E44FB'" onmouseout="this.style.color='#B3B3B3'">
+          <i data-lucide="x" style="width:14px;height:14px;"></i>
+        </button>
+      </div>
+      <!-- OCR 텍스트 (스크롤) -->
+      <div id="ocr-text-area" style="flex:1;overflow-y:auto;padding:20px;"></div>
+    </div>
+  </div>
+</div>
+
+<!-- 토스트 -->
+<div id="toast" class="toast toast-success">
+  <i data-lucide="circle-check-big" style="width:20px; height:20px; flex-shrink:0;"></i>
+  <span id="toast-msg">저장되었습니다.</span>
+</div>
+
+<script>
+// ── 데이터 ──
+const STUDENTS = [
+  { id:'10101', name:'김서윤', status:'제출', date:'07/21 14:31 선생님 업로드', files:1, ocrStatus:'confirmed', pages:[3,4] },
+  { id:'10102', name:'이준호', status:'제출', date:'07/21 14:31 선생님 업로드', files:1, ocrStatus:'unconfirmed', pages:[5,6] },
+  { id:'10103', name:'박지민', status:'제출', date:'07/21 14:31 선생님 업로드', files:1, ocrStatus:'unconfirmed', pages:[7,8] },
+  { id:'10104', name:'최유진', status:'제출', date:'07/21 14:31 선생님 업로드', files:1, ocrStatus:'processing', pages:[9,10] },
+  { id:'10105', name:'정현우', status:'제출', date:'07/21 14:31 선생님 업로드', files:1, ocrStatus:'unconfirmed', pages:[11,12] },
+  { id:'10106', name:'한지우', status:'미제출', date:'-', files:0, ocrStatus:null, pages:[] },
+  { id:'10107', name:'조민재', status:'미제출', date:'-', files:0, ocrStatus:null, pages:[] },
+  { id:'10108', name:'윤하은', status:'미제출', date:'-', files:0, ocrStatus:null, pages:[] },
+  { id:'10109', name:'임도윤', status:'제출', date:'07/21 14:31 선생님 업로드', files:1, ocrStatus:'unconfirmed', pages:[13,14] }
+];
+
+// OCR 텍스트 데이터 (학생별)
+const OCR_DATA = {
+  '10101': {
+    pages: [
+      {
+        num: 3,
+        blocks: [
+          { type:'text', content:'지구 표면의 약 70%는 물로 구성되어 있지만, 전 세계적으로 물 부족으로 인한 문제를 겪는 국가들이 많이 있다. 해수와 \'담수\'의 관점에서 물이 부족한 이유를 서술하고, 물 부족 문제를 해결하기 위해 \'새로운 수자원을 더 개발\'하는 방법과 \'현재 사용하는 수자원을 더 절약\'하는 방법 중 하나를 선택하고, 그 방법을 선택한 이유를 근거를 들어 설명하시오. (300자 이상 서술하되, 수권, 빙하, 지하수, 하천수, 호수 등의 단어를 활용하여 서술하시오.)' },
+          { type:'image', description:'원형 그래프가 포함된 이미지 영역 — 지구 수자원 분포 비율 도표' },
+          { type:'text', content:'인간이 쉽게 활용할 수 있는 담수의 양은 전체 수자원의 약 0.77%에 불과하며, 나머지는 해수(97.2%)와 빙하(2.1%)로 구성되어 있다.' }
+        ]
+      },
+      {
+        num: 4,
+        blocks: [
+          { type:'text', content:'저는 새로운 수자원을 더 개발하여 이것은 물 부족 문제를 해결해야 한다고 생각합니다. 인구가 증가하고, 여러 산업이 발전함에 따라 전체적인 물의 수요는 계속 증가하고 있습니다. 이러한 상황에서 단순히 물을 절약하는 것으로는 수요를 충족시킬 수 없다고 생각합니다. 따라서 금속 지역에서 많이 사용하고 있는 해수를 담수로 바꾸어주는 해수 연수화나, 같은 물을 기술을 도입하여 새로운 수자원을 확보하는 것이 필요하다고 생각합니다.' },
+          { type:'text', content:'더 먼 미래를 생각하면 물 부족 문제를 근본적으로 해결하기 위해서는 수자원 개발이 반드시 필요합니다.' }
+        ]
+      }
+    ]
+  },
+  '10102': {
+    pages: [
+      {
+        num: 5,
+        blocks: [
+          { type:'text', content:'물 부족 문제가 발생하는 이유는 지구에 존재하는 물의 대부분이 해수이기 때문입니다. 전체 물의 97%가 바닷물이고, 나머지 3%의 담수 중에서도 빙하와 만년설이 대부분을 차지합니다.' },
+          { type:'image', description:'막대 그래프가 포함된 이미지 영역 — 대륙별 물 사용량 비교' },
+          { type:'text', content:'실제로 인간이 사용할 수 있는 지하수, 하천수, 호수의 물은 전체의 1%도 되지 않습니다. 이렇게 제한된 수자원으로 인해 많은 국가들이 물 부족에 시달리고 있습니다.' }
+        ]
+      },
+      {
+        num: 6,
+        blocks: [
+          { type:'text', content:'저는 현재 사용하는 수자원을 더 절약하는 방법을 선택하겠습니다. 새로운 기술 개발에는 많은 비용이 들지만, 절약은 바로 시작할 수 있기 때문입니다. 예를 들어 빗물 저장 시스템을 활용하거나, 농업용수를 절약하는 관개 기술을 보급하면 효과적으로 수자원을 관리할 수 있습니다.' }
+        ]
+      }
+    ]
+  }
+};
+
+// 다른 학생들도 기본 데이터 생성
+['10103','10105','10109'].forEach(function(id) {
+  var s = STUDENTS.find(function(x){ return x.id === id; });
+  if (s && !OCR_DATA[id]) {
+    OCR_DATA[id] = {
+      pages: s.pages.map(function(p) {
+        return {
+          num: p,
+          blocks: [
+            { type:'text', content:'학생 ' + s.name + '의 OCR 인식 결과입니다. 이 텍스트는 목업 데이터이며, 실제 서비스에서는 해당 학생의 과제물 스캔 이미지에서 추출된 텍스트가 표시됩니다.' },
+            { type:'image', description:'이미지 영역' },
+            { type:'text', content:'추가 답변 내용이 이어집니다. 학생이 작성한 서술형 답안의 나머지 부분이 여기에 표시됩니다.' }
+          ]
+        };
+      })
+    };
+  }
+});
+
+// 스캔 이미지 시뮬레이션 데이터 (손글씨 느낌)
+const SCAN_PAGES = {
+  3: '지구 표면의 약 70%는 물로 구성되어 있지만, 전 세계적으로 물 부족으로 인한 문제를 겪는 국가들이 많이 있다.\n\n[그래프]\n\n인간이 쉬로 활용할 슈 있는 담수의 양은 전체 수자원의 약 0.77%에 볼과하며...',
+  4: '저는 새로은 수자원을 더 개발하여 이것은 물 부족 문제를 해결해야 한다고 생각합니다. 인구가 증가하고, 여러 산업이 발전함에 따라...\n\n더 먼 미래를 생각하면 물 부족 문제를 근본적으로 해결해야...',
+  5: '물 부족 문제가 발생하는 이유는 지구에 존재하는 물의 대부분이 해수이기 때문입니다.\n\n[그래프]\n\n실제로 인간이 사용할 수 있는 지하수, 하천수, 호수의 물은...',
+  6: '저는 현재 사용하는 수자원을 더 절약하는 방법을 선택하겠습니다. 새로운 기술 개발에는 많은 비용이 들지만...'
+};
+
+var ocrStudents = STUDENTS.filter(function(s){ return s.status === '제출' && s.ocrStatus !== null && s.ocrStatus !== 'processing'; });
+var currentStudentIdx = 0;
+var currentPageIdx = 0;
+
+// ── 학급 제출 상세 테이블 렌더 ──
+function renderTable() {
+  var tbody = document.getElementById('student-table-body');
+  var html = '';
+  STUDENTS.forEach(function(s, i) {
+    var statusBadge = s.status === '제출'
+      ? '<span class="badge badge-green">제출</span>'
+      : '<span class="badge badge-red">미제출</span>';
+
+    // OCR 상태 셀 — 클릭 시 OCR 확인 화면 진입 (제출+처리 완료된 경우만)
+    var ocrCell = '-';
+    if (s.ocrStatus === 'confirmed') {
+      ocrCell = '<span style="display:inline-flex;align-items:center;gap:4px;color:#00AF3D;font-weight:700;font-size:13px;cursor:pointer;" onclick="goToOCR(' + i + ')"><i data-lucide="circle-check" style="width:14px;height:14px;"></i>확인완료</span>';
+    } else if (s.ocrStatus === 'unconfirmed') {
+      ocrCell = '<span style="display:inline-flex;align-items:center;gap:4px;color:#7E44FB;font-weight:700;font-size:13px;cursor:pointer;" onclick="goToOCR(' + i + ')"><i data-lucide="circle" style="width:14px;height:14px;"></i>미확인</span>';
+    } else if (s.ocrStatus === 'processing') {
+      ocrCell = '<span style="display:inline-flex;align-items:center;gap:4px;color:#FF8C4C;font-weight:700;font-size:13px;"><i data-lucide="loader" style="width:14px;height:14px;" class="spin"></i>처리중</span>';
+    }
+
+    // 과제 제출 관리 — Figma 원본대로 모든 학생 동일하게 '파일 추가/제거 ↑'
+    var actionCell = '<span style="color:#7E44FB;font-size:13px;font-weight:700;cursor:pointer;">파일 추가/제거 <i data-lucide="upload" style="width:12px;height:12px;display:inline;vertical-align:-2px;"></i></span>';
+
+    html += '<tr>';
+    html += '<td style="text-align:center;">' + statusBadge + '</td>';
+    html += '<td style="font-weight:700;">' + s.id + '</td>';
+    html += '<td>' + s.name + '</td>';
+    html += '<td style="color:' + (s.date === '-' ? '#B3B3B3' : '#333') + ';">' + s.date + '</td>';
+    html += '<td style="text-align:center;">' + s.files + '</td>';
+    html += '<td style="text-align:center;">' + ocrCell + '</td>';
+    html += '<td style="text-align:center;">' + actionCell + '</td>';
+    html += '</tr>';
+  });
+  tbody.innerHTML = html;
+  lucide.createIcons();
+
+  // 스피너 애니메이션
+  var style = document.createElement('style');
+  style.textContent = '@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}.spin{animation:spin 1s linear infinite;}';
+  document.head.appendChild(style);
+}
+
+// ── 화면 전환 ──
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(function(s){ s.classList.remove('active'); });
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+  lucide.createIcons();
+}
+
+function goToList() {
+  renderTable();
+  showScreen('screen-list');
+}
+
+function goToOCR(studentTableIdx) {
+  // 해당 학생의 ocrStudents 내 인덱스 찾기
+  var student = STUDENTS[studentTableIdx];
+  if (!student || student.status === '미제출' || student.ocrStatus === 'processing') return;
+
+  var idx = ocrStudents.findIndex(function(s){ return s.id === student.id; });
+  if (idx === -1) idx = 0;
+  currentStudentIdx = idx;
+  currentPageIdx = 0;
+  renderOCRView();
+  showScreen('screen-ocr');
+}
+
+// ── OCR 뷰 렌더 ──
+function renderOCRView() {
+  var student = ocrStudents[currentStudentIdx];
+  if (!student) return;
+
+  // 네비게이터
+  document.getElementById('nav-student-name').textContent = student.name + ' (' + student.id + ')';
+
+  // 드롭다운 리스트 갱신
+  var confirmedCount = 0;
+  var listHtml = '';
+  ocrStudents.forEach(function(s, i) {
+    if (s.ocrStatus === 'confirmed') confirmedCount++;
+    var isActive = i === currentStudentIdx;
+    var checkIcon = s.ocrStatus === 'confirmed'
+      ? '<span style="color:#00AF3D;font-size:13px;">✓</span>'
+      : '<span style="color:#D9D9D9;font-size:13px;">○</span>';
+    listHtml += '<div onclick="selectStudent(' + i + ')" style="display:flex;align-items:center;gap:10px;padding:10px 14px;cursor:pointer;background:' + (isActive ? '#F7F4FF' : 'white') + ';font-size:15px;font-weight:' + (isActive ? '800' : '700') + ';color:' + (isActive ? '#341761' : '#333') + ';" onmouseover="if(!this.classList.contains(\'active-item\'))this.style.background=\'#F8F8F8\'" onmouseout="this.style.background=\'' + (isActive ? '#F7F4FF' : 'white') + '\'">'
+      + checkIcon
+      + '<span>' + s.name + ' (' + s.id + ')</span>'
+      + (isActive ? '<span style="margin-left:auto;font-size:11px;color:#7E44FB;font-weight:700;">현재</span>' : '')
+      + '</div>';
+  });
+  document.getElementById('nav-dropdown-list').innerHTML = listHtml;
+  document.getElementById('nav-confirm-count').textContent = '확인 ' + confirmedCount + '/' + ocrStudents.length;
+
+  // 버튼 상태
+  document.getElementById('btn-prev').disabled = currentStudentIdx === 0;
+  document.getElementById('btn-prev').style.opacity = currentStudentIdx === 0 ? '0.4' : '1';
+  document.getElementById('btn-next').disabled = currentStudentIdx === ocrStudents.length - 1;
+  document.getElementById('btn-next').style.opacity = currentStudentIdx === ocrStudents.length - 1 ? '0.4' : '1';
+
+  // 확인 완료 버튼 상태
+  var btnConfirm = document.getElementById('btn-confirm');
+  if (student.ocrStatus === 'confirmed') {
+    btnConfirm.innerHTML = '<i data-lucide="check-check" style="width:16px;height:16px;"></i>확인 완료됨';
+    btnConfirm.className = 'btn btn-outline btn-sm';
+    btnConfirm.style.color = '#00AF3D';
+    btnConfirm.style.borderColor = '#00AF3D';
+  } else {
+    btnConfirm.innerHTML = '<i data-lucide="check" style="width:16px;height:16px;"></i>확인 완료';
+    btnConfirm.className = 'btn btn-secondary btn-sm';
+    btnConfirm.style.color = '';
+    btnConfirm.style.borderColor = '';
+  }
+
+  // 마지막 학생이면 버튼 텍스트 변경
+  var btnSaveNext = document.getElementById('btn-save-next');
+  if (currentStudentIdx === ocrStudents.length - 1) {
+    btnSaveNext.innerHTML = '<i data-lucide="check-circle" style="width:16px;height:16px;"></i>저장 후 완료';
+  } else {
+    btnSaveNext.innerHTML = '저장 후 다음<i data-lucide="chevron-right" style="width:16px;height:16px;"></i>';
+  }
+
+  // 페이지 수
+
+  // OCR 텍스트 렌더
+  renderOCRText(student);
+
+  // 스캔 뷰어
+  currentPageIdx = 0;
+  renderScanPage(student);
+
+  lucide.createIcons();
+}
+
+function renderOCRText(student) {
+  var area = document.getElementById('ocr-text-area');
+  var data = OCR_DATA[student.id];
+  if (!data) {
+    area.innerHTML = '<div style="padding:40px; text-align:center; color:#B3B3B3;"><i data-lucide="alert-circle" style="width:24px; height:24px; margin-bottom:8px;"></i><br>OCR 데이터가 없습니다.</div>';
+    return;
+  }
+
+  var html = '';
+  data.pages.forEach(function(page, pi) {
+    if (pi > 0) {
+      html += '<div class="page-divider" data-page="' + page.num + '" style="cursor:pointer;" onclick="jumpToPage(' + pi + ')" onmouseover="this.style.color=\'#7E44FB\'" onmouseout="this.style.color=\'#B3B3B3\'">페이지 ' + page.num + '</div>';
+    }
+
+    page.blocks.forEach(function(block) {
+      if (block.type === 'text') {
+        html += '<textarea class="ocr-textarea" style="min-height:' + Math.max(80, block.content.length / 2.5) + 'px; margin-bottom:8px;" oninput="autoResize(this)">' + block.content + '</textarea>';
+      } else if (block.type === 'image') {
+        html += '<div class="img-placeholder"><i data-lucide="image" style="width:16px; height:16px; flex-shrink:0; color:#B3B3B3;"></i>(' + block.description + ')</div>';
+      }
+    });
+  });
+
+  area.innerHTML = html;
+
+  // 텍스트 에어리어 높이 자동 조절
+  area.querySelectorAll('.ocr-textarea').forEach(function(ta) {
+    autoResize(ta);
+  });
+}
+
+function autoResize(el) {
+  el.style.height = 'auto';
+  el.style.height = el.scrollHeight + 'px';
+}
+
+function renderScanPage(student) {
+  var pageNum = student.pages[currentPageIdx];
+  document.getElementById('scan-page-info').textContent = pageNum + ' / 14';
+
+  var content = SCAN_PAGES[pageNum];
+  var el = document.getElementById('scan-page-content');
+
+  if (content) {
+    // 손글씨 시뮬레이션
+    var lines = content.split('\n');
+    var html = '';
+    lines.forEach(function(line) {
+      if (line === '[그래프]') {
+        html += '<div style="width:100%;height:120px;background:#F0F0F0;border:1px solid #D9D9D9;border-radius:4px;margin:12px 0;display:flex;align-items:center;justify-content:center;color:#999;font-size:14px;font-style:italic;">[이미지 영역]</div>';
+      } else if (line === '') {
+        html += '<div style="height:16px;"></div>';
+      } else {
+        html += '<p style="margin:0 0 4px; font-family:\'Nanum Pen Script\',cursive,\'NanumSquareRound\'; font-size:18px; line-height:2.0; color:#222; letter-spacing:-0.5px;">' + line + '</p>';
+      }
+    });
+    el.innerHTML = html;
+  } else {
+    el.innerHTML = '<div style="padding:60px; text-align:center; color:#999; font-size:14px;">스캔 이미지 미리보기<br><span style="font-size:12px; color:#B3B3B3;">(목업 — 실제로는 PDF 페이지 이미지가 표시됩니다)</span></div>';
+  }
+  // 현재 zoom/rotation 유지
+  applyScanTransform();
+}
+
+// ── 드롭다운 ──
+function toggleStudentDropdown() {
+  var dd = document.getElementById('nav-dropdown');
+  dd.style.display = dd.style.display === 'none' ? 'block' : 'none';
+}
+
+function selectStudent(idx) {
+  currentStudentIdx = idx;
+  currentPageIdx = 0;
+  scanZoom = 100;
+  scanRotation = 0;
+  document.getElementById('nav-dropdown').style.display = 'none';
+  renderOCRView();
+}
+
+// 외부 클릭 시 드롭다운 닫기
+document.addEventListener('click', function(e) {
+  var btn = document.getElementById('nav-dropdown-btn');
+  var dd = document.getElementById('nav-dropdown');
+  if (btn && dd && !btn.contains(e.target) && !dd.contains(e.target)) {
+    dd.style.display = 'none';
+  }
+});
+
+// ── 네비게이션 ──
+function navStudent(dir) {
+  var newIdx = currentStudentIdx + dir;
+  if (newIdx < 0 || newIdx >= ocrStudents.length) return;
+  currentStudentIdx = newIdx;
+  currentPageIdx = 0;
+  renderOCRView();
+}
+
+function navPage(dir) {
+  var student = ocrStudents[currentStudentIdx];
+  var newIdx = currentPageIdx + dir;
+  if (newIdx < 0 || newIdx >= student.pages.length) return;
+  currentPageIdx = newIdx;
+  renderScanPage(student);
+}
+
+// 스캔 뷰어 상태
+var scanZoom = 100;
+var scanRotation = 0;
+
+function applyScanTransform() {
+  var el = document.getElementById('scan-page-content');
+  if (!el) return;
+  el.style.transform = 'rotate(' + scanRotation + 'deg) scale(' + (scanZoom / 100) + ')';
+  document.getElementById('scan-zoom-info').textContent = scanZoom + '%';
+}
+
+function changeScanZoom(delta) {
+  scanZoom = Math.max(30, Math.min(300, scanZoom + delta));
+  applyScanTransform();
+}
+
+function resetScanZoom() {
+  scanZoom = 100;
+  scanRotation = 0;
+  applyScanTransform();
+}
+
+function rotateScan(deg) {
+  scanRotation = (scanRotation + deg + 360) % 360;
+  applyScanTransform();
+}
+
+function jumpToPage(pageIndex) {
+  currentPageIdx = pageIndex;
+  renderScanPage(ocrStudents[currentStudentIdx]);
+}
+
+// ── 액션 ──
+function confirmCurrent() {
+  var student = ocrStudents[currentStudentIdx];
+  if (student.ocrStatus === 'confirmed') {
+    student.ocrStatus = 'unconfirmed';
+    // STUDENTS 배열에도 동기화
+    var orig = STUDENTS.find(function(s){ return s.id === student.id; });
+    if (orig) orig.ocrStatus = 'unconfirmed';
+  } else {
+    student.ocrStatus = 'confirmed';
+    var orig = STUDENTS.find(function(s){ return s.id === student.id; });
+    if (orig) orig.ocrStatus = 'confirmed';
+  }
+  renderOCRView();
+  showToast(student.ocrStatus === 'confirmed' ? '확인 완료 처리되었습니다.' : '확인 상태가 해제되었습니다.', 'success');
+}
+
+function saveAndNext() {
+  var student = ocrStudents[currentStudentIdx];
+  student.ocrStatus = 'confirmed';
+  var orig = STUDENTS.find(function(s){ return s.id === student.id; });
+  if (orig) orig.ocrStatus = 'confirmed';
+
+  if (currentStudentIdx < ocrStudents.length - 1) {
+    currentStudentIdx++;
+    currentPageIdx = 0;
+    renderOCRView();
+    showToast('저장 완료. 다음 학생으로 이동합니다.', 'success');
+  } else {
+    renderOCRView();
+    showToast('모든 학생의 OCR 확인이 완료되었습니다!', 'success');
+    setTimeout(function() { goToList(); }, 1500);
+  }
+}
+
+// ── 토스트 ──
+function showToast(msg, type) {
+  var toast = document.getElementById('toast');
+  var msgEl = document.getElementById('toast-msg');
+  msgEl.textContent = msg;
+  toast.className = 'toast toast-' + (type || 'success') + ' show';
+  setTimeout(function(){ toast.classList.remove('show'); }, 2500);
+}
+
+// ── 초기화 ──
+renderTable();
+lucide.createIcons();
+</script>
+</body>
+</html>
