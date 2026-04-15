@@ -63,7 +63,7 @@
   .b-todo{background:#FFEFEF;color:#DB3E51}
   .b-check{background:#FFEFEF;color:#DB3E51}
 
-  .link{color:#7E44FB;font-weight:800;display:inline-flex;align-items:center;gap:4px;cursor:pointer}
+  .link{color:#7E44FB;font-weight:400;display:inline-flex;align-items:center;gap:4px;cursor:pointer}
 
   /* Callout */
   .callout{display:flex;align-items:center;gap:14px;background:#F7F4FF;border:1px solid #E0D2FF;border-radius:12px;padding:14px 20px;margin-top:18px}
@@ -548,7 +548,7 @@ function render(){
         ?`<span style="color:#DB3E51;font-weight:700">${r.ai}</span> <button class="btn btn-pri" style="height:28px;font-size:12px;padding:0 10px;margin-left:6px"><i data-lucide="rotate-cw" style="width:12px;height:12px"></i>재실행</button>`
         :r.ai}</td>
       <td>${r.score}</td>
-      <td><span class="link">학생 채점 상세 <i data-lucide="chevron-right" style="width:14px;height:14px"></i></span></td>
+      <td><span class="link" onclick="location.href='scoring_student_v1.html'" style="cursor:pointer;">학생 채점 상세 <i data-lucide="chevron-right" style="width:14px;height:14px"></i></span></td>
     </tr>
   `).join('');
   lucide.createIcons();
