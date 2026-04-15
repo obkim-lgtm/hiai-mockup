@@ -183,9 +183,12 @@
     <!-- 좌측 -->
     <div style="display:flex;align-items:center;gap:16px;">
       <!-- 학생 드롭다운 -->
-      <div style="background:white;border:1px solid #D4D3D1;border-radius:6px;padding:8px 12px 8px 16px;min-width:345px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;">
-        <span style="font-size:20px;font-weight:700;color:#333;">10130 김문항 (채점 완료)</span>
-        <i data-lucide="chevron-down" style="width:20px;height:20px;color:#333;flex-shrink:0;margin-left:8px;"></i>
+      <div id="studentDropdownWrap" style="position:relative;">
+        <div id="studentDropdownBtn" style="background:white;border:1px solid #D4D3D1;border-radius:6px;padding:8px 12px 8px 16px;min-width:345px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;">
+          <span style="font-size:20px;font-weight:700;color:#333;">10130 김문항 (채점 완료)</span>
+          <i data-lucide="chevron-down" style="width:20px;height:20px;color:#333;flex-shrink:0;margin-left:8px;"></i>
+        </div>
+        <div id="studentDropdownList" style="display:none;position:absolute;top:calc(100% + 4px);left:0;min-width:345px;max-height:400px;overflow-y:auto;background:white;border:1px solid #D4D3D1;border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,0.12);z-index:100;padding:4px 0;"></div>
       </div>
       <span style="font-size:16px;color:#333;">21명 중 8명 채점 완료</span>
     </div>
@@ -734,6 +737,42 @@
 <script>
   // Lucide 아이콘 초기화
   lucide.createIcons();
+
+  // ── 학생 드롭다운 ──
+  var STUDENT_LIST = [
+    {id:'10101', name:'김서윤', status:'진행 중', statusCls:'#FF8C4C', link:'scoring_student_v1.html'},
+    {id:'10102', name:'이준호', status:'완료', statusCls:'#00AF3D', link:'scoring_student_v1.html'},
+    {id:'10103', name:'박지민', status:'완료', statusCls:'#00AF3D', link:'scoring_student_v1.html'},
+    {id:'10104', name:'최유진', status:'완료', statusCls:'#00AF3D', link:'scoring_student_v1.html'},
+    {id:'10105', name:'정현우', status:'미채점', statusCls:'#808080', link:'scoring_student_v1.html'},
+    {id:'10106', name:'한가람', status:'미채점', statusCls:'#808080', link:'scoring_student_v1.html'},
+    {id:'10107', name:'오세훈', status:'미채점', statusCls:'#808080', link:'scoring_student_v1.html'},
+    {id:'10108', name:'한지우', status:'확인 필요', statusCls:'#DB3E51', link:'scoring_student_v1.html'},
+    {id:'10130', name:'김문항', status:'완료', statusCls:'#00AF3D', link:'scoring_student_kimmh_v1.html'},
+    {id:'10131', name:'김하이', status:'완료', statusCls:'#00AF3D', link:'scoring_student_kimhi_v1.html'}
+  ];
+  var CURRENT_STUDENT_ID = '10130';
+  (function initStudentDropdown(){
+    var list = document.getElementById('studentDropdownList');
+    list.innerHTML = STUDENT_LIST.map(function(s){
+      var isCurrent = s.id === CURRENT_STUDENT_ID;
+      return '<div class="sd-item" data-link="'+s.link+'" style="padding:10px 16px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;'+(isCurrent?'background:#F7F4FF;':'')+'font-size:16px;font-weight:'+(isCurrent?'700':'400')+';color:#333;">'
+        +'<span>'+s.id+' '+s.name+'</span>'
+        +'<span style="font-size:13px;font-weight:700;color:'+s.statusCls+';">'+s.status+'</span>'
+        +'</div>';
+    }).join('');
+    list.querySelectorAll('.sd-item').forEach(function(el){
+      el.addEventListener('mouseenter',function(){if(!this.style.background.includes('F7F4FF'))this.style.background='#F8F8F8';});
+      el.addEventListener('mouseleave',function(){if(!this.style.background.includes('F7F4FF'))this.style.background='';});
+      el.addEventListener('click',function(){location.href=this.getAttribute('data-link');});
+    });
+    document.getElementById('studentDropdownBtn').addEventListener('click',function(e){
+      e.stopPropagation();
+      var l=document.getElementById('studentDropdownList');
+      l.style.display=l.style.display==='none'?'block':'none';
+    });
+    document.addEventListener('click',function(){document.getElementById('studentDropdownList').style.display='none';});
+  })();
 
   // 채점 상태 라디오
   function selectStatus(el) {
