@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" href="../screens/favicon_src.png" type="image/png">
+  <title>AI 채점</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+  <style>
+    @import url('https://cdn.rawgit.com/moonspam/NanumSquareRound/master/nanumsquareround.min.css');
+    * { font-family: 'NanumSquareRound', -apple-system, sans-serif; box-sizing: border-box; }
+    body { margin: 0; background: #EDF1FC; }
+
+    /* Tab */
+    .tab-active   { flex:1; height:60px; background:white; border-radius:20px 20px 0 0; display:flex; align-items:center; justify-content:center; cursor:pointer; }
+    .tab-inactive { flex:1; height:60px; background:#CBD6F4; border-radius:20px 20px 0 0; display:flex; align-items:center; justify-content:center; cursor:pointer; }
+
+    /* Buttons */
+    .btn-primary   { background:#7E44FB; color:white; border:none; border-radius:8px; height:36px; padding:0 16px; font-size:16px; font-weight:700; cursor:pointer; font-family:inherit; display:inline-flex; align-items:center; gap:8px; white-space:nowrap; }
+    .btn-secondary { background:white; color:#7E44FB; border:1.5px solid #B28FFD; border-radius:8px; height:36px; padding:0 16px; font-size:16px; font-weight:700; cursor:pointer; font-family:inherit; display:inline-flex; align-items:center; gap:8px; white-space:nowrap; }
+    .btn-ghost { background:transparent; color:#7E44FB; border:none; padding:0; font-size:16px; font-weight:700; cursor:pointer; font-family:inherit; display:inline-flex; align-items:center; gap:4px; white-space:nowrap; }
+    .btn-ghost:hover { text-decoration:underline; }
+
+    /* Modal */
+    .modal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.4); z-index:1000; align-items:center; justify-content:center; }
+    .modal-overlay.open { display:flex; }
+    .modal-box { background:white; border-radius:24px; box-shadow:0 4px 12px rgba(95,102,178,0.16); width:752px; max-width:90vw; overflow:hidden; }
+
+    /* Toast */
+    .toast {
+      position:fixed; bottom:80px; left:50%; transform:translateX(-50%) translateY(12px);
+      font-size:16px; font-weight:700; font-family:inherit;
+      padding:16px 24px 16px 16px; border-radius:8px; z-index:9999;
+      width:384px; max-width:90vw;
+      display:flex; align-items:center; gap:12px;
+      opacity:0; transition:opacity 0.2s ease, transform 0.2s ease;
+      pointer-events:none;
+      box-shadow:0 0 1px #494949, 0 8px 32px rgba(95,102,178,0.16);
+      line-height:1.55;
+    }
+    .toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+    .toast.toast-success { background:#00AF3D; color:white; }
+    .toast.toast-error   { background:#DB3E51; color:#F8F8F8; }
+    .toast.toast-loading { background:#5890FF; color:white; }
+
+    /* Progress bar */
+    .progress-bar-bg { background:#F2ECFF; border-radius:4px; height:8px; flex:1; overflow:hidden; }
+    .progress-bar-fill { background:#7E44FB; height:100%; border-radius:4px; transition:width 0.3s; }
+
+    /* Radio card */
+    .radio-card { border:2px solid #B3B3B3; border-radius:12px; padding:14px 16px; cursor:pointer; display:flex; align-items:center; gap:12px; transition:border-color 0.15s; }
+    .radio-card.selected { border:5px solid #7E44FB; padding:11px 13px; }
+    .radio-card .radio-dot { width:20px; height:20px; border-radius:50%; border:2px solid #B3B3B3; flex-shrink:0; display:flex; align-items:center; justify-content:center; }
+    .radio-card.selected .radio-dot { border-color:#7E44FB; }
+    .radio-card.selected .radio-dot::after { content:''; width:10px; height:10px; border-radius:50%; background:#7E44FB; }
+
+    /* Checkbox */
+    .chk { width:20px; height:20px; border-radius:4px; border:2px solid #B3B3B3; flex-shrink:0; display:flex; align-items:center; justify-content:center; cursor:pointer; }
+    .chk.checked { background:#7E44FB; border-color:#7E44FB; }
+    .chk.checked::after { content:''; display:block; width:6px; height:10px; border:solid white; border-width:0 2px 2px 0; transform:rotate(45deg) translateY(-1px); }
+
+    /* Spinning animation for loader */
+    @keyframes spin { to { transform:rotate(360deg); } }
+    .animate-spin { animation:spin 1s linear infinite; }
+  </style>
+</head>
+<body>
+
+<!-- ===== GNB ===== -->
+<div style="background:white; height:98px; border-bottom:1px solid #D9D9D9; display:flex; align-items:center; justify-content:center; padding:0 36px;">
+  <div style="display:flex; align-items:center; justify-content:space-between; width:100%; max-width:1200px; padding:0 36px;">
+    <div style="display:flex; align-items:center; gap:8px; flex-shrink:0;">
+      <div style="width:58px; height:42px; overflow:hidden; position:relative; flex-shrink:0;">
+        <img src="https://www.figma.com/api/mcp/asset/c911cba1-edaf-4ae5-9e7f-a7223e212dfb"
+             style="position:absolute; left:50%; transform:translateX(-50%); height:100%; width:auto; object-fit:cover;" alt="HiAI 로고">
+      </div>
+      <div style="position:relative; width:150px; height:41px; flex-shrink:0;">
+        <img src="https://www.figma.com/api/mcp/asset/0b7bfb05-8331-4a5b-a914-dfd68cbb45cf"
+             style="position:absolute; top:0; left:0; width:79.842px; height:16.284px;" alt="하이러닝 AI">
+        <img src="https://www.figma.com/api/mcp/asset/99f47c76-65ad-45ac-aa4e-3fa30bab432a"
+             style="position:absolute; top:24.08px; left:0.31px; width:149.692px; height:16.422px;" alt="서논술형 평가 서비스">
+      </div>
+    </div>
+    <nav style="display:flex; gap:52px; align-items:center;">
+      <span style="font-size:20px; font-weight:800; color:#7E44FB; cursor:pointer;">나의 평가</span>
+      <span style="font-size:20px; font-weight:700; color:#000; cursor:pointer;">평가 자료실</span>
+      <span style="font-size:20px; font-weight:700; color:#000; cursor:pointer;">고객센터</span>
+    </nav>
+    <div style="display:flex; align-items:center; gap:12px; flex-shrink:0;">
+      <img src="https://www.figma.com/api/mcp/asset/3cbd0bfb-698a-4008-8e82-f6d34112ea5f"
+           style="width:36px; height:36px;" alt="AI 아이콘">
+      <span style="font-size:20px; font-weight:700; color:#000;">김동* 님</span>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 타이틀 바 ===== -->
+<div style="background:linear-gradient(to right, #6562f5 4%, #9b68f3 97.86%); height:86px; display:flex; align-items:center; justify-content:center; padding:0 36px;">
+  <div style="width:100%; max-width:1200px; padding:0 36px;">
+    <span style="font-size:28px; font-weight:800; color:white; line-height:1.35;">1학년 국어</span>
+  </div>
+</div>
+
+<!-- ===== 본문 ===== -->
+<div style="display:flex; flex-direction:column; align-items:center; padding:40px 36px; min-height:760px;">
+  <div style="width:100%; max-width:1200px;">
+
+    <!-- 탭 -->
+    <div style="display:flex; gap:12px;">
+      <div class="tab-inactive" onclick="location.href='eval_home_v6_260403.html'"><span style="font-size:20px; font-weight:700; color:#000;">평가 홈</span></div>
+      <div class="tab-inactive"><span style="font-size:20px; font-weight:700; color:#000;">평가 대상</span></div>
+      <div class="tab-inactive" onclick="location.href='evaluation_design_v3_260403.html'"><span style="font-size:20px; font-weight:700; color:#000;">평가 설계</span></div>
+      <div class="tab-inactive" onclick="location.href='task_ocr_review_v1.html'"><span style="font-size:20px; font-weight:700; color:#000;">과제물 관리</span></div>
+      <div class="tab-active"><span style="font-size:20px; font-weight:800; color:#341761;">AI 채점</span></div>
+      <div class="tab-inactive" onclick="location.href='report_list_v1.html'"><span style="font-size:20px; font-weight:700; color:#000;">평가 리포트</span></div>
+    </div>
+
+    <!-- 패널 -->
+    <div style="background:white; border-radius:0 0 20px 20px; padding:28px 24px; box-shadow:0 4px 36px 0 rgba(95,102,178,0.16); display:flex; flex-direction:column; gap:28px;">
+
+      <!-- 헤더 -->
+      <div>
+        <div style="font-size:24px; font-weight:700; color:#333; margin-bottom:8px;">AI 채점</div>
+        <div style="font-size:16px; font-weight:400; color:#333; line-height:1.55;">AI Assistant와 함께 과제를 채점하고 피드백 기록을 생성할 수 있습니다. AI는 선생님을 보조하는 역할을 하며 채점의 최종 권한은 선생님에게만 있습니다.</div>
+      </div>
+
+      <!-- 섹션 -->
+      <div style="background:#F8F8F8; border-radius:16px; padding:28px 24px;">
+        <!-- 카드 -->
+        <div style="background:white; border-radius:16px; padding:24px;">
+          <!-- 카드 타이틀 -->
+          <div style="font-size:20px; font-weight:700; color:#333; margin-bottom:20px;">미래 사회 예측 시나리오</div>
+
+          <!-- 테이블 -->
+          <div style="width:100%;">
+            <!-- Header -->
+            <div style="display:flex; background:#F8F8F8; border-radius:10px; height:40px; align-items:center; font-size:16px; font-weight:700; color:#333; text-align:center;">
+              <div style="width:80px; text-align:center;">상태</div>
+              <div style="width:80px; text-align:center;">결과 공개</div>
+              <div style="width:80px; text-align:center;">반</div>
+              <div style="flex:1; text-align:center;">채점 현황</div>
+              <div style="width:120px; text-align:center;">원점수 평균</div>
+              <div style="width:260px; text-align:center;">AI 채점</div>
+              <div style="width:158px; text-align:center;">채점 실시 결과</div>
+            </div>
+
+            <!-- Row 1: 1-1반 -->
+            <div style="display:flex; align-items:center; height:58px; border-bottom:1px solid #D9D9D9; font-size:16px; color:#333;">
+              <div style="width:80px; text-align:center;">
+                <span style="background:#F2F5FF; color:#5890FF; border-radius:100px; padding:3px 10px; font-size:14px; font-weight:700;">진행</span>
+              </div>
+              <div style="width:80px; text-align:center;">
+                <span style="background:#F0F0F0; color:#494949; border-radius:100px; padding:3px 10px; font-size:14px; font-weight:700;">비공개</span>
+              </div>
+              <div style="width:80px; text-align:center; font-weight:700;">1-1</div>
+              <div style="flex:1; display:flex; align-items:center; gap:10px; padding:0 16px;">
+                <div class="progress-bar-bg" style="max-width:100px;">
+                  <div class="progress-bar-fill" style="width:0%;"></div>
+                </div>
+                <span style="font-size:14px; color:#808080; font-weight:700;">0/14</span>
+              </div>
+              <div style="width:120px; text-align:center; color:#808080;">-</div>
+              <div style="width:260px; text-align:center;">
+                <span style="display:inline-flex; align-items:center; gap:6px; color:#7E44FB; font-size:16px; font-weight:700;">
+                  <i data-lucide="loader-circle" style="width:18px; height:18px;" class="animate-spin"></i>
+                  자동 채점 진행 중
+                </span>
+              </div>
+              <div style="width:158px; text-align:center;">
+                <button class="btn-ghost" style="opacity:0.5; cursor:default; justify-content:center; width:100%;" disabled>채점 결과 상세</button>
+              </div>
+            </div>
+
+            <!-- Row 2: 1-2반 -->
+            <div style="display:flex; align-items:center; height:58px; border-bottom:1px solid #D9D9D9; font-size:16px; color:#333;">
+              <div style="width:80px; text-align:center;">
+                <span style="background:#F2F5FF; color:#5890FF; border-radius:100px; padding:3px 10px; font-size:14px; font-weight:700;">진행</span>
+              </div>
+              <div style="width:80px; text-align:center;">
+                <span style="background:#F0F0F0; color:#494949; border-radius:100px; padding:3px 10px; font-size:14px; font-weight:700;">비공개</span>
+              </div>
+              <div style="width:80px; text-align:center; font-weight:700;">1-2</div>
+              <div style="flex:1; display:flex; align-items:center; gap:10px; padding:0 16px;">
+                <div class="progress-bar-bg" style="max-width:100px;">
+                  <div class="progress-bar-fill" style="width:72%; opacity:0.72;"></div>
+                </div>
+                <span style="font-size:14px; color:#808080; font-weight:700;">0/14</span>
+              </div>
+              <div style="width:120px; text-align:center; font-weight:700;">75</div>
+              <div style="width:260px; display:flex; align-items:center; justify-content:center; gap:8px;">
+                <button class="btn-primary" style="height:36px; font-size:14px;" onclick="openRerunModal()">
+                  <i data-lucide="rotate-cw" style="width:16px; height:16px;"></i>
+                  재실행
+                </button>
+                <button class="btn-secondary" style="height:36px; font-size:14px;">
+                  <i data-lucide="chart-column-decreasing" style="width:16px; height:16px;"></i>
+                  AI 점수 확인
+                </button>
+              </div>
+              <div style="width:158px; text-align:center;">
+                <button class="btn-ghost" style="justify-content:center; width:100%;" onclick="location.href='scoring_detail_v1.html'">채점 결과 상세</button>
+              </div>
+            </div>
+
+            <!-- Row 3: 1-3반 -->
+            <div style="display:flex; align-items:center; height:58px; border-bottom:1px solid #D9D9D9; font-size:16px; color:#333;">
+              <div style="width:80px; text-align:center;">
+                <span style="background:#F2F5FF; color:#5890FF; border-radius:100px; padding:3px 10px; font-size:14px; font-weight:700;">진행</span>
+              </div>
+              <div style="width:80px; text-align:center;">
+                <span style="background:#F0F0F0; color:#494949; border-radius:100px; padding:3px 10px; font-size:14px; font-weight:700;">비공개</span>
+              </div>
+              <div style="width:80px; text-align:center; font-weight:700;">1-3</div>
+              <div style="flex:1; display:flex; align-items:center; gap:10px; padding:0 16px;">
+                <div class="progress-bar-bg" style="max-width:100px;">
+                  <div class="progress-bar-fill" style="width:0%;"></div>
+                </div>
+                <span style="font-size:14px; color:#808080; font-weight:700;">0/14</span>
+              </div>
+              <div style="width:120px; text-align:center; color:#808080;">-</div>
+              <div style="width:260px; text-align:center;">
+                <button class="btn-primary" style="height:36px;" onclick="openRunModal()">
+                  <i data-lucide="wand-sparkles" style="width:16px; height:16px;"></i>
+                  AI 채점 실행
+                </button>
+              </div>
+              <div style="width:158px; text-align:center;">
+                <button class="btn-ghost" style="justify-content:center; width:100%;">수동 채점 진행</button>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /패널 -->
+  </div>
+</div>
+
+<!-- ===== Footer ===== -->
+<div style="background:#EDF1FC; height:120px;"></div>
+
+<!-- ===== AI 채점 실행 모달 ===== -->
+<div id="runModal" class="modal-overlay" onclick="if(event.target===this) closeRunModal()">
+  <div class="modal-box">
+    <!-- Header -->
+    <div style="padding:24px 24px 16px 24px;">
+      <div style="font-size:20px; font-weight:700; color:#333;">AI 채점 실행</div>
+    </div>
+    <!-- Body -->
+    <div style="padding:0 24px 24px 24px; display:flex; flex-direction:column; gap:20px;">
+      <div style="font-size:14px; color:#333; line-height:1.55;">
+        AI 채점을 실행합니다. 채점 대상 학생을 선택하고 채점 수준을 설정한 뒤 실행 버튼을 눌러주세요.<br>
+        과제를 제출하지 않은 학생은 선택할 수 없습니다.
+      </div>
+
+      <!-- 채점 대상 -->
+      <div>
+        <div style="font-size:16px; font-weight:700; color:#333; margin-bottom:10px;">AI 채점 대상</div>
+        <div style="border:1px solid #D9D9D9; border-radius:12px; overflow:hidden;">
+          <!-- Header row -->
+          <div style="background:#F8F8F8; padding:12px 16px; display:flex; align-items:center; gap:10px; border-bottom:1px solid #D9D9D9;">
+            <div class="chk checked" onclick="toggleRunAll(this)"></div>
+            <span style="font-size:14px; font-weight:700; color:#333;">1-1반 (1/3명)</span>
+          </div>
+          <!-- Student 1 -->
+          <div style="padding:10px 16px; display:flex; align-items:center; gap:10px; border-bottom:1px solid #F0F0F0;">
+            <div class="chk checked" onclick="toggleChk(this)"></div>
+            <span style="font-size:14px; color:#333; flex:1;">10101 일일일</span>
+            <span style="font-size:13px; color:#7E44FB; font-weight:700;">AI 채점결과 2점</span>
+          </div>
+          <!-- Student 2 -->
+          <div style="padding:10px 16px; display:flex; align-items:center; gap:10px; border-bottom:1px solid #F0F0F0; opacity:0.5;">
+            <div class="chk" style="cursor:not-allowed;"></div>
+            <span style="font-size:14px; color:#333; flex:1;">10102 일일이</span>
+            <span style="font-size:13px; color:#808080;">과제 미제출</span>
+          </div>
+          <!-- Student 3 -->
+          <div style="padding:10px 16px; display:flex; align-items:center; gap:10px; opacity:0.5;">
+            <div class="chk" style="cursor:not-allowed;"></div>
+            <span style="font-size:14px; color:#333; flex:1;">10103 일일삼</span>
+            <span style="font-size:13px; color:#808080;">과제 미제출</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 채점 수준 -->
+      <div>
+        <div style="font-size:16px; font-weight:700; color:#333; margin-bottom:10px;">AI 채점 수준</div>
+        <div style="display:flex; flex-direction:column; gap:10px;" id="runLevelGroup">
+          <div class="radio-card selected" onclick="selectRunLevel(this)">
+            <div class="radio-dot"></div>
+            <span style="font-size:14px; font-weight:700; color:#333;">기본 설정으로 채점</span>
+          </div>
+          <div class="radio-card" onclick="selectRunLevel(this)">
+            <div class="radio-dot"></div>
+            <span style="font-size:14px; font-weight:700; color:#333;">비교적 관대하게 채점</span>
+          </div>
+          <div class="radio-card" onclick="selectRunLevel(this)">
+            <div class="radio-dot"></div>
+            <span style="font-size:14px; font-weight:700; color:#333;">비교적 엄격하게 채점</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Footer -->
+    <div style="padding:8px 24px 24px 24px; display:flex; justify-content:flex-end; gap:12px;">
+      <button onclick="closeRunModal()" style="background:#F0F0F0; color:#494949; border:none; border-radius:8px; height:40px; padding:0 20px; font-size:16px; font-weight:700; cursor:pointer; font-family:inherit;">취소</button>
+      <button onclick="runAI()" style="background:#7E44FB; color:white; border:none; border-radius:8px; height:40px; padding:0 20px; font-size:16px; font-weight:700; cursor:pointer; font-family:inherit;">AI 채점 실행</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== AI 채점 재실행 모달 ===== -->
+<div id="rerunModal" class="modal-overlay" onclick="if(event.target===this) closeRerunModal()">
+  <div class="modal-box">
+    <!-- Header -->
+    <div style="padding:24px 24px 16px 24px;">
+      <div style="font-size:20px; font-weight:700; color:#333;">AI 채점 재실행</div>
+    </div>
+    <!-- Body -->
+    <div style="padding:0 24px 24px 24px; display:flex; flex-direction:column; gap:20px;">
+      <div style="font-size:14px; color:#333; line-height:1.55;">
+        AI 채점을 재실행합니다. 채점 대상 학생을 선택하고 채점 수준을 설정한 뒤 실행 버튼을 눌러주세요.<br>
+        과제를 제출하지 않은 학생은 선택할 수 없습니다.
+      </div>
+
+      <!-- 채점 대상 -->
+      <div>
+        <div style="font-size:16px; font-weight:700; color:#333; margin-bottom:10px;">AI 채점 대상</div>
+        <div style="border:1px solid #D9D9D9; border-radius:12px; overflow:hidden;">
+          <!-- Header row -->
+          <div style="background:#F8F8F8; padding:12px 16px; display:flex; align-items:center; gap:10px; border-bottom:1px solid #D9D9D9;">
+            <div class="chk checked" onclick="toggleRerunAll(this)"></div>
+            <span style="font-size:14px; font-weight:700; color:#333;">1-2반 (1/3명)</span>
+          </div>
+          <!-- Student 1 -->
+          <div style="padding:10px 16px; display:flex; align-items:center; gap:10px; border-bottom:1px solid #F0F0F0;">
+            <div class="chk checked" onclick="toggleChk(this)"></div>
+            <span style="font-size:14px; color:#333; flex:1;">10101 김하나</span>
+            <span style="font-size:13px; color:#7E44FB; font-weight:700;">AI 채점결과 30점</span>
+          </div>
+          <!-- Student 2 -->
+          <div style="padding:10px 16px; display:flex; align-items:center; gap:10px; border-bottom:1px solid #F0F0F0; opacity:0.5;">
+            <div class="chk" style="cursor:not-allowed;"></div>
+            <span style="font-size:14px; color:#333; flex:1;">10102 김하이</span>
+            <span style="font-size:13px; color:#808080;">과제 미제출</span>
+          </div>
+          <!-- Student 3 -->
+          <div style="padding:10px 16px; display:flex; align-items:center; gap:10px; opacity:0.5;">
+            <div class="chk" style="cursor:not-allowed;"></div>
+            <span style="font-size:14px; color:#333; flex:1;">10103 김하삼</span>
+            <span style="font-size:13px; color:#808080;">과제 미제출</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 채점 수준 -->
+      <div>
+        <div style="font-size:16px; font-weight:700; color:#333; margin-bottom:10px;">AI 채점 수준</div>
+        <div style="display:flex; flex-direction:column; gap:10px;" id="rerunLevelGroup">
+          <div class="radio-card selected" onclick="selectRerunLevel(this)">
+            <div class="radio-dot"></div>
+            <span style="font-size:14px; font-weight:700; color:#333;">이전과 동일하게 채점</span>
+          </div>
+          <div class="radio-card" onclick="selectRerunLevel(this)">
+            <div class="radio-dot"></div>
+            <span style="font-size:14px; font-weight:700; color:#333;">이전보다 관대하게 채점</span>
+          </div>
+          <div class="radio-card" onclick="selectRerunLevel(this)">
+            <div class="radio-dot"></div>
+            <span style="font-size:14px; font-weight:700; color:#333;">이전보다 엄격하게 채점</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Footer -->
+    <div style="padding:8px 24px 24px 24px; display:flex; justify-content:flex-end; gap:12px;">
+      <button onclick="closeRerunModal()" style="background:#F0F0F0; color:#494949; border:none; border-radius:8px; height:40px; padding:0 20px; font-size:16px; font-weight:700; cursor:pointer; font-family:inherit;">취소</button>
+      <button onclick="rerunAI()" style="background:#7E44FB; color:white; border:none; border-radius:8px; height:40px; padding:0 20px; font-size:16px; font-weight:700; cursor:pointer; font-family:inherit;">AI 채점 재실행</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== Toast ===== -->
+<div id="toast" class="toast">
+  <i id="toast-icon" data-lucide="circle-check-big" style="width:20px; height:20px; color:white; flex-shrink:0;"></i>
+  <span id="toast-msg"></span>
+</div>
+
+<script>
+  // Modal open/close
+  function openRunModal() {
+    document.getElementById('runModal').classList.add('open');
+  }
+  function closeRunModal() {
+    document.getElementById('runModal').classList.remove('open');
+  }
+  function openRerunModal() {
+    document.getElementById('rerunModal').classList.add('open');
+  }
+  function closeRerunModal() {
+    document.getElementById('rerunModal').classList.remove('open');
+  }
+
+  // Radio toggle
+  function selectRunLevel(el) {
+    document.querySelectorAll('#runLevelGroup .radio-card').forEach(c => c.classList.remove('selected'));
+    el.classList.add('selected');
+  }
+  function selectRerunLevel(el) {
+    document.querySelectorAll('#rerunLevelGroup .radio-card').forEach(c => c.classList.remove('selected'));
+    el.classList.add('selected');
+  }
+
+  // Checkbox toggle
+  function toggleChk(el) {
+    el.classList.toggle('checked');
+  }
+  function toggleRunAll(el) {
+    el.classList.toggle('checked');
+  }
+  function toggleRerunAll(el) {
+    el.classList.toggle('checked');
+  }
+
+  // Toast
+  let toastTimer = null;
+  function showToast(type, msg) {
+    const t = document.getElementById('toast');
+    const icon = document.getElementById('toast-icon');
+    const msgEl = document.getElementById('toast-msg');
+    // Clear previous
+    clearTimeout(toastTimer);
+    t.classList.remove('show', 'toast-success', 'toast-error', 'toast-loading');
+
+    if (type === 'success') {
+      t.classList.add('toast-success');
+      icon.setAttribute('data-lucide', 'circle-check-big');
+    } else if (type === 'error') {
+      t.classList.add('toast-error');
+      icon.setAttribute('data-lucide', 'circle-alert');
+    } else if (type === 'loading') {
+      t.classList.add('toast-loading');
+      icon.setAttribute('data-lucide', 'loader-circle');
+    }
+    msgEl.textContent = msg;
+    lucide.createIcons();
+
+    // Show
+    requestAnimationFrame(() => {
+      t.classList.add('show');
+    });
+
+    // Auto dismiss
+    if (type !== 'loading') {
+      toastTimer = setTimeout(() => {
+        t.classList.remove('show');
+      }, 2500);
+    }
+  }
+
+  // AI Run / Rerun
+  function runAI() {
+    closeRunModal();
+    showToast('loading', 'AI 채점을 실행하고 있습니다...');
+    setTimeout(() => {
+      showToast('success', 'AI 채점이 완료되었습니다.');
+    }, 2000);
+  }
+  function rerunAI() {
+    closeRerunModal();
+    showToast('loading', 'AI 채점을 재실행하고 있습니다...');
+    setTimeout(() => {
+      showToast('success', 'AI 채점 재실행이 완료되었습니다.');
+    }, 2000);
+  }
+
+  // Init Lucide icons
+  document.addEventListener('DOMContentLoaded', () => {
+    lucide.createIcons();
+  });
+</script>
+
+</body>
+</html>
