@@ -74,6 +74,14 @@
     .fb-emoji-card { flex:1; height:72px; border-radius:12px; border:1.5px solid #E6E6E6; background:white; cursor:pointer; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; font-family:inherit; transition:border-color .15s,background .15s; }
     .fb-emoji-card:hover { border-color:#B28FFD; background:#FAF7FF; }
     .fb-emoji-card.selected { border-color:#7E44FB; background:#F7F4FF; }
+    .fb-type-row { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:11px 0; border-bottom:1px solid #F0F0F0; }
+    .fb-type-row:last-child { border-bottom:none; }
+    .fb-type-name { font-size:14px; font-weight:700; color:#222631; }
+    .fb-type-desc { font-size:12px; color:#808080; margin-top:2px; }
+    .fb-stars { display:flex; gap:2px; flex-shrink:0; }
+    .fb-star { background:none; border:none; cursor:pointer; font-size:22px; color:#D9D9D9; padding:0 1px; line-height:1; transition:color .1s; }
+    .fb-star.on { color:#FFBF00; }
+    .fb-star.hv { color:#FFD966; }
   /* Modal */
   .modal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.4); z-index:1000; align-items:center; justify-content:center; }
   .modal-overlay.open { display:flex; }
@@ -1145,6 +1153,19 @@
     document.querySelectorAll('#modal-feedback .fb-emoji-card').forEach(b => b.classList.remove('selected'));
     el.classList.add('selected');
   }
+  function setFbStar(btn, val) {
+    btn.closest('.fb-stars').querySelectorAll('.fb-star').forEach((s, i) => {
+      s.classList.toggle('on', i < val); s.classList.remove('hv');
+    });
+  }
+  function hoverFbStar(btn, val) {
+    btn.closest('.fb-stars').querySelectorAll('.fb-star').forEach((s, i) => {
+      s.classList.toggle('hv', i < val && !s.classList.contains('on'));
+    });
+  }
+  function leaveFbStars(el) {
+    el.querySelectorAll('.fb-star').forEach(s => s.classList.remove('hv'));
+  }
   function submitFeedback() {
     document.getElementById('modal-feedback').classList.remove('open');
     showToast('success', '의견이 전송되었습니다. 감사합니다!');
@@ -1174,6 +1195,51 @@
           <button class="fb-emoji-card" onclick="selectFbEmoji(this)">
             <span style="font-size:28px;">😞</span><span style="font-size:12px; font-weight:700; color:#494949;">불만</span>
           </button>
+        </div>
+      </div>
+      <div>
+        <div class="field-label">문항 유형별 만족도 <span style="font-size:12px; color:#B3B3B3; font-weight:400;">(선택)</span></div>
+        <div style="margin-top:8px; background:#FAFAFA; border:1px solid #EFEFEF; border-radius:12px; padding:4px 16px;">
+          <div class="fb-type-row">
+            <div><div class="fb-type-name">논술형</div><div class="fb-type-desc">자유 서술 기반의 긴 분량 답안</div></div>
+            <div class="fb-stars" onmouseleave="leaveFbStars(this)">
+              <button type="button" class="fb-star" onclick="setFbStar(this,1)" onmouseover="hoverFbStar(this,1)">★</button>
+              <button type="button" class="fb-star" onclick="setFbStar(this,2)" onmouseover="hoverFbStar(this,2)">★</button>
+              <button type="button" class="fb-star" onclick="setFbStar(this,3)" onmouseover="hoverFbStar(this,3)">★</button>
+              <button type="button" class="fb-star" onclick="setFbStar(this,4)" onmouseover="hoverFbStar(this,4)">★</button>
+              <button type="button" class="fb-star" onclick="setFbStar(this,5)" onmouseover="hoverFbStar(this,5)">★</button>
+            </div>
+          </div>
+          <div class="fb-type-row">
+            <div><div class="fb-type-name">서술형</div><div class="fb-type-desc">특정 내용 설명·기술 중심의 중간 분량</div></div>
+            <div class="fb-stars" onmouseleave="leaveFbStars(this)">
+              <button type="button" class="fb-star" onclick="setFbStar(this,1)" onmouseover="hoverFbStar(this,1)">★</button>
+              <button type="button" class="fb-star" onclick="setFbStar(this,2)" onmouseover="hoverFbStar(this,2)">★</button>
+              <button type="button" class="fb-star" onclick="setFbStar(this,3)" onmouseover="hoverFbStar(this,3)">★</button>
+              <button type="button" class="fb-star" onclick="setFbStar(this,4)" onmouseover="hoverFbStar(this,4)">★</button>
+              <button type="button" class="fb-star" onclick="setFbStar(this,5)" onmouseover="hoverFbStar(this,5)">★</button>
+            </div>
+          </div>
+          <div class="fb-type-row">
+            <div><div class="fb-type-name">단답/목록형</div><div class="fb-type-desc">단어 또는 단문 수준의 짧은 답안</div></div>
+            <div class="fb-stars" onmouseleave="leaveFbStars(this)">
+              <button type="button" class="fb-star" onclick="setFbStar(this,1)" onmouseover="hoverFbStar(this,1)">★</button>
+              <button type="button" class="fb-star" onclick="setFbStar(this,2)" onmouseover="hoverFbStar(this,2)">★</button>
+              <button type="button" class="fb-star" onclick="setFbStar(this,3)" onmouseover="hoverFbStar(this,3)">★</button>
+              <button type="button" class="fb-star" onclick="setFbStar(this,4)" onmouseover="hoverFbStar(this,4)">★</button>
+              <button type="button" class="fb-star" onclick="setFbStar(this,5)" onmouseover="hoverFbStar(this,5)">★</button>
+            </div>
+          </div>
+          <div class="fb-type-row">
+            <div><div class="fb-type-name">보고서형</div><div class="fb-type-desc">구조화된 양식 기반 (제목·본문·결론 등)</div></div>
+            <div class="fb-stars" onmouseleave="leaveFbStars(this)">
+              <button type="button" class="fb-star" onclick="setFbStar(this,1)" onmouseover="hoverFbStar(this,1)">★</button>
+              <button type="button" class="fb-star" onclick="setFbStar(this,2)" onmouseover="hoverFbStar(this,2)">★</button>
+              <button type="button" class="fb-star" onclick="setFbStar(this,3)" onmouseover="hoverFbStar(this,3)">★</button>
+              <button type="button" class="fb-star" onclick="setFbStar(this,4)" onmouseover="hoverFbStar(this,4)">★</button>
+              <button type="button" class="fb-star" onclick="setFbStar(this,5)" onmouseover="hoverFbStar(this,5)">★</button>
+            </div>
+          </div>
         </div>
       </div>
       <div>
