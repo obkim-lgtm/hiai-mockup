@@ -579,6 +579,37 @@
 **직접 접근 URL:**
 - 평가계획생성: `https://www.figma.com/design/344b7XVs8E9KaFBhgAEhtW/HIAI-v1.0~?node-id=2412-26000`
 
+#### 과제물 관리 (TASKS)
+| 스크린 ID | 화면명 | 상태 | 파일 | 노드 ID |
+|-----------|--------|------|------|---------|
+| TASKS-001 | 과제물 관리 목록 | ● | 344b7XVs8E9KaFBhgAEhtW | `2087:50603` |
+| TASKS-002 | 학급 제출 상세 (1-1반) | ● | 344b7XVs8E9KaFBhgAEhtW | `2087:50665` |
+| TASKS-003 | 개별 파일 추가/제거 팝업 | ● | 344b7XVs8E9KaFBhgAEhtW | `2087:50992` |
+| TASKS-004 | 일괄업로드 - 파일선택 | ● | 344b7XVs8E9KaFBhgAEhtW | `2087:51011` |
+| TASKS-005 | 일괄업로드 - 분할설정 | ● | 344b7XVs8E9KaFBhgAEhtW | `2087:51230` |
+| TASKS-006 | 일괄업로드 - 분할결과(수동) | ● | 344b7XVs8E9KaFBhgAEhtW | `2087:51329` |
+| TASKS-007 | 일괄업로드 - 분할결과(자동) | ● | 344b7XVs8E9KaFBhgAEhtW | `2087:51437` |
+
+**직접 접근 URL:**
+- 과제물 관리 목록: `https://www.figma.com/design/344b7XVs8E9KaFBhgAEhtW/HIAI-v1.0~?node-id=2087-50603`
+- 학급 제출 상세: `https://www.figma.com/design/344b7XVs8E9KaFBhgAEhtW/HIAI-v1.0~?node-id=2087-50665`
+- 개별 파일 추가/제거: `https://www.figma.com/design/344b7XVs8E9KaFBhgAEhtW/HIAI-v1.0~?node-id=2087-50992`
+- 일괄업로드 파일선택: `https://www.figma.com/design/344b7XVs8E9KaFBhgAEhtW/HIAI-v1.0~?node-id=2087-51011`
+- 일괄업로드 분할설정: `https://www.figma.com/design/344b7XVs8E9KaFBhgAEhtW/HIAI-v1.0~?node-id=2087-51230`
+- 일괄업로드 분할결과(수동): `https://www.figma.com/design/344b7XVs8E9KaFBhgAEhtW/HIAI-v1.0~?node-id=2087-51329`
+- 일괄업로드 분할결과(자동): `https://www.figma.com/design/344b7XVs8E9KaFBhgAEhtW/HIAI-v1.0~?node-id=2087-51437`
+
+**Figma 섹션:** `과제물 관리` (344b7XVs8E9KaFBhgAEhtW, 페이지 `v1.2 - 전체화면`, 섹션 `2087:50587`)
+
+**화면 구성 요약:**
+- **TASKS-001 (목록):** 과제물 관리 탭 active, 평가명별 반 단위 카드 (상태 뱃지: 진행/마감/예정, 제출현황 프로그레스바, 미제출 수, 과제 제출 상세 링크). 하단에 "과제물 없는 과제" 영역 (수동 채점하기 버튼)
+- **TASKS-002 (학급 제출 상세):** 타이틀바 "← 1학년 국어 | 과제 제출 상세", 우상단 `학급 PDF 업로드` 버튼(green). 미제출 학생 경고 바. 학생 테이블: 상태(제출/미제출 뱃지) · 학번 · 이름 · 최근 제출 일시 · 파일 수 · 파일 추가/제거 링크
+- **TASKS-003 (파일 추가/제거 팝업):** Dialog — "김가나 학생 파일 추가/제거", 파일 제한 안내, 파일 태그 + 삭제, 파일 업로드 링크, 취소/저장 버튼
+- **TASKS-004 (일괄업로드 - 파일선택):** 전체 화면, "1학년 1반 학급 PDF 일괄 업로드" 타이틀. 드롭존 영역 (학급 단위 스캔 PDF 1개 선택 안내 + 파일 선택 버튼)
+- **TASKS-005 (분할설정):** 좌측 PDF 미리보기 (페이지 네비게이션 + 줌), 우측 분할 설정 패널 — 학생당 기본 N장, 스캔 파일 N페이지부터 시작, 분할 결과 수정 방식 라디오 (페이지 장수 입력 / 페이지 번호 입력), 파일 다시 업로드 / 파일 분할 시작 버튼
+- **TASKS-006 (분할결과 수동):** 좌측 PDF 미리보기, 우측 분할 결과 테이블 — 학번 · 이름 · 페이지 수 · 페이지 번호(from~to 입력) · 미제출 체크. 분할 재설정 / 과제 업로드 버튼
+- **TASKS-007 (분할결과 자동):** TASKS-006과 동일 레이아웃, 페이지 번호 자동 배정(1~2, 3~4...), 페이지 수 0인 행도 표시
+
 #### AI 채점 (SCORINGS)
 | 스크린 ID | 화면명 | 상태 | 파일 | 노드 ID |
 |-----------|--------|------|------|---------|
@@ -590,6 +621,26 @@
 - AI채점 목록: `https://www.figma.com/design/MM23uA7pDEmFeMKGeFVJpB/2026-HIAI--Design-?node-id=54-4151`
 - 학생채점결과상세: `https://www.figma.com/design/MM23uA7pDEmFeMKGeFVJpB/2026-HIAI--Design-?node-id=49-1674`
 
+#### 평가 리포트 (REPORTS)
+
+| 스크린 ID | 화면명 | 상태 | 파일 | 노드 ID |
+|-----------|--------|------|------|---------|
+| REPORTS-001 | 평가 리포트 목록 | ● | `344b7XVs8E9KaFBhgAEhtW` | `2087:52878` |
+| REPORTS-002 | 학생 평가 리포트 상세 | ● | `344b7XVs8E9KaFBhgAEhtW` | — |
+
+**직접 접근 URL:**
+- 평가 리포트 목록: `https://www.figma.com/design/344b7XVs8E9KaFBhgAEhtW/HIAI-v1.0~?node-id=2087-52878`
+
+**목업 파일:**
+- 목록: `output/report_list_v1.html`
+- 상세: `output/student_report_v1.html`
+
+**화면 구성 요약:**
+- **REPORTS-001 (목록):** 평가 리포트 탭 active. 패널 헤더: "평가 리포트" + 설명 + `평가 점수 다운로드` 버튼(purple filled, download 아이콘).
+  - Section 1 — 과제별 평균 점수: 과제·전체평균·반·반평균·평균대비(▲/▼/— 컬러 기호)·인원·미응시/미제출. 과제별 3개 반 rowspan.
+  - Section 2 — 학생별 평가 리포트: 반/정렬 필터 드롭다운 + 테이블(반·학번·이름·총점·과제1/2/3·평가 리포트). "리포트 상세 >" 링크 → `student_report_v1.html`. 하단 페이지네이션.
+- **REPORTS-002 (상세):** TitleBar "1학년 국어 | 리포트 상세" + ← 뒤로(→ report_list_v1.html). Recharts 기반 개인 성취 분석 (라인차트, 레이더차트). 과목 태그·AI 피드백 요약 포함.
+
 ---
 
 ## 작업 이력
@@ -597,3 +648,5 @@
 - 260401: 스크린 인덱스 전체 추출 완료 (스크린맵 `l6ucsDgFo0Y4uOB2eIBrMu` 전 노드 파싱 — 피그마 MCP 직접 접근 가능)
 - 260401: CLAUDE.md에 Figma 파일키 4종 및 스크린 인덱스 참조 추가, 서비스 개요 및 핵심 플로우 정리
 - 260403: COURSE-001 평가홈 목업 신규 작성 (`eval_home_v1_260403.html`). Figma `344b7XVs8E9KaFBhgAEhtW` `2087:56337` 기준.
+- 260414: 과제물 관리(TASKS) 스크린 인덱스 추가 — 7개 화면 (목록, 학급 제출 상세, 파일 팝업, 일괄업로드 4단계). Figma `344b7XVs8E9KaFBhgAEhtW` 페이지 `v1.2 - 전체화면`.
+- 260415: 평가 리포트(REPORTS) 목록 목업 신규 작성 (`report_list_v1.html`). Figma `344b7XVs8E9KaFBhgAEhtW` `2087:52878` 기준. 과제별 평균 점수 테이블 + 학생별 리포트 테이블. 리포트 상세 링크 → `student_report_v1.html`. 전 파일 "평가 리포트" 탭 연결 완료.

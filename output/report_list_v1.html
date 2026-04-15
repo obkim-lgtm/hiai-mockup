@@ -7,356 +7,369 @@
 <title>평가 리포트 목록 v1</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
-<script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-<script src="https://unpkg.com/prop-types@15.8.1/prop-types.min.js"></script>
-<script src="https://unpkg.com/recharts@2.12.7/umd/Recharts.js"></script>
-<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 <style>
   @import url('https://cdn.rawgit.com/moonspam/NanumSquareRound/master/nanumsquareround.min.css');
   *{font-family:'NanumSquareRound',-apple-system,sans-serif;box-sizing:border-box}
   body{margin:0;background:#EDF1FC;color:#222}
-  .tab-active  {flex:1;height:60px;background:white;border-radius:20px 20px 0 0;display:flex;align-items:center;justify-content:center;cursor:pointer;}
+  .tab-active{flex:1;height:60px;background:white;border-radius:20px 20px 0 0;display:flex;align-items:center;justify-content:center;cursor:default;}
   .tab-inactive{flex:1;height:60px;background:#CBD6F4;border-radius:20px 20px 0 0;display:flex;align-items:center;justify-content:center;cursor:pointer;}
+  .tab-inactive:hover{background:#b9c8f0}
   .btn-pri{background:#7E44FB;color:#fff;border:0;border-radius:8px;height:36px;padding:0 16px;font-size:13px;font-weight:800;cursor:pointer;display:inline-flex;align-items:center;gap:6px}
-  .btn-out{background:#fff;color:#494949;border:1px solid #D9D9D9;border-radius:8px;height:32px;padding:0 12px;font-size:12px;font-weight:800;cursor:pointer}
-  .btn-out.on{color:#7E44FB;border-color:#7E44FB;background:#F7F4FF}
-  .badge-warn{background:#FFEFEF;color:#DB3E51;border-radius:100px;padding:2px 10px;font-size:12px;font-weight:800}
-  .badge-ok  {background:#F1F9F3;color:#00AF3D;border-radius:100px;padding:2px 10px;font-size:12px;font-weight:800}
-  .badge-mid {background:#FFF8F3;color:#FF8C4C;border-radius:100px;padding:2px 10px;font-size:12px;font-weight:800}
-  .tag-strong{display:inline-flex;align-items:center;height:22px;padding:0 8px;border-radius:100px;font-size:11px;font-weight:800;background:#F1F9F3;color:#00AF3D}
-  .tag-weak  {display:inline-flex;align-items:center;height:22px;padding:0 8px;border-radius:100px;font-size:11px;font-weight:800;background:#FFEFEF;color:#DB3E51}
-  tr.warn-row{background:#FFF8F3}
-  tr.warn-row td:first-child{border-left:3px solid #FF8C4C}
-  tr.danger-row{background:#FFF5F5}
-  tr.danger-row td:first-child{border-left:3px solid #DB3E51}
+  .btn-pri:hover{background:#6B35E8}
+  .btn-out{background:#fff;color:#7E44FB;border:1px solid #B28FFD;border-radius:8px;height:36px;padding:0 12px;font-size:13px;font-weight:800;cursor:pointer;display:inline-flex;align-items:center;gap:6px}
+  .section-title{font-size:18px;font-weight:800;color:#222;display:flex;align-items:center;gap:10px;margin-bottom:16px}
+  .section-title::before{content:'';display:inline-block;width:4px;height:20px;background:#7E44FB;border-radius:2px;flex-shrink:0}
+  .tbl{width:100%;border-collapse:collapse}
+  .tbl th{background:#F8F8F8;font-size:13px;font-weight:800;color:#494949;padding:11px 12px;text-align:center;border-bottom:1px solid #E6E6E6}
+  .tbl th.left{text-align:left;padding-left:20px}
+  .tbl td{font-size:13px;font-weight:700;color:#222;padding:11px 12px;text-align:center;border-bottom:1px solid #F0F0F0;vertical-align:middle}
+  .tbl td.left{text-align:left;padding-left:20px}
+  .tbl tbody tr:last-child td{border-bottom:none}
+  .tbl tbody tr:hover td{background:#FAFAFF}
+  .group-sep td{border-bottom:1.5px solid #E6E6E6 !important}
+  .avg-val{font-size:15px;font-weight:900;color:#7E44FB}
+  .diff-up{color:#00AF3D;font-weight:800}
+  .diff-dn{color:#DB3E51;font-weight:800}
+  .diff-eq{color:#808080;font-weight:800}
+  select.filter-sel{border:1px solid #D9D9D9;border-radius:8px;height:36px;padding:0 12px;font-size:13px;font-weight:700;color:#222;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23808080' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") no-repeat right 10px center;padding-right:32px;cursor:pointer;outline:none;-webkit-appearance:none;font-family:'NanumSquareRound',-apple-system,sans-serif}
+  .page-btn{width:32px;height:32px;border:1px solid #D9D9D9;border-radius:8px;background:#fff;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#494949;transition:all .15s}
+  .page-btn:hover{border-color:#7E44FB;color:#7E44FB}
+  .page-btn.active{background:#7E44FB;color:#fff;border-color:#7E44FB}
+  .report-link{color:#7E44FB;font-weight:800;text-decoration:none;display:inline-flex;align-items:center;gap:2px;font-size:13px}
+  .report-link:hover{text-decoration:underline}
+  .badge-miss{background:#FFEFEF;color:#DB3E51;border-radius:100px;padding:2px 10px;font-size:12px;font-weight:800;display:inline-block}
+  .gnb-menu span{cursor:pointer;transition:color .15s}
+  .gnb-menu span:hover{color:#7E44FB}
 </style>
 </head>
 <body>
-<div id="root"></div>
-<script type="text/babel">
-const {useState} = React;
-const {ResponsiveContainer,BarChart,Bar,XAxis,YAxis,Tooltip,Cell,ReferenceLine,CartesianGrid} = Recharts;
 
-/* ── 에셋 ── */
-const A = {
-  logoIcon: "https://www.figma.com/api/mcp/asset/c911cba1-edaf-4ae5-9e7f-a7223e212dfb",
-  logoT1:   "https://www.figma.com/api/mcp/asset/0b7bfb05-8331-4a5b-a914-dfd68cbb45cf",
-  logoT2:   "https://www.figma.com/api/mcp/asset/99f47c76-65ad-45ac-aa4e-3fa30bab432a",
-  aiIcon:   "https://www.figma.com/api/mcp/asset/9f7e059a-12a4-40b7-ab5b-2623dfdbbbd6",
-};
-
-/* ── 더미 데이터 ── */
-const ASSIGNMENTS = [
-  {
-    id:"a1", title:"미래 사회 예측 시나리오", deadline:"25.04.28", maxScore:30,
-    totalAvg:26.1, classAvg:{c1:28,c2:26,c3:24},
-    submitted:58, total:60, missing:2,
-    dist:[{range:"0–9",count:2},{range:"10–14",count:4},{range:"15–19",count:8},{range:"20–24",count:18},{range:"25–29",count:20},{range:"30",count:6}],
-  },
-  {
-    id:"a2", title:"독후감 1차 과제", deadline:"25.05.10", maxScore:30,
-    totalAvg:26.4, classAvg:{c1:27,c2:25,c3:27},
-    submitted:57, total:60, missing:3,
-    dist:[{range:"0–9",count:3},{range:"10–14",count:5},{range:"15–19",count:7},{range:"20–24",count:16},{range:"25–29",count:22},{range:"30",count:4}],
-  },
-  {
-    id:"a3", title:"독후감 2차 과제", deadline:"25.05.28", maxScore:30,
-    totalAvg:24.8, classAvg:{c1:25,c2:23,c3:26},
-    submitted:55, total:60, missing:5,
-    dist:[{range:"0–9",count:5},{range:"10–14",count:8},{range:"15–19",count:10},{range:"20–24",count:18},{range:"25–29",count:12},{range:"30",count:2}],
-  },
-];
-
-const STUDENTS = [
-  {id:"10101",cls:"1-1",name:"강지훈",total:82,scores:[28,27,27],tag:{text:"논리 전개 우수",type:"strong"},alert:null},
-  {id:"10102",cls:"1-1",name:"김서연",total:75,scores:[25,25,25],tag:{text:"자료 활용 우수",type:"strong"},alert:null},
-  {id:"10103",cls:"1-1",name:"박민준",total:48,scores:[18,16,14],tag:{text:"근거 제시 보강 필요",type:"weak"},alert:"drop"},
-  {id:"10201",cls:"1-2",name:"김하나",total:60,scores:[23,20,17],tag:{text:"경험 연결 보강 필요",type:"weak"},alert:"drop"},
-  {id:"10202",cls:"1-2",name:"최민지",total:78,scores:[26,26,26],tag:{text:"서술 구조 우수",type:"strong"},alert:null},
-  {id:"10203",cls:"1-2",name:"이하린",total:30,scores:[30,null,null],tag:{text:"미제출 반복",type:"weak"},alert:"missing"},
-  {id:"10204",cls:"1-2",name:"한아영",total:79,scores:[27,26,26],tag:{text:"자료 활용 우수",type:"strong"},alert:null},
-  {id:"10301",cls:"1-3",name:"정우성",total:55,scores:[22,18,15],tag:{text:"점수 하락 추세",type:"weak"},alert:"drop"},
-  {id:"10302",cls:"1-3",name:"오수민",total:83,scores:[28,28,27],tag:{text:"논리 전개 우수",type:"strong"},alert:null},
-  {id:"10303",cls:"1-3",name:"윤지호",total:40,scores:[14,13,13],tag:{text:"전반적 보강 필요",type:"weak"},alert:"drop"},
-];
-
-/* ── 공통 헤더 ── */
-function GNB(){
-  return (
-    <div style={{background:"#fff",height:98,borderBottom:"1px solid #D9D9D9",display:"flex",alignItems:"center",justifyContent:"center",padding:"0 36px"}}>
-      <div style={{flex:"1 0 0",maxWidth:1200,minWidth:960,display:"flex",alignItems:"center",justifyContent:"space-between",padding:"0 36px"}}>
-        <div style={{display:"flex",alignItems:"center",gap:8}}>
-          <div style={{width:58,height:42,overflow:"hidden",position:"relative",flexShrink:0}}>
-            <img src={A.logoIcon} alt="" style={{position:"absolute",left:"50%",transform:"translateX(-50%)",height:"100%",width:"auto",objectFit:"cover"}}/>
-          </div>
-          <div style={{position:"relative",width:150,height:41}}>
-            <img src={A.logoT1} alt="" style={{position:"absolute",top:0,left:0,width:79.842,height:16.284}}/>
-            <img src={A.logoT2} alt="" style={{position:"absolute",top:24.08,left:0.31,width:149.692,height:16.422}}/>
-          </div>
-        </div>
-        <div style={{display:"flex",alignItems:"center",gap:52,fontSize:20}}>
-          <span style={{color:"#7E44FB",fontWeight:800}}>나의 평가</span>
-          <span style={{color:"#000",fontWeight:700}}>평가 자료실</span>
-          <span style={{color:"#000",fontWeight:700}}>고객센터</span>
-        </div>
-        <div style={{display:"flex",alignItems:"center",gap:12}}>
-          <div style={{width:36,height:36,background:"#F0EAFF",borderRadius:"50%",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#7E44FB" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 8V4H8"/><rect width="16" height="12" x="4" y="8" rx="2"/><path d="M2 14h2"/><path d="M20 14h2"/><path d="M15 13v2"/><path d="M9 13v2"/></svg></div>
-          <span style={{fontSize:20,fontWeight:700}}>김동* 님</span>
-        </div>
+<!-- ── GNB ── -->
+<div style="background:#fff;height:98px;border-bottom:1px solid #D9D9D9;display:flex;align-items:center;justify-content:center;padding:0 36px">
+  <div style="flex:1;max-width:1200px;min-width:960px;display:flex;align-items:center;justify-content:space-between;padding:0 36px">
+    <!-- Logo -->
+    <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
+      <div style="width:58px;height:42px;overflow:hidden;position:relative;flex-shrink:0">
+        <img src="https://www.figma.com/api/mcp/asset/e79fd2d7-dd69-428b-8123-ea4fd2bac859"
+             style="position:absolute;left:50%;transform:translateX(-50%);height:100%;width:auto;object-fit:cover" alt="HiAI 로고">
+      </div>
+      <div style="position:relative;width:150px;height:41px">
+        <img src="https://www.figma.com/api/mcp/asset/7ece41a2-2ee0-4bfb-86b2-95d8a69be9c0"
+             style="position:absolute;top:0;left:0;width:79.842px;height:16.284px" alt="하이러닝 AI">
+        <img src="https://www.figma.com/api/mcp/asset/92820b0f-352b-4807-8902-592502093666"
+             style="position:absolute;top:24.08px;left:0.31px;width:149.692px;height:16.422px" alt="서논술형 평가 서비스">
       </div>
     </div>
-  );
-}
-function TitleBar(){
-  return (
-    <div style={{background:"linear-gradient(to right,#6562f5 4%,#9b68f3 97.86%)",height:86,display:"flex",alignItems:"center",justifyContent:"center",padding:"0 36px"}}>
-      <div style={{flex:"1 0 0",maxWidth:1200,minWidth:960,padding:"0 36px"}}>
-        <span style={{fontSize:28,fontWeight:800,color:"#fff"}}>1학년 국어</span>
+    <!-- Nav -->
+    <div class="gnb-menu" style="display:flex;align-items:center;gap:52px;font-size:20px">
+      <span style="color:#7E44FB;font-weight:800">나의 평가</span>
+      <span style="color:#000;font-weight:700">평가 자료실</span>
+      <span style="color:#000;font-weight:700">고객센터</span>
+    </div>
+    <!-- User -->
+    <div style="display:flex;align-items:center;gap:12px">
+      <div style="width:36px;height:36px;background:#F0EAFF;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#7E44FB" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 8V4H8"/><rect width="16" height="12" x="4" y="8" rx="2"/>
+          <path d="M2 14h2"/><path d="M20 14h2"/><path d="M15 13v2"/><path d="M9 13v2"/>
+        </svg>
+      </div>
+      <span style="font-size:20px;font-weight:700">김동* 님</span>
+    </div>
+  </div>
+</div>
+
+<!-- ── TitleBar ── -->
+<div style="background:linear-gradient(to right,#6562F5 4%,#9B68F3 97.86%);height:86px;display:flex;align-items:center;justify-content:center;padding:0 36px">
+  <div style="flex:1;max-width:1200px;min-width:960px;padding:0 36px">
+    <span style="font-size:28px;font-weight:800;color:#fff">1학년 국어</span>
+  </div>
+</div>
+
+<!-- ── Content ── -->
+<div style="display:flex;flex-direction:column;align-items:center;padding:40px 36px;min-height:760px">
+  <div style="width:100%;max-width:1200px">
+
+    <!-- Tabs -->
+    <div style="display:flex;gap:12px">
+      <div class="tab-inactive" onclick="location.href='eval_home_v6_260403.html'">
+        <span style="font-size:20px;font-weight:700;color:#000">평가 홈</span>
+      </div>
+      <div class="tab-inactive">
+        <span style="font-size:20px;font-weight:700;color:#000">평가 대상</span>
+      </div>
+      <div class="tab-inactive" onclick="location.href='evaluation_design_v3_260403.html'">
+        <span style="font-size:20px;font-weight:700;color:#000">평가 설계</span>
+      </div>
+      <div class="tab-inactive" onclick="location.href='task_ocr_review_v1.html'">
+        <span style="font-size:20px;font-weight:700;color:#000">과제물 관리</span>
+      </div>
+      <div class="tab-inactive" onclick="location.href='scoring_list_v1.html'">
+        <span style="font-size:20px;font-weight:700;color:#000">AI 채점</span>
+      </div>
+      <div class="tab-active">
+        <span style="font-size:20px;font-weight:800;color:#341761">평가 리포트</span>
       </div>
     </div>
-  );
-}
-function Tabs(){
-  const tabs=["평가 홈","평가 대상","평가 설계","과제물 관리","AI 채점","평가 리포트"];
-  const urls=["eval_home_v6_260403.html",null,"evaluation_design_v3_260403.html","task_ocr_review_v1.html","scoring_list_v1.html",null];
-  return (
-    <div style={{display:"flex",gap:12}}>
-      {tabs.map((t,i)=>(
-        <div key={i} className={i===5?"tab-active":"tab-inactive"}
-          onClick={urls[i]?()=>location.href=urls[i]:undefined}
-          style={{cursor:urls[i]?"pointer":"default"}}>
-          <span style={{fontSize:20,fontWeight:i===5?800:700,color:i===5?"#341761":"#000"}}>{t}</span>
-        </div>
-      ))}
-    </div>
-  );
-}
 
-/* ── KPI 카드 ── */
-function KpiCard({icon,label,value,sub,color,bg}){
-  return (
-    <div style={{background:"#fff",border:"1px solid #E6E6E6",borderRadius:14,padding:"20px 24px",display:"flex",alignItems:"center",gap:16,flex:1}}>
-      <div style={{width:44,height:44,borderRadius:12,background:bg,display:"flex",alignItems:"center",justifyContent:"center",fontSize:22,flexShrink:0}}>{icon}</div>
+    <!-- Panel -->
+    <div style="background:#fff;border-radius:0 0 20px 20px;padding:28px 24px;box-shadow:0 4px 36px rgba(95,102,178,0.16)">
+
+      <!-- Panel header -->
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:32px">
+        <div>
+          <div style="font-size:24px;font-weight:800;color:#222;margin-bottom:6px">평가 리포트</div>
+          <div style="font-size:14px;color:#808080;font-weight:700">실시된 평가 결과를 확인하고 엑셀로 다운받을 수 있습니다.</div>
+        </div>
+        <button class="btn-pri">
+          <i data-lucide="download" style="width:16px;height:16px"></i>
+          평가 점수 다운로드
+        </button>
+      </div>
+
+      <!-- ── Section 1: 과제별 평균 점수 ── -->
+      <div style="margin-bottom:40px">
+        <div class="section-title">과제별 평균 점수</div>
+        <div style="border:1px solid #E6E6E6;border-radius:12px;overflow:hidden">
+          <table class="tbl">
+            <thead>
+              <tr>
+                <th class="left" style="width:220px">과제</th>
+                <th style="width:100px">전체 평균</th>
+                <th style="width:72px">반</th>
+                <th style="width:100px">반 평균</th>
+                <th style="width:110px">평균대비</th>
+                <th style="width:72px">인원</th>
+                <th style="width:120px">미응시/미제출</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- 미래 사회 예측 시나리오 -->
+              <tr>
+                <td class="left" rowspan="3" style="border-right:1px solid #F0F0F0;font-size:14px;font-weight:800">
+                  미래 사회 예측 시나리오
+                </td>
+                <td rowspan="3" class="avg-val" style="border-right:1px solid #F0F0F0">26.1</td>
+                <td>1-1</td>
+                <td>30.1</td>
+                <td><span class="diff-up">▲ 4.0</span></td>
+                <td>20</td>
+                <td>2</td>
+              </tr>
+              <tr>
+                <td>1-2</td>
+                <td>26.1</td>
+                <td><span class="diff-eq">— 0.0</span></td>
+                <td>20</td>
+                <td>2</td>
+              </tr>
+              <tr class="group-sep">
+                <td>1-3</td>
+                <td>24.1</td>
+                <td><span class="diff-dn">▼ 2.0</span></td>
+                <td>20</td>
+                <td>2</td>
+              </tr>
+              <!-- 독후감 1차 과제 -->
+              <tr>
+                <td class="left" rowspan="3" style="border-right:1px solid #F0F0F0;font-size:14px;font-weight:800">
+                  독후감 1차 과제
+                </td>
+                <td rowspan="3" class="avg-val" style="border-right:1px solid #F0F0F0">26.4</td>
+                <td>1-1</td>
+                <td>27.0</td>
+                <td><span class="diff-up">▲ 0.6</span></td>
+                <td>20</td>
+                <td>2</td>
+              </tr>
+              <tr>
+                <td>1-2</td>
+                <td>25.0</td>
+                <td><span class="diff-dn">▼ 1.4</span></td>
+                <td>20</td>
+                <td>2</td>
+              </tr>
+              <tr class="group-sep">
+                <td>1-3</td>
+                <td>27.0</td>
+                <td><span class="diff-up">▲ 0.6</span></td>
+                <td>20</td>
+                <td>2</td>
+              </tr>
+              <!-- 독후감 2차 과제 -->
+              <tr>
+                <td class="left" rowspan="3" style="border-right:1px solid #F0F0F0;font-size:14px;font-weight:800">
+                  독후감 2차 과제
+                </td>
+                <td rowspan="3" class="avg-val" style="border-right:1px solid #F0F0F0">24.8</td>
+                <td>1-1</td>
+                <td>25.0</td>
+                <td><span class="diff-up">▲ 0.2</span></td>
+                <td>20</td>
+                <td>5</td>
+              </tr>
+              <tr>
+                <td>1-2</td>
+                <td>23.0</td>
+                <td><span class="diff-dn">▼ 1.8</span></td>
+                <td>20</td>
+                <td>5</td>
+              </tr>
+              <tr>
+                <td>1-3</td>
+                <td>26.0</td>
+                <td><span class="diff-up">▲ 1.2</span></td>
+                <td>20</td>
+                <td>5</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ── Section 2: 학생별 평가 리포트 ── -->
       <div>
-        <div style={{fontSize:12,color:"#808080",fontWeight:800,marginBottom:4}}>{label}</div>
-        <div style={{fontSize:24,fontWeight:900,color,lineHeight:1}}>{value}</div>
-        {sub && <div style={{fontSize:12,color:"#B3B3B3",marginTop:3}}>{sub}</div>}
+        <div class="section-title">학생별 평가 리포트</div>
+        <!-- Filters -->
+        <div style="display:flex;gap:12px;margin-bottom:16px">
+          <select class="filter-sel">
+            <option>1-2반</option>
+            <option>전체</option>
+            <option>1-1반</option>
+            <option>1-3반</option>
+          </select>
+          <select class="filter-sel">
+            <option>학번 순</option>
+            <option>이름 순</option>
+            <option>총점 높은 순</option>
+            <option>총점 낮은 순</option>
+          </select>
+        </div>
+        <!-- Table -->
+        <div style="border:1px solid #E6E6E6;border-radius:12px;overflow:hidden">
+          <table class="tbl">
+            <thead>
+              <tr>
+                <th style="width:72px">반</th>
+                <th style="width:88px">학번</th>
+                <th style="width:90px">이름</th>
+                <th style="width:72px">총점</th>
+                <th style="width:80px">과제1</th>
+                <th style="width:80px">과제2</th>
+                <th style="width:80px">과제3</th>
+                <th>평가 리포트</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>1-2</td>
+                <td>10201</td>
+                <td style="font-weight:800">김하나</td>
+                <td style="font-weight:900;color:#7E44FB">30</td>
+                <td>30</td>
+                <td style="color:#B3B3B3">—</td>
+                <td style="color:#B3B3B3">—</td>
+                <td>
+                  <a href="student_report_v1.html" class="report-link">
+                    리포트 상세 <i data-lucide="chevron-right" style="width:14px;height:14px"></i>
+                  </a>
+                </td>
+              </tr>
+              <tr>
+                <td>1-2</td>
+                <td>10202</td>
+                <td style="font-weight:800">최민지</td>
+                <td style="font-weight:900;color:#7E44FB">60</td>
+                <td>30</td>
+                <td>20</td>
+                <td>10</td>
+                <td>
+                  <a href="student_report_v1.html" class="report-link">
+                    리포트 상세 <i data-lucide="chevron-right" style="width:14px;height:14px"></i>
+                  </a>
+                </td>
+              </tr>
+              <tr>
+                <td>1-2</td>
+                <td>10203</td>
+                <td style="font-weight:800">이하린</td>
+                <td style="color:#B3B3B3">—</td>
+                <td style="color:#B3B3B3">—</td>
+                <td style="color:#B3B3B3">—</td>
+                <td style="color:#B3B3B3">—</td>
+                <td>
+                  <a href="student_report_v1.html" class="report-link">
+                    리포트 상세 <i data-lucide="chevron-right" style="width:14px;height:14px"></i>
+                  </a>
+                </td>
+              </tr>
+              <tr>
+                <td>1-2</td>
+                <td>10204</td>
+                <td style="font-weight:800">한아영</td>
+                <td style="font-weight:900;color:#7E44FB">60</td>
+                <td>30</td>
+                <td>20</td>
+                <td>10</td>
+                <td>
+                  <a href="student_report_v1.html" class="report-link">
+                    리포트 상세 <i data-lucide="chevron-right" style="width:14px;height:14px"></i>
+                  </a>
+                </td>
+              </tr>
+              <tr>
+                <td>1-2</td>
+                <td>10205</td>
+                <td style="font-weight:800">김민경</td>
+                <td style="font-weight:900;color:#7E44FB">60</td>
+                <td>30</td>
+                <td>20</td>
+                <td>10</td>
+                <td>
+                  <a href="student_report_v1.html" class="report-link">
+                    리포트 상세 <i data-lucide="chevron-right" style="width:14px;height:14px"></i>
+                  </a>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <!-- Pagination -->
+        <div style="display:flex;justify-content:center;align-items:center;gap:6px;margin-top:20px">
+          <button class="page-btn"><i data-lucide="chevron-left" style="width:14px;height:14px"></i></button>
+          <button class="page-btn active">1</button>
+          <button class="page-btn">2</button>
+          <button class="page-btn">3</button>
+          <button class="page-btn">4</button>
+          <button class="page-btn">5</button>
+          <button class="page-btn"><i data-lucide="chevron-right" style="width:14px;height:14px"></i></button>
+        </div>
       </div>
+
+    </div><!-- /panel -->
+  </div>
+</div>
+
+<!-- ── Footer ── -->
+<footer style="background:#fff;border-top:1px solid #E6E6E6;padding:28px 36px">
+  <div style="max-width:1200px;margin:0 auto;padding:0 36px">
+    <div style="display:flex;gap:24px;margin-bottom:12px;flex-wrap:wrap;align-items:center">
+      <img src="https://via.placeholder.com/80x28?text=경기도교육청" alt="" style="height:28px;opacity:.6" onerror="this.style.display='none'">
+      <span style="font-size:11px;color:#B3B3B3">경기도교육청</span>
+      <span style="font-size:11px;color:#B3B3B3">경기도융합과학교육원</span>
+      <span style="font-size:11px;color:#B3B3B3">EBS 온라인 클래스</span>
     </div>
-  );
-}
-
-/* ── 수행평가 카드 ── */
-function AssignmentCard({a}){
-  const submRate = Math.round(a.submitted/a.total*100);
-  return (
-    <div style={{background:"#fff",border:"1px solid #E6E6E6",borderRadius:14,overflow:"hidden",flex:1,minWidth:0}}>
-      <div style={{padding:"18px 20px 14px",borderBottom:"1px solid #F0F0F0"}}>
-        <div style={{fontSize:13,fontWeight:900,color:"#341761",marginBottom:2}}>{a.title}</div>
-        <div style={{fontSize:12,color:"#808080"}}>마감 {a.deadline} · 만점 {a.maxScore}점</div>
-      </div>
-      <div style={{padding:"14px 20px"}}>
-        {/* 평균 + 응시율 */}
-        <div style={{display:"flex",justifyContent:"space-between",marginBottom:12}}>
-          <div>
-            <div style={{fontSize:11,color:"#808080",fontWeight:800}}>전체 평균</div>
-            <div style={{fontSize:20,fontWeight:900,color:"#7E44FB"}}>{a.totalAvg}<span style={{fontSize:12,color:"#B3B3B3",fontWeight:700}}>점</span></div>
-          </div>
-          <div style={{textAlign:"right"}}>
-            <div style={{fontSize:11,color:"#808080",fontWeight:800}}>응시 완료</div>
-            <div style={{fontSize:20,fontWeight:900,color:submRate<90?"#FF8C4C":"#00AF3D"}}>{submRate}<span style={{fontSize:12,color:"#B3B3B3",fontWeight:700}}>%</span></div>
-          </div>
-        </div>
-        {/* 반별 평균 바 */}
-        <div style={{marginBottom:12}}>
-          <div style={{fontSize:11,color:"#808080",fontWeight:800,marginBottom:6}}>반별 평균</div>
-          {Object.entries(a.classAvg).map(([k,v])=>(
-            <div key={k} style={{display:"flex",alignItems:"center",gap:8,marginBottom:4}}>
-              <div style={{fontSize:11,color:"#494949",fontWeight:800,width:24}}>1-{k.slice(1)}</div>
-              <div style={{flex:1,height:8,background:"#F0EEFF",borderRadius:999,overflow:"hidden"}}>
-                <div style={{height:"100%",width:`${v/a.maxScore*100}%`,background:"#7E44FB",borderRadius:999}}/>
-              </div>
-              <div style={{fontSize:11,fontWeight:900,color:"#7E44FB",width:28,textAlign:"right"}}>{v}점</div>
-            </div>
-          ))}
-        </div>
-        {/* 점수 분포 미니 차트 */}
-        <div style={{fontSize:11,color:"#808080",fontWeight:800,marginBottom:4}}>점수 분포</div>
-        <div style={{height:70}}>
-          <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={a.dist} margin={{top:0,right:0,left:-20,bottom:0}}>
-              <XAxis dataKey="range" tick={{fontSize:9,fill:"#B3B3B3"}} axisLine={false} tickLine={false}/>
-              <YAxis hide/>
-              <Tooltip contentStyle={{fontSize:11}} formatter={(v)=>[`${v}명`,"인원"]}/>
-              <Bar dataKey="count" radius={[3,3,0,0]}>
-                {a.dist.map((d,i)=>(
-                  <Cell key={i} fill={i>=4?"#7E44FB":"#C8BFFA"}/>
-                ))}
-              </Bar>
-            </BarChart>
-          </ResponsiveContainer>
-        </div>
-        {a.missing>0 && (
-          <div style={{marginTop:8,display:"flex",alignItems:"center",gap:6,fontSize:12,color:"#DB3E51",fontWeight:800}}>
-            ⚠ 미제출 {a.missing}명
-          </div>
-        )}
-      </div>
+    <div style="display:flex;gap:16px;font-size:12px;color:#808080;font-weight:700;margin-bottom:6px">
+      <span>개인정보처리방침</span>
+      <span>이용약관</span>
+      <span>오픈소스 라이선스</span>
     </div>
-  );
-}
-
-/* ── 학생 리스트 ── */
-function ScorePill({score,max}){
-  if(score===null) return <span style={{color:"#DB3E51",fontWeight:800,fontSize:13}}>미제출</span>;
-  const pct = score/max;
-  const color = pct>=0.85?"#00AF3D":pct>=0.7?"#7E44FB":pct>=0.5?"#FF8C4C":"#DB3E51";
-  return <span style={{fontWeight:900,fontSize:13,color}}>{score}</span>;
-}
-
-/* ── 메인 ── */
-function App(){
-  const [cls,setCls]=useState("전체");
-  const [sort,setSort]=useState("학번순");
-  const [showAlert,setShowAlert]=useState(false);
-
-  const clsOptions=["전체","1-1","1-2","1-3"];
-
-  const filtered = STUDENTS
-    .filter(s=> cls==="전체" || s.cls===cls)
-    .filter(s=> !showAlert || s.alert)
-    .sort((a,b)=> sort==="학번순"?a.id.localeCompare(b.id):b.total-a.total);
-
-  const alertCount = STUDENTS.filter(s=>s.alert).length;
-  const missingCount = STUDENTS.filter(s=>s.scores.some(v=>v===null)).length;
-  const avgTotal = Math.round(STUDENTS.reduce((s,st)=>s+st.total,0)/STUDENTS.length);
-
-  return (
-    <div style={{minHeight:"100vh"}}>
-      <GNB/>
-      <TitleBar/>
-      <div style={{display:"flex",flexDirection:"column",alignItems:"center",padding:"40px 36px",minHeight:760}}>
-        <div style={{width:"100%",maxWidth:1200}}>
-          <Tabs/>
-          <div style={{background:"white",borderRadius:"0 0 16px 16px",border:"1px solid #E6E6E6",padding:"28px 24px"}}>
-
-            {/* 헤더 */}
-            <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:24}}>
-              <div>
-                <div style={{fontSize:22,fontWeight:900}}>평가 리포트</div>
-                <div style={{fontSize:13,color:"#808080",marginTop:4}}>실시된 평가 결과를 확인하고 엑셀로 다운받을 수 있습니다.</div>
-              </div>
-              <button className="btn-pri">📥 평가 점수 다운로드</button>
-            </div>
-
-            {/* KPI */}
-            <div style={{display:"flex",gap:12,marginBottom:24}}>
-              <KpiCard icon="📊" label="3개 과제 전체 평균" value={`${avgTotal}점`} sub="만점 90점 기준" color="#7E44FB" bg="#F7F4FF"/>
-              <KpiCard icon="✅" label="응시 완료" value="55명" sub={`전체 60명 중`} color="#00AF3D" bg="#F1F9F3"/>
-              <KpiCard icon="⚠️" label="미제출 학생" value={`${missingCount}명`} sub="면담 권장" color="#DB3E51" bg="#FFEFEF"/>
-              <KpiCard icon="📉" label="주의 필요 학생" value={`${alertCount}명`} sub="점수 하락 또는 미제출 반복" color="#FF8C4C" bg="#FFF8F3"/>
-            </div>
-
-            {/* 수행평가별 카드 */}
-            <div style={{marginBottom:6,display:"flex",alignItems:"center",gap:8}}>
-              <div style={{width:4,height:16,background:"#7E44FB",borderRadius:2}}/>
-              <div style={{fontSize:15,fontWeight:900,color:"#341761"}}>수행평가별 현황</div>
-            </div>
-            <div style={{display:"flex",gap:14,marginBottom:28}}>
-              {ASSIGNMENTS.map(a=><AssignmentCard key={a.id} a={a}/>)}
-            </div>
-
-            {/* 학생 리스트 */}
-            <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:12}}>
-              <div style={{display:"flex",alignItems:"center",gap:8}}>
-                <div style={{width:4,height:16,background:"#7E44FB",borderRadius:2}}/>
-                <div style={{fontSize:15,fontWeight:900,color:"#341761"}}>학생별 평가 리포트</div>
-              </div>
-              <div style={{display:"flex",gap:8,alignItems:"center"}}>
-                <button className={"btn-out"+(showAlert?" on":"")} onClick={()=>setShowAlert(!showAlert)}>
-                  ⚠ 주의 학생만 보기 {alertCount}명
-                </button>
-                <select value={cls} onChange={e=>setCls(e.target.value)}
-                  style={{height:32,border:"1px solid #D9D9D9",borderRadius:8,padding:"0 10px",fontSize:12,fontWeight:800,color:"#494949",background:"#fff"}}>
-                  {clsOptions.map(c=><option key={c}>{c}</option>)}
-                </select>
-                <select value={sort} onChange={e=>setSort(e.target.value)}
-                  style={{height:32,border:"1px solid #D9D9D9",borderRadius:8,padding:"0 10px",fontSize:12,fontWeight:800,color:"#494949",background:"#fff"}}>
-                  {["학번순","총점 높은 순","총점 낮은 순"].map(s=><option key={s}>{s}</option>)}
-                </select>
-              </div>
-            </div>
-
-            <div style={{border:"1px solid #E6E6E6",borderRadius:12,overflow:"hidden"}}>
-              <table style={{width:"100%",borderCollapse:"collapse"}}>
-                <thead>
-                  <tr style={{background:"#F8F8F8",borderBottom:"1px solid #E6E6E6"}}>
-                    {["반","학번","이름","총점","과제1","과제2","과제3","AI 특성","리포트"].map(h=>(
-                      <th key={h} style={{padding:"12px 14px",fontSize:12,fontWeight:800,color:"#808080",textAlign:"center",whiteSpace:"nowrap"}}>{h}</th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  {filtered.map((s,i)=>{
-                    const rowCls = s.alert==="missing"?"danger-row":s.alert==="drop"?"warn-row":"";
-                    return (
-                      <tr key={s.id} className={rowCls} style={{borderBottom:"1px solid #F0F0F0"}}>
-                        <td style={{padding:"14px",fontSize:13,textAlign:"center",fontWeight:700}}>{s.cls}</td>
-                        <td style={{padding:"14px",fontSize:13,textAlign:"center",color:"#808080"}}>{s.id}</td>
-                        <td style={{padding:"14px",fontSize:14,fontWeight:900,textAlign:"center"}}>
-                          <div style={{display:"flex",alignItems:"center",justifyContent:"center",gap:6}}>
-                            {s.alert && <span style={{fontSize:14}}>{s.alert==="missing"?"🔴":"🟠"}</span>}
-                            {s.name}
-                          </div>
-                        </td>
-                        <td style={{padding:"14px",textAlign:"center"}}>
-                          <div style={{display:"flex",flexDirection:"column",alignItems:"center",gap:4}}>
-                            <span style={{fontSize:14,fontWeight:900,color:"#7E44FB"}}>{s.total}점</span>
-                            <div style={{width:60,height:5,background:"#F0EEFF",borderRadius:999,overflow:"hidden"}}>
-                              <div style={{height:"100%",width:`${s.total/90*100}%`,background:"#7E44FB",borderRadius:999}}/>
-                            </div>
-                          </div>
-                        </td>
-                        {s.scores.map((sc,j)=>(
-                          <td key={j} style={{padding:"14px",textAlign:"center"}}>
-                            <ScorePill score={sc} max={30}/>
-                          </td>
-                        ))}
-                        <td style={{padding:"14px",textAlign:"center"}}>
-                          <span className={s.tag.type==="strong"?"tag-strong":"tag-weak"}>{s.tag.text}</span>
-                        </td>
-                        <td style={{padding:"14px",textAlign:"center"}}>
-                          <a href="student_report_v1.html" style={{color:"#7E44FB",fontWeight:800,fontSize:13,textDecoration:"none"}}>리포트 상세 ›</a>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
-
-            {/* 페이지네이션 */}
-            <div style={{display:"flex",justifyContent:"center",gap:6,marginTop:20}}>
-              {[1,2,3,4,5].map(p=>(
-                <button key={p} style={{width:32,height:32,borderRadius:8,border:"1px solid",
-                  borderColor:p===1?"#7E44FB":"#D9D9D9",
-                  background:p===1?"#7E44FB":"#fff",
-                  color:p===1?"#fff":"#494949",
-                  fontSize:13,fontWeight:800,cursor:"pointer"}}>{p}</button>
-              ))}
-            </div>
-
-            <div style={{height:24}}/>
-          </div>
-        </div>
-        <div style={{height:48}}/>
-      </div>
+    <div style="font-size:12px;color:#B3B3B3">
+      AI 서·논술형 평가 서비스 고객센터 &nbsp;·&nbsp; 공지사항 &nbsp;·&nbsp; 자주 묻는 질문 &nbsp;·&nbsp; 1:1 문의
     </div>
-  );
-}
+  </div>
+</footer>
 
-ReactDOM.createRoot(document.getElementById("root")).render(<App/>);
-</script>
+<script>lucide.createIcons();</script>
 </body>
 </html>
