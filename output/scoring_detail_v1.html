@@ -85,6 +85,16 @@
   .fb-emoji-card.selected{border-color:#7E44FB;background:#F7F4FF}
   .fb-info-row{display:flex;align-items:flex-start;gap:12px;padding:12px 14px;background:#FAF7FF;border:1px solid #EADCFF;border-radius:10px}
   .fb-info-row .ic{flex-shrink:0;width:28px;height:28px;border-radius:50%;background:#7E44FB;color:#fff;display:flex;align-items:center;justify-content:center}
+  .fb-box.lg{max-height:90vh;overflow-y:auto}
+  .fb-type-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 0;border-bottom:1px solid #F0F0F0}
+  .fb-type-row:last-child{border-bottom:none}
+  .fb-type-info{display:flex;flex-direction:column;gap:2px}
+  .fb-type-name{font-size:14px;font-weight:700;color:#222631}
+  .fb-type-desc{font-size:12px;color:#808080}
+  .fb-stars{display:flex;gap:2px;flex-shrink:0}
+  .fb-star{background:none;border:none;cursor:pointer;font-size:24px;color:#D9D9D9;padding:0 1px;line-height:1;transition:color .1s}
+  .fb-star.on{color:#FFBF00}
+  .fb-star.hv{color:#FFD966}
 
   /* ── 공통 모달 ── */
   .item-modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:3000;display:none;align-items:center;justify-content:center}
@@ -699,6 +709,9 @@ function downloadWithoutFeedback(){closeFbIntro();fbToast('채점 결과를 다�
 function openFbForm(){closeFbIntro();document.getElementById('fbForm').classList.add('show');setTimeout(function(){lucide.createIcons();},10);}
 function closeFbForm(){document.getElementById('fbForm').classList.remove('show');}
 function selectFbEmoji(el){document.querySelectorAll('#fbForm .fb-emoji-card').forEach(function(c){c.classList.remove('selected');});el.classList.add('selected');}
+function setFbStar(btn,val){var stars=btn.closest('.fb-stars').querySelectorAll('.fb-star');stars.forEach(function(s,i){s.classList.toggle('on',i<val);s.classList.remove('hv');});}
+function hoverFbStar(btn,val){var stars=btn.closest('.fb-stars').querySelectorAll('.fb-star');stars.forEach(function(s,i){s.classList.toggle('hv',i<val&&!s.classList.contains('on'));});}
+function leaveFbStars(el){el.querySelectorAll('.fb-star').forEach(function(s){s.classList.remove('hv');});}
 function submitFb(){closeFbForm();fbToast('의견이 전송되었습니다. 감사합니다!');setTimeout(function(){fbToast('채점 결과를 다운로드합니다.');},1200);}
 </script>
 
@@ -726,15 +739,57 @@ function submitFb(){closeFbForm();fbToast('의견이 전송되었습니다. 감�
 <div class="fb-overlay" id="fbForm" onclick="if(event.target===this)closeFbForm()">
   <div class="fb-box lg" style="position:relative">
     <button onclick="closeFbForm()" style="position:absolute;top:11px;right:11px;width:36px;height:36px;border-radius:6px;border:none;background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#808080" onmouseover="this.style.background='#F0F0F0'" onmouseout="this.style.background='transparent'"><i data-lucide="x" style="width:18px;height:18px"></i></button>
-    <div style="padding:24px 24px 16px"><div style="font-size:18px;font-weight:700;color:#222631">AI 채점, 어떠셨나요?</div><div style="font-size:13px;color:#808080;margin-top:6px">이번 수행평가의 AI 채점 만족도를 알려주세요.</div></div>
-    <div style="padding:0 24px 20px">
-      <div style="display:flex;gap:10px;margin-bottom:16px">
-        <button type="button" class="fb-emoji-card" onclick="selectFbEmoji(this)"><span style="font-size:26px">😊</span><span style="font-size:12px;color:#494949;font-weight:700">만족</span></button>
-        <button type="button" class="fb-emoji-card" onclick="selectFbEmoji(this)"><span style="font-size:26px">😐</span><span style="font-size:12px;color:#494949;font-weight:700">보통</span></button>
-        <button type="button" class="fb-emoji-card" onclick="selectFbEmoji(this)"><span style="font-size:26px">😞</span><span style="font-size:12px;color:#494949;font-weight:700">불만족</span></button>
+    <div style="padding:24px 24px 16px">
+      <div style="font-size:18px;font-weight:700;color:#222631">AI 채점, 어떠셨나요?</div>
+      <div style="font-size:13px;color:#808080;margin-top:6px">문항 유형별로 별점을 남겨주세요. (1~5점)</div>
+    </div>
+    <div style="padding:0 24px 4px">
+      <!-- 문항 유형별 별점 -->
+      <div style="font-size:12px;font-weight:700;color:#B0B0B0;letter-spacing:.04em;margin-bottom:6px">문항 유형별 만족도</div>
+      <div style="background:#FAFAFA;border:1px solid #EFEFEF;border-radius:12px;padding:4px 16px">
+        <div class="fb-type-row">
+          <div class="fb-type-info"><div class="fb-type-name">논술형</div><div class="fb-type-desc">자유 서술 기반의 긴 분량 답안</div></div>
+          <div class="fb-stars" onmouseleave="leaveFbStars(this)">
+            <button type="button" class="fb-star" onclick="setFbStar(this,1)" onmouseover="hoverFbStar(this,1)">★</button>
+            <button type="button" class="fb-star" onclick="setFbStar(this,2)" onmouseover="hoverFbStar(this,2)">★</button>
+            <button type="button" class="fb-star" onclick="setFbStar(this,3)" onmouseover="hoverFbStar(this,3)">★</button>
+            <button type="button" class="fb-star" onclick="setFbStar(this,4)" onmouseover="hoverFbStar(this,4)">★</button>
+            <button type="button" class="fb-star" onclick="setFbStar(this,5)" onmouseover="hoverFbStar(this,5)">★</button>
+          </div>
+        </div>
+        <div class="fb-type-row">
+          <div class="fb-type-info"><div class="fb-type-name">서술형</div><div class="fb-type-desc">특정 내용 설명·기술 중심의 중간 분량</div></div>
+          <div class="fb-stars" onmouseleave="leaveFbStars(this)">
+            <button type="button" class="fb-star" onclick="setFbStar(this,1)" onmouseover="hoverFbStar(this,1)">★</button>
+            <button type="button" class="fb-star" onclick="setFbStar(this,2)" onmouseover="hoverFbStar(this,2)">★</button>
+            <button type="button" class="fb-star" onclick="setFbStar(this,3)" onmouseover="hoverFbStar(this,3)">★</button>
+            <button type="button" class="fb-star" onclick="setFbStar(this,4)" onmouseover="hoverFbStar(this,4)">★</button>
+            <button type="button" class="fb-star" onclick="setFbStar(this,5)" onmouseover="hoverFbStar(this,5)">★</button>
+          </div>
+        </div>
+        <div class="fb-type-row">
+          <div class="fb-type-info"><div class="fb-type-name">단답/목록형</div><div class="fb-type-desc">단어 또는 단문 수준의 짧은 답안</div></div>
+          <div class="fb-stars" onmouseleave="leaveFbStars(this)">
+            <button type="button" class="fb-star" onclick="setFbStar(this,1)" onmouseover="hoverFbStar(this,1)">★</button>
+            <button type="button" class="fb-star" onclick="setFbStar(this,2)" onmouseover="hoverFbStar(this,2)">★</button>
+            <button type="button" class="fb-star" onclick="setFbStar(this,3)" onmouseover="hoverFbStar(this,3)">★</button>
+            <button type="button" class="fb-star" onclick="setFbStar(this,4)" onmouseover="hoverFbStar(this,4)">★</button>
+            <button type="button" class="fb-star" onclick="setFbStar(this,5)" onmouseover="hoverFbStar(this,5)">★</button>
+          </div>
+        </div>
+        <div class="fb-type-row">
+          <div class="fb-type-info"><div class="fb-type-name">보고서형</div><div class="fb-type-desc">구조화된 양식 기반 (제목·본문·결론 등)</div></div>
+          <div class="fb-stars" onmouseleave="leaveFbStars(this)">
+            <button type="button" class="fb-star" onclick="setFbStar(this,1)" onmouseover="hoverFbStar(this,1)">★</button>
+            <button type="button" class="fb-star" onclick="setFbStar(this,2)" onmouseover="hoverFbStar(this,2)">★</button>
+            <button type="button" class="fb-star" onclick="setFbStar(this,3)" onmouseover="hoverFbStar(this,3)">★</button>
+            <button type="button" class="fb-star" onclick="setFbStar(this,4)" onmouseover="hoverFbStar(this,4)">★</button>
+            <button type="button" class="fb-star" onclick="setFbStar(this,5)" onmouseover="hoverFbStar(this,5)">★</button>
+          </div>
+        </div>
       </div>
-      <select style="width:100%;height:40px;border:1px solid #D9D9D9;border-radius:8px;padding:0 12px;font-family:inherit;font-size:14px;color:#494949;background:#fff;margin-bottom:10px"><option>카테고리 선택 (선택)</option><option>채점 정확도</option><option>채점 기준 반영</option><option>피드백 품질</option><option>처리 속도</option><option>기타</option></select>
-      <textarea placeholder="자유롭게 의견을 남겨주세요. (선택)" style="width:100%;height:100px;border:1px solid #D9D9D9;border-radius:8px;padding:10px 12px;font-family:inherit;font-size:14px;resize:none"></textarea>
+      <!-- 자유 의견 -->
+      <textarea placeholder="추가로 하고 싶은 말씀이 있으시면 남겨주세요. (선택)" style="width:100%;height:88px;border:1px solid #D9D9D9;border-radius:8px;padding:10px 12px;font-family:inherit;font-size:14px;resize:none;margin-top:14px;box-sizing:border-box"></textarea>
     </div>
     <div style="padding:8px 24px 20px;display:flex;justify-content:flex-end;gap:12px">
       <button class="btn" style="height:40px;background:#fff;color:#7E44FB;border:1px solid #B28FFD" onclick="closeFbForm()">취소</button>
