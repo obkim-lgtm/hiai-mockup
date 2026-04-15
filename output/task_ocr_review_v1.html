@@ -346,8 +346,14 @@
     </div>
   </div>
 
+  <!-- OCR 인식 품질 경고 배너 (needsReview인 학생만 표시) -->
+  <div id="ocr-review-banner" style="display:none;padding:10px 20px;background:#FFF8F3;border-bottom:1px solid #FFE0C2;align-items:center;gap:10px;">
+    <i data-lucide="triangle-alert" style="width:16px;height:16px;color:#FF8C4C;flex-shrink:0;"></i>
+    <span style="font-size:14px;color:#494949;line-height:1.5;font-weight:700;"><strong style="color:#FF8C4C;">AI가 이 답안의 OCR 신뢰도를 낮게 판단했습니다.</strong> 원본 이미지와 대조하며 전체 내용을 확인해 주세요.</span>
+  </div>
+
   <!-- 좌우 대조 영역 (전체 화면 높이) -->
-  <div style="display:flex;height:calc(100vh - 98px - 56px);">
+  <div id="ocr-split" style="display:flex;height:calc(100vh - 98px - 56px);">
 
     <!-- 좌측: 원본 스캔 (채점 상세 좌측 비율 참고) -->
     <div style="width:56%;min-width:0;display:flex;flex-direction:column;border-right:1px solid #E6E6E6;">
@@ -419,15 +425,15 @@
 <script>
 // ── 데이터 ──
 const STUDENTS = [
-  { id:'10101', name:'김서윤', status:'제출', date:'07/21 14:31 선생님 업로드', files:1, ocrStatus:'confirmed', pages:[3,4] },
-  { id:'10102', name:'이준호', status:'제출', date:'07/21 14:31 선생님 업로드', files:1, ocrStatus:'unconfirmed', pages:[5,6] },
-  { id:'10103', name:'박지민', status:'제출', date:'07/21 14:31 선생님 업로드', files:1, ocrStatus:'unconfirmed', pages:[7,8] },
-  { id:'10104', name:'최유진', status:'제출', date:'07/21 14:31 선생님 업로드', files:1, ocrStatus:'processing', pages:[9,10] },
-  { id:'10105', name:'정현우', status:'제출', date:'07/21 14:31 선생님 업로드', files:1, ocrStatus:'unconfirmed', pages:[11,12] },
+  { id:'10101', name:'김서윤', status:'제출', date:'07/21 14:31 선생님 업로드', files:1, ocrStatus:'confirmed', needsReview:false, pages:[3,4] },
+  { id:'10102', name:'이준호', status:'제출', date:'07/21 14:31 선생님 업로드', files:1, ocrStatus:'unconfirmed', needsReview:true, pages:[5,6] },
+  { id:'10103', name:'박지민', status:'제출', date:'07/21 14:31 선생님 업로드', files:1, ocrStatus:'unconfirmed', needsReview:true, pages:[7,8] },
+  { id:'10104', name:'최유진', status:'제출', date:'07/21 14:31 선생님 업로드', files:1, ocrStatus:'processing', needsReview:false, pages:[9,10] },
+  { id:'10105', name:'정현우', status:'제출', date:'07/21 14:31 선생님 업로드', files:1, ocrStatus:'unconfirmed', needsReview:false, pages:[11,12] },
   { id:'10106', name:'한지우', status:'미제출', date:'-', files:0, ocrStatus:null, pages:[] },
   { id:'10107', name:'조민재', status:'미제출', date:'-', files:0, ocrStatus:null, pages:[] },
   { id:'10108', name:'윤하은', status:'미제출', date:'-', files:0, ocrStatus:null, pages:[] },
-  { id:'10109', name:'임도윤', status:'제출', date:'07/21 14:31 선생님 업로드', files:1, ocrStatus:'unconfirmed', pages:[13,14] }
+  { id:'10109', name:'임도윤', status:'제출', date:'07/21 14:31 선생님 업로드', files:1, ocrStatus:'unconfirmed', needsReview:false, pages:[13,14] }
 ];
 
 // OCR 텍스트 데이터 (학생별)
@@ -573,6 +579,17 @@ function goToOCR(studentTableIdx) {
 function renderOCRView() {
   var student = ocrStudents[currentStudentIdx];
   if (!student) return;
+
+  // OCR 인식 품질 경고 배너
+  var reviewBanner = document.getElementById('ocr-review-banner');
+  var ocrSplit = document.getElementById('ocr-split');
+  if (student.needsReview) {
+    reviewBanner.style.display = 'flex';
+    ocrSplit.style.height = 'calc(100vh - 98px - 56px - 42px)';
+  } else {
+    reviewBanner.style.display = 'none';
+    ocrSplit.style.height = 'calc(100vh - 98px - 56px)';
+  }
 
   // 네비게이터
   document.getElementById('nav-student-name').textContent = student.name + ' (' + student.id + ')';
