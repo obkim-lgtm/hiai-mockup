@@ -143,27 +143,18 @@
       font-size: 14px;
     }
 
-    /* 하이라이트 오버레이 */
+    /* 하이라이트 오버레이 (투명 클릭 영역) */
     .hl-region {
       position: absolute;
       border-radius: 4px;
       cursor: pointer;
-      transition: opacity 0.15s;
       z-index: 2;
-    }
-    .hl-region:hover {
-      opacity: 1 !important;
-    }
-    .hl-region.active {
-      opacity: 1 !important;
-      outline: 2px solid currentColor;
-      outline-offset: 1px;
     }
 
     /* 팝오버 */
     .hl-popover {
-      position: absolute;
-      z-index: 10;
+      position: fixed;
+      z-index: 100;
       width: 320px;
       background: white;
       border-radius: 12px;
@@ -332,21 +323,21 @@
       <div id="viewer-container" style="position:relative;width:100%;">
         <img src="https://www.figma.com/api/mcp/asset/b3209b87-f272-4ff4-a2d2-5d585c5847f6" style="width:100%;height:auto;display:block;" alt="학생 과제물">
 
-        <!-- ── 문항별 하이라이트 ── -->
+        <!-- ── 문항별 하이라이트 (투명, 클릭 영역만) ── -->
         <div class="hl-region hl-q" data-mode="per-question" data-idx="0"
-          style="top:5%;left:4%;width:92%;height:22%;background:rgba(126,68,251,0.12);border:2px solid rgba(126,68,251,0.3);color:#7E44FB;opacity:0.8;"></div>
+          style="top:5%;left:4%;width:92%;height:22%;background:transparent;border:none;"></div>
         <div class="hl-region hl-q" data-mode="per-question" data-idx="1"
-          style="top:30%;left:4%;width:92%;height:28%;background:rgba(88,144,255,0.12);border:2px solid rgba(88,144,255,0.3);color:#5890FF;opacity:0.8;"></div>
+          style="top:30%;left:4%;width:92%;height:28%;background:transparent;border:none;"></div>
         <div class="hl-region hl-q" data-mode="per-question" data-idx="2"
-          style="top:61%;left:4%;width:92%;height:30%;background:rgba(255,140,76,0.12);border:2px solid rgba(255,140,76,0.3);color:#FF8C4C;opacity:0.8;"></div>
+          style="top:61%;left:4%;width:92%;height:30%;background:transparent;border:none;"></div>
 
-        <!-- ── 채점요소별 하이라이트 ── -->
+        <!-- ── 채점요소별 하이라이트 (투명, 클릭 영역만) ── -->
         <div class="hl-region hl-r" data-mode="per-item" data-idx="0"
-          style="display:none;top:8%;left:4%;width:92%;height:35%;background:rgba(126,68,251,0.10);border:2px solid rgba(126,68,251,0.25);color:#7E44FB;opacity:0.8;"></div>
+          style="display:none;top:8%;left:4%;width:92%;height:35%;background:transparent;border:none;"></div>
         <div class="hl-region hl-r" data-mode="per-item" data-idx="1"
-          style="display:none;top:46%;left:4%;width:92%;height:20%;background:rgba(0,175,61,0.10);border:2px solid rgba(0,175,61,0.25);color:#00AF3D;opacity:0.8;"></div>
+          style="display:none;top:46%;left:4%;width:92%;height:20%;background:transparent;border:none;"></div>
         <div class="hl-region hl-r" data-mode="per-item" data-idx="2"
-          style="display:none;top:69%;left:4%;width:92%;height:22%;background:rgba(219,62,81,0.10);border:2px solid rgba(219,62,81,0.25);color:#DB3E51;opacity:0.8;"></div>
+          style="display:none;top:69%;left:4%;width:92%;height:22%;background:transparent;border:none;"></div>
 
         <!-- ── 팝오버 ── -->
         <div id="hl-popover" class="hl-popover">
@@ -984,31 +975,43 @@
     if (data.improve) footer += '<div class="pop-improve">⚠ ' + data.improve + '</div>';
     document.getElementById('pop-footer').innerHTML = footer;
 
-    // 위치 계산: 하이라이트 좌측에 표시
-    var container = document.getElementById('viewer-container');
-    var containerRect = container.getBoundingClientRect();
+    // 위치 계산: 클릭 영역 바로 위에 표시 (fixed 기준)
     var elRect = el.getBoundingClientRect();
-    var scrollArea = document.getElementById('viewer-scroll');
-
-    var popLeft = (elRect.left - containerRect.left) - 336;
-    var popTop = (elRect.top - containerRect.top);
-
-    // 왼쪽 공간 부족하면 오른쪽에 표시
     var arrow = document.getElementById('pop-arrow');
-    if (popLeft < 8) {
-      popLeft = (elRect.right - containerRect.left) + 16;
-      arrow.style.right = 'auto';
-      arrow.style.left = '-6px';
-      arrow.style.boxShadow = '-2px 2px 4px rgba(0,0,0,0.05)';
-    } else {
-      arrow.style.left = 'auto';
-      arrow.style.right = '-6px';
-      arrow.style.boxShadow = '2px -2px 4px rgba(0,0,0,0.05)';
-    }
 
-    // 아래로 넘치면 위로 올리기
-    if (popTop + 200 > container.offsetHeight) {
-      popTop = Math.max(8, (elRect.bottom - containerRect.top) - 200);
+    // 팝오버를 fixed로 전환
+    popover.style.position = 'fixed';
+
+    // 가로: 하이라이트 중앙 정렬, 화면 밖 안 넘치게
+    var popWidth = 320;
+    var popLeft = elRect.left + (elRect.width / 2) - (popWidth / 2);
+    popLeft = Math.max(8, Math.min(popLeft, window.innerWidth - popWidth - 8));
+
+    // 세로: 하이라이트 위에 (아래 화살표)
+    var popTop = elRect.top - 8;
+    popover.style.visibility = 'hidden';
+    popover.style.display = 'block';
+    var popHeight = popover.offsetHeight;
+    popover.style.display = '';
+    popover.style.visibility = '';
+    popTop = elRect.top - popHeight - 12;
+
+    // 위 공간 부족하면 아래에 표시
+    if (popTop < 8) {
+      popTop = elRect.bottom + 12;
+      arrow.style.top = '-6px';
+      arrow.style.bottom = 'auto';
+      arrow.style.left = '50%';
+      arrow.style.right = 'auto';
+      arrow.style.transform = 'translateX(-50%) rotate(45deg)';
+      arrow.style.boxShadow = '-2px -2px 4px rgba(0,0,0,0.05)';
+    } else {
+      arrow.style.bottom = '-6px';
+      arrow.style.top = 'auto';
+      arrow.style.left = '50%';
+      arrow.style.right = 'auto';
+      arrow.style.transform = 'translateX(-50%) rotate(45deg)';
+      arrow.style.boxShadow = '2px 2px 4px rgba(0,0,0,0.05)';
     }
 
     popover.style.left = popLeft + 'px';
