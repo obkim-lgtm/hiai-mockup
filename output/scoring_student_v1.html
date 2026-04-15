@@ -208,7 +208,7 @@
   <div style="width:612px;flex-shrink:0;overflow-y:auto;background:white;border-left:1px solid #D9D9D9;">
 
     <!-- OCR 미확인 경고 배너 -->
-    <div id="scoring-ocr-review-banner" style="display:flex;align-items:center;gap:10px;padding:10px 20px;background:#FFF8F3;border-bottom:1px solid #FFE0C2;">
+    <div id="scoring-ocr-review-banner" style="display:none;align-items:center;gap:10px;padding:10px 20px;background:#FFF8F3;border-bottom:1px solid #FFE0C2;">
       <i data-lucide="triangle-alert" style="width:15px;height:15px;color:#FF8C4C;flex-shrink:0;"></i>
       <span style="font-size:13px;color:#494949;font-weight:700;"><strong style="color:#FF8C4C;">OCR 결과 확인 필요</strong> — OCR 결과 확인 후 AI 채점을 재실행해 주세요.</span>
     </div>
@@ -747,6 +747,10 @@
   (function() {
     var popup, header, dragging = false, ox, oy, px, py;
     document.addEventListener('DOMContentLoaded', function() {
+      // OCR 패널 배너 초기화
+      var panelBanner = document.getElementById('scoring-ocr-review-banner');
+      if (panelBanner) panelBanner.style.display = OCR_NEEDS_REVIEW ? 'flex' : 'none';
+
       popup = document.getElementById('ocr-popup');
       header = document.getElementById('ocr-popup-header');
       header.addEventListener('mousedown', function(e) {
