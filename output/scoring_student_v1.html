@@ -709,12 +709,10 @@
     var sec = ta.closest('.rubric-ocr-section');
     sec.classList.add('section-editing');
     var btn = sec.querySelector('button[onclick^="ocrEditSection"]');
-    if (btn) {
-      btn.querySelector('i').setAttribute('data-lucide','check');
+    if (btn && !document.getElementById('ocr-ebadge-' + gi)) {
       var badge = document.createElement('span');
       badge.className = 'editing-badge'; badge.id = 'ocr-ebadge-' + gi; badge.textContent = '편집 중';
       btn.parentElement.insertBefore(badge, btn);
-      lucide.createIcons();
     }
     _ocrEditingSection = gi;
     ta.focus();
@@ -730,14 +728,13 @@
     body.style.display = '';
     ta.style.display = 'none';
     var sec = ta.closest('.rubric-ocr-section');
-    sec.classList.remove('section-editing');
+    if (sec) sec.classList.remove('section-editing');
     var eb = document.getElementById('ocr-ebadge-' + gi); if (eb) eb.remove();
     var btn = sec ? sec.querySelector('button[onclick^="ocrEditSection"]') : null;
-    if (btn) { btn.querySelector('i').setAttribute('data-lucide','pencil'); lucide.createIcons(); }
     var saved = document.createElement('span');
     saved.className = 'saved-badge';
-    saved.innerHTML = '<i data-lucide="check" style="width:11px;height:11px;"></i>저장됨';
-    if (btn) { btn.parentElement.insertBefore(saved, btn); lucide.createIcons(); }
+    saved.innerHTML = '✓ 저장됨';
+    if (btn) { btn.parentElement.insertBefore(saved, btn); }
     setTimeout(function(){ saved.style.opacity='0'; }, 1200);
     setTimeout(function(){ saved.remove(); }, 1700);
   }

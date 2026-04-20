@@ -389,9 +389,6 @@
       <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
         <i data-lucide="circle-check-big" style="width:20px;height:20px;color:#333;flex-shrink:0;"></i>
         <span style="font-size:18px;font-weight:700;color:#333;">채점 결과</span>
-        <div style="margin-left:auto;">
-          <button class="info-icon-btn">i</button>
-        </div>
       </div>
       <p style="font-size:14px;color:#808080;margin:0 0 20px;">AI는 채점을 보조하는 역할을 하며, 채점의 최종 권한은 선생님에게만 있습니다.</p>
 
@@ -446,9 +443,6 @@
       <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px;">
         <img src="https://www.figma.com/api/mcp/asset/00360fb7-6467-4e3e-a39e-7707c99d1e34" style="width:20px;height:20px;" alt="AI 아이콘">
         <span style="font-size:18px;font-weight:700;color:#333;">AI 채점 근거 및 피드백</span>
-        <div style="margin-left:auto;">
-          <button class="info-icon-btn">i</button>
-        </div>
       </div>
 
       <!-- 탭 토글 -->
@@ -458,7 +452,6 @@
         </button>
         <button class="tab-toggle-btn" id="tab-rubric" onclick="switchTab('rubric')">
           루브릭 기반 AI
-          <button class="info-icon-btn" style="margin-left:4px;">i</button>
         </button>
       </div>
 
@@ -635,7 +628,6 @@
 
       <!-- 안내 텍스트 -->
       <div style="display:flex;align-items:flex-start;gap:6px;">
-        <button class="info-icon-btn" style="flex-shrink:0;margin-top:1px;">i</button>
         <span style="font-size:14px;color:#494949;line-height:1.5;">AI Assistant의 채점 결과는 부정확할 수 있습니다. 언제나 선생님의 최종 확인이 필요합니다.</span>
       </div>
     </div>
@@ -646,9 +638,6 @@
       <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px;">
         <img src="https://www.figma.com/api/mcp/asset/fdcaa67c-ca34-4c5b-bb9b-dd30760e0b97" style="width:20px;height:20px;" alt="피드백 아이콘">
         <span style="font-size:18px;font-weight:700;color:#333;">선생님 직접 피드백</span>
-        <div style="margin-left:auto;">
-          <button class="info-icon-btn">i</button>
-        </div>
       </div>
 
       <!-- 텍스트에어리어 -->
@@ -1093,7 +1082,7 @@
     ta.oninput = function(){ this.style.height='auto'; this.style.height=this.scrollHeight+'px'; };
     var sec = ta.closest('.rubric-ocr-section'); sec.classList.add('section-editing');
     var btn = sec.querySelector('button[onclick^="ocrEditSection"]');
-    if (btn) { btn.querySelector('i').setAttribute('data-lucide','check'); var badge = document.createElement('span'); badge.className='editing-badge'; badge.id='ocr-ebadge-'+gi; badge.textContent='편집 중'; btn.parentElement.insertBefore(badge,btn); lucide.createIcons(); }
+    if (btn && !document.getElementById('ocr-ebadge-'+gi)) { var badge = document.createElement('span'); badge.className='editing-badge'; badge.id='ocr-ebadge-'+gi; badge.textContent='편집 중'; btn.parentElement.insertBefore(badge,btn); }
     _ocrEditingSection = gi; ta.focus();
   }
   function ocrSaveSection(ta, gi) {
@@ -1102,13 +1091,12 @@
     var body = document.getElementById('ocr-body-' + gi); if (!body) return;
     OCR_QUESTIONS[gi].text = ta.value;
     body.innerHTML = '<span style="color:#333;">' + ta.value.replace(/\n/g,'<br>') + '</span>'; body.style.display = ''; ta.style.display = 'none';
-    var sec = ta.closest('.rubric-ocr-section'); sec.classList.remove('section-editing');
+    var sec = ta.closest('.rubric-ocr-section'); if (sec) sec.classList.remove('section-editing');
     var eb = document.getElementById('ocr-ebadge-'+gi); if (eb) eb.remove();
     var btn = sec ? sec.querySelector('button[onclick^="ocrEditSection"]') : null;
-    if (btn) { btn.querySelector('i').setAttribute('data-lucide','pencil'); lucide.createIcons(); }
-    var saved = document.createElement('span'); saved.className='saved-badge'; saved.innerHTML='<i data-lucide="check" style="width:11px;height:11px;"></i>저장됨';
-    if (btn) { btn.parentElement.insertBefore(saved,btn); lucide.createIcons(); }
-    setTimeout(function(){ saved.style.opacity='0'; },1200); setTimeout(function(){ saved.remove(); },1700);
+    var saved = document.createElement('span'); saved.className='saved-badge'; saved.innerHTML='✓ 저장됨';
+    if (btn) { btn.parentElement.insertBefore(saved,btn); }
+    setTimeout(function(){ saved.style.opacity='0'; },1200); setTimeout(function(){ if(saved.parentNode) saved.remove(); },1700);
   }
   function openOcrPopup() {
     var popup = document.getElementById('ocr-popup');
