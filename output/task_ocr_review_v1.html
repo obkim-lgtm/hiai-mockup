@@ -327,39 +327,47 @@
 <!-- ===== 화면 2: OCR 확인/수정 (채점 상세 스타일 전체화면) ===== -->
 <div id="screen-ocr" class="screen">
 
-  <!-- 상단 고정 바 (채점 상세와 동일 패턴) -->
-  <div style="position:sticky;top:0;z-index:50;background:white;border-bottom:1px solid #E6E6E6;display:flex;align-items:center;justify-content:space-between;padding:0 20px;height:56px;gap:16px;">
+  <!-- 상단 고정 바 (채점 상세와 동일 스타일) -->
+  <div style="position:sticky;top:0;z-index:50;height:68px;display:flex;align-items:stretch;background:#F8F8F8;border-top:1px solid #D9D9D9;border-bottom:1px solid #D9D9D9;">
 
-    <!-- 좌측: 뒤로가기 + 학생 드롭다운 -->
-    <div style="display:flex;align-items:center;gap:12px;min-width:0;">
-      <button onclick="goToList()" style="display:flex;align-items:center;gap:6px;background:#F0F0F0;border:none;border-radius:8px;padding:6px 12px;cursor:pointer;font-family:inherit;font-size:14px;font-weight:700;color:#494949;white-space:nowrap;" onmouseover="this.style.background='#E6E6E6'" onmouseout="this.style.background='#F0F0F0'">
-        <i data-lucide="arrow-left" style="width:15px;height:15px;"></i>목록으로
-      </button>
-      <!-- 학생 드롭다운 -->
-      <div style="position:relative;">
-        <button id="nav-dropdown-btn" onclick="toggleStudentDropdown()" style="display:flex;align-items:center;gap:8px;background:white;border:1.5px solid #B28FFD;border-radius:8px;padding:6px 12px;cursor:pointer;font-family:inherit;min-width:200px;justify-content:space-between;" onmouseover="this.style.borderColor='#7E44FB'" onmouseout="this.style.borderColor='#B28FFD'">
-          <span id="nav-student-name" style="font-size:16px;font-weight:800;color:#341761;">김서윤 (10101)</span>
-          <i data-lucide="chevrons-up-down" style="width:15px;height:15px;color:#7E44FB;flex-shrink:0;"></i>
-        </button>
-        <div id="nav-dropdown" style="display:none;position:absolute;top:calc(100% + 6px);left:0;background:white;border:1px solid #E6E6E6;border-radius:10px;box-shadow:0 4px 20px rgba(95,102,178,.18);z-index:200;overflow:hidden;min-width:240px;">
-          <div id="nav-dropdown-list" style="max-height:320px;overflow-y:auto;"></div>
+    <!-- 이전으로 버튼 (보라색 사각 블록) -->
+    <button onclick="goToList()" style="width:68px;height:68px;background:#7E44FB;border:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;flex-shrink:0;padding:0;" onmouseover="this.style.opacity='.88'" onmouseout="this.style.opacity='1'">
+      <i data-lucide="arrow-left" style="width:28px;height:28px;color:white;"></i>
+      <span style="font-size:14px;font-weight:700;color:white;line-height:1;">이전으로</span>
+    </button>
+
+    <!-- 나머지 타이틀바 영역 -->
+    <div style="flex:1;display:flex;align-items:center;justify-content:space-between;padding:0 24px;">
+
+      <!-- 좌측: 학생 드롭다운 + 확인 진행 현황 -->
+      <div style="display:flex;align-items:center;gap:16px;">
+        <div id="studentDropdownWrap" style="position:relative;">
+          <div id="studentDropdownBtn" onclick="toggleStudentDropdown()" style="background:white;border:1px solid #D4D3D1;border-radius:6px;padding:8px 12px 8px 16px;min-width:345px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;">
+            <span id="nav-student-name" style="font-size:20px;font-weight:700;color:#333;">김서윤 (10101)</span>
+            <i data-lucide="chevron-down" style="width:20px;height:20px;color:#333;flex-shrink:0;margin-left:8px;"></i>
+          </div>
+          <div id="studentDropdownList" style="display:none;position:absolute;top:calc(100% + 4px);left:0;min-width:345px;max-height:400px;overflow-y:auto;background:white;border:1px solid #D4D3D1;border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,0.12);z-index:200;padding:4px 0;">
+            <div id="nav-dropdown-list"></div>
+          </div>
         </div>
+        <span id="nav-confirm-count" style="font-size:16px;color:#333;white-space:nowrap;"></span>
       </div>
-      <span id="nav-confirm-count" style="font-size:13px;color:#7E44FB;font-weight:800;white-space:nowrap;"></span>
-    </div>
 
-    <!-- 우측: 이전/다음 + 액션 버튼 -->
-    <div style="display:flex;align-items:center;gap:8px;flex-shrink:0;">
-      <button class="btn btn-outline btn-sm" id="btn-prev" onclick="navStudent(-1)">
-        <i data-lucide="chevron-left" style="width:15px;height:15px;"></i>이전 학생
-      </button>
-      <button class="btn btn-outline btn-sm" id="btn-next" onclick="navStudent(1)">
-        다음 학생<i data-lucide="chevron-right" style="width:15px;height:15px;"></i>
-      </button>
-      <div style="width:1px;height:24px;background:#E6E6E6;margin:0 4px;"></div>
-      <button class="btn btn-primary btn-sm" id="btn-save-next" onclick="saveAndNext()">
-        저장 후 다음<i data-lucide="chevron-right" style="width:15px;height:15px;"></i>
-      </button>
+      <!-- 우측: 이전/다음 학생 + 저장 버튼 -->
+      <div style="display:flex;align-items:center;gap:16px;">
+        <div style="display:flex;align-items:center;gap:0;">
+          <button id="btn-prev" onclick="navStudent(-1)" style="background:none;border:none;font-size:16px;font-weight:700;color:#494949;cursor:pointer;padding:0 12px;">
+            &lt; 이전 학생
+          </button>
+          <div style="width:1px;height:20px;background:#D9D9D9;"></div>
+          <button id="btn-next" onclick="navStudent(1)" style="background:none;border:none;font-size:16px;font-weight:700;color:#494949;cursor:pointer;padding:0 12px;">
+            다음 학생 &gt;
+          </button>
+        </div>
+        <button class="btn btn-primary" id="btn-save-next" onclick="saveAndNext()" style="height:40px;">
+          <i data-lucide="check" style="width:16px;height:16px;"></i>저장
+        </button>
+      </div>
     </div>
   </div>
 
@@ -372,7 +380,7 @@
   </div>
 
   <!-- 좌우 대조 영역 (전체 화면 높이) -->
-  <div id="ocr-split" style="display:flex;height:calc(100vh - 98px - 56px);">
+  <div id="ocr-split" style="display:flex;height:calc(100vh - 68px);">
 
     <!-- 좌측: 원본 스캔 (채점 상세 좌측 비율 참고) -->
     <div style="width:56%;min-width:0;display:flex;flex-direction:column;border-right:1px solid #E6E6E6;">
@@ -699,10 +707,10 @@ function renderOCRView() {
   var ocrSplit = document.getElementById('ocr-split');
   if (student.needsReview) {
     reviewBanner.style.display = 'flex';
-    ocrSplit.style.height = 'calc(100vh - 56px - 42px)';
+    ocrSplit.style.height = 'calc(100vh - 68px - 42px)';
   } else {
     reviewBanner.style.display = 'none';
-    ocrSplit.style.height = 'calc(100vh - 56px)';
+    ocrSplit.style.height = 'calc(100vh - 68px)';
   }
 
   // 네비게이터
@@ -737,9 +745,9 @@ function renderOCRView() {
   // 마지막 학생이면 버튼 텍스트 변경
   var btnSaveNext = document.getElementById('btn-save-next');
   if (currentStudentIdx === ocrStudents.length - 1) {
-    btnSaveNext.innerHTML = '<i data-lucide="check-circle" style="width:16px;height:16px;"></i>저장 후 완료';
+    btnSaveNext.innerHTML = '<i data-lucide="check" style="width:16px;height:16px;"></i>저장';
   } else {
-    btnSaveNext.innerHTML = '저장 후 다음<i data-lucide="chevron-right" style="width:16px;height:16px;"></i>';
+    btnSaveNext.innerHTML = '<i data-lucide="check" style="width:16px;height:16px;"></i>저장';
   }
 
   // 페이지 수
@@ -850,7 +858,7 @@ function renderScanPage(student) {
 
 // ── 드롭다운 ──
 function toggleStudentDropdown() {
-  var dd = document.getElementById('nav-dropdown');
+  var dd = document.getElementById('studentDropdownList');
   dd.style.display = dd.style.display === 'none' ? 'block' : 'none';
 }
 
@@ -859,15 +867,15 @@ function selectStudent(idx) {
   currentPageIdx = 0;
   scanZoom = 100;
   scanRotation = 0;
-  document.getElementById('nav-dropdown').style.display = 'none';
+  document.getElementById('studentDropdownList').style.display = 'none';
   renderOCRView();
 }
 
 // 외부 클릭 시 드롭다운 닫기
 document.addEventListener('click', function(e) {
-  var btn = document.getElementById('nav-dropdown-btn');
-  var dd = document.getElementById('nav-dropdown');
-  if (btn && dd && !btn.contains(e.target) && !dd.contains(e.target)) {
+  var btn = document.getElementById('studentDropdownWrap');
+  var dd = document.getElementById('studentDropdownList');
+  if (btn && dd && !btn.contains(e.target)) {
     dd.style.display = 'none';
   }
 });
