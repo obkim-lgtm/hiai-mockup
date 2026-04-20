@@ -966,17 +966,14 @@ function openSectionEdit(gi) {
   var section = ta.closest('.rubric-ocr-section');
   section.classList.add('section-editing');
 
-  // 연필 → 체크 + "편집 중" 뱃지
+  // 편집 중 뱃지 삽입
   var btn = section.querySelector('button[onclick^="editSection"]');
-  if (btn) {
-    btn.querySelector('i').setAttribute('data-lucide','check');
-    // 편집 중 뱃지 삽입
+  if (btn && !document.getElementById('editing-badge-' + gi)) {
     var badge = document.createElement('span');
     badge.className = 'editing-badge';
     badge.id = 'editing-badge-' + gi;
     badge.textContent = '편집 중';
     btn.parentElement.insertBefore(badge, btn);
-    lucide.createIcons();
   }
   _editingSection = gi;
   ta.focus();
@@ -991,24 +988,20 @@ function saveSection(ta, gi) {
   body.style.display = '';
   ta.style.display = 'none';
   var section = ta.closest('.rubric-ocr-section');
-  section.classList.remove('section-editing');
+  if (section) section.classList.remove('section-editing');
 
   // 편집 중 뱃지 제거
   var editBadge = document.getElementById('editing-badge-' + gi);
   if (editBadge) editBadge.remove();
 
-  // 연필 복원
-  var btn = section ? section.querySelector('button[onclick^="editSection"]') : null;
-  if (btn) { btn.querySelector('i').setAttribute('data-lucide','pencil'); lucide.createIcons(); }
-
   // "저장됨 ✓" 피드백
+  var btn = section ? section.querySelector('button[onclick^="editSection"]') : null;
   var saved = document.createElement('span');
   saved.className = 'saved-badge';
-  saved.innerHTML = '<i data-lucide="check" style="width:11px;height:11px;"></i>저장됨';
-  btn.parentElement.insertBefore(saved, btn);
-  lucide.createIcons();
+  saved.innerHTML = '✓ 저장됨';
+  if (btn) btn.parentElement.insertBefore(saved, btn);
   setTimeout(function(){ saved.style.opacity='0'; }, 1200);
-  setTimeout(function(){ saved.remove(); }, 1700);
+  setTimeout(function(){ if (saved.parentNode) saved.remove(); }, 1700);
 }
 
 function updateSuspectCount() {
