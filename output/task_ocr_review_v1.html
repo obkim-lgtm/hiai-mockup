@@ -312,7 +312,7 @@
               <th style="width:90px;">이름</th>
               <th>최근 제출 일시</th>
               <th style="width:70px; text-align:center;">파일 수</th>
-              <th style="width:100px; text-align:center;">OCR 상태</th>
+              <th style="width:160px; text-align:center;">OCR 상태</th>
               <th style="width:120px; text-align:center;">과제 제출 관리</th>
             </tr>
           </thead>
@@ -425,13 +425,6 @@
           <span style="font-size:16px;font-weight:800;color:#222;">OCR 인식 결과</span>
         </div>
         <!-- 안내 배너 -->
-        <div id="ocr-guide-banner" style="padding:10px 14px;background:#F7F4FF;border-radius:8px;display:flex;gap:8px;align-items:flex-start;margin-bottom:16px;">
-          <i data-lucide="pencil-line" style="width:14px;height:14px;color:#7E44FB;flex-shrink:0;margin-top:2px;"></i>
-          <span style="font-size:13px;color:#494949;line-height:1.6;flex:1;"><strong>인식된 텍스트가 원본과 맞는지 확인해 주세요.</strong> 직접 수정할 수 있으며, 이미지 영역은 회색으로 구분됩니다. 수정 내용은 자동으로 저장됩니다.</span>
-          <button onclick="this.parentElement.style.display='none'" style="border:none;background:transparent;cursor:pointer;color:#B3B3B3;padding:0;flex-shrink:0;" onmouseover="this.style.color='#7E44FB'" onmouseout="this.style.color='#B3B3B3'">
-            <i data-lucide="x" style="width:14px;height:14px;"></i>
-          </button>
-        </div>
       </div>
       <!-- OCR 텍스트 -->
       <div id="ocr-text-area" style="padding:0 20px 20px;"></div>
@@ -637,8 +630,12 @@ function renderTable() {
     var ocrCell = '-';
     if (s.ocrStatus === 'confirmed') {
       ocrCell = '<span style="display:inline-flex;align-items:center;gap:4px;color:#00AF3D;font-weight:700;font-size:13px;cursor:pointer;" onclick="goToOCR(' + i + ')"><i data-lucide="circle-check" style="width:14px;height:14px;"></i>확인완료</span>';
+    } else if (s.ocrStatus === 'unconfirmed' && s.needsReview) {
+      var uCount = (OCR_DATA[s.id] && OCR_DATA[s.id].questions)
+        ? OCR_DATA[s.id].questions.filter(function(q){ return !!q.uncertainty; }).length : 0;
+      ocrCell = '<span style="display:inline-flex;align-items:center;gap:4px;color:#DB3E51;font-weight:700;font-size:13px;cursor:pointer;white-space:nowrap;" onclick="goToOCR(' + i + ')"><i data-lucide="triangle-alert" style="width:14px;height:14px;flex-shrink:0;"></i>확인 필요<span style="font-weight:700;font-size:11px;background:#FFEFEF;border-radius:100px;padding:1px 6px;margin-left:2px;white-space:nowrap;">' + uCount + '개 문항</span></span>';
     } else if (s.ocrStatus === 'unconfirmed') {
-      ocrCell = '<span style="display:inline-flex;align-items:center;gap:4px;color:#7E44FB;font-weight:700;font-size:13px;cursor:pointer;" onclick="goToOCR(' + i + ')"><i data-lucide="circle" style="width:14px;height:14px;"></i>미확인</span>';
+      ocrCell = '<span style="display:inline-flex;align-items:center;gap:4px;color:#808080;font-weight:700;font-size:13px;cursor:pointer;" onclick="goToOCR(' + i + ')"><i data-lucide="circle" style="width:14px;height:14px;"></i>미확인</span>';
     } else if (s.ocrStatus === 'processing') {
       ocrCell = '<span style="display:inline-flex;align-items:center;gap:4px;color:#FF8C4C;font-weight:700;font-size:13px;"><i data-lucide="loader" style="width:14px;height:14px;" class="spin"></i>처리중</span>';
     }
@@ -719,8 +716,10 @@ function renderOCRView() {
     if (s.ocrStatus === 'confirmed') confirmedCount++;
     var isActive = i === currentStudentIdx;
     var checkIcon = s.ocrStatus === 'confirmed'
-      ? '<span style="color:#00AF3D;font-size:13px;">✓</span>'
-      : '<span style="color:#D9D9D9;font-size:13px;">○</span>';
+      ? '<span style="color:#00AF3D;font-size:13px;flex-shrink:0;">✓</span>'
+      : s.needsReview
+        ? '<span style="color:#DB3E51;font-size:12px;flex-shrink:0;">⚠</span>'
+        : '<span style="color:#D9D9D9;font-size:13px;flex-shrink:0;">○</span>';
     listHtml += '<div onclick="selectStudent(' + i + ')" style="display:flex;align-items:center;gap:10px;padding:10px 14px;cursor:pointer;background:' + (isActive ? '#F7F4FF' : 'white') + ';font-size:15px;font-weight:' + (isActive ? '800' : '700') + ';color:' + (isActive ? '#341761' : '#333') + ';" onmouseover="if(!this.classList.contains(\'active-item\'))this.style.background=\'#F8F8F8\'" onmouseout="this.style.background=\'' + (isActive ? '#F7F4FF' : 'white') + '\'">'
       + checkIcon
       + '<span>' + s.name + ' (' + s.id + ')</span>'
