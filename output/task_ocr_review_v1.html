@@ -58,6 +58,24 @@
     .page-divider{ display:flex; align-items:center; gap:12px; margin:12px 0; color:#B3B3B3; font-size:12px; font-weight:700; }
     .page-divider::before,.page-divider::after{ content:''; flex:1; height:1px; background:#E6E6E6; }
 
+    /* OCR 인식 불확실 노트 */
+    .ocr-uncertainty-note{ border-top:1px dashed #FFBCBC; background:#FFF5F5; padding:10px 14px; display:flex; flex-direction:column; gap:4px; border-radius:0 0 10px 10px; }
+    .ocr-uncertainty-label{ font-size:12px; font-weight:800; color:#DB3E51; display:flex; align-items:center; gap:4px; }
+    .ocr-uncertainty-text{ font-size:13px; color:#494949; line-height:1.65; }
+
+    /* 문항별 OCR 섹션 */
+    .rubric-ocr-section{ border:1px solid #E6E6E6; border-radius:12px; margin-bottom:12px; overflow:hidden; }
+    .rubric-ocr-header{ display:flex; align-items:center; gap:8px; padding:10px 14px; background:#F8F8F8; border-bottom:1px solid #E6E6E6; flex-wrap:wrap; }
+    .rubric-ocr-desc{ font-size:13px; color:#808080; font-weight:700; flex:1; min-width:0; overflow:hidden; white-space:nowrap; text-overflow:ellipsis; }
+    .rubric-suspect-chip{ display:inline-flex; align-items:center; gap:4px; background:#FFF0F0; border:1px solid #FFBCBC; border-radius:100px; padding:2px 8px; font-size:12px; font-weight:800; color:#DB3E51; flex-shrink:0; }
+    .rubric-ocr-body{ padding:14px 16px; font-size:15px; line-height:1.85; color:#333; cursor:text; position:relative; }
+    .rubric-ocr-body:hover{ background:#FDFCFF; }
+    .rubric-ocr-body:hover::after{ content:'클릭하여 편집'; position:absolute; top:8px; right:10px; font-size:11px; font-weight:700; color:#B3B3B3; pointer-events:none; }
+    .section-editing{ border-color:#7E44FB !important; box-shadow:0 0 0 2px rgba(126,68,251,.12); }
+    .section-editing .rubric-ocr-header{ background:#F7F4FF; }
+    .editing-badge{ font-size:11px; font-weight:800; color:#7E44FB; background:#EDE6FF; border-radius:100px; padding:2px 8px; }
+    .saved-badge{ font-size:11px; font-weight:800; color:#00AF3D; display:inline-flex; align-items:center; gap:3px; transition:opacity .4s; }
+
     /* 학생 네비게이터 */
     .student-nav{ display:flex; align-items:center; justify-content:space-between; padding:14px 20px; background:#F7F4FF; border-radius:12px; margin-bottom:20px; }
     .student-nav-center{ display:flex; align-items:center; gap:16px; }
@@ -81,7 +99,7 @@
 <body>
 
 <!-- ===== GNB ===== -->
-<div style="background:white; height:98px; border-bottom:1px solid #D9D9D9; display:flex; align-items:center; justify-content:center; padding:0 36px;">
+<div id="gnb" style="background:white; height:98px; border-bottom:1px solid #D9D9D9; display:flex; align-items:center; justify-content:center; padding:0 36px;">
   <div style="display:flex; align-items:center; justify-content:space-between; width:100%; max-width:1200px; padding:0 36px;">
     <div style="display:flex; align-items:center; gap:8px; flex-shrink:0;">
       <div style="width:58px; height:42px; overflow:hidden; position:relative; flex-shrink:0;">
@@ -347,9 +365,11 @@
   </div>
 
   <!-- OCR 인식 품질 경고 배너 (needsReview인 학생만 표시) -->
-  <div id="ocr-review-banner" style="display:none;padding:10px 20px;background:#FFF8F3;border-bottom:1px solid #FFE0C2;align-items:center;gap:10px;">
-    <i data-lucide="triangle-alert" style="width:16px;height:16px;color:#FF8C4C;flex-shrink:0;"></i>
-    <span style="font-size:14px;color:#494949;line-height:1.5;font-weight:700;"><strong style="color:#FF8C4C;">OCR 결과 확인 필요</strong> — 원본 이미지와 대조하며 전체 내용을 확인해 주세요.</span>
+  <div id="ocr-review-banner" style="display:none;padding:10px 20px;background:#FFF5F5;border-bottom:1px solid #FFBCBC;align-items:center;gap:10px;">
+    <i data-lucide="triangle-alert" style="width:16px;height:16px;color:#DB3E51;flex-shrink:0;"></i>
+    <span style="font-size:14px;color:#494949;line-height:1.5;font-weight:700;">
+      <strong style="color:#DB3E51;">OCR 결과 확인 필요</strong> — <strong id="suspect-count-badge" style="color:#DB3E51;">0개</strong> 문항에서 인식 불확실 구간이 감지되었습니다. 해당 문항 아래 AI 메모를 확인하고 원본과 대조해 주세요.
+    </span>
   </div>
 
   <!-- 좌우 대조 영역 (전체 화면 높이) -->
@@ -358,7 +378,10 @@
     <!-- 좌측: 원본 스캔 (채점 상세 좌측 비율 참고) -->
     <div style="width:56%;min-width:0;display:flex;flex-direction:column;border-right:1px solid #E6E6E6;">
       <!-- 페이지 네비게이션 바 -->
-      <div style="display:flex;align-items:center;justify-content:center;gap:12px;background:#3A3A3A;padding:8px 16px;flex-shrink:0;">
+      <div style="display:flex;align-items:center;justify-content:center;gap:12px;background:#3A3A3A;padding:8px 16px;flex-shrink:0;position:relative;">
+        <span style="position:absolute;left:14px;display:flex;align-items:center;gap:5px;background:rgba(255,255,255,.12);border-radius:6px;padding:3px 8px;font-size:11px;font-weight:700;color:rgba(255,255,255,.7);letter-spacing:0.2px;pointer-events:none;">
+          <i data-lucide="file-text" style="width:11px;height:11px;"></i>PDF 원본 · 손글씨
+        </span>
         <!-- 페이지 이동 -->
         <button onclick="navPage(-1)" style="background:none;border:none;cursor:pointer;color:white;display:flex;align-items:center;padding:4px;" title="이전 페이지">
           <i data-lucide="chevron-left" style="width:18px;height:18px;"></i>
@@ -439,46 +462,102 @@ const STUDENTS = [
 // OCR 텍스트 데이터 (학생별)
 const OCR_DATA = {
   '10101': {
-    pages: [
+    type: 'question',
+    questions: [
       {
-        num: 3,
-        blocks: [
-          { type:'text', content:'지구 표면의 약 70%는 물로 구성되어 있지만, 전 세계적으로 물 부족으로 인한 문제를 겪는 국가들이 많이 있다. 해수와 \'담수\'의 관점에서 물이 부족한 이유를 서술하고, 물 부족 문제를 해결하기 위해 \'새로운 수자원을 더 개발\'하는 방법과 \'현재 사용하는 수자원을 더 절약\'하는 방법 중 하나를 선택하고, 그 방법을 선택한 이유를 근거를 들어 설명하시오. (300자 이상 서술하되, 수권, 빙하, 지하수, 하천수, 호수 등의 단어를 활용하여 서술하시오.)' },
-          { type:'image', description:'원형 그래프가 포함된 이미지 영역 — 지구 수자원 분포 비율 도표' },
-          { type:'text', content:'인간이 쉽게 활용할 수 있는 담수의 양은 전체 수자원의 약 0.77%에 불과하며, 나머지는 해수(97.2%)와 빙하(2.1%)로 구성되어 있다.' }
-        ]
+        id: 'q1', label: '문항 1', desc: '관심 분야 선정',
+        text: '도시 환경'
       },
       {
-        num: 4,
-        blocks: [
-          { type:'text', content:'저는 새로운 수자원을 더 개발하여 이것은 물 부족 문제를 해결해야 한다고 생각합니다. 인구가 증가하고, 여러 산업이 발전함에 따라 전체적인 물의 수요는 계속 증가하고 있습니다. 이러한 상황에서 단순히 물을 절약하는 것으로는 수요를 충족시킬 수 없다고 생각합니다. 따라서 금속 지역에서 많이 사용하고 있는 해수를 담수로 바꾸어주는 해수 연수화나, 같은 물을 기술을 도입하여 새로운 수자원을 확보하는 것이 필요하다고 생각합니다.' },
-          { type:'text', content:'더 먼 미래를 생각하면 물 부족 문제를 근본적으로 해결하기 위해서는 수자원 개발이 반드시 필요합니다.' }
-        ]
+        id: 'q2', label: '문항 2', desc: '해당 분야의 미래 모습에 대하여 질문을 작성해보자',
+        text: '도시화가 계속 진행되면 녹지 공간은 얼마나 줄어들까? 대기오염이 심화될 경우 도시 거주민의 건강에 어떤 영향을 미칠까?'
+      },
+      {
+        id: 'q3', label: '문항 3', desc: '해당 분야 또는 질문에 대한 배경지식을 작성해보자',
+        text: '도시 열섬 현상은 콘크리트와 아스팔트가 열을 흡수하여 도심 기온이 주변보다 높아지는 현상이다. 이는 에너지 소비 증가, 대기오염 심화, 건강 문제 등을 유발하며 전 세계 주요 도시에서 공통적으로 나타나고 있다.'
+      },
+      {
+        id: 'q4', label: '문항 4', desc: '해당 분야의 현재 모습에 대해 기사, 통계자료를 바탕으로 표현해보자',
+        text: '서울시 도심의 여름 평균기온은 근교 대비 약 2~3°C 높으며, 이로 인한 냉방 에너지 소비는 연간 약 20% 더 많다. (출처: 서울연구원 도시기후 보고서 2022.8)'
+      },
+      {
+        id: 'q5', label: '문항 5', desc: '해당 내용과 관련된 과거의 기사 또는 통계 자료를 구체적으로 작성해보자',
+        text: '1990년대 이후 서울의 도심 녹지 비율은 꾸준히 감소하였으며, 2000년대 초반 도심 재개발로 인해 기존 녹지의 30% 이상이 건물로 대체되었다. (출처: 환경부 도시녹지 현황 통계 2020.5)'
+      },
+      {
+        id: 'q6', label: '문항 6', desc: '현재의 모습이 나타나게 된 원인을 분석해보자',
+        text: '급속한 경제 성장과 인구 집중으로 인해 도시 개발이 환경 고려 없이 진행되었고, 녹지보다 주거·상업 공간 확보가 우선시된 결과 현재의 열섬 및 대기오염 문제가 심화되었다.'
       }
     ]
   },
   '10102': {
-    pages: [
+    type: 'question',
+    questions: [
       {
-        num: 5,
-        blocks: [
-          { type:'text', content:'물 부족 문제가 발생하는 이유는 지구에 존재하는 물의 대부분이 해수이기 때문입니다. 전체 물의 97%가 바닷물이고, 나머지 3%의 담수 중에서도 빙하와 만년설이 대부분을 차지합니다.' },
-          { type:'image', description:'막대 그래프가 포함된 이미지 영역 — 대륙별 물 사용량 비교' },
-          { type:'text', content:'실제로 인간이 사용할 수 있는 지하수, 하천수, 호수의 물은 전체의 1%도 되지 않습니다. 이렇게 제한된 수자원으로 인해 많은 국가들이 물 부족에 시달리고 있습니다.' }
-        ]
+        id: 'q1', label: '문항 1', desc: '관심 분야 선정',
+        text: '해양'
       },
       {
-        num: 6,
-        blocks: [
-          { type:'text', content:'저는 현재 사용하는 수자원을 더 절약하는 방법을 선택하겠습니다. 새로운 기술 개발에는 많은 비용이 들지만, 절약은 바로 시작할 수 있기 때문입니다. 예를 들어 빗물 저장 시스템을 활용하거나, 농업용수를 절약하는 관개 기술을 보급하면 효과적으로 수자원을 관리할 수 있습니다.' }
-        ]
+        id: 'q2', label: '문항 2', desc: '해당 분야의 미래 모습에 대하여 질문을 작성해보자',
+        text: '해양오염으로 인해 물부족현상이 심해질 수 있을까? 생물 다양성이 감소하면 인간의 식량 공급에도 영향을 미칠까?',
+        uncertainty: '문항 2에서 첫 번째 질문 문장의 일부 글자 판독이 불확실합니다. 흘려 쓴 받침 처리로 인해 단어가 부정확하게 인식되었을 수 있습니다. 원본 이미지와 대조 후 수정해 주세요.'
+      },
+      {
+        id: 'q3', label: '문항 3', desc: '해당 분야 또는 질문에 대한 배경지식을 작성해보자',
+        text: '전 세계적으로 해양오염이 심각해지고 있으며, 특히 플라스틱 폐기물과 화학물질이 해양생태계를 위협하고 있다. 기후변화로 인한 해수면 상승으로 지수온화가 가속화되고 있으며, 이는 해양 생물의 서식 환경을 변화시키고 있다. 산호초의 백화 현상, 어류 개체수 감소 등이 대표적인 사례이다.',
+        uncertainty: '문항 3 두 번째 문장에서 인접한 음절이 뭉쳐 쓰인 구간이 있습니다. \'지수온화\' 부분은 원문 단어와 다를 가능성이 있으며, 전반적인 문장 흐름을 원본과 함께 확인해 주세요.'
+      },
+      {
+        id: 'q4', label: '문항 4', desc: '해당 분야의 현재 모습에 대해 기사, 통계자료를 바탕으로 표현해보자',
+        text: '매년 약 800만 톤의 플라스틱이 바다로 유입되며, 현재 해양에는 약 1억 5천만 톤의 플라스틱이 존재한다. (출처: 바닷물 흐름도 = 결석 2021/6.30)'
+      },
+      {
+        id: 'q5', label: '문항 5', desc: '해당 내용과 관련된 과거의 기사 또는 통계 자료를 구체적으로 작성해보자',
+        text: '1960년대 이후 해양 플라스틱 오염이 급격히 증가하였으며, 1984년 조사에 따르면 북태평양 해역에서 이미 높은 농도의 플라스틱이 검출되었다. (출처: 고래류 골격 분포 2019.4)'
+      },
+      {
+        id: 'q6', label: '문항 6', desc: '현재의 모습이 나타나게 된 원인을 분석해보자',
+        text: '산업화 이후 플라스틱 생산량이 급격히 증가하면서 폐기물 관리가 제대로 이루어지지 않아 해양으로 유입되는 양이 늘어났다.'
       }
     ]
   }
 };
 
+// 박지민(10103) — 문항 단위, 인식 불확실 2개 문항
+OCR_DATA['10103'] = {
+  type: 'question',
+  questions: [
+    {
+      id: 'q1', label: '문항 1', desc: '관심 분야 선정',
+      text: '환경'
+    },
+    {
+      id: 'q2', label: '문항 2', desc: '해당 분야의 미래 모습에 대하여 질문을 작성해보자',
+      text: '기후 변화로 인해 극단적인 기상 현상이 더 자주 발생할까? 재생에너지 전환이 늦어질 경우 지구 평균기온은 얼마나 상승할까?'
+    },
+    {
+      id: 'q3', label: '문항 3', desc: '해당 분야 또는 질문에 대한 배경지식을 작성해보자',
+      text: '온실가스 증가로 지구 온난화가 심화되고 있으며, 이는 이상기후, 해수면 상승, 생물 다양성 감소 등을 초래한다. 1990년대 이후 세계 각국이 탄소 감축 협약을 맺고 있으나, 실질적 실행이 부족하여 온난화 추세가 지속되고 있다는 주장이 있다.',
+      uncertainty: '문항 3 후반부 문장에서 일부 글자의 획이 불명확하여 판독 신뢰도가 낮습니다. 특히 \'실질적\' 이후 구간에서 오인식 가능성이 있으니 원본과 대조해 주세요.'
+    },
+    {
+      id: 'q4', label: '문항 4', desc: '해당 분야의 현재 모습에 대해 기사, 통계자료를 바탕으로 표현해보자',
+      text: 'IPCC 보고서에 따르면 산업화 이전 대비 현재 지구 평균기온은 이미 1.1°C 상승하였다. (출처: 기후변화 현황 리포트 2022/3.15) 2022년 한반도 여름 평균기온은 관측 이래 역대 3위를 기록하였다.',
+      uncertainty: '문항 4의 수치 및 날짜 표기 부분에서 인식 오류가 발생했을 수 있습니다. \'1.1°C\' 및 출처의 날짜 형식이 손글씨로 기재되어 정확한 수치를 원본 이미지에서 직접 확인해 주세요.'
+    },
+    {
+      id: 'q5', label: '문항 5', desc: '해당 내용과 관련된 과거의 기사 또는 통계 자료를 구체적으로 작성해보자',
+      text: '1970년대 이후 전 세계 이산화탄소 농도가 지속적으로 상승하였으며, 2020년 기준 400ppm을 초과하였다. (출처: 환경부 기후변화 통계 2021.6)'
+    },
+    {
+      id: 'q6', label: '문항 6', desc: '현재의 모습이 나타나게 된 원인을 분석해보자',
+      text: '화석연료 중심의 산업 발전과 삼림 벌채가 주요 원인으로, 대기 중 온실가스 농도를 높여 지구 열평형이 무너지게 되었다.'
+    }
+  ]
+};
+
 // 다른 학생들도 기본 데이터 생성
-['10103','10105','10109'].forEach(function(id) {
+['10105','10109'].forEach(function(id) {
   var s = STUDENTS.find(function(x){ return x.id === id; });
   if (s && !OCR_DATA[id]) {
     OCR_DATA[id] = {
@@ -496,13 +575,50 @@ const OCR_DATA = {
   }
 });
 
-// 스캔 이미지 시뮬레이션 데이터 (손글씨 느낌)
-const SCAN_PAGES = {
-  3: '지구 표면의 약 70%는 물로 구성되어 있지만, 전 세계적으로 물 부족으로 인한 문제를 겪는 국가들이 많이 있다.\n\n[그래프]\n\n인간이 쉬로 활용할 슈 있는 담수의 양은 전체 수자원의 약 0.77%에 볼과하며...',
-  4: '저는 새로은 수자원을 더 개발하여 이것은 물 부족 문제를 해결해야 한다고 생각합니다. 인구가 증가하고, 여러 산업이 발전함에 따라...\n\n더 먼 미래를 생각하면 물 부족 문제를 근본적으로 해결해야...',
-  5: '물 부족 문제가 발생하는 이유는 지구에 존재하는 물의 대부분이 해수이기 때문입니다.\n\n[그래프]\n\n실제로 인간이 사용할 수 있는 지하수, 하천수, 호수의 물은...',
-  6: '저는 현재 사용하는 수자원을 더 절약하는 방법을 선택하겠습니다. 새로운 기술 개발에는 많은 비용이 들지만...'
-};
+// 스캔 이미지 시뮬레이션 — 실제 서식 형태
+const SCAN_FORM = [
+  // 페이지 1: 문항 1~3
+  {
+    title: '관심 분야에 관한 미래 예측 보고서 작성',
+    rows: [
+      { label: '관심 분야 선정', answer: '해양', height: '44px' },
+      { label: '해당 분야의 미래 모습에\n대하여 질문을 작성해보자', answer: '해양오염으로 인해\n물부족현상이 심해질 수 있을까?', height: '80px' },
+      { label: '해당 분야 또는 질문에 대한\n배경지식을 작성해보자\n(관련 이론, 개념, 사실 등)', answer: '전 세계적으로 해양오염이 심각해지고 있으며, 특히 플라스틱 폐기물과 화학물질이 해양생태계를 위협하고 있다. 기후변화로 인한 해수면 상승으로 지수온화가 가속화되고 있으며, 이는 해양 생물의 서식 환경을 변화시키고 있다. 산호초의 백화 현상, 어류 개체수 감소 등이 대표적인 사례이다.', height: '130px' }
+    ]
+  },
+  // 페이지 2: 문항 4~6
+  {
+    title: '관심 분야에 관한 미래 예측 보고서 작성',
+    rows: [
+      { label: '해당 분야의 현재 모습에\n대해 기사, 통계자료를\n바탕으로 구체적으로\n표현해보자', answer: '매년 약 800만 톤의 플라스틱이 바다로 유입되며, 현재 해양에는 약 1억 5천만 톤의 플라스틱이 존재한다.\n\n출처: 바닷물 흐름도 = 결석 2021/6.30', height: '130px' },
+      { label: '해당 내용(해당 분야)과\n관련된 과거의 기사 또는\n통계 자료를 구체적으로\n작성해보자', answer: '1960년대 이후 해양 플라스틱 오염이 급격히 증가하였으며, 1984년 조사에 따르면 북태평양 해역에서 이미 높은 농도의 플라스틱이 검출되었다.\n\n출처: 고래류 골격 분포 2019.4', height: '130px' },
+      { label: '현재의 모습이 나타나게\n된 원인(원인이 된 사건)을\n분석해보자', answer: '산업화 이후 플라스틱 생산량이 급격히 증가하면서 폐기물 관리가 제대로 이루어지지 않아 해양으로 유입되는 양이 늘어났다.\n\n출처: 개역학교 조사 2013.4\t변화로 2021년대', height: '130px' }
+    ]
+  }
+];
+
+// 페이지 구성 함수
+function buildFormPageHTML(page) {
+  var hw = "font-family:'Nanum Pen Script','Gungsuh',cursive;font-size:15px;line-height:1.8;color:#1a1a1a;white-space:pre-wrap;";
+  var html = '<div style="font-size:11px;font-weight:900;text-align:center;letter-spacing:0.5px;padding:10px 0 8px;border-bottom:2px solid #555;">'
+    + page.title + '</div>';
+  html += '<div style="background:#ccc;height:22px;margin:6px 0;border-radius:2px;"></div>';
+  html += '<table style="width:100%;border-collapse:collapse;font-size:11px;">';
+  page.rows.forEach(function(row) {
+    var labelLines = row.label.split('\n');
+    html += '<tr>';
+    html += '<td style="background:#DCDCDC;border:1px solid #999;padding:7px 8px;width:32%;vertical-align:top;text-align:center;font-weight:700;font-size:10px;line-height:1.5;">'
+      + labelLines.join('<br>') + '</td>';
+    html += '<td style="border:1px solid #999;padding:8px 10px;vertical-align:top;height:' + row.height + ';">'
+      + '<span style="' + hw + '">' + row.answer + '</span></td>';
+    html += '</tr>';
+  });
+  html += '</table>';
+  return html;
+}
+
+// 구형 SCAN_PAGES (페이지 번호 → 폴백용)
+const SCAN_PAGES = {};
 
 var ocrStudents = STUDENTS.filter(function(s){ return s.status === '제출' && s.ocrStatus !== null && s.ocrStatus !== 'processing'; });
 var currentStudentIdx = 0;
@@ -553,6 +669,8 @@ function renderTable() {
 function showScreen(id) {
   document.querySelectorAll('.screen').forEach(function(s){ s.classList.remove('active'); });
   document.getElementById(id).classList.add('active');
+  var gnb = document.getElementById('gnb');
+  if (gnb) gnb.style.display = (id === 'screen-ocr') ? 'none' : '';
   window.scrollTo(0,0);
   lucide.createIcons();
 }
@@ -585,10 +703,10 @@ function renderOCRView() {
   var ocrSplit = document.getElementById('ocr-split');
   if (student.needsReview) {
     reviewBanner.style.display = 'flex';
-    ocrSplit.style.height = 'calc(100vh - 98px - 56px - 42px)';
+    ocrSplit.style.height = 'calc(100vh - 56px - 42px)';
   } else {
     reviewBanner.style.display = 'none';
-    ocrSplit.style.height = 'calc(100vh - 98px - 56px)';
+    ocrSplit.style.height = 'calc(100vh - 56px)';
   }
 
   // 네비게이터
@@ -635,6 +753,9 @@ function renderOCRView() {
   currentPageIdx = 0;
   renderScanPage(student);
 
+  // 의심 영역 카운트 배너 갱신
+  updateSuspectCount();
+
   lucide.createIcons();
 }
 
@@ -646,6 +767,47 @@ function renderOCRText(student) {
     return;
   }
 
+  // 문항 단위 렌더
+  if (data.type === 'question' || data.type === 'rubric') {
+    var groups = data.type === 'question' ? data.questions : data.rubricGroups;
+    var html = '';
+    groups.forEach(function(group, gi) {
+      var hasUncertainty = !!group.uncertainty;
+      var chipHtml = hasUncertainty
+        ? '<span class="rubric-suspect-chip"><i data-lucide="triangle-alert" style="width:11px;height:11px;"></i>확인 필요</span>'
+        : '';
+      var bodyText = group.text || (group.spans ? group.spans.map(function(s){ return s.text; }).join(' ') : '');
+
+      html += '<div class="rubric-ocr-section">';
+      html += '<div class="rubric-ocr-header">';
+      html += '<span class="badge badge-purple" style="font-size:12px;padding:3px 10px;">' + group.label + '</span>';
+      html += '<span class="rubric-ocr-desc">' + group.desc + '</span>';
+      html += chipHtml;
+      html += '<button onclick="editSection(this,' + gi + ')" title="편집" style="background:none;border:none;cursor:pointer;color:#B3B3B3;padding:2px 4px;flex-shrink:0;display:flex;align-items:center;" onmouseover="this.style.color=\'#7E44FB\'" onmouseout="this.style.color=\'#B3B3B3\'">';
+      html += '<i data-lucide="pencil" style="width:13px;height:13px;"></i></button>';
+      html += '</div>';
+      // 본문 (클릭 시 편집)
+      html += '<div class="rubric-ocr-body" id="group-body-' + gi + '" onclick="editSectionByBody(this,' + gi + ')">';
+      html += '<span style="color:#333;">' + bodyText + '</span>';
+      html += '</div>';
+      // textarea (편집 모드)
+      html += '<textarea id="group-ta-' + gi + '" onblur="saveSection(this,' + gi + ')" style="display:none;width:100%;border:none;border-top:1px solid #D4BBFF;padding:12px 15px;font-family:inherit;font-size:15px;line-height:1.8;color:#333;outline:none;resize:none;overflow:hidden;box-sizing:border-box;" rows="4">' + bodyText + '</textarea>';
+      // 인식 불확실 노트
+      if (hasUncertainty) {
+        html += '<div class="ocr-uncertainty-note" id="group-note-' + gi + '">';
+        html += '<span class="ocr-uncertainty-label"><i data-lucide="triangle-alert" style="width:12px;height:12px;"></i>AI 인식 불확실</span>';
+        html += '<span class="ocr-uncertainty-text">' + group.uncertainty + '</span>';
+        html += '</div>';
+      }
+      html += '</div>';
+    });
+
+    area.innerHTML = html;
+    lucide.createIcons();
+    return;
+  }
+
+  // 페이지 단위 렌더 (기존 방식)
   var html = '';
   data.pages.forEach(function(page, pi) {
     html += '<div class="page-divider" data-page="' + page.num + '" style="cursor:pointer;" onclick="jumpToPage(' + pi + ')" onmouseover="this.style.color=\'#7E44FB\'" onmouseout="this.style.color=\'#B3B3B3\'">페이지 ' + (pi + 1) + '</div>';
@@ -661,8 +823,6 @@ function renderOCRText(student) {
 
   area.innerHTML = html;
 
-  // 텍스트 에어리어 높이 자동 조절
-  // 렌더 완료 후 높이 계산
   requestAnimationFrame(function() {
     area.querySelectorAll('.ocr-textarea').forEach(function(ta) {
       autoResize(ta);
@@ -676,30 +836,17 @@ function autoResize(el) {
 }
 
 function renderScanPage(student) {
-  var pageNum = student.pages[currentPageIdx];
-  document.getElementById('scan-page-info').textContent = (currentPageIdx + 1) + ' / ' + student.pages.length;
+  var totalPages = SCAN_FORM.length;
+  document.getElementById('scan-page-info').textContent = (currentPageIdx + 1) + ' / ' + totalPages;
 
-  var content = SCAN_PAGES[pageNum];
   var el = document.getElementById('scan-page-content');
+  var formPage = SCAN_FORM[currentPageIdx];
 
-  if (content) {
-    // 손글씨 시뮬레이션
-    var lines = content.split('\n');
-    var html = '';
-    lines.forEach(function(line) {
-      if (line === '[그래프]') {
-        html += '<div style="width:100%;height:120px;background:#F0F0F0;border:1px solid #D9D9D9;border-radius:4px;margin:12px 0;display:flex;align-items:center;justify-content:center;color:#999;font-size:14px;font-style:italic;">[이미지 영역]</div>';
-      } else if (line === '') {
-        html += '<div style="height:16px;"></div>';
-      } else {
-        html += '<p style="margin:0 0 4px; font-family:\'Nanum Pen Script\',cursive,\'NanumSquareRound\'; font-size:18px; line-height:2.0; color:#222; letter-spacing:-0.5px;">' + line + '</p>';
-      }
-    });
-    el.innerHTML = html;
+  if (formPage) {
+    el.innerHTML = buildFormPageHTML(formPage);
   } else {
-    el.innerHTML = '<div style="padding:60px; text-align:center; color:#999; font-size:14px;">스캔 이미지 미리보기<br><span style="font-size:12px; color:#B3B3B3;">(목업 — 실제로는 PDF 페이지 이미지가 표시됩니다)</span></div>';
+    el.innerHTML = '<div style="padding:60px;text-align:center;color:#999;font-size:14px;">스캔 이미지 미리보기<br><span style="font-size:12px;color:#B3B3B3;">(목업 — 실제로는 PDF 페이지 이미지가 표시됩니다)</span></div>';
   }
-  // 현재 zoom/rotation 유지
   applyScanTransform();
 }
 
@@ -739,7 +886,7 @@ function navStudent(dir) {
 function navPage(dir) {
   var student = ocrStudents[currentStudentIdx];
   var newIdx = currentPageIdx + dir;
-  if (newIdx < 0 || newIdx >= student.pages.length) return;
+  if (newIdx < 0 || newIdx >= SCAN_FORM.length) return;
   currentPageIdx = newIdx;
   renderScanPage(student);
 }
@@ -774,6 +921,103 @@ function rotateScan(deg) {
 function jumpToPage(pageIndex) {
   currentPageIdx = pageIndex;
   renderScanPage(ocrStudents[currentStudentIdx]);
+}
+
+// ── OCR 의심 영역 인라인 편집 ──
+
+
+function editSectionByBody(bodyEl, gi) {
+  openSectionEdit(gi);
+}
+
+function editSection(btn, gi) {
+  var ta = document.getElementById('group-ta-' + gi);
+  if (!ta) return;
+  if (ta.style.display !== 'none') {
+    saveSection(ta, gi);
+    return;
+  }
+  openSectionEdit(gi);
+}
+
+var _editingSection = null; // 현재 편집 중인 섹션 인덱스
+
+function openSectionEdit(gi) {
+  // 다른 섹션이 열려있으면 먼저 저장
+  if (_editingSection !== null && _editingSection !== gi) {
+    var prevTa = document.getElementById('group-ta-' + _editingSection);
+    if (prevTa && prevTa.style.display !== 'none') {
+      saveSection(prevTa, _editingSection);
+    }
+  }
+  // 이미 같은 섹션 편집 중이면 무시
+  if (_editingSection === gi) return;
+
+  var body = document.getElementById('group-body-' + gi);
+  var ta = document.getElementById('group-ta-' + gi);
+  if (!body || !ta) return;
+  ta.value = body.innerText.trim();
+  body.style.display = 'none';
+  ta.style.display = 'block';
+  ta.style.height = 'auto';
+  ta.style.height = Math.max(ta.scrollHeight, 80) + 'px';
+  ta.style.overflowY = 'hidden';
+  ta.oninput = function(){ this.style.height='auto'; this.style.height=this.scrollHeight+'px'; };
+
+  var section = ta.closest('.rubric-ocr-section');
+  section.classList.add('section-editing');
+
+  // 연필 → 체크 + "편집 중" 뱃지
+  var btn = section.querySelector('button[onclick^="editSection"]');
+  if (btn) {
+    btn.querySelector('i').setAttribute('data-lucide','check');
+    // 편집 중 뱃지 삽입
+    var badge = document.createElement('span');
+    badge.className = 'editing-badge';
+    badge.id = 'editing-badge-' + gi;
+    badge.textContent = '편집 중';
+    btn.parentElement.insertBefore(badge, btn);
+    lucide.createIcons();
+  }
+  _editingSection = gi;
+  ta.focus();
+}
+
+function saveSection(ta, gi) {
+  if (ta.style.display === 'none') return; // blur 중복 방지
+  _editingSection = null;
+  var body = document.getElementById('group-body-' + gi);
+  if (!body) return;
+  body.innerHTML = '<span style="color:#333;">' + ta.value.replace(/\n/g, '<br>') + '</span>';
+  body.style.display = '';
+  ta.style.display = 'none';
+  var section = ta.closest('.rubric-ocr-section');
+  section.classList.remove('section-editing');
+
+  // 편집 중 뱃지 제거
+  var editBadge = document.getElementById('editing-badge-' + gi);
+  if (editBadge) editBadge.remove();
+
+  // 연필 복원
+  var btn = section ? section.querySelector('button[onclick^="editSection"]') : null;
+  if (btn) { btn.querySelector('i').setAttribute('data-lucide','pencil'); lucide.createIcons(); }
+
+  // "저장됨 ✓" 피드백
+  var saved = document.createElement('span');
+  saved.className = 'saved-badge';
+  saved.innerHTML = '<i data-lucide="check" style="width:11px;height:11px;"></i>저장됨';
+  btn.parentElement.insertBefore(saved, btn);
+  lucide.createIcons();
+  setTimeout(function(){ saved.style.opacity='0'; }, 1200);
+  setTimeout(function(){ saved.remove(); }, 1700);
+}
+
+function updateSuspectCount() {
+  var area = document.getElementById('ocr-text-area');
+  var countEl = document.getElementById('suspect-count-badge');
+  if (!area || !countEl) return;
+  var notes = area.querySelectorAll('.ocr-uncertainty-note').length;
+  countEl.textContent = notes + '개';
 }
 
 // ── 액션 ──
