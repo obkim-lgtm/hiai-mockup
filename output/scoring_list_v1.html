@@ -252,11 +252,14 @@
 <!-- ===== OCR 경고 모달 (소수) — 1-1반: 2명 미확인 ===== -->
 <div id="ocrFewModal" class="modal-overlay" onclick="if(event.target===this) closeOcrFewModal()">
   <div class="modal-box">
-    <div style="padding:24px 24px 16px;">
-      <div style="display:flex; align-items:center; gap:10px;">
+    <div style="padding:24px 24px 16px; position:relative;">
+      <div style="display:flex; align-items:center; gap:10px; padding-right:36px;">
         <i data-lucide="triangle-alert" style="width:22px; height:22px; color:#FF8C4C; flex-shrink:0;"></i>
         <span style="font-size:20px; font-weight:700; color:#333;">OCR 미확인 학생이 있습니다</span>
       </div>
+      <button onclick="closeOcrFewModal()" style="position:absolute; top:11px; right:11px; width:36px; height:36px; background:none; border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; border-radius:6px;" onmouseover="this.style.background='#F0F0F0'" onmouseout="this.style.background='none'">
+        <i data-lucide="x" style="width:20px; height:20px; color:#808080;"></i>
+      </button>
     </div>
     <div style="padding:0 24px 24px; display:flex; flex-direction:column; gap:16px;">
       <p style="font-size:14px; color:#494949; line-height:1.55; margin:0;">아래 학생의 OCR 결과가 아직 확인되지 않았습니다. 인식 불확실 구간이 있어 채점 정확도에 영향을 줄 수 있습니다.</p>
@@ -268,7 +271,7 @@
             <span style="font-size:12px; font-weight:700; background:#FFEDD5; color:#FF8C4C; border-radius:100px; padding:2px 8px;">2개 문항</span>
           </div>
           <a href="task_ocr_review_v1.html" target="_blank" style="font-size:14px; font-weight:700; color:#7E44FB; display:flex; align-items:center; gap:4px; text-decoration:none;">
-            OCR 확인 <i data-lucide="external-link" style="width:13px; height:13px;"></i>
+            OCR 결과 확인 <i data-lucide="external-link" style="width:13px; height:13px;"></i>
           </a>
         </div>
         <div style="padding:10px 16px; display:flex; align-items:center; justify-content:space-between;">
@@ -278,13 +281,12 @@
             <span style="font-size:12px; font-weight:700; background:#FFEDD5; color:#FF8C4C; border-radius:100px; padding:2px 8px;">1개 문항</span>
           </div>
           <a href="task_ocr_review_v1.html" target="_blank" style="font-size:14px; font-weight:700; color:#7E44FB; display:flex; align-items:center; gap:4px; text-decoration:none;">
-            OCR 확인 <i data-lucide="external-link" style="width:13px; height:13px;"></i>
+            OCR 결과 확인 <i data-lucide="external-link" style="width:13px; height:13px;"></i>
           </a>
         </div>
       </div>
     </div>
     <div style="padding:8px 24px 24px; display:flex; justify-content:flex-end; gap:12px;">
-      <button onclick="closeOcrFewModal()" style="background:#F0F0F0; color:#494949; border:none; border-radius:8px; height:40px; padding:0 20px; font-size:16px; font-weight:700; cursor:pointer; font-family:inherit;">취소</button>
       <button onclick="proceedToRunModal('ocrFewModal')" style="background:white; color:#7E44FB; border:1.5px solid #B28FFD; border-radius:8px; height:40px; padding:0 20px; font-size:16px; font-weight:700; cursor:pointer; font-family:inherit;">이대로 채점 실행</button>
     </div>
   </div>
@@ -293,11 +295,14 @@
 <!-- ===== OCR 경고 모달 (다수) — 1-2반: 8/14명 미확인 ===== -->
 <div id="ocrManyModal" class="modal-overlay" onclick="if(event.target===this) closeOcrManyModal()">
   <div class="modal-box">
-    <div style="padding:24px 24px 16px;">
-      <div style="display:flex; align-items:center; gap:10px;">
+    <div style="padding:24px 24px 16px; position:relative;">
+      <div style="display:flex; align-items:center; gap:10px; padding-right:36px;">
         <i data-lucide="triangle-alert" style="width:22px; height:22px; color:#DB3E51; flex-shrink:0;"></i>
         <span style="font-size:20px; font-weight:700; color:#333;">다수 학생의 OCR 결과가 확인되지 않았습니다</span>
       </div>
+      <button onclick="closeOcrManyModal()" style="position:absolute; top:11px; right:11px; width:36px; height:36px; background:none; border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; border-radius:6px;" onmouseover="this.style.background='#F0F0F0'" onmouseout="this.style.background='none'">
+        <i data-lucide="x" style="width:20px; height:20px; color:#808080;"></i>
+      </button>
     </div>
     <div style="padding:0 24px 24px; display:flex; flex-direction:column; gap:16px;">
       <div style="background:#FFF5F5; border:1px solid #FFBCBC; border-radius:8px; padding:14px 16px; display:flex; align-items:flex-start; gap:10px;">
@@ -310,7 +315,6 @@
       </div>
     </div>
     <div style="padding:8px 24px 24px; display:flex; justify-content:flex-end; gap:12px;">
-      <button onclick="closeOcrManyModal()" style="background:#F0F0F0; color:#494949; border:none; border-radius:8px; height:40px; padding:0 20px; font-size:16px; font-weight:700; cursor:pointer; font-family:inherit;">취소</button>
       <button onclick="location.href='task_ocr_review_v1.html'" style="background:white; color:#7E44FB; border:1.5px solid #B28FFD; border-radius:8px; height:40px; padding:0 20px; font-size:16px; font-weight:700; cursor:pointer; font-family:inherit; display:inline-flex; align-items:center; gap:6px;">
         <i data-lucide="external-link" style="width:15px; height:15px;"></i>OCR 결과 확인하러 가기
       </button>
