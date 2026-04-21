@@ -284,7 +284,7 @@
       <div class="section-head">
         <h3>채점 진행 결과</h3>
         <div class="right">
-          <button class="btn btn-sec" style="height:36px;font-size:16px"><i data-lucide="wand-2" style="width:16px;height:16px"></i>AI 채점 실행</button>
+          <button class="btn btn-sec" style="height:36px;font-size:16px" onclick="openAiRunModal()"><i data-lucide="wand-2" style="width:16px;height:16px"></i>AI 채점 실행</button>
           <button class="btn-icon"><i data-lucide="bar-chart-3" style="width:18px;height:18px"></i></button>
           <button class="btn-icon"><i data-lucide="rotate-cw" style="width:18px;height:18px"></i></button>
         </div>
@@ -801,5 +801,99 @@ function submitFb(){closeFbForm();fbToast('의견이 전송되었습니다. 감�
     </div>
   </div>
 </div>
+<!-- ===== AI 채점 실행 모달 ===== -->
+<div id="aiRunModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:1000;align-items:center;justify-content:center;" onclick="if(event.target===this)closeAiRunModal()">
+  <div style="background:white;border-radius:24px;box-shadow:0 4px 12px rgba(95,102,178,0.16);width:752px;max-width:90vw;overflow:hidden;">
+    <!-- Header -->
+    <div style="padding:24px 24px 16px 24px;">
+      <div style="font-size:20px;font-weight:700;color:#333;">AI 채점 실행</div>
+    </div>
+    <!-- Body -->
+    <div style="padding:0 24px 24px 24px;display:flex;flex-direction:column;gap:20px;">
+      <div style="font-size:14px;color:#333;line-height:1.55;">
+        AI Assistant 자동 채점을 진행할 학생과 AI 채점 수준을 선택해 주세요.<br>
+        AI 채점 결과를 기반으로 채점 수준을 조정하여 해당 학생에 대한 AI Assistant 자동 채점을 재실행합니다.<br>
+        AI는 선생님을 보조하는 역할을 하며 채점의 최종 권한은 선생님에게만 있습니다.
+      </div>
+      <!-- 채점 대상 -->
+      <div>
+        <div style="font-size:16px;font-weight:700;color:#333;margin-bottom:10px;">AI 채점 대상</div>
+        <div style="border:1px solid #D9D9D9;border-radius:8px;overflow:hidden;">
+          <div style="background:#F8F8F8;padding:12px 20px;display:flex;align-items:center;gap:10px;border-bottom:1px solid #D9D9D9;">
+            <div class="ai-chk checked" onclick="toggleAiAll(this)"></div>
+            <span style="font-size:16px;font-weight:700;color:#333;flex:1;">1-1반 (1/3명)</span>
+            <i data-lucide="chevron-down" style="width:20px;height:20px;color:#333;"></i>
+          </div>
+          <div style="padding:12px 20px;display:flex;align-items:center;gap:10px;border-bottom:1px solid #F0F0F0;">
+            <div class="ai-chk checked" onclick="toggleAiChk(this)"></div>
+            <span style="font-size:16px;color:#333;flex:1;font-weight:700;">10101 일일일</span>
+            <span style="font-size:14px;color:#333;">AI 채점결과 2점</span>
+          </div>
+          <div style="padding:12px 20px;display:flex;align-items:center;gap:10px;border-bottom:1px solid #F0F0F0;opacity:0.5;">
+            <div class="ai-chk" style="cursor:not-allowed;"></div>
+            <span style="font-size:16px;color:#333;flex:1;font-weight:700;">10102 일일이</span>
+            <span style="font-size:14px;color:#808080;">과제 미제출</span>
+          </div>
+          <div style="padding:12px 20px;display:flex;align-items:center;gap:10px;opacity:0.5;">
+            <div class="ai-chk" style="cursor:not-allowed;"></div>
+            <span style="font-size:16px;color:#333;flex:1;font-weight:700;">10103 일일삼</span>
+            <span style="font-size:14px;color:#808080;">과제 미제출</span>
+          </div>
+        </div>
+      </div>
+      <!-- 채점 수준 -->
+      <div>
+        <div style="font-size:16px;font-weight:700;color:#333;margin-bottom:12px;">AI 채점 수준</div>
+        <div style="display:flex;flex-direction:column;gap:10px;" id="aiRunLevelGroup">
+          <label style="display:flex;align-items:center;gap:10px;cursor:pointer;" onclick="selectAiLevel(this)">
+            <div class="ai-radio selected"></div>
+            <span style="font-size:16px;font-weight:700;color:#333;">기본 설정으로 채점</span>
+          </label>
+          <label style="display:flex;align-items:center;gap:10px;cursor:pointer;" onclick="selectAiLevel(this)">
+            <div class="ai-radio"></div>
+            <span style="font-size:16px;font-weight:700;color:#333;">비교적 관대하게 채점</span>
+          </label>
+          <label style="display:flex;align-items:center;gap:10px;cursor:pointer;" onclick="selectAiLevel(this)">
+            <div class="ai-radio"></div>
+            <span style="font-size:16px;font-weight:700;color:#333;">비교적 엄격하게 채점</span>
+          </label>
+        </div>
+      </div>
+    </div>
+    <!-- Footer -->
+    <div style="padding:8px 24px 24px 24px;display:flex;justify-content:flex-end;gap:12px;">
+      <button onclick="closeAiRunModal()" style="background:#F0F0F0;color:#494949;border:none;border-radius:8px;height:40px;padding:0 20px;font-size:16px;font-weight:700;cursor:pointer;font-family:inherit;">취소</button>
+      <button onclick="closeAiRunModal()" style="background:#7E44FB;color:white;border:none;border-radius:8px;height:40px;padding:0 20px;font-size:16px;font-weight:700;cursor:pointer;font-family:inherit;">AI 채점 실행</button>
+    </div>
+  </div>
+</div>
+
+<style>
+  .ai-chk { width:20px;height:20px;border-radius:2px;border:1px solid #B3B3B3;flex-shrink:0;display:flex;align-items:center;justify-content:center;cursor:pointer; }
+  .ai-chk.checked { background:#7E44FB;border-color:#7E44FB; }
+  .ai-chk.checked::after { content:'';display:block;width:6px;height:10px;border:solid white;border-width:0 2px 2px 0;transform:rotate(45deg) translateY(-1px); }
+  .ai-radio { width:20px;height:20px;border-radius:50%;border:1.5px solid #B3B3B3;flex-shrink:0;background:white; }
+  .ai-radio.selected { border-color:#7E44FB;border-width:5px; }
+</style>
+
+<script>
+  function openAiRunModal() {
+    var m = document.getElementById('aiRunModal');
+    m.style.display = 'flex';
+    lucide.createIcons();
+  }
+  function closeAiRunModal() {
+    document.getElementById('aiRunModal').style.display = 'none';
+  }
+  function toggleAiAll(el) {
+    var isChecked = el.classList.toggle('checked');
+    el.closest('div[style*="border-radius:8px"]').querySelectorAll('.ai-chk:not([style*="not-allowed"])').forEach(function(c){ isChecked ? c.classList.add('checked') : c.classList.remove('checked'); });
+  }
+  function toggleAiChk(el) { el.classList.toggle('checked'); }
+  function selectAiLevel(label) {
+    document.querySelectorAll('#aiRunLevelGroup .ai-radio').forEach(function(r){ r.classList.remove('selected'); });
+    label.querySelector('.ai-radio').classList.add('selected');
+  }
+</script>
 </body>
 </html>
