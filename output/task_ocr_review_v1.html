@@ -368,9 +368,11 @@
         <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:8px;">
           <h2 id="list-class-title" style="font-size:24px; font-weight:800; color:#222; margin:0;">1-1반 과제 제출 상세</h2>
           <div style="display:flex; gap:10px;">
-            <button id="btn-ocr-confirm" class="btn btn-secondary btn-sm" onclick="goToOCR(0)">
-              <i data-lucide="scan-text" style="width:16px; height:16px;"></i>OCR 결과 확인
-            </button>
+            <span id="btn-ocr-confirm-wrap">
+              <button id="btn-ocr-confirm" class="btn btn-secondary btn-sm" onclick="goToOCR(0)">
+                <i data-lucide="scan-text" style="width:16px; height:16px;"></i>OCR 결과 확인
+              </button>
+            </span>
             <button class="btn btn-primary btn-sm" onclick="showScreen('screen-upload');resetUpload();">
               <i data-lucide="upload" style="width:16px; height:16px;"></i>학급 PDF 업로드
             </button>
@@ -1022,12 +1024,15 @@ function showListForClass(classNum) {
   if (titleEl) titleEl.textContent = '1-' + classNum + '반 과제 제출 상세';
   var banner = document.getElementById('list-ocr-banner');
   var ocrBtn = document.getElementById('btn-ocr-confirm');
+  var ocrWrap = document.getElementById('btn-ocr-confirm-wrap');
   if (classNum === 1) {
     if (banner) banner.style.display = 'flex';
-    if (ocrBtn) { ocrBtn.disabled = false; ocrBtn.style.opacity = '1'; ocrBtn.style.cursor = 'pointer'; }
+    if (ocrBtn) { ocrBtn.disabled = false; ocrBtn.style.opacity = '1'; ocrBtn.style.cursor = 'pointer'; ocrBtn.style.pointerEvents = ''; }
+    if (ocrWrap) { ocrWrap.removeAttribute('title'); ocrWrap.style.cursor = ''; }
   } else {
     if (banner) banner.style.display = 'none';
-    if (ocrBtn) { ocrBtn.disabled = true; ocrBtn.style.opacity = '0.4'; ocrBtn.style.cursor = 'not-allowed'; }
+    if (ocrBtn) { ocrBtn.disabled = true; ocrBtn.style.opacity = '0.4'; ocrBtn.style.cursor = 'not-allowed'; ocrBtn.style.pointerEvents = 'none'; }
+    if (ocrWrap) { ocrWrap.setAttribute('title', '과제물 업로드 후 이용가능합니다.'); ocrWrap.style.cursor = 'not-allowed'; }
   }
   renderTable();
   showScreen('screen-list');
