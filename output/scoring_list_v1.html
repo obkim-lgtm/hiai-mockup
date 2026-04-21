@@ -220,7 +220,7 @@
               <div style="width:158px; text-align:center;"><button class="btn-ghost" style="justify-content:center; width:100%;" onclick="location.href='scoring_detail_v1.html'">채점 결과 상세</button></div>
             </div>
 
-            <!-- Row 5: 1-5반 (채점 완료) -->
+            <!-- Row 5: 1-5반 (AI 채점 진행중) -->
             <div style="display:flex; align-items:center; height:58px; font-size:16px; color:#333;">
               <div style="width:80px; text-align:center;"><span style="background:#F1F9F3; color:#00AF3D; border-radius:100px; padding:3px 10px; font-size:14px; font-weight:700;">완료</span></div>
               <div style="width:80px; text-align:center;"><span style="background:#F7F4FF; color:#7E44FB; border-radius:100px; padding:3px 10px; font-size:14px; font-weight:700;">공개</span></div>
@@ -230,15 +230,12 @@
                 <span style="font-size:14px; color:#00AF3D; font-weight:700;">14/14</span>
               </div>
               <div style="width:120px; text-align:center; font-weight:700; color:#333;">38</div>
-              <div style="width:260px; display:flex; align-items:center; justify-content:center; gap:8px;">
-                <button class="btn-primary" style="height:36px; font-size:14px;" onclick="openRerunModal()">
-                  <i data-lucide="rotate-cw" style="width:16px; height:16px;"></i>재실행
-                </button>
-                <button class="btn-secondary" style="height:36px; font-size:14px;">
-                  <i data-lucide="chart-column-decreasing" style="width:16px; height:16px;"></i>AI 점수 확인
-                </button>
+              <div style="width:260px; text-align:center;">
+                <span style="display:inline-flex; align-items:center; gap:6px; color:#7E44FB; font-size:16px; font-weight:700;">
+                  <i data-lucide="loader-circle" style="width:18px; height:18px;" class="animate-spin"></i>자동 채점 진행 중
+                </span>
               </div>
-              <div style="width:158px; text-align:center;"><button class="btn-ghost" style="justify-content:center; width:100%;" onclick="location.href='scoring_detail_v1.html'">채점 결과 상세</button></div>
+              <div style="width:158px; text-align:center;"><button class="btn-ghost" style="opacity:0.5; cursor:default; justify-content:center; width:100%;" disabled>채점 결과 상세</button></div>
             </div>
 
           </div>
