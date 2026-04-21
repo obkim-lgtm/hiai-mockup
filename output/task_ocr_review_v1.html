@@ -1082,6 +1082,24 @@ function showToast(msg, type) {
 // ── 초기화 ──
 renderTable();
 lucide.createIcons();
+
+// ── URL 해시 라우팅 ──
+(function() {
+  var hash = window.location.hash;
+  if (hash.startsWith('#ocr=')) {
+    var sid = hash.replace('#ocr=', '');
+    var student = STUDENTS.find(function(s){ return s.id === sid; });
+    if (student && student.status !== '미제출' && student.ocrStatus !== 'processing') {
+      var idx = ocrStudents.findIndex(function(s){ return s.id === sid; });
+      currentStudentIdx = (idx !== -1) ? idx : 0;
+      currentPageIdx = 0;
+      renderOCRView();
+      showScreen('screen-ocr');
+    }
+  } else if (hash === '#list') {
+    showScreen('screen-list');
+  }
+})();
 </script>
 </body>
 </html>
