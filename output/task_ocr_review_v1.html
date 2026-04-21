@@ -1,0 +1,1469 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" href="../screens/favicon_src.png" type="image/png">
+  <title>과제물 관리 — OCR 확인</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+  <style>
+    @import url('https://cdn.rawgit.com/moonspam/NanumSquareRound/master/nanumsquareround.min.css');
+    *{ font-family:'NanumSquareRound',-apple-system,sans-serif; box-sizing:border-box; }
+    body{ margin:0; background:#EDF1FC; color:#222; font-size:16px; min-width:1280px; }
+    a{ text-decoration:none; color:inherit; }
+
+    /* 탭 */
+    .tabs{ display:flex; gap:12px; }
+    .tab{ flex:1; height:60px; background:#CBD6F4; border-radius:20px 20px 0 0; display:flex; align-items:center; justify-content:center; color:#000; font-weight:700; font-size:20px; cursor:pointer; }
+    .tab.on{ background:#fff; color:#341761; font-weight:800; }
+    .panel{ background:#fff; border-radius:0 0 20px 20px; padding:28px 24px; box-shadow:0 4px 36px rgba(95,102,178,.16); }
+
+    /* 뱃지 */
+    .badge{ display:inline-flex; align-items:center; justify-content:center; border-radius:100px; padding:3px 10px; font-size:12px; font-weight:800; white-space:nowrap; }
+    .badge-green{ background:#F1F9F3; color:#00AF3D; }
+    .badge-red{ background:#FFEFEF; color:#DB3E51; }
+    .badge-purple{ background:#F7F4FF; color:#7E44FB; }
+    .badge-gray{ background:#F8F8F8; color:#808080; }
+    .badge-orange{ background:#FFEDD5; color:#FF8C4C; }
+    .badge-blue{ background:#F2F5FF; color:#5890FF; }
+
+    /* 버튼 */
+    .btn{ height:40px; border-radius:8px; font-weight:700; font-size:16px; font-family:inherit; cursor:pointer; display:inline-flex; align-items:center; gap:8px; padding:0 16px; border:none; transition:opacity .15s; }
+    .btn:hover{ opacity:.88; }
+    .btn-primary{ background:#7E44FB; color:white; }
+    .btn-secondary{ background:white; color:#7E44FB; border:1.5px solid #B28FFD; }
+    .btn-outline{ background:white; color:#494949; border:1px solid #D9D9D9; }
+    .btn-green{ background:#00AF3D; color:white; }
+    .btn-ghost{ background:transparent; color:#7E44FB; border:none; padding:0 8px; }
+    .btn-sm{ height:36px; font-size:14px; padding:0 12px; }
+
+    /* 테이블 */
+    .tbl{ width:100%; border-collapse:collapse; }
+    .tbl th{ background:#F8F8F8; font-size:14px; font-weight:800; color:#808080; padding:12px 16px; text-align:left; border-bottom:1px solid #E6E6E6; }
+    .tbl td{ font-size:14px; padding:12px 16px; border-bottom:1px solid #F0F0F0; color:#333; }
+    .tbl tr:hover td{ background:#FDFCFF; }
+
+    /* OCR 비교 뷰 */
+    .scan-viewer{ background:#F0F0F0; border-radius:12px; overflow:hidden; display:flex; flex-direction:column; }
+    .scan-toolbar{ display:flex; align-items:center; justify-content:space-between; padding:10px 16px; background:#333; color:white; font-size:14px; font-weight:700; }
+    .scan-body{ flex:1; overflow:auto; display:flex; align-items:flex-start; justify-content:center; padding:16px; background:#666; min-height:600px; }
+    .scan-page{ background:white; box-shadow:0 2px 12px rgba(0,0,0,.3); max-width:100%; }
+
+    .ocr-textarea{ width:100%; min-height:60px; border:1px solid #E6E6E6; border-radius:10px; padding:16px 18px; font-size:15px; font-family:inherit; resize:none; outline:none; color:#333; line-height:1.75; background:white; overflow-y:hidden; box-sizing:border-box; display:block; }
+    .ocr-textarea:focus{ border-color:#7E44FB; box-shadow:0 0 0 2px rgba(126,68,251,.12); }
+
+    .img-placeholder{ background:#F8F8F8; border:1px dashed #D9D9D9; border-radius:8px; padding:14px 16px; margin:8px 0; color:#808080; font-size:14px; font-style:italic; display:flex; align-items:center; gap:8px; }
+
+    .page-divider{ display:flex; align-items:center; gap:12px; margin:12px 0; color:#B3B3B3; font-size:12px; font-weight:700; }
+    .page-divider::before,.page-divider::after{ content:''; flex:1; height:1px; background:#E6E6E6; }
+
+    /* OCR 인식 불확실 노트 */
+    .ocr-uncertainty-note{ border-top:1px dashed #FFBCBC; background:#FFF5F5; padding:10px 14px; display:flex; flex-direction:column; gap:4px; border-radius:0 0 10px 10px; }
+    .ocr-uncertainty-label{ font-size:12px; font-weight:800; color:#DB3E51; display:flex; align-items:center; gap:4px; }
+    .ocr-uncertainty-text{ font-size:13px; color:#494949; line-height:1.65; }
+
+    /* 문항별 OCR 섹션 */
+    .rubric-ocr-section{ border:1px solid #E6E6E6; border-radius:12px; margin-bottom:12px; overflow:hidden; }
+    .rubric-ocr-header{ display:flex; align-items:center; gap:8px; padding:10px 14px; background:#F8F8F8; border-bottom:1px solid #E6E6E6; flex-wrap:wrap; }
+    .rubric-ocr-desc{ font-size:13px; color:#808080; font-weight:700; flex:1; min-width:0; overflow:hidden; white-space:nowrap; text-overflow:ellipsis; }
+    .rubric-suspect-chip{ display:inline-flex; align-items:center; gap:4px; background:#FFF0F0; border:1px solid #FFBCBC; border-radius:100px; padding:2px 8px; font-size:12px; font-weight:800; color:#DB3E51; flex-shrink:0; }
+    .rubric-ocr-body{ padding:14px 16px; font-size:15px; line-height:1.85; color:#333; cursor:text; position:relative; }
+    .rubric-ocr-body:hover{ background:#FDFCFF; }
+    .section-editing{ border-color:#7E44FB !important; box-shadow:0 0 0 2px rgba(126,68,251,.12); }
+    .section-editing .rubric-ocr-header{ background:#F7F4FF; }
+    .editing-badge{ font-size:11px; font-weight:800; color:#7E44FB; background:#EDE6FF; border-radius:100px; padding:2px 8px; }
+    .saved-badge{ font-size:11px; font-weight:800; color:#00AF3D; display:inline-flex; align-items:center; gap:3px; transition:opacity .4s; }
+
+    /* 학생 네비게이터 */
+    .student-nav{ display:flex; align-items:center; justify-content:space-between; padding:14px 20px; background:#F7F4FF; border-radius:12px; margin-bottom:20px; }
+    .student-nav-center{ display:flex; align-items:center; gap:16px; }
+    .student-dot{ width:10px; height:10px; border-radius:50%; }
+    .student-dot.done{ background:#7E44FB; }
+    .student-dot.current{ background:#7E44FB; box-shadow:0 0 0 3px rgba(126,68,251,.3); }
+    .student-dot.todo{ background:#D9D9D9; }
+    .student-dot.skip{ background:transparent; border:2px solid #D9D9D9; }
+
+    /* 토스트 */
+    .toast{ position:fixed; bottom:80px; left:50%; transform:translateX(-50%) translateY(12px); opacity:0; width:384px; padding:16px 24px 16px 16px; border-radius:8px; display:flex; align-items:center; gap:12px; font-size:16px; font-weight:700; box-shadow:0 0 1px #494949, 0 8px 32px rgba(95,102,178,.16); z-index:9999; transition:opacity .2s ease, transform .2s ease; pointer-events:none; }
+    .toast.show{ opacity:1; transform:translateX(-50%) translateY(0); }
+    .toast-success{ background:#00AF3D; color:white; }
+    .toast-error{ background:#DB3E51; color:#F8F8F8; }
+
+    /* 스크린 전환 */
+    .screen{ display:none; }
+    .screen.active{ display:block; }
+  </style>
+</head>
+<body>
+
+<!-- ===== GNB ===== -->
+<div id="gnb" style="background:white; height:98px; border-bottom:1px solid #D9D9D9; display:flex; align-items:center; justify-content:center; padding:0 36px;">
+  <div style="display:flex; align-items:center; justify-content:space-between; width:100%; max-width:1200px; padding:0 36px;">
+    <div style="display:flex; align-items:center; gap:8px; flex-shrink:0;">
+      <div style="width:58px; height:42px; overflow:hidden; position:relative; flex-shrink:0;">
+        <img src="https://www.figma.com/api/mcp/asset/c911cba1-edaf-4ae5-9e7f-a7223e212dfb" style="position:absolute; left:50%; transform:translateX(-50%); height:100%; width:auto; object-fit:cover;" alt="HiAI 로고">
+      </div>
+      <div style="position:relative; width:150px; height:41px; flex-shrink:0;">
+        <img src="https://www.figma.com/api/mcp/asset/0b7bfb05-8331-4a5b-a914-dfd68cbb45cf" style="position:absolute; top:0; left:0; width:79.842px; height:16.284px;" alt="하이러닝 AI">
+        <img src="https://www.figma.com/api/mcp/asset/99f47c76-65ad-45ac-aa4e-3fa30bab432a" style="position:absolute; top:24.08px; left:0.31px; width:149.692px; height:16.422px;" alt="서논술형 평가 서비스">
+      </div>
+    </div>
+    <nav style="display:flex; gap:52px; align-items:center;">
+      <span style="font-size:20px; font-weight:800; color:#7E44FB; cursor:pointer;">나의 평가</span>
+      <span style="font-size:20px; font-weight:700; color:#000; cursor:pointer;">평가 자료실</span>
+      <span style="font-size:20px; font-weight:700; color:#000; cursor:pointer;">고객센터</span>
+    </nav>
+    <div style="display:flex; align-items:center; gap:12px; flex-shrink:0;">
+      <div style="width:36px;height:36px;background:#F0EAFF;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><i data-lucide="bot" style="width:20px;height:20px;color:#7E44FB;"></i></div>
+      <span style="font-size:20px; font-weight:700; color:#000;">김동* 님</span>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 화면 0: 과제물 관리 목록 (TASKS-001) ===== -->
+<div id="screen-task" class="screen active">
+
+  <!-- 타이틀 바 -->
+  <div style="background:linear-gradient(to right,#6562f5 4%,#9b68f3 97.86%);height:86px;display:flex;align-items:center;justify-content:center;padding:0 36px;">
+    <div style="width:100%;max-width:1200px;padding:0 36px;">
+      <span style="font-size:28px;font-weight:800;color:white;line-height:1.35;">1학년 국어</span>
+    </div>
+  </div>
+
+  <!-- 탭 + 패널 -->
+  <div style="max-width:1200px;margin:0 auto;padding:0 36px;">
+    <div style="padding-top:28px;">
+      <div class="tabs">
+        <div class="tab" onclick="location.href='eval_home_v6_260403.html'">평가 홈</div>
+        <div class="tab">평가 대상</div>
+        <div class="tab" onclick="location.href='evaluation_design_v3_260403.html'">평가 설계</div>
+        <div class="tab on">과제물 관리</div>
+        <div class="tab" onclick="location.href='scoring_list_v1.html'">AI 채점</div>
+        <div class="tab" onclick="location.href='report_list_v1.html'">평가 리포트</div>
+      </div>
+      <div class="panel" style="min-height:500px;">
+        <!-- 헤더 -->
+        <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:24px;">
+          <h2 style="font-size:24px;font-weight:800;color:#222;margin:0;">과제물 관리</h2>
+          <p style="font-size:16px;color:#494949;margin:0;line-height:1.55;">과제 제출 현황을 확인하거나 선생님이 직접 파일을 업로드할 수 있습니다.</p>
+        </div>
+
+        <!-- 회색 섹션 배경 -->
+        <div style="background:#F8F8F8;border-radius:16px;padding:28px 24px;display:flex;flex-direction:column;gap:24px;">
+
+          <!-- 카드 1: 미래사회 예측 시나리오 -->
+          <div style="background:white;border-radius:16px;padding:24px;display:flex;flex-direction:column;gap:20px;">
+            <h3 style="font-size:20px;font-weight:700;color:#333;margin:0;">미래사회 예측 시나리오</h3>
+            <table class="tbl">
+              <thead>
+                <tr>
+                  <th style="width:94px;text-align:center;">상태</th>
+                  <th style="width:94px;text-align:center;">반</th>
+                  <th>제출 현황</th>
+                  <th style="width:94px;text-align:center;">미제출</th>
+                  <th style="width:194px;text-align:center;">과제 제출 관리</th>
+                </tr>
+              </thead>
+              <tbody>
+                <!-- 1-1반: OCR 일부 미확인 -->
+                <tr>
+                  <td style="text-align:center;"><span class="badge badge-blue">진행</span></td>
+                  <td style="text-align:center;">1-1</td>
+                  <td>
+                    <div style="display:flex;align-items:center;gap:12px;">
+                      <div style="flex:1;height:16px;background:#F2ECFF;border-radius:4px;overflow:hidden;"><div style="width:57%;height:100%;background:#7E44FB;opacity:0.72;"></div></div>
+                      <span style="font-size:16px;color:#333;min-width:45px;text-align:right;">8/14</span>
+                    </div>
+                  </td>
+                  <td style="text-align:center;font-size:16px;color:#333;">6</td>
+                  <td style="text-align:center;">
+                    <button onclick="showScreen('screen-list')" style="background:none;border:none;cursor:pointer;font-family:inherit;font-size:16px;font-weight:700;color:#7E44FB;display:inline-flex;align-items:center;gap:4px;padding:4px 8px;border-radius:8px;" onmouseover="this.style.background='#F7F4FF'" onmouseout="this.style.background='none'">
+                      과제 제출 상세 <i data-lucide="chevron-right" style="width:16px;height:16px;"></i>
+                    </button>
+                  </td>
+                </tr>
+                <!-- 1-2반: OCR 과반 미확인 -->
+                <tr>
+                  <td style="text-align:center;"><span class="badge badge-red">마감</span></td>
+                  <td style="text-align:center;">1-2</td>
+                  <td>
+                    <div style="display:flex;align-items:center;gap:12px;">
+                      <div style="flex:1;height:16px;background:#F2ECFF;border-radius:4px;overflow:hidden;"><div style="width:100%;height:100%;background:#7E44FB;opacity:0.72;"></div></div>
+                      <span style="font-size:16px;color:#333;min-width:45px;text-align:right;">14/14</span>
+                    </div>
+                  </td>
+                  <td style="text-align:center;font-size:16px;color:#333;">0</td>
+                  <td style="text-align:center;">
+                    <button onclick="showScreen('screen-list')" style="background:none;border:none;cursor:pointer;font-family:inherit;font-size:16px;font-weight:700;color:#7E44FB;display:inline-flex;align-items:center;gap:4px;padding:4px 8px;border-radius:8px;" onmouseover="this.style.background='#F7F4FF'" onmouseout="this.style.background='none'">
+                      과제 제출 상세 <i data-lucide="chevron-right" style="width:16px;height:16px;"></i>
+                    </button>
+                  </td>
+                </tr>
+                <!-- 1-3반: OCR 모두 확인 -->
+                <tr>
+                  <td style="text-align:center;"><span class="badge badge-red">마감</span></td>
+                  <td style="text-align:center;">1-3</td>
+                  <td>
+                    <div style="display:flex;align-items:center;gap:12px;">
+                      <div style="flex:1;height:16px;background:#F2ECFF;border-radius:4px;overflow:hidden;"><div style="width:100%;height:100%;background:#7E44FB;opacity:0.72;"></div></div>
+                      <span style="font-size:16px;color:#333;min-width:45px;text-align:right;">14/14</span>
+                    </div>
+                  </td>
+                  <td style="text-align:center;font-size:16px;color:#333;">0</td>
+                  <td style="text-align:center;">
+                    <button onclick="showScreen('screen-list')" style="background:none;border:none;cursor:pointer;font-family:inherit;font-size:16px;font-weight:700;color:#7E44FB;display:inline-flex;align-items:center;gap:4px;padding:4px 8px;border-radius:8px;" onmouseover="this.style.background='#F7F4FF'" onmouseout="this.style.background='none'">
+                      과제 제출 상세 <i data-lucide="chevron-right" style="width:16px;height:16px;"></i>
+                    </button>
+                  </td>
+                </tr>
+                <!-- 1-4반: 채점 진행중 -->
+                <tr>
+                  <td style="text-align:center;"><span class="badge badge-red">마감</span></td>
+                  <td style="text-align:center;">1-4</td>
+                  <td>
+                    <div style="display:flex;align-items:center;gap:12px;">
+                      <div style="flex:1;height:16px;background:#F2ECFF;border-radius:4px;overflow:hidden;"><div style="width:100%;height:100%;background:#7E44FB;opacity:0.72;"></div></div>
+                      <span style="font-size:16px;color:#333;min-width:45px;text-align:right;">14/14</span>
+                    </div>
+                  </td>
+                  <td style="text-align:center;font-size:16px;color:#333;">0</td>
+                  <td style="text-align:center;">
+                    <button onclick="showScreen('screen-list')" style="background:none;border:none;cursor:pointer;font-family:inherit;font-size:16px;font-weight:700;color:#7E44FB;display:inline-flex;align-items:center;gap:4px;padding:4px 8px;border-radius:8px;" onmouseover="this.style.background='#F7F4FF'" onmouseout="this.style.background='none'">
+                      과제 제출 상세 <i data-lucide="chevron-right" style="width:16px;height:16px;"></i>
+                    </button>
+                  </td>
+                </tr>
+                <!-- 1-5반: 채점 완료 -->
+                <tr>
+                  <td style="text-align:center;"><span class="badge badge-red">마감</span></td>
+                  <td style="text-align:center;">1-5</td>
+                  <td>
+                    <div style="display:flex;align-items:center;gap:12px;">
+                      <div style="flex:1;height:16px;background:#F2ECFF;border-radius:4px;overflow:hidden;"><div style="width:100%;height:100%;background:#7E44FB;opacity:0.72;"></div></div>
+                      <span style="font-size:16px;color:#333;min-width:45px;text-align:right;">14/14</span>
+                    </div>
+                  </td>
+                  <td style="text-align:center;font-size:16px;color:#333;">0</td>
+                  <td style="text-align:center;">
+                    <button onclick="showScreen('screen-list')" style="background:none;border:none;cursor:pointer;font-family:inherit;font-size:16px;font-weight:700;color:#7E44FB;display:inline-flex;align-items:center;gap:4px;padding:4px 8px;border-radius:8px;" onmouseover="this.style.background='#F7F4FF'" onmouseout="this.style.background='none'">
+                      과제 제출 상세 <i data-lucide="chevron-right" style="width:16px;height:16px;"></i>
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- 카드 2: 과제물 없는 과제 -->
+          <div style="background:white;border-radius:16px;padding:24px;display:flex;flex-direction:column;gap:20px;">
+            <h3 style="font-size:20px;font-weight:700;color:#333;margin:0;">과제물 없는 과제</h3>
+            <table class="tbl">
+              <thead>
+                <tr>
+                  <th style="width:94px;text-align:center;">상태</th>
+                  <th style="width:94px;text-align:center;">반</th>
+                  <th>기간</th>
+                  <th>제출 현황</th>
+                  <th style="width:94px;text-align:center;">미제출</th>
+                  <th style="width:194px;text-align:center;">과제 제출 관리</th>
+                </tr>
+              </thead>
+            </table>
+            <!-- 빈 상태 -->
+            <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:160px;gap:16px;">
+              <p style="font-size:16px;font-weight:700;color:#808080;text-align:center;line-height:1.55;margin:0;">
+                과제 제출 없음으로 설정된 평가 과제입니다.<br>선생님이 직접 채점을 진행할 수 있습니다.
+              </p>
+              <button class="btn btn-primary btn-sm">
+                <i data-lucide="arrow-right" style="width:16px;height:16px;"></i>수동 채점하기
+              </button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+    <div style="height:60px;"></div>
+  </div>
+</div>
+
+<!-- ===== 화면 1: 학급 제출 상세 (OCR 상태 포함) ===== -->
+<div id="screen-list" class="screen">
+
+  <!-- 타이틀 바 -->
+  <div style="background:linear-gradient(to right, #6562f5 4%, #9b68f3 97.86%); height:86px; display:flex; align-items:center; justify-content:center; padding:0 36px;">
+    <div style="width:100%; max-width:1200px; padding:0 36px; display:flex; align-items:center; gap:16px;">
+      <i data-lucide="arrow-left" style="width:28px; height:28px; color:white; cursor:pointer; flex-shrink:0;" onclick="showScreen('screen-task')"></i>
+      <span style="font-size:28px; font-weight:800; color:white; line-height:1.35;">1학년 국어</span>
+      <div style="width:1px; height:28px; background:rgba(255,255,255,.4); margin:0 4px;"></div>
+      <span style="font-size:20px; font-weight:700; color:rgba(255,255,255,.85);">과제 제출 상세</span>
+    </div>
+  </div>
+
+  <!-- 탭 + 패널 -->
+  <div style="max-width:1200px; margin:0 auto; padding:0 36px;">
+    <div style="padding-top:28px;">
+      <div class="tabs">
+        <div class="tab" onclick="location.href='eval_home_v6_260403.html'">평가 홈</div>
+        <div class="tab">평가 대상</div>
+        <div class="tab" onclick="location.href='evaluation_design_v3_260403.html'">평가 설계</div>
+        <div class="tab on">과제물 관리</div>
+        <div class="tab" onclick="location.href='scoring_list_v1.html'">AI 채점</div>
+        <div class="tab" onclick="location.href='report_list_v1.html'">평가 리포트</div>
+      </div>
+      <div class="panel" style="min-height:500px;">
+        <!-- 헤더 -->
+        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:8px;">
+          <h2 style="font-size:24px; font-weight:800; color:#222; margin:0;">1-1반 과제 제출 상세</h2>
+          <div style="display:flex; gap:10px;">
+            <button class="btn btn-secondary btn-sm" onclick="goToOCR(0)">
+              <i data-lucide="scan-text" style="width:16px; height:16px;"></i>OCR 결과 확인
+            </button>
+            <button class="btn btn-primary btn-sm" onclick="showScreen('screen-upload');resetUpload();">
+              <i data-lucide="upload" style="width:16px; height:16px;"></i>학급 PDF 업로드
+            </button>
+          </div>
+        </div>
+        <p style="font-size:14px; color:#808080; margin:0 0 20px;">[미래사회 예측 시나리오] 과제 제출 현황을 확인하고 파일을 직접 업로드할 수 있습니다.</p>
+
+        <!-- OCR 확인 필요 배너 -->
+        <div style="display:flex; align-items:flex-start; gap:10px; padding:10px 16px; background:#FFF5F5; border:1px solid #FFBCBC; border-radius:8px; margin-bottom:20px;">
+          <i data-lucide="triangle-alert" style="width:15px; height:15px; color:#DB3E51; flex-shrink:0; margin-top:2px;"></i>
+          <div style="display:flex; flex-direction:column; gap:4px;">
+            <span style="font-size:14px; color:#DB3E51; font-weight:800;">OCR 인식 결과 확인이 필요한 학생입니다.</span>
+            <span style="font-size:14px; color:#DB3E51;">10102 이준호 &nbsp;·&nbsp; 10103 박지민</span>
+          </div>
+        </div>
+
+        <!-- 테이블 -->
+        <table class="tbl">
+          <thead>
+            <tr>
+              <th style="width:90px; text-align:center;">상태</th>
+              <th style="width:80px;">학번</th>
+              <th style="width:90px;">이름</th>
+              <th>최근 제출 일시</th>
+              <th style="width:70px; text-align:center;">파일 수</th>
+              <th style="width:160px; text-align:center;">OCR 상태</th>
+              <th style="width:120px; text-align:center;">과제 제출 관리</th>
+            </tr>
+          </thead>
+          <tbody id="student-table-body">
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div style="height:60px;"></div>
+  </div>
+</div>
+
+<!-- ===== 화면 1-B: 학급 PDF 업로드 ===== -->
+<div id="screen-upload" class="screen">
+
+  <!-- 타이틀 바 -->
+  <div style="background:linear-gradient(to right,#6562f5 4%,#9b68f3 97.86%);height:86px;display:flex;align-items:center;justify-content:center;padding:0 36px;flex-shrink:0;">
+    <div style="width:100%;max-width:1200px;padding:0 36px;display:flex;align-items:center;gap:12px;">
+      <button onclick="showScreen('screen-list')" style="background:none;border:none;cursor:pointer;padding:0;display:flex;align-items:center;">
+        <i data-lucide="arrow-left" style="width:28px;height:28px;color:white;"></i>
+      </button>
+      <span style="font-size:28px;font-weight:800;color:white;">1학년 국어</span>
+      <div style="width:1px;height:28px;background:rgba(255,255,255,.4);margin:0 4px;"></div>
+      <span style="font-size:20px;font-weight:700;color:rgba(255,255,255,.9);">학급 PDF 업로드</span>
+    </div>
+  </div>
+
+  <!-- [상태A] 빈 상태 -->
+  <div id="upload-state-empty">
+    <div style="max-width:1200px;margin:0 auto;padding:0 36px;">
+      <div style="padding-top:28px;">
+        <div class="tabs">
+          <div class="tab" onclick="location.href='eval_home_v6_260403.html'">평가 홈</div>
+          <div class="tab">평가 대상</div>
+          <div class="tab" onclick="location.href='evaluation_design_v3_260403.html'">평가 설계</div>
+          <div class="tab on">과제물 관리</div>
+          <div class="tab" onclick="location.href='scoring_list_v1.html'">AI 채점</div>
+          <div class="tab" onclick="location.href='report_list_v1.html'">평가 리포트</div>
+        </div>
+        <div class="panel" style="min-height:500px;">
+          <div style="margin-bottom:24px;">
+            <h2 style="font-size:24px;font-weight:800;color:#222;margin:0 0 6px;">1학년 1반 학급 PDF 일괄 업로드</h2>
+            <p style="font-size:16px;color:#494949;margin:0;line-height:1.55;">학생의 과제를 스캔해서 한 번에 업로드할 수 있습니다.</p>
+          </div>
+          <div style="background:#F8F8F8;border-radius:16px;padding:24px;">
+            <div style="background:white;border-radius:12px;padding:24px;min-height:228px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;text-align:center;">
+              <p style="font-size:16px;font-weight:700;color:#808080;line-height:1.55;margin:0;">
+                학급 단위로 스캔한 하나의 PDF파일을 선택해 주세요.<br>
+                PDF 파일을 대상별로 분할하여 업로드해 드립니다.<br>
+                이미 업로드된 파일이 있는 경우, 새로 업로드 하시는 파일로 교체됩니다.
+              </p>
+              <button onclick="simulateUpload()" style="height:36px;background:#7E44FB;color:white;border:none;border-radius:8px;padding:0 16px;font-size:16px;font-weight:700;font-family:inherit;cursor:pointer;display:inline-flex;align-items:center;gap:8px;">
+                <i data-lucide="folder-open" style="width:18px;height:18px;"></i>파일 선택
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div style="height:60px;"></div>
+  </div>
+
+  <!-- [상태B] 파일 선택됨 — 스플릿 레이아웃 -->
+  <div id="upload-state-split" style="display:none;height:calc(100vh - 184px);">
+    <!-- 좌측: PDF 뷰어 -->
+    <div style="flex:1;min-width:0;display:flex;flex-direction:column;background:#1E1E1E;">
+      <div style="height:48px;background:#494949;display:flex;align-items:center;justify-content:space-between;padding:0 16px;flex-shrink:0;">
+        <span style="font-size:14px;color:white;font-weight:700;">1학년1반과제파일.pdf</span>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <button style="background:rgba(255,255,255,0.12);border:none;border-radius:4px;padding:2px 8px;color:white;font-size:14px;cursor:pointer;">4</button>
+          <span style="color:#ccc;font-size:14px;">/</span>
+          <span style="color:white;font-size:14px;">120</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:6px;">
+          <button style="background:rgba(255,255,255,0.12);border:none;border-radius:50%;width:20px;height:20px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:white;font-size:14px;font-weight:700;">−</button>
+          <span style="color:white;font-size:14px;min-width:40px;text-align:center;">100%</span>
+          <button style="background:rgba(255,255,255,0.12);border:none;border-radius:50%;width:20px;height:20px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:white;font-size:14px;font-weight:700;">+</button>
+        </div>
+      </div>
+      <div style="flex:1;overflow:auto;display:flex;align-items:flex-start;justify-content:center;padding:24px;background:#3A3A3A;">
+        <img src="https://www.figma.com/api/mcp/asset/1c8e1c17-7086-4f76-81b6-00dd8617efde" alt="PDF 미리보기" style="max-width:100%;max-height:100%;object-fit:contain;box-shadow:0 4px 24px rgba(0,0,0,0.5);">
+      </div>
+    </div>
+    <!-- 우측: 분할 설정 패널 -->
+    <div style="width:600px;flex-shrink:0;background:white;display:flex;flex-direction:column;border-left:1px solid #E6E6E6;">
+      <div style="padding:24px;border-bottom:1px solid #E6E6E6;flex-shrink:0;">
+        <h3 style="font-size:18px;font-weight:800;color:#222;margin:0 0 6px;">분할 설정</h3>
+        <p style="font-size:14px;color:#808080;margin:0;">학생 수에 맞게 PDF를 자동으로 분할합니다.</p>
+      </div>
+      <div style="flex:1;overflow-y:auto;padding:20px 24px;display:flex;flex-direction:column;gap:16px;">
+        <div style="background:#F8F8F8;border-radius:12px;padding:16px;">
+          <p style="font-size:14px;color:#494949;margin:0 0 8px;font-weight:700;">파일 정보</p>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <i data-lucide="file-text" style="width:16px;height:16px;color:#7E44FB;flex-shrink:0;"></i>
+            <span style="font-size:14px;color:#333;">1학년1반과제파일.pdf</span>
+            <span style="font-size:12px;color:#808080;margin-left:auto;">120페이지</span>
+          </div>
+        </div>
+        <div>
+          <p style="font-size:14px;font-weight:700;color:#333;margin:0 0 8px;">분할 방식</p>
+          <div style="display:flex;flex-direction:column;gap:8px;">
+            <label style="display:flex;align-items:center;gap:10px;padding:12px;border:2px solid #7E44FB;border-radius:8px;cursor:pointer;background:#F7F4FF;">
+              <input type="radio" name="splitType" checked style="accent-color:#7E44FB;width:16px;height:16px;">
+              <div>
+                <p style="font-size:14px;font-weight:700;color:#7E44FB;margin:0;">자동 분할</p>
+                <p style="font-size:12px;color:#808080;margin:0;">학생 수(9명)에 맞게 균등 분할</p>
+              </div>
+            </label>
+            <label style="display:flex;align-items:center;gap:10px;padding:12px;border:1px solid #D9D9D9;border-radius:8px;cursor:pointer;">
+              <input type="radio" name="splitType" style="accent-color:#7E44FB;width:16px;height:16px;">
+              <div>
+                <p style="font-size:14px;font-weight:700;color:#333;margin:0;">수동 분할</p>
+                <p style="font-size:12px;color:#808080;margin:0;">학생별 페이지 번호를 직접 입력</p>
+              </div>
+            </label>
+          </div>
+        </div>
+        <div style="background:#FFF5F5;border-radius:8px;padding:12px 14px;display:flex;align-items:flex-start;gap:8px;">
+          <i data-lucide="info" style="width:14px;height:14px;color:#DB3E51;flex-shrink:0;margin-top:2px;"></i>
+          <p style="font-size:13px;color:#DB3E51;margin:0;line-height:1.5;">이미 업로드된 파일이 있는 경우, 새로 업로드하는 파일로 교체됩니다.</p>
+        </div>
+      </div>
+      <div style="padding:16px 24px;border-top:1px solid #E6E6E6;display:flex;justify-content:flex-end;gap:10px;flex-shrink:0;">
+        <button onclick="resetUpload()" style="height:36px;background:white;color:#494949;border:1.5px solid #D9D9D9;border-radius:8px;padding:0 16px;font-size:14px;font-weight:700;font-family:inherit;cursor:pointer;">취소</button>
+        <button onclick="startSplit()" style="height:36px;background:#7E44FB;color:white;border:none;border-radius:8px;padding:0 16px;font-size:14px;font-weight:700;font-family:inherit;cursor:pointer;display:inline-flex;align-items:center;gap:6px;">
+          <i data-lucide="scissors" style="width:15px;height:15px;"></i>분할 시작
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- [상태C] 처리 중 오버레이 -->
+  <div id="upload-state-processing" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:500;align-items:center;justify-content:center;flex-direction:column;gap:16px;">
+    <div style="width:48px;height:48px;border:4px solid rgba(255,255,255,0.3);border-top:4px solid white;border-radius:50%;animation:spin 1s linear infinite;"></div>
+    <p style="font-size:18px;font-weight:700;color:white;margin:0;">PDF를 분할하는 중입니다...</p>
+  </div>
+
+  <!-- [상태D] 분할 결과 — 스플릿 레이아웃 -->
+  <div id="upload-state-done" style="display:none;height:calc(100vh - 184px);">
+    <!-- 좌측: PDF 뷰어 -->
+    <div style="flex:1;min-width:0;display:flex;flex-direction:column;background:#1E1E1E;">
+      <div style="height:48px;background:#494949;display:flex;align-items:center;justify-content:space-between;padding:0 16px;flex-shrink:0;">
+        <span style="font-size:14px;color:white;font-weight:700;">1학년1반과제파일.pdf</span>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <button style="background:rgba(255,255,255,0.12);border:none;border-radius:4px;padding:2px 8px;color:white;font-size:14px;cursor:pointer;">4</button>
+          <span style="color:#ccc;font-size:14px;">/</span>
+          <span style="color:white;font-size:14px;">120</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:6px;">
+          <button style="background:rgba(255,255,255,0.12);border:none;border-radius:50%;width:20px;height:20px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:white;font-size:14px;font-weight:700;">−</button>
+          <span style="color:white;font-size:14px;min-width:40px;text-align:center;">100%</span>
+          <button style="background:rgba(255,255,255,0.12);border:none;border-radius:50%;width:20px;height:20px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:white;font-size:14px;font-weight:700;">+</button>
+        </div>
+      </div>
+      <div style="flex:1;overflow:auto;display:flex;align-items:flex-start;justify-content:center;padding:24px;background:#3A3A3A;">
+        <img src="https://www.figma.com/api/mcp/asset/1c8e1c17-7086-4f76-81b6-00dd8617efde" alt="PDF 미리보기" style="max-width:100%;max-height:100%;object-fit:contain;box-shadow:0 4px 24px rgba(0,0,0,0.5);">
+      </div>
+    </div>
+    <!-- 우측: 분할 결과 패널 -->
+    <div style="width:600px;flex-shrink:0;background:white;display:flex;flex-direction:column;gap:24px;padding:20px 24px 0;">
+      <div style="display:flex;flex-direction:column;gap:24px;flex:1;min-height:0;">
+        <h3 style="font-size:18px;font-weight:800;color:#333;margin:0;">PDF 분할 결과</h3>
+        <div style="display:flex;flex-direction:column;gap:24px;flex:1;min-height:0;">
+          <p style="font-size:16px;color:#333;margin:0;line-height:1.25;">페이지 번호를 입력하여 학생별 과제물을 구분해 주세요.</p>
+          <!-- 테이블 -->
+          <div style="flex:1;overflow-y:auto;min-height:0;">
+            <div style="display:flex;flex-direction:column;">
+              <!-- 헤더 -->
+              <div style="display:flex;align-items:center;">
+                <div style="width:102px;flex-shrink:0;height:40px;background:#F8F8F8;border-radius:8px 0 0 8px;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:800;color:#333;">학번</div>
+                <div style="width:102px;flex-shrink:0;height:40px;background:#F8F8F8;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:800;color:#333;">이름</div>
+                <div style="width:86px;flex-shrink:0;height:40px;background:#F8F8F8;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:800;color:#333;">페이지 수</div>
+                <div style="flex:1;height:40px;background:#F8F8F8;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:800;color:#333;">페이지 번호</div>
+                <div style="width:68px;flex-shrink:0;height:40px;background:#F8F8F8;border-radius:0 8px 8px 0;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:800;color:#333;">미제출</div>
+              </div>
+              <!-- 데이터 행 -->
+              <div id="done-result-tbody"></div>
+            </div>
+          </div>
+          <!-- 버튼 -->
+          <div style="display:flex;align-items:center;justify-content:space-between;padding-bottom:20px;flex-shrink:0;">
+            <button onclick="resetUpload()" style="height:40px;background:transparent;color:#7E44FB;border:1.5px solid #B28FFD;border-radius:8px;padding:0 16px;font-size:16px;font-weight:800;font-family:inherit;cursor:pointer;display:inline-flex;align-items:center;gap:8px;">
+              <i data-lucide="rotate-ccw" style="width:20px;height:20px;"></i>분할 재설정
+            </button>
+            <button onclick="uploadAndGoList()" style="height:40px;background:#7E44FB;color:white;border:none;border-radius:8px;padding:0 16px;font-size:16px;font-weight:800;font-family:inherit;cursor:pointer;display:inline-flex;align-items:center;gap:8px;">
+              <i data-lucide="check" style="width:20px;height:20px;"></i>과제 업로드
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+<!-- ===== 화면 2: OCR 확인/수정 (채점 상세 스타일 전체화면) ===== -->
+<div id="screen-ocr" class="screen">
+
+  <!-- 상단 고정 바 (채점 상세와 동일 스타일) -->
+  <div style="position:sticky;top:0;z-index:50;height:68px;display:flex;align-items:stretch;background:#F8F8F8;border-top:1px solid #D9D9D9;border-bottom:1px solid #D9D9D9;">
+
+    <!-- 이전으로 버튼 (보라색 사각 블록) -->
+    <button onclick="goToList()" style="width:68px;height:68px;background:#7E44FB;border:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;flex-shrink:0;padding:0;" onmouseover="this.style.opacity='.88'" onmouseout="this.style.opacity='1'">
+      <i data-lucide="arrow-left" style="width:28px;height:28px;color:white;"></i>
+      <span style="font-size:14px;font-weight:700;color:white;line-height:1;">이전으로</span>
+    </button>
+
+    <!-- 나머지 타이틀바 영역 -->
+    <div style="flex:1;display:flex;align-items:center;justify-content:space-between;padding:0 24px;">
+
+      <!-- 좌측: 학생 드롭다운 + 확인 진행 현황 -->
+      <div style="display:flex;align-items:center;gap:16px;">
+        <div id="studentDropdownWrap" style="position:relative;">
+          <div id="studentDropdownBtn" onclick="toggleStudentDropdown()" style="background:white;border:1px solid #D4D3D1;border-radius:6px;padding:8px 12px 8px 16px;min-width:345px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;">
+            <span id="nav-student-name" style="font-size:20px;font-weight:700;color:#333;">김서윤 (10101)</span>
+            <i data-lucide="chevron-down" style="width:20px;height:20px;color:#333;flex-shrink:0;margin-left:8px;"></i>
+          </div>
+          <div id="studentDropdownList" style="display:none;position:absolute;top:calc(100% + 4px);left:0;min-width:345px;max-height:400px;overflow-y:auto;background:white;border:1px solid #D4D3D1;border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,0.12);z-index:200;padding:4px 0;">
+            <div id="nav-dropdown-list"></div>
+          </div>
+        </div>
+        <span id="nav-confirm-count" style="font-size:16px;color:#333;white-space:nowrap;"></span>
+      </div>
+
+      <!-- 우측: 이전/다음 학생 + 저장 버튼 -->
+      <div style="display:flex;align-items:center;gap:16px;">
+        <div style="display:flex;align-items:center;gap:0;">
+          <button id="btn-prev" onclick="navStudent(-1)" style="background:none;border:none;font-size:16px;font-weight:700;color:#494949;cursor:pointer;padding:0 12px;">
+            &lt; 이전 학생
+          </button>
+          <div style="width:1px;height:20px;background:#D9D9D9;"></div>
+          <button id="btn-next" onclick="navStudent(1)" style="background:none;border:none;font-size:16px;font-weight:700;color:#494949;cursor:pointer;padding:0 12px;">
+            다음 학생 &gt;
+          </button>
+        </div>
+        <button class="btn btn-primary" id="btn-save-next" onclick="saveAndNext()" style="height:40px;">
+          <i data-lucide="check" style="width:16px;height:16px;"></i>저장
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- OCR 인식 품질 경고 배너 (needsReview인 학생만 표시) -->
+  <div id="ocr-review-banner" style="display:none;padding:10px 20px;background:#FFF5F5;border-bottom:1px solid #FFBCBC;align-items:center;gap:10px;">
+    <i data-lucide="triangle-alert" style="width:16px;height:16px;color:#DB3E51;flex-shrink:0;"></i>
+    <span style="font-size:14px;color:#494949;line-height:1.5;font-weight:700;">
+      <strong style="color:#DB3E51;">OCR 결과 확인 필요</strong> — <strong id="suspect-count-badge" style="color:#DB3E51;">0개</strong> 문항에서 인식 불확실 구간이 감지되었습니다. 해당 문항 아래 AI 메모를 확인하고 원본과 대조해 주세요.
+    </span>
+  </div>
+
+  <!-- 좌우 대조 영역 (전체 화면 높이) -->
+  <div id="ocr-split" style="display:flex;height:calc(100vh - 68px);">
+
+    <!-- 좌측: 원본 스캔 (채점 상세 좌측 비율 참고) -->
+    <div style="width:56%;min-width:0;display:flex;flex-direction:column;border-right:1px solid #E6E6E6;">
+      <!-- 페이지 네비게이션 바 -->
+      <div style="display:flex;align-items:center;justify-content:center;gap:12px;background:#3A3A3A;padding:8px 16px;flex-shrink:0;position:relative;">
+        <!-- 페이지 이동 -->
+        <button onclick="navPage(-1)" style="background:none;border:none;cursor:pointer;color:white;display:flex;align-items:center;padding:4px;" title="이전 페이지">
+          <i data-lucide="chevron-left" style="width:18px;height:18px;"></i>
+        </button>
+        <span id="scan-page-info" style="font-size:14px;font-weight:700;color:white;min-width:60px;text-align:center;">3 / 14</span>
+        <button onclick="navPage(1)" style="background:none;border:none;cursor:pointer;color:white;display:flex;align-items:center;padding:4px;" title="다음 페이지">
+          <i data-lucide="chevron-right" style="width:18px;height:18px;"></i>
+        </button>
+        <!-- 구분선 -->
+        <div style="width:1px;height:16px;background:rgba(255,255,255,.2);"></div>
+        <!-- 회전 -->
+        <button onclick="rotateScan(-90)" style="background:none;border:none;cursor:pointer;color:#ccc;display:flex;align-items:center;padding:4px;border-radius:4px;" title="왼쪽 회전" onmouseover="this.style.color='white'" onmouseout="this.style.color='#ccc'">
+          <i data-lucide="rotate-ccw" style="width:16px;height:16px;"></i>
+        </button>
+        <button onclick="rotateScan(90)" style="background:none;border:none;cursor:pointer;color:#ccc;display:flex;align-items:center;padding:4px;border-radius:4px;" title="오른쪽 회전" onmouseover="this.style.color='white'" onmouseout="this.style.color='#ccc'">
+          <i data-lucide="rotate-cw" style="width:16px;height:16px;"></i>
+        </button>
+        <!-- 구분선 -->
+        <div style="width:1px;height:16px;background:rgba(255,255,255,.2);"></div>
+        <!-- 확대/축소 -->
+        <button onclick="changeScanZoom(-10)" style="background:none;border:none;cursor:pointer;color:#ccc;display:flex;align-items:center;padding:4px;border-radius:4px;" title="축소" onmouseover="this.style.color='white'" onmouseout="this.style.color='#ccc'">
+          <i data-lucide="minus" style="width:16px;height:16px;"></i>
+        </button>
+        <span id="scan-zoom-info" style="font-size:13px;color:white;font-weight:700;min-width:40px;text-align:center;cursor:pointer;" onclick="resetScanZoom()" title="클릭하여 100% 초기화">100%</span>
+        <button onclick="changeScanZoom(10)" style="background:none;border:none;cursor:pointer;color:#ccc;display:flex;align-items:center;padding:4px;border-radius:4px;" title="확대" onmouseover="this.style.color='white'" onmouseout="this.style.color='#ccc'">
+          <i data-lucide="plus" style="width:16px;height:16px;"></i>
+        </button>
+      </div>
+      <!-- 스캔 이미지 본문 -->
+      <div id="scan-viewport" style="flex:1;overflow:auto;background:#666;display:flex;align-items:flex-start;justify-content:center;padding:20px;">
+        <div id="scan-page-content" style="background:white;box-shadow:0 2px 16px rgba(0,0,0,.35);width:520px;min-height:700px;padding:48px 44px;font-size:18px;line-height:2.0;color:#333;transform-origin:top center;transition:transform 0.2s;"></div>
+      </div>
+    </div>
+
+    <!-- 우측: OCR 결과 패널 (전체 스크롤) -->
+    <div style="width:44%;min-width:0;overflow-y:auto;background:white;">
+      <!-- 패널 헤더 + 배너 (스크롤과 함께) -->
+      <div style="padding:16px 20px 0;">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">
+          <i data-lucide="scan-text" style="width:16px;height:16px;color:#7E44FB;"></i>
+          <span style="font-size:16px;font-weight:800;color:#222;">OCR 인식 결과</span>
+        </div>
+        <!-- 안내 배너 -->
+      </div>
+      <!-- OCR 텍스트 -->
+      <div id="ocr-text-area" style="padding:0 20px 20px;"></div>
+    </div>
+  </div>
+</div>
+
+<!-- 토스트 -->
+<div id="toast" class="toast toast-success">
+  <i data-lucide="circle-check-big" style="width:20px; height:20px; flex-shrink:0;"></i>
+  <span id="toast-msg">저장되었습니다.</span>
+</div>
+
+<!-- 미제출 학생 개별 업로드 모달 -->
+<div id="studentUploadModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:1000;align-items:center;justify-content:center;" onclick="if(event.target===this)this.style.display='none';">
+  <div style="background:white;border-radius:24px;box-shadow:0 4px 12px rgba(95,102,178,0.16);width:420px;max-width:90vw;" onclick="event.stopPropagation()">
+    <div style="padding:24px 24px 16px;display:flex;align-items:center;justify-content:space-between;">
+      <h3 style="font-size:18px;font-weight:800;color:#222631;margin:0;">개별 파일 업로드</h3>
+      <button onclick="document.getElementById('studentUploadModal').style.display='none'" style="width:36px;height:36px;background:none;border:none;cursor:pointer;border-radius:6px;display:flex;align-items:center;justify-content:center;" onmouseover="this.style.background='#F8F8F8'" onmouseout="this.style.background='none'">
+        <i data-lucide="x" style="width:18px;height:18px;color:#808080;"></i>
+      </button>
+    </div>
+    <div style="padding:0 24px 24px;">
+      <p style="font-size:14px;color:#808080;margin:0 0 16px;" id="student-upload-name">학생명 (학번)</p>
+      <!-- 빈 상태 -->
+      <div id="student-upload-state-empty" style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:32px 0;text-align:center;">
+        <i data-lucide="file-up" style="width:40px;height:40px;color:#B3B3B3;"></i>
+        <p style="font-size:14px;color:#808080;margin:0;line-height:1.55;">학생의 과제 파일을 선택해 주세요.<br>PDF 또는 이미지 파일을 업로드할 수 있습니다.</p>
+        <button onclick="submitStudentUpload()" style="height:36px;background:#7E44FB;color:white;border:none;border-radius:8px;padding:0 16px;font-size:14px;font-weight:700;font-family:inherit;cursor:pointer;display:inline-flex;align-items:center;gap:6px;">
+          <i data-lucide="folder-open" style="width:16px;height:16px;"></i>파일 선택
+        </button>
+      </div>
+      <!-- 처리 중 -->
+      <div id="student-upload-state-processing" style="display:none;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:32px 0;">
+        <div style="width:32px;height:32px;border:3px solid #E6E0FF;border-top:3px solid #7E44FB;border-radius:50%;animation:spin 1s linear infinite;"></div>
+        <p style="font-size:14px;color:#808080;margin:0;">업로드 중입니다...</p>
+      </div>
+      <!-- 완료 -->
+      <div id="student-upload-state-done" style="display:none;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:24px 0;">
+        <i data-lucide="circle-check-big" style="width:40px;height:40px;color:#00AF3D;"></i>
+        <p style="font-size:15px;font-weight:800;color:#222;margin:0;">업로드 완료</p>
+        <p style="font-size:13px;color:#808080;margin:0;">과제 파일이 성공적으로 업로드되었습니다.</p>
+        <button onclick="document.getElementById('studentUploadModal').style.display='none'" style="height:36px;background:#7E44FB;color:white;border:none;border-radius:8px;padding:0 16px;font-size:14px;font-weight:700;font-family:inherit;cursor:pointer;">확인</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- OCR 시작 안내 모달 -->
+<div id="ocrStartModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:1000;align-items:center;justify-content:center;">
+  <div style="background:white;border-radius:24px;box-shadow:0 4px 12px rgba(95,102,178,0.16);width:480px;max-width:90vw;position:relative;">
+    <button onclick="closeOcrStartModal()" style="position:absolute;top:11px;right:11px;width:36px;height:36px;background:none;border:none;cursor:pointer;border-radius:6px;display:flex;align-items:center;justify-content:center;" onmouseover="this.style.background='#F8F8F8'" onmouseout="this.style.background='none'">
+      <i data-lucide="x" style="width:18px;height:18px;color:#808080;"></i>
+    </button>
+    <div style="padding:24px 24px 16px;">
+      <div style="display:flex;align-items:center;gap:10px;">
+        <div style="width:36px;height:36px;background:#EDF1FC;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+          <i data-lucide="scan-text" style="width:20px;height:20px;color:#7E44FB;"></i>
+        </div>
+        <h3 style="font-size:18px;font-weight:800;color:#222631;margin:0;">OCR 인식을 시작합니다</h3>
+      </div>
+    </div>
+    <div style="padding:0 24px 24px;display:flex;flex-direction:column;gap:16px;">
+      <div style="background:#F8F8F8;border-radius:12px;padding:16px 18px;display:flex;flex-direction:column;gap:10px;">
+        <div style="display:flex;align-items:flex-start;gap:10px;">
+          <i data-lucide="cpu" style="width:18px;height:18px;color:#7E44FB;flex-shrink:0;margin-top:2px;"></i>
+          <p style="font-size:15px;color:#333;margin:0;line-height:1.55;">업로드된 과제물의 <strong>필기 내용을 AI가 자동으로 인식</strong>합니다. 인식이 완료되면 AI 채점을 진행할 수 있습니다.</p>
+        </div>
+        <div style="display:flex;align-items:flex-start;gap:10px;">
+          <i data-lucide="triangle-alert" style="width:18px;height:18px;color:#FF8C4C;flex-shrink:0;margin-top:2px;"></i>
+          <p style="font-size:15px;color:#333;margin:0;line-height:1.55;"><strong>인식 정확도가 낮은 문항</strong>은 AI가 자동으로 감지합니다. <span style="color:#7E44FB;font-weight:700;">과제물 관리</span>의 <span style="background:#F0EAFF;color:#7E44FB;font-weight:700;padding:1px 6px;border-radius:4px;font-size:13px;">OCR 결과 확인</span> 버튼을 눌러 원본과 대조하여 확인·수정해 주세요.</p>
+        </div>
+      </div>
+      <label style="display:flex;align-items:center;gap:8px;cursor:pointer;user-select:none;">
+        <input type="checkbox" id="ocrStartDontShow" style="width:16px;height:16px;accent-color:#7E44FB;cursor:pointer;">
+        <span style="font-size:14px;color:#808080;">다시 보지 않기</span>
+      </label>
+    </div>
+    <div style="padding:8px 24px 16px;display:flex;justify-content:flex-end;">
+      <button onclick="closeOcrStartModal()" style="height:40px;background:#7E44FB;color:white;border:none;border-radius:8px;padding:0 24px;font-size:16px;font-weight:800;font-family:inherit;cursor:pointer;">
+        확인
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── 데이터 ──
+const STUDENTS = [
+  { id:'10101', name:'김서윤', status:'제출', date:'07/21 14:31 선생님 업로드', files:1, ocrStatus:'confirmed', needsReview:false, pages:[3,4] },
+  { id:'10102', name:'이준호', status:'제출', date:'07/21 14:31 선생님 업로드', files:1, ocrStatus:'unconfirmed', needsReview:true, pages:[5,6] },
+  { id:'10103', name:'박지민', status:'제출', date:'07/21 14:31 선생님 업로드', files:1, ocrStatus:'unconfirmed', needsReview:true, pages:[7,8] },
+  { id:'10104', name:'최유진', status:'제출', date:'07/21 14:31 선생님 업로드', files:1, ocrStatus:'processing', needsReview:false, pages:[9,10] },
+  { id:'10105', name:'정현우', status:'제출', date:'07/21 14:31 선생님 업로드', files:1, ocrStatus:'unconfirmed', needsReview:false, pages:[11,12] },
+  { id:'10106', name:'한지우', status:'미제출', date:'-', files:0, ocrStatus:null, pages:[] },
+  { id:'10107', name:'조민재', status:'미제출', date:'-', files:0, ocrStatus:null, pages:[] },
+  { id:'10108', name:'윤하은', status:'미제출', date:'-', files:0, ocrStatus:null, pages:[] },
+  { id:'10109', name:'임도윤', status:'제출', date:'07/21 14:31 선생님 업로드', files:1, ocrStatus:'unconfirmed', needsReview:false, pages:[13,14] }
+];
+
+// OCR 텍스트 데이터 (학생별)
+const OCR_DATA = {
+  '10101': {
+    type: 'question',
+    questions: [
+      {
+        id: 'q1', label: '문항 1', desc: '관심 분야 선정',
+        text: '도시 환경'
+      },
+      {
+        id: 'q2', label: '문항 2', desc: '해당 분야의 미래 모습에 대하여 질문을 작성해보자',
+        text: '도시화가 계속 진행되면 녹지 공간은 얼마나 줄어들까? 대기오염이 심화될 경우 도시 거주민의 건강에 어떤 영향을 미칠까?'
+      },
+      {
+        id: 'q3', label: '문항 3', desc: '해당 분야 또는 질문에 대한 배경지식을 작성해보자',
+        text: '도시 열섬 현상은 콘크리트와 아스팔트가 열을 흡수하여 도심 기온이 주변보다 높아지는 현상이다. 이는 에너지 소비 증가, 대기오염 심화, 건강 문제 등을 유발하며 전 세계 주요 도시에서 공통적으로 나타나고 있다.'
+      },
+      {
+        id: 'q4', label: '문항 4', desc: '해당 분야의 현재 모습에 대해 기사, 통계자료를 바탕으로 표현해보자',
+        text: '서울시 도심의 여름 평균기온은 근교 대비 약 2~3°C 높으며, 이로 인한 냉방 에너지 소비는 연간 약 20% 더 많다. (출처: 서울연구원 도시기후 보고서 2022.8)'
+      },
+      {
+        id: 'q5', label: '문항 5', desc: '해당 내용과 관련된 과거의 기사 또는 통계 자료를 구체적으로 작성해보자',
+        text: '1990년대 이후 서울의 도심 녹지 비율은 꾸준히 감소하였으며, 2000년대 초반 도심 재개발로 인해 기존 녹지의 30% 이상이 건물로 대체되었다. (출처: 환경부 도시녹지 현황 통계 2020.5)'
+      },
+      {
+        id: 'q6', label: '문항 6', desc: '현재의 모습이 나타나게 된 원인을 분석해보자',
+        text: '급속한 경제 성장과 인구 집중으로 인해 도시 개발이 환경 고려 없이 진행되었고, 녹지보다 주거·상업 공간 확보가 우선시된 결과 현재의 열섬 및 대기오염 문제가 심화되었다.'
+      }
+    ]
+  },
+  '10102': {
+    type: 'question',
+    questions: [
+      {
+        id: 'q1', label: '문항 1', desc: '관심 분야 선정',
+        text: '해양'
+      },
+      {
+        id: 'q2', label: '문항 2', desc: '해당 분야의 미래 모습에 대하여 질문을 작성해보자',
+        text: '해양오염으로 인해 물부족현상이 심해질 수 있을까? 생물 다양성이 감소하면 인간의 식량 공급에도 영향을 미칠까?',
+        uncertainty: '문항 2에서 첫 번째 질문 문장의 일부 글자 판독이 불확실합니다. 흘려 쓴 받침 처리로 인해 단어가 부정확하게 인식되었을 수 있습니다. 원본 이미지와 대조 후 수정해 주세요.'
+      },
+      {
+        id: 'q3', label: '문항 3', desc: '해당 분야 또는 질문에 대한 배경지식을 작성해보자',
+        text: '전 세계적으로 해양오염이 심각해지고 있으며, 특히 플라스틱 폐기물과 화학물질이 해양생태계를 위협하고 있다. 기후변화로 인한 해수면 상승으로 지수온화가 가속화되고 있으며, 이는 해양 생물의 서식 환경을 변화시키고 있다. 산호초의 백화 현상, 어류 개체수 감소 등이 대표적인 사례이다.',
+        uncertainty: '문항 3 두 번째 문장에서 인접한 음절이 뭉쳐 쓰인 구간이 있습니다. \'지수온화\' 부분은 원문 단어와 다를 가능성이 있으며, 전반적인 문장 흐름을 원본과 함께 확인해 주세요.'
+      },
+      {
+        id: 'q4', label: '문항 4', desc: '해당 분야의 현재 모습에 대해 기사, 통계자료를 바탕으로 표현해보자',
+        text: '매년 약 800만 톤의 플라스틱이 바다로 유입되며, 현재 해양에는 약 1억 5천만 톤의 플라스틱이 존재한다. (출처: 바닷물 흐름도 = 결석 2021/6.30)'
+      },
+      {
+        id: 'q5', label: '문항 5', desc: '해당 내용과 관련된 과거의 기사 또는 통계 자료를 구체적으로 작성해보자',
+        text: '1960년대 이후 해양 플라스틱 오염이 급격히 증가하였으며, 1984년 조사에 따르면 북태평양 해역에서 이미 높은 농도의 플라스틱이 검출되었다. (출처: 고래류 골격 분포 2019.4)'
+      },
+      {
+        id: 'q6', label: '문항 6', desc: '현재의 모습이 나타나게 된 원인을 분석해보자',
+        text: '산업화 이후 플라스틱 생산량이 급격히 증가하면서 폐기물 관리가 제대로 이루어지지 않아 해양으로 유입되는 양이 늘어났다.'
+      }
+    ]
+  }
+};
+
+// 박지민(10103) — 문항 단위, 인식 불확실 2개 문항
+OCR_DATA['10103'] = {
+  type: 'question',
+  questions: [
+    {
+      id: 'q1', label: '문항 1', desc: '관심 분야 선정',
+      text: '환경'
+    },
+    {
+      id: 'q2', label: '문항 2', desc: '해당 분야의 미래 모습에 대하여 질문을 작성해보자',
+      text: '기후 변화로 인해 극단적인 기상 현상이 더 자주 발생할까? 재생에너지 전환이 늦어질 경우 지구 평균기온은 얼마나 상승할까?'
+    },
+    {
+      id: 'q3', label: '문항 3', desc: '해당 분야 또는 질문에 대한 배경지식을 작성해보자',
+      text: '온실가스 증가로 지구 온난화가 심화되고 있으며, 이는 이상기후, 해수면 상승, 생물 다양성 감소 등을 초래한다. 1990년대 이후 세계 각국이 탄소 감축 협약을 맺고 있으나, 실질적 실행이 부족하여 온난화 추세가 지속되고 있다는 주장이 있다.',
+      uncertainty: '문항 3 후반부 문장에서 일부 글자의 획이 불명확하여 판독 신뢰도가 낮습니다. 특히 \'실질적\' 이후 구간에서 오인식 가능성이 있으니 원본과 대조해 주세요.'
+    },
+    {
+      id: 'q4', label: '문항 4', desc: '해당 분야의 현재 모습에 대해 기사, 통계자료를 바탕으로 표현해보자',
+      text: 'IPCC 보고서에 따르면 산업화 이전 대비 현재 지구 평균기온은 이미 1.1°C 상승하였다. (출처: 기후변화 현황 리포트 2022/3.15) 2022년 한반도 여름 평균기온은 관측 이래 역대 3위를 기록하였다.',
+      uncertainty: '문항 4의 수치 및 날짜 표기 부분에서 인식 오류가 발생했을 수 있습니다. \'1.1°C\' 및 출처의 날짜 형식이 손글씨로 기재되어 정확한 수치를 원본 이미지에서 직접 확인해 주세요.'
+    },
+    {
+      id: 'q5', label: '문항 5', desc: '해당 내용과 관련된 과거의 기사 또는 통계 자료를 구체적으로 작성해보자',
+      text: '1970년대 이후 전 세계 이산화탄소 농도가 지속적으로 상승하였으며, 2020년 기준 400ppm을 초과하였다. (출처: 환경부 기후변화 통계 2021.6)'
+    },
+    {
+      id: 'q6', label: '문항 6', desc: '현재의 모습이 나타나게 된 원인을 분석해보자',
+      text: '화석연료 중심의 산업 발전과 삼림 벌채가 주요 원인으로, 대기 중 온실가스 농도를 높여 지구 열평형이 무너지게 되었다.'
+    }
+  ]
+};
+
+// 다른 학생들도 기본 데이터 생성
+['10105','10109'].forEach(function(id) {
+  var s = STUDENTS.find(function(x){ return x.id === id; });
+  if (s && !OCR_DATA[id]) {
+    OCR_DATA[id] = {
+      pages: s.pages.map(function(p) {
+        return {
+          num: p,
+          blocks: [
+            { type:'text', content:'학생 ' + s.name + '의 OCR 인식 결과입니다. 이 텍스트는 목업 데이터이며, 실제 서비스에서는 해당 학생의 과제물 스캔 이미지에서 추출된 텍스트가 표시됩니다.' },
+            { type:'image', description:'이미지 영역' },
+            { type:'text', content:'추가 답변 내용이 이어집니다. 학생이 작성한 서술형 답안의 나머지 부분이 여기에 표시됩니다.' }
+          ]
+        };
+      })
+    };
+  }
+});
+
+// 스캔 이미지 시뮬레이션 — 실제 서식 형태
+const SCAN_FORM = [
+  // 페이지 1: 문항 1~3
+  {
+    title: '관심 분야에 관한 미래 예측 보고서 작성',
+    rows: [
+      { label: '관심 분야 선정', answer: '해양', height: '44px' },
+      { label: '해당 분야의 미래 모습에\n대하여 질문을 작성해보자', answer: '해양오염으로 인해\n물부족현상이 심해질 수 있을까?', height: '80px' },
+      { label: '해당 분야 또는 질문에 대한\n배경지식을 작성해보자\n(관련 이론, 개념, 사실 등)', answer: '전 세계적으로 해양오염이 심각해지고 있으며, 특히 플라스틱 폐기물과 화학물질이 해양생태계를 위협하고 있다. 기후변화로 인한 해수면 상승으로 지수온화가 가속화되고 있으며, 이는 해양 생물의 서식 환경을 변화시키고 있다. 산호초의 백화 현상, 어류 개체수 감소 등이 대표적인 사례이다.', height: '130px' }
+    ]
+  },
+  // 페이지 2: 문항 4~6
+  {
+    title: '관심 분야에 관한 미래 예측 보고서 작성',
+    rows: [
+      { label: '해당 분야의 현재 모습에\n대해 기사, 통계자료를\n바탕으로 구체적으로\n표현해보자', answer: '매년 약 800만 톤의 플라스틱이 바다로 유입되며, 현재 해양에는 약 1억 5천만 톤의 플라스틱이 존재한다.\n\n출처: 바닷물 흐름도 = 결석 2021/6.30', height: '130px' },
+      { label: '해당 내용(해당 분야)과\n관련된 과거의 기사 또는\n통계 자료를 구체적으로\n작성해보자', answer: '1960년대 이후 해양 플라스틱 오염이 급격히 증가하였으며, 1984년 조사에 따르면 북태평양 해역에서 이미 높은 농도의 플라스틱이 검출되었다.\n\n출처: 고래류 골격 분포 2019.4', height: '130px' },
+      { label: '현재의 모습이 나타나게\n된 원인(원인이 된 사건)을\n분석해보자', answer: '산업화 이후 플라스틱 생산량이 급격히 증가하면서 폐기물 관리가 제대로 이루어지지 않아 해양으로 유입되는 양이 늘어났다.\n\n출처: 개역학교 조사 2013.4\t변화로 2021년대', height: '130px' }
+    ]
+  }
+];
+
+// 페이지 구성 함수
+function buildFormPageHTML(page) {
+  var hw = "font-family:'Nanum Pen Script','Gungsuh',cursive;font-size:15px;line-height:1.8;color:#1a1a1a;white-space:pre-wrap;";
+  var html = '<div style="font-size:11px;font-weight:900;text-align:center;letter-spacing:0.5px;padding:10px 0 8px;border-bottom:2px solid #555;">'
+    + page.title + '</div>';
+  html += '<div style="background:#ccc;height:22px;margin:6px 0;border-radius:2px;"></div>';
+  html += '<table style="width:100%;border-collapse:collapse;font-size:11px;">';
+  page.rows.forEach(function(row) {
+    var labelLines = row.label.split('\n');
+    html += '<tr>';
+    html += '<td style="background:#DCDCDC;border:1px solid #999;padding:7px 8px;width:32%;vertical-align:top;text-align:center;font-weight:700;font-size:10px;line-height:1.5;">'
+      + labelLines.join('<br>') + '</td>';
+    html += '<td style="border:1px solid #999;padding:8px 10px;vertical-align:top;height:' + row.height + ';">'
+      + '<span style="' + hw + '">' + row.answer + '</span></td>';
+    html += '</tr>';
+  });
+  html += '</table>';
+  return html;
+}
+
+// 구형 SCAN_PAGES (페이지 번호 → 폴백용)
+const SCAN_PAGES = {};
+
+var ocrStudents = STUDENTS.filter(function(s){ return s.status === '제출' && s.ocrStatus !== null && s.ocrStatus !== 'processing'; });
+var currentStudentIdx = 0;
+var currentPageIdx = 0;
+
+// ── 학급 제출 상세 테이블 렌더 ──
+function renderTable() {
+  var tbody = document.getElementById('student-table-body');
+  var html = '';
+  STUDENTS.forEach(function(s, i) {
+    var statusBadge = s.status === '제출'
+      ? '<span class="badge badge-green">제출</span>'
+      : '<span class="badge badge-red">미제출</span>';
+
+    // OCR 상태 셀 — 클릭 시 OCR 확인 화면 진입 (제출+처리 완료된 경우만)
+    var ocrCell = '-';
+    if (s.ocrStatus === 'confirmed') {
+      ocrCell = '<span style="display:inline-flex;align-items:center;gap:4px;color:#00AF3D;font-weight:700;font-size:13px;cursor:pointer;" onclick="goToOCR(' + i + ')"><i data-lucide="circle-check" style="width:14px;height:14px;"></i>확인완료</span>';
+    } else if (s.ocrStatus === 'unconfirmed' && s.needsReview) {
+      var uCount = (OCR_DATA[s.id] && OCR_DATA[s.id].questions)
+        ? OCR_DATA[s.id].questions.filter(function(q){ return !!q.uncertainty; }).length : 0;
+      ocrCell = '<span style="display:inline-flex;align-items:center;gap:4px;color:#DB3E51;font-weight:700;font-size:13px;cursor:pointer;white-space:nowrap;" onclick="goToOCR(' + i + ')"><i data-lucide="triangle-alert" style="width:14px;height:14px;flex-shrink:0;"></i>확인 필요<span style="font-weight:700;font-size:11px;background:#FFEFEF;border-radius:100px;padding:1px 6px;margin-left:2px;white-space:nowrap;">' + uCount + '개 문항</span></span>';
+    } else if (s.ocrStatus === 'unconfirmed') {
+      ocrCell = '<span style="display:inline-flex;align-items:center;gap:4px;color:#808080;font-weight:700;font-size:13px;cursor:pointer;" onclick="goToOCR(' + i + ')"><i data-lucide="circle" style="width:14px;height:14px;"></i>미확인</span>';
+    } else if (s.ocrStatus === 'processing') {
+      ocrCell = '<span style="display:inline-flex;align-items:center;gap:4px;color:#FF8C4C;font-weight:700;font-size:13px;"><i data-lucide="loader" style="width:14px;height:14px;" class="spin"></i>처리중</span>';
+    }
+
+    // 과제 제출 관리 — 미제출 학생은 파일 업로드 버튼, 나머지는 파일 추가/제거
+    var actionCell;
+    if (s.status === '미제출') {
+      actionCell = '<button onclick="openStudentUploadModal(\'' + s.id + '\', \'' + s.name + '\')" style="height:28px;background:#00AF3D;color:white;border:none;border-radius:6px;padding:0 10px;font-size:12px;font-weight:700;font-family:inherit;cursor:pointer;">파일 업로드</button>';
+    } else {
+      actionCell = '<span style="color:#7E44FB;font-size:13px;font-weight:700;cursor:pointer;">파일 추가/제거 <i data-lucide="upload" style="width:12px;height:12px;display:inline;vertical-align:-2px;"></i></span>';
+    }
+
+    html += '<tr>';
+    html += '<td style="text-align:center;">' + statusBadge + '</td>';
+    html += '<td style="font-weight:700;">' + s.id + '</td>';
+    html += '<td>' + s.name + '</td>';
+    html += '<td style="color:' + (s.date === '-' ? '#B3B3B3' : '#333') + ';">' + s.date + '</td>';
+    html += '<td style="text-align:center;">' + s.files + '</td>';
+    html += '<td style="text-align:center;">' + ocrCell + '</td>';
+    html += '<td style="text-align:center;">' + actionCell + '</td>';
+    html += '</tr>';
+  });
+  tbody.innerHTML = html;
+  lucide.createIcons();
+
+  // 스피너 애니메이션
+  var style = document.createElement('style');
+  style.textContent = '@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}.spin{animation:spin 1s linear infinite;}';
+  document.head.appendChild(style);
+}
+
+// ── 화면 전환 ──
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(function(s){ s.classList.remove('active'); });
+  document.getElementById(id).classList.add('active');
+  var gnb = document.getElementById('gnb');
+  if (gnb) gnb.style.display = (id === 'screen-ocr') ? 'none' : '';
+  window.scrollTo(0,0);
+  lucide.createIcons();
+}
+
+function goToList() {
+  renderTable();
+  showScreen('screen-list');
+}
+
+function goToOCR(studentTableIdx) {
+  // 해당 학생의 ocrStudents 내 인덱스 찾기
+  var student = STUDENTS[studentTableIdx];
+  if (!student || student.status === '미제출' || student.ocrStatus === 'processing') return;
+
+  var idx = ocrStudents.findIndex(function(s){ return s.id === student.id; });
+  if (idx === -1) idx = 0;
+  currentStudentIdx = idx;
+  currentPageIdx = 0;
+  renderOCRView();
+  showScreen('screen-ocr');
+}
+
+// ── OCR 뷰 렌더 ──
+function renderOCRView() {
+  var student = ocrStudents[currentStudentIdx];
+  if (!student) return;
+
+  // OCR 인식 품질 경고 배너
+  var reviewBanner = document.getElementById('ocr-review-banner');
+  var ocrSplit = document.getElementById('ocr-split');
+  if (student.needsReview) {
+    reviewBanner.style.display = 'flex';
+    ocrSplit.style.height = 'calc(100vh - 68px - 42px)';
+  } else {
+    reviewBanner.style.display = 'none';
+    ocrSplit.style.height = 'calc(100vh - 68px)';
+  }
+
+  // 네비게이터
+  document.getElementById('nav-student-name').textContent = student.name + ' (' + student.id + ')';
+
+  // 드롭다운 리스트 갱신
+  var confirmedCount = 0;
+  var listHtml = '';
+  ocrStudents.forEach(function(s, i) {
+    if (s.ocrStatus === 'confirmed') confirmedCount++;
+    var isActive = i === currentStudentIdx;
+    var checkIcon = s.ocrStatus === 'confirmed'
+      ? '<span style="color:#00AF3D;font-size:13px;flex-shrink:0;">✓</span>'
+      : s.needsReview
+        ? '<span style="color:#DB3E51;font-size:12px;flex-shrink:0;">⚠</span>'
+        : '<span style="color:#D9D9D9;font-size:13px;flex-shrink:0;">○</span>';
+    listHtml += '<div onclick="selectStudent(' + i + ')" style="display:flex;align-items:center;gap:10px;padding:10px 14px;cursor:pointer;background:' + (isActive ? '#F7F4FF' : 'white') + ';font-size:15px;font-weight:' + (isActive ? '800' : '700') + ';color:' + (isActive ? '#341761' : '#333') + ';" onmouseover="if(!this.classList.contains(\'active-item\'))this.style.background=\'#F8F8F8\'" onmouseout="this.style.background=\'' + (isActive ? '#F7F4FF' : 'white') + '\'">'
+      + checkIcon
+      + '<span>' + s.name + ' (' + s.id + ')</span>'
+      + (isActive ? '<span style="margin-left:auto;font-size:11px;color:#7E44FB;font-weight:700;">현재</span>' : '')
+      + '</div>';
+  });
+  document.getElementById('nav-dropdown-list').innerHTML = listHtml;
+  document.getElementById('nav-confirm-count').textContent = '확인 ' + confirmedCount + '/' + ocrStudents.length;
+
+  // 버튼 상태
+  document.getElementById('btn-prev').disabled = currentStudentIdx === 0;
+  document.getElementById('btn-prev').style.opacity = currentStudentIdx === 0 ? '0.4' : '1';
+  document.getElementById('btn-next').disabled = currentStudentIdx === ocrStudents.length - 1;
+  document.getElementById('btn-next').style.opacity = currentStudentIdx === ocrStudents.length - 1 ? '0.4' : '1';
+
+  // 마지막 학생이면 버튼 텍스트 변경
+  var btnSaveNext = document.getElementById('btn-save-next');
+  if (currentStudentIdx === ocrStudents.length - 1) {
+    btnSaveNext.innerHTML = '<i data-lucide="check" style="width:16px;height:16px;"></i>저장';
+  } else {
+    btnSaveNext.innerHTML = '<i data-lucide="check" style="width:16px;height:16px;"></i>저장';
+  }
+
+  // 페이지 수
+
+  // OCR 텍스트 렌더
+  renderOCRText(student);
+
+  // 스캔 뷰어
+  currentPageIdx = 0;
+  renderScanPage(student);
+
+  // 의심 영역 카운트 배너 갱신
+  updateSuspectCount();
+
+  lucide.createIcons();
+}
+
+function renderOCRText(student) {
+  var area = document.getElementById('ocr-text-area');
+  var data = OCR_DATA[student.id];
+  if (!data) {
+    area.innerHTML = '<div style="padding:40px; text-align:center; color:#B3B3B3;"><i data-lucide="alert-circle" style="width:24px; height:24px; margin-bottom:8px;"></i><br>OCR 데이터가 없습니다.</div>';
+    return;
+  }
+
+  // 문항 단위 렌더
+  if (data.type === 'question' || data.type === 'rubric') {
+    var groups = data.type === 'question' ? data.questions : data.rubricGroups;
+    var html = '';
+    groups.forEach(function(group, gi) {
+      var hasUncertainty = !!group.uncertainty;
+      var chipHtml = hasUncertainty
+        ? '<span class="rubric-suspect-chip"><i data-lucide="triangle-alert" style="width:11px;height:11px;"></i>확인 필요</span>'
+        : '';
+      var bodyText = group.text || (group.spans ? group.spans.map(function(s){ return s.text; }).join(' ') : '');
+
+      html += '<div class="rubric-ocr-section">';
+      html += '<div class="rubric-ocr-header">';
+      html += '<span class="badge badge-purple" style="font-size:12px;padding:3px 10px;">' + group.label + '</span>';
+      html += '<span class="rubric-ocr-desc">' + group.desc + '</span>';
+      html += chipHtml;
+      html += '<button onclick="editSection(this,' + gi + ')" title="편집" style="background:none;border:none;cursor:pointer;color:#B3B3B3;padding:2px 4px;flex-shrink:0;display:flex;align-items:center;" onmouseover="this.style.color=\'#7E44FB\'" onmouseout="this.style.color=\'#B3B3B3\'">';
+      html += '<i data-lucide="pencil" style="width:13px;height:13px;"></i></button>';
+      html += '</div>';
+      // 본문 (클릭 시 편집)
+      html += '<div class="rubric-ocr-body" id="group-body-' + gi + '" onclick="editSectionByBody(this,' + gi + ')">';
+      html += '<span style="color:#333;">' + bodyText + '</span>';
+      html += '</div>';
+      // textarea (편집 모드)
+      html += '<textarea id="group-ta-' + gi + '" onblur="saveSection(this,' + gi + ')" style="display:none;width:100%;border:none;border-top:1px solid #D4BBFF;padding:12px 15px;font-family:inherit;font-size:15px;line-height:1.8;color:#333;outline:none;resize:none;overflow:hidden;box-sizing:border-box;" rows="4">' + bodyText + '</textarea>';
+      // 인식 불확실 노트
+      if (hasUncertainty) {
+        html += '<div class="ocr-uncertainty-note" id="group-note-' + gi + '">';
+        html += '<span class="ocr-uncertainty-label"><i data-lucide="triangle-alert" style="width:12px;height:12px;"></i>AI 인식 불확실</span>';
+        html += '<span class="ocr-uncertainty-text">' + group.uncertainty + '</span>';
+        html += '</div>';
+      }
+      html += '</div>';
+    });
+
+    area.innerHTML = html;
+    lucide.createIcons();
+    return;
+  }
+
+  // 페이지 단위 렌더 (기존 방식)
+  var html = '';
+  data.pages.forEach(function(page, pi) {
+    html += '<div class="page-divider" data-page="' + page.num + '" style="cursor:pointer;" onclick="jumpToPage(' + pi + ')" onmouseover="this.style.color=\'#7E44FB\'" onmouseout="this.style.color=\'#B3B3B3\'">페이지 ' + (pi + 1) + '</div>';
+
+    page.blocks.forEach(function(block) {
+      if (block.type === 'text') {
+        html += '<textarea class="ocr-textarea" style="margin-bottom:8px;" oninput="autoResize(this)">' + block.content + '</textarea>';
+      } else if (block.type === 'image') {
+        html += '<div class="img-placeholder"><i data-lucide="image" style="width:16px; height:16px; flex-shrink:0; color:#B3B3B3;"></i>(' + block.description + ')</div>';
+      }
+    });
+  });
+
+  area.innerHTML = html;
+
+  requestAnimationFrame(function() {
+    area.querySelectorAll('.ocr-textarea').forEach(function(ta) {
+      autoResize(ta);
+    });
+  });
+}
+
+function autoResize(el) {
+  el.style.height = '1px';
+  el.style.height = Math.max(60, el.scrollHeight) + 'px';
+}
+
+function renderScanPage(student) {
+  var totalPages = SCAN_FORM.length;
+  document.getElementById('scan-page-info').textContent = (currentPageIdx + 1) + ' / ' + totalPages;
+
+  var el = document.getElementById('scan-page-content');
+  var formPage = SCAN_FORM[currentPageIdx];
+
+  if (formPage) {
+    el.innerHTML = buildFormPageHTML(formPage);
+  } else {
+    el.innerHTML = '<div style="padding:60px;text-align:center;color:#999;font-size:14px;">스캔 이미지 미리보기<br><span style="font-size:12px;color:#B3B3B3;">(목업 — 실제로는 PDF 페이지 이미지가 표시됩니다)</span></div>';
+  }
+  applyScanTransform();
+}
+
+// ── 드롭다운 ──
+function toggleStudentDropdown() {
+  var dd = document.getElementById('studentDropdownList');
+  dd.style.display = dd.style.display === 'none' ? 'block' : 'none';
+}
+
+function selectStudent(idx) {
+  currentStudentIdx = idx;
+  currentPageIdx = 0;
+  scanZoom = 100;
+  scanRotation = 0;
+  document.getElementById('studentDropdownList').style.display = 'none';
+  renderOCRView();
+}
+
+// 외부 클릭 시 드롭다운 닫기
+document.addEventListener('click', function(e) {
+  var btn = document.getElementById('studentDropdownWrap');
+  var dd = document.getElementById('studentDropdownList');
+  if (btn && dd && !btn.contains(e.target)) {
+    dd.style.display = 'none';
+  }
+});
+
+// ── 네비게이션 ──
+function navStudent(dir) {
+  var newIdx = currentStudentIdx + dir;
+  if (newIdx < 0 || newIdx >= ocrStudents.length) return;
+  currentStudentIdx = newIdx;
+  currentPageIdx = 0;
+  renderOCRView();
+}
+
+function navPage(dir) {
+  var student = ocrStudents[currentStudentIdx];
+  var newIdx = currentPageIdx + dir;
+  if (newIdx < 0 || newIdx >= SCAN_FORM.length) return;
+  currentPageIdx = newIdx;
+  renderScanPage(student);
+}
+
+// 스캔 뷰어 상태
+var scanZoom = 100;
+var scanRotation = 0;
+
+function applyScanTransform() {
+  var el = document.getElementById('scan-page-content');
+  if (!el) return;
+  el.style.transform = 'rotate(' + scanRotation + 'deg) scale(' + (scanZoom / 100) + ')';
+  document.getElementById('scan-zoom-info').textContent = scanZoom + '%';
+}
+
+function changeScanZoom(delta) {
+  scanZoom = Math.max(30, Math.min(300, scanZoom + delta));
+  applyScanTransform();
+}
+
+function resetScanZoom() {
+  scanZoom = 100;
+  scanRotation = 0;
+  applyScanTransform();
+}
+
+function rotateScan(deg) {
+  scanRotation = (scanRotation + deg + 360) % 360;
+  applyScanTransform();
+}
+
+function jumpToPage(pageIndex) {
+  currentPageIdx = pageIndex;
+  renderScanPage(ocrStudents[currentStudentIdx]);
+}
+
+// ── OCR 의심 영역 인라인 편집 ──
+
+
+function editSectionByBody(bodyEl, gi) {
+  openSectionEdit(gi);
+}
+
+function editSection(btn, gi) {
+  var ta = document.getElementById('group-ta-' + gi);
+  if (!ta) return;
+  if (ta.style.display !== 'none') {
+    saveSection(ta, gi);
+    return;
+  }
+  openSectionEdit(gi);
+}
+
+var _editingSection = null; // 현재 편집 중인 섹션 인덱스
+
+function openSectionEdit(gi) {
+  // 다른 섹션이 열려있으면 먼저 저장
+  if (_editingSection !== null && _editingSection !== gi) {
+    var prevTa = document.getElementById('group-ta-' + _editingSection);
+    if (prevTa && prevTa.style.display !== 'none') {
+      saveSection(prevTa, _editingSection);
+    }
+  }
+  // 이미 같은 섹션 편집 중이면 무시
+  if (_editingSection === gi) return;
+
+  var body = document.getElementById('group-body-' + gi);
+  var ta = document.getElementById('group-ta-' + gi);
+  if (!body || !ta) return;
+  ta.value = body.innerText.trim();
+  body.style.display = 'none';
+  ta.style.display = 'block';
+  ta.style.height = 'auto';
+  ta.style.height = Math.max(ta.scrollHeight, 80) + 'px';
+  ta.style.overflowY = 'hidden';
+  ta.oninput = function(){ this.style.height='auto'; this.style.height=this.scrollHeight+'px'; };
+
+  var section = ta.closest('.rubric-ocr-section');
+  section.classList.add('section-editing');
+
+  // 편집 중 뱃지 삽입
+  var btn = section.querySelector('button[onclick^="editSection"]');
+  if (btn && !document.getElementById('editing-badge-' + gi)) {
+    var badge = document.createElement('span');
+    badge.className = 'editing-badge';
+    badge.id = 'editing-badge-' + gi;
+    badge.textContent = '편집 중';
+    btn.parentElement.insertBefore(badge, btn);
+  }
+  _editingSection = gi;
+  ta.focus();
+}
+
+function saveSection(ta, gi) {
+  if (ta.style.display === 'none') return; // blur 중복 방지
+  _editingSection = null;
+  var body = document.getElementById('group-body-' + gi);
+  if (!body) return;
+  body.innerHTML = '<span style="color:#333;">' + ta.value.replace(/\n/g, '<br>') + '</span>';
+  body.style.display = '';
+  ta.style.display = 'none';
+  var section = ta.closest('.rubric-ocr-section');
+  if (section) section.classList.remove('section-editing');
+
+  // 편집 중 뱃지 제거
+  var editBadge = document.getElementById('editing-badge-' + gi);
+  if (editBadge) editBadge.remove();
+
+  // "저장됨 ✓" 피드백
+  var btn = section ? section.querySelector('button[onclick^="editSection"]') : null;
+  var saved = document.createElement('span');
+  saved.className = 'saved-badge';
+  saved.innerHTML = '✓ 저장됨';
+  if (btn) btn.parentElement.insertBefore(saved, btn);
+  setTimeout(function(){ saved.style.opacity='0'; }, 1200);
+  setTimeout(function(){ if (saved.parentNode) saved.remove(); }, 1700);
+}
+
+function updateSuspectCount() {
+  var area = document.getElementById('ocr-text-area');
+  var countEl = document.getElementById('suspect-count-badge');
+  if (!area || !countEl) return;
+  var notes = area.querySelectorAll('.ocr-uncertainty-note').length;
+  countEl.textContent = notes + '개';
+}
+
+// ── 액션 ──
+
+function saveAndNext() {
+  var student = ocrStudents[currentStudentIdx];
+  student.ocrStatus = 'confirmed';
+  var orig = STUDENTS.find(function(s){ return s.id === student.id; });
+  if (orig) orig.ocrStatus = 'confirmed';
+
+  if (currentStudentIdx < ocrStudents.length - 1) {
+    currentStudentIdx++;
+    currentPageIdx = 0;
+    renderOCRView();
+    showToast('저장 완료. 다음 학생으로 이동합니다.', 'success');
+  } else {
+    renderOCRView();
+    showToast('모든 학생의 OCR 확인이 완료되었습니다!', 'success');
+    setTimeout(function() { goToList(); }, 1500);
+  }
+}
+
+// ── 토스트 ──
+function showToast(msg, type) {
+  var toast = document.getElementById('toast');
+  var msgEl = document.getElementById('toast-msg');
+  msgEl.textContent = msg;
+  toast.className = 'toast toast-' + (type || 'success') + ' show';
+  setTimeout(function(){ toast.classList.remove('show'); }, 2500);
+}
+
+// ── 업로드 화면 상태 함수 ──
+function simulateUpload() {
+  document.getElementById('upload-state-empty').style.display = 'none';
+  document.getElementById('upload-state-split').style.display = 'flex';
+  document.getElementById('upload-state-processing').style.display = 'none';
+  document.getElementById('upload-state-done').style.display = 'none';
+  lucide.createIcons();
+}
+
+function startSplit() {
+  document.getElementById('upload-state-processing').style.display = 'flex';
+  lucide.createIcons();
+  setTimeout(function() {
+    document.getElementById('upload-state-split').style.display = 'none';
+    document.getElementById('upload-state-processing').style.display = 'none';
+    document.getElementById('upload-state-done').style.display = 'flex';
+    renderDoneTable();
+    lucide.createIcons();
+  }, 2000);
+}
+
+function resetUpload() {
+  document.getElementById('upload-state-empty').style.display = 'block';
+  document.getElementById('upload-state-split').style.display = 'none';
+  document.getElementById('upload-state-processing').style.display = 'none';
+  document.getElementById('upload-state-done').style.display = 'none';
+  lucide.createIcons();
+}
+
+function renderDoneTable() {
+  var container = document.getElementById('done-result-tbody');
+  if (!container) return;
+  var rows = '';
+  var pageStart = 1;
+  var cellBase = 'border-bottom:1px solid #D9D9D9;display:flex;align-items:center;justify-content:center;padding:12px;font-size:16px;color:#333;';
+  STUDENTS.forEach(function(s) {
+    var isAbsent = s.status === '미제출';
+    var pageCount = isAbsent ? 0 : 2;
+    var pageEnd = isAbsent ? pageStart : pageStart + pageCount - 1;
+    var checkboxHtml = isAbsent
+      ? '<input type="checkbox" checked onchange="this.checked=true;" style="width:20px;height:20px;accent-color:#7E44FB;cursor:pointer;border-radius:2px;flex-shrink:0;">'
+      : '<input type="checkbox" style="width:20px;height:20px;accent-color:#7E44FB;cursor:pointer;border-radius:2px;flex-shrink:0;">';
+    var pageInputHtml = isAbsent
+      ? '<span style="font-size:16px;color:#333;">(미제출)</span>'
+      : '<div style="display:flex;align-items:center;gap:8px;">'
+        + '<input type="number" value="' + pageStart + '" min="1" max="999" style="width:64px;height:40px;border:1px solid #D9D9D9;border-radius:8px;text-align:center;font-size:16px;font-family:inherit;padding:0;outline:none;" onfocus="this.style.borderColor='#7E44FB'" onblur="this.style.borderColor='#D9D9D9'">'
+        + '<span style="color:#333;font-size:16px;opacity:.5;">~</span>'
+        + '<input type="number" value="' + pageEnd + '" min="1" max="999" style="width:64px;height:40px;border:1px solid #D9D9D9;border-radius:8px;text-align:center;font-size:16px;font-family:inherit;padding:0;outline:none;" onfocus="this.style.borderColor='#7E44FB'" onblur="this.style.borderColor='#D9D9D9'">'
+        + '</div>';
+    rows += '<div style="display:flex;align-items:stretch;">'
+      + '<div style="width:102px;flex-shrink:0;' + cellBase + '">' + s.id + '</div>'
+      + '<div style="width:102px;flex-shrink:0;' + cellBase + '">' + s.name + '</div>'
+      + '<div style="width:86px;flex-shrink:0;' + cellBase + '">' + (isAbsent ? '0' : pageCount) + '</div>'
+      + '<div style="flex:1;min-width:0;' + cellBase + 'gap:8px;">' + pageInputHtml + '</div>'
+      + '<div style="width:68px;flex-shrink:0;' + cellBase + '">' + checkboxHtml + '</div>'
+      + '</div>';
+    if (!isAbsent) pageStart += pageCount;
+  });
+  container.innerHTML = rows;
+}
+
+function uploadAndGoList() {
+  showScreen('screen-list');
+  showToast('과제물이 업로드되었습니다.', 'success');
+  setTimeout(function() {
+    if (localStorage.getItem('ocrStartModalDismissed') !== 'true') {
+      var modal = document.getElementById('ocrStartModal');
+      modal.style.display = 'flex';
+      lucide.createIcons();
+    }
+  }, 300);
+}
+
+function closeOcrStartModal() {
+  document.getElementById('ocrStartModal').style.display = 'none';
+  if (document.getElementById('ocrStartDontShow').checked) {
+    localStorage.setItem('ocrStartModalDismissed', 'true');
+  }
+}
+
+function openStudentUploadModal(studentId, studentName) {
+  document.getElementById('student-upload-name').textContent = studentName + ' (' + studentId + ')';
+  document.getElementById('student-upload-state-empty').style.display = 'flex';
+  document.getElementById('student-upload-state-processing').style.display = 'none';
+  document.getElementById('student-upload-state-done').style.display = 'none';
+  document.getElementById('studentUploadModal').style.display = 'flex';
+  lucide.createIcons();
+}
+
+function submitStudentUpload() {
+  var empty = document.getElementById('student-upload-state-empty');
+  var processing = document.getElementById('student-upload-state-processing');
+  empty.style.display = 'none';
+  processing.style.display = 'flex';
+  lucide.createIcons();
+  setTimeout(function() {
+    processing.style.display = 'none';
+    document.getElementById('student-upload-state-done').style.display = 'flex';
+    lucide.createIcons();
+    renderTable();
+  }, 1500);
+}
+
+
+// ── 초기화 ──
+renderTable();
+lucide.createIcons();
+
+// ── URL 해시 라우팅 ──
+(function() {
+  var hash = window.location.hash;
+  if (hash.startsWith('#ocr=')) {
+    var sid = hash.replace('#ocr=', '');
+    var student = STUDENTS.find(function(s){ return s.id === sid; });
+    if (student && student.status !== '미제출' && student.ocrStatus !== 'processing') {
+      var idx = ocrStudents.findIndex(function(s){ return s.id === sid; });
+      currentStudentIdx = (idx !== -1) ? idx : 0;
+      currentPageIdx = 0;
+      renderOCRView();
+      showScreen('screen-ocr');
+    }
+  } else if (hash === '#list') {
+    showScreen('screen-list');
+  }
+})();
+</script>
+</body>
+</html>
