@@ -230,10 +230,13 @@
                 <span style="font-size:14px; color:#00AF3D; font-weight:700;">14/14</span>
               </div>
               <div style="width:120px; text-align:center; font-weight:700; color:#333;">38</div>
-              <div style="width:260px; text-align:center;">
-                <span style="display:inline-flex; align-items:center; gap:6px; color:#00AF3D; font-size:14px; font-weight:700;">
-                  <i data-lucide="circle-check-big" style="width:16px; height:16px;"></i>채점 완료
-                </span>
+              <div style="width:260px; display:flex; align-items:center; justify-content:center; gap:8px;">
+                <button class="btn-primary" style="height:36px; font-size:14px;" onclick="openRerunModal()">
+                  <i data-lucide="rotate-cw" style="width:16px; height:16px;"></i>재실행
+                </button>
+                <button class="btn-secondary" style="height:36px; font-size:14px;">
+                  <i data-lucide="chart-column-decreasing" style="width:16px; height:16px;"></i>AI 점수 확인
+                </button>
               </div>
               <div style="width:158px; text-align:center;"><button class="btn-ghost" style="justify-content:center; width:100%;" onclick="location.href='scoring_detail_v1.html'">채점 결과 상세</button></div>
             </div>
