@@ -145,89 +145,97 @@
               <div style="width:158px; text-align:center;">채점 실시 결과</div>
             </div>
 
-            <!-- Row 1: 1-1반 -->
+            <!-- Row 1: 1-1반 (OCR 일부 미확인) -->
             <div style="display:flex; align-items:center; height:58px; border-bottom:1px solid #D9D9D9; font-size:16px; color:#333;">
-              <div style="width:80px; text-align:center;">
-                <span style="background:#F2F5FF; color:#5890FF; border-radius:100px; padding:3px 10px; font-size:14px; font-weight:700;">진행</span>
-              </div>
-              <div style="width:80px; text-align:center;">
-                <span style="background:#F0F0F0; color:#494949; border-radius:100px; padding:3px 10px; font-size:14px; font-weight:700;">비공개</span>
-              </div>
+              <div style="width:80px; text-align:center;"><span style="background:#F2F5FF; color:#5890FF; border-radius:100px; padding:3px 10px; font-size:14px; font-weight:700;">진행</span></div>
+              <div style="width:80px; text-align:center;"><span style="background:#F0F0F0; color:#494949; border-radius:100px; padding:3px 10px; font-size:14px; font-weight:700;">비공개</span></div>
               <div style="width:80px; text-align:center; font-weight:700;">1-1</div>
               <div style="flex:1; display:flex; align-items:center; gap:10px; padding:0 16px;">
-                <div class="progress-bar-bg" style="max-width:100px;">
-                  <div class="progress-bar-fill" style="width:0%;"></div>
-                </div>
+                <div class="progress-bar-bg" style="max-width:100px;"><div class="progress-bar-fill" style="width:0%;"></div></div>
                 <span style="font-size:14px; color:#808080; font-weight:700;">0/14</span>
               </div>
               <div style="width:120px; text-align:center; color:#808080;">-</div>
               <div style="width:260px; text-align:center;">
-                <span style="display:inline-flex; align-items:center; gap:6px; color:#7E44FB; font-size:16px; font-weight:700;">
-                  <i data-lucide="loader-circle" style="width:18px; height:18px;" class="animate-spin"></i>
-                  자동 채점 진행 중
-                </span>
+                <button class="btn-primary" style="height:36px;" onclick="openOcrFewModal()">
+                  <i data-lucide="wand-sparkles" style="width:16px; height:16px;"></i>AI 채점 실행
+                </button>
               </div>
-              <div style="width:158px; text-align:center;">
-                <button class="btn-ghost" style="opacity:0.5; cursor:default; justify-content:center; width:100%;" disabled>채점 결과 상세</button>
-              </div>
+              <div style="width:158px; text-align:center;"><button class="btn-ghost" style="justify-content:center; width:100%;">수동 채점 진행</button></div>
             </div>
 
-            <!-- Row 2: 1-2반 -->
+            <!-- Row 2: 1-2반 (OCR 과반 미확인) -->
             <div style="display:flex; align-items:center; height:58px; border-bottom:1px solid #D9D9D9; font-size:16px; color:#333;">
-              <div style="width:80px; text-align:center;">
-                <span style="background:#F2F5FF; color:#5890FF; border-radius:100px; padding:3px 10px; font-size:14px; font-weight:700;">진행</span>
-              </div>
-              <div style="width:80px; text-align:center;">
-                <span style="background:#F0F0F0; color:#494949; border-radius:100px; padding:3px 10px; font-size:14px; font-weight:700;">비공개</span>
-              </div>
+              <div style="width:80px; text-align:center;"><span style="background:#F2F5FF; color:#5890FF; border-radius:100px; padding:3px 10px; font-size:14px; font-weight:700;">진행</span></div>
+              <div style="width:80px; text-align:center;"><span style="background:#F0F0F0; color:#494949; border-radius:100px; padding:3px 10px; font-size:14px; font-weight:700;">비공개</span></div>
               <div style="width:80px; text-align:center; font-weight:700;">1-2</div>
               <div style="flex:1; display:flex; align-items:center; gap:10px; padding:0 16px;">
-                <div class="progress-bar-bg" style="max-width:100px;">
-                  <div class="progress-bar-fill" style="width:72%; opacity:0.72;"></div>
-                </div>
+                <div class="progress-bar-bg" style="max-width:100px;"><div class="progress-bar-fill" style="width:0%;"></div></div>
                 <span style="font-size:14px; color:#808080; font-weight:700;">0/14</span>
               </div>
-              <div style="width:120px; text-align:center; font-weight:700;">75</div>
-              <div style="width:260px; display:flex; align-items:center; justify-content:center; gap:8px;">
-                <button class="btn-primary" style="height:36px; font-size:14px;" onclick="openRerunModal()">
-                  <i data-lucide="rotate-cw" style="width:16px; height:16px;"></i>
-                  재실행
-                </button>
-                <button class="btn-secondary" style="height:36px; font-size:14px;">
-                  <i data-lucide="chart-column-decreasing" style="width:16px; height:16px;"></i>
-                  AI 점수 확인
+              <div style="width:120px; text-align:center; color:#808080;">-</div>
+              <div style="width:260px; text-align:center;">
+                <button class="btn-primary" style="height:36px;" onclick="openOcrManyModal()">
+                  <i data-lucide="wand-sparkles" style="width:16px; height:16px;"></i>AI 채점 실행
                 </button>
               </div>
-              <div style="width:158px; text-align:center;">
-                <button class="btn-ghost" style="justify-content:center; width:100%;" onclick="location.href='scoring_detail_v1.html'">채점 결과 상세</button>
-              </div>
+              <div style="width:158px; text-align:center;"><button class="btn-ghost" style="justify-content:center; width:100%;">수동 채점 진행</button></div>
             </div>
 
-            <!-- Row 3: 1-3반 -->
+            <!-- Row 3: 1-3반 (OCR 모두 확인) -->
             <div style="display:flex; align-items:center; height:58px; border-bottom:1px solid #D9D9D9; font-size:16px; color:#333;">
-              <div style="width:80px; text-align:center;">
-                <span style="background:#F2F5FF; color:#5890FF; border-radius:100px; padding:3px 10px; font-size:14px; font-weight:700;">진행</span>
-              </div>
-              <div style="width:80px; text-align:center;">
-                <span style="background:#F0F0F0; color:#494949; border-radius:100px; padding:3px 10px; font-size:14px; font-weight:700;">비공개</span>
-              </div>
+              <div style="width:80px; text-align:center;"><span style="background:#F2F5FF; color:#5890FF; border-radius:100px; padding:3px 10px; font-size:14px; font-weight:700;">진행</span></div>
+              <div style="width:80px; text-align:center;"><span style="background:#F0F0F0; color:#494949; border-radius:100px; padding:3px 10px; font-size:14px; font-weight:700;">비공개</span></div>
               <div style="width:80px; text-align:center; font-weight:700;">1-3</div>
               <div style="flex:1; display:flex; align-items:center; gap:10px; padding:0 16px;">
-                <div class="progress-bar-bg" style="max-width:100px;">
-                  <div class="progress-bar-fill" style="width:0%;"></div>
-                </div>
+                <div class="progress-bar-bg" style="max-width:100px;"><div class="progress-bar-fill" style="width:0%;"></div></div>
                 <span style="font-size:14px; color:#808080; font-weight:700;">0/14</span>
               </div>
               <div style="width:120px; text-align:center; color:#808080;">-</div>
               <div style="width:260px; text-align:center;">
                 <button class="btn-primary" style="height:36px;" onclick="openRunModal()">
-                  <i data-lucide="wand-sparkles" style="width:16px; height:16px;"></i>
-                  AI 채점 실행
+                  <i data-lucide="wand-sparkles" style="width:16px; height:16px;"></i>AI 채점 실행
                 </button>
               </div>
-              <div style="width:158px; text-align:center;">
-                <button class="btn-ghost" style="justify-content:center; width:100%;">수동 채점 진행</button>
+              <div style="width:158px; text-align:center;"><button class="btn-ghost" style="justify-content:center; width:100%;">수동 채점 진행</button></div>
+            </div>
+
+            <!-- Row 4: 1-4반 (채점 진행중) -->
+            <div style="display:flex; align-items:center; height:58px; border-bottom:1px solid #D9D9D9; font-size:16px; color:#333;">
+              <div style="width:80px; text-align:center;"><span style="background:#F2F5FF; color:#5890FF; border-radius:100px; padding:3px 10px; font-size:14px; font-weight:700;">진행</span></div>
+              <div style="width:80px; text-align:center;"><span style="background:#F0F0F0; color:#494949; border-radius:100px; padding:3px 10px; font-size:14px; font-weight:700;">비공개</span></div>
+              <div style="width:80px; text-align:center; font-weight:700;">1-4</div>
+              <div style="flex:1; display:flex; align-items:center; gap:10px; padding:0 16px;">
+                <div class="progress-bar-bg" style="max-width:100px;"><div class="progress-bar-fill" style="width:57%;"></div></div>
+                <span style="font-size:14px; color:#808080; font-weight:700;">8/14</span>
               </div>
+              <div style="width:120px; text-align:center; font-weight:700; color:#333;">32</div>
+              <div style="width:260px; display:flex; align-items:center; justify-content:center; gap:8px;">
+                <button class="btn-primary" style="height:36px; font-size:14px;" onclick="openRerunModal()">
+                  <i data-lucide="rotate-cw" style="width:16px; height:16px;"></i>재실행
+                </button>
+                <button class="btn-secondary" style="height:36px; font-size:14px;">
+                  <i data-lucide="chart-column-decreasing" style="width:16px; height:16px;"></i>AI 점수 확인
+                </button>
+              </div>
+              <div style="width:158px; text-align:center;"><button class="btn-ghost" style="justify-content:center; width:100%;" onclick="location.href='scoring_detail_v1.html'">채점 결과 상세</button></div>
+            </div>
+
+            <!-- Row 5: 1-5반 (채점 완료) -->
+            <div style="display:flex; align-items:center; height:58px; font-size:16px; color:#333;">
+              <div style="width:80px; text-align:center;"><span style="background:#F1F9F3; color:#00AF3D; border-radius:100px; padding:3px 10px; font-size:14px; font-weight:700;">완료</span></div>
+              <div style="width:80px; text-align:center;"><span style="background:#F7F4FF; color:#7E44FB; border-radius:100px; padding:3px 10px; font-size:14px; font-weight:700;">공개</span></div>
+              <div style="width:80px; text-align:center; font-weight:700;">1-5</div>
+              <div style="flex:1; display:flex; align-items:center; gap:10px; padding:0 16px;">
+                <div class="progress-bar-bg" style="max-width:100px;"><div class="progress-bar-fill" style="width:100%;"></div></div>
+                <span style="font-size:14px; color:#00AF3D; font-weight:700;">14/14</span>
+              </div>
+              <div style="width:120px; text-align:center; font-weight:700; color:#333;">38</div>
+              <div style="width:260px; text-align:center;">
+                <span style="display:inline-flex; align-items:center; gap:6px; color:#00AF3D; font-size:14px; font-weight:700;">
+                  <i data-lucide="circle-check-big" style="width:16px; height:16px;"></i>채점 완료
+                </span>
+              </div>
+              <div style="width:158px; text-align:center;"><button class="btn-ghost" style="justify-content:center; width:100%;" onclick="location.href='scoring_detail_v1.html'">채점 결과 상세</button></div>
             </div>
 
           </div>
@@ -240,6 +248,76 @@
 
 <!-- ===== Footer ===== -->
 <div style="background:#EDF1FC; height:120px;"></div>
+
+<!-- ===== OCR 경고 모달 (소수) — 1-1반: 2명 미확인 ===== -->
+<div id="ocrFewModal" class="modal-overlay" onclick="if(event.target===this) closeOcrFewModal()">
+  <div class="modal-box">
+    <div style="padding:24px 24px 16px;">
+      <div style="display:flex; align-items:center; gap:10px;">
+        <i data-lucide="triangle-alert" style="width:22px; height:22px; color:#FF8C4C; flex-shrink:0;"></i>
+        <span style="font-size:20px; font-weight:700; color:#333;">OCR 미확인 학생이 있습니다</span>
+      </div>
+    </div>
+    <div style="padding:0 24px 24px; display:flex; flex-direction:column; gap:16px;">
+      <p style="font-size:14px; color:#494949; line-height:1.55; margin:0;">아래 학생의 OCR 결과가 아직 확인되지 않았습니다. 인식 불확실 구간이 있어 채점 정확도에 영향을 줄 수 있습니다.</p>
+      <div style="border:1px solid #FFD6B0; border-radius:8px; overflow:hidden; background:#FFFAF5;">
+        <div style="padding:10px 16px; display:flex; align-items:center; justify-content:space-between; border-bottom:1px solid #FFD6B0;">
+          <div style="display:flex; align-items:center; gap:8px;">
+            <i data-lucide="triangle-alert" style="width:14px; height:14px; color:#FF8C4C;"></i>
+            <span style="font-size:15px; font-weight:700; color:#333;">10102 이준호</span>
+            <span style="font-size:12px; font-weight:700; background:#FFEDD5; color:#FF8C4C; border-radius:100px; padding:2px 8px;">2개 문항</span>
+          </div>
+          <a href="task_ocr_review_v1.html" target="_blank" style="font-size:14px; font-weight:700; color:#7E44FB; display:flex; align-items:center; gap:4px; text-decoration:none;">
+            OCR 확인 <i data-lucide="external-link" style="width:13px; height:13px;"></i>
+          </a>
+        </div>
+        <div style="padding:10px 16px; display:flex; align-items:center; justify-content:space-between;">
+          <div style="display:flex; align-items:center; gap:8px;">
+            <i data-lucide="triangle-alert" style="width:14px; height:14px; color:#FF8C4C;"></i>
+            <span style="font-size:15px; font-weight:700; color:#333;">10103 박지민</span>
+            <span style="font-size:12px; font-weight:700; background:#FFEDD5; color:#FF8C4C; border-radius:100px; padding:2px 8px;">1개 문항</span>
+          </div>
+          <a href="task_ocr_review_v1.html" target="_blank" style="font-size:14px; font-weight:700; color:#7E44FB; display:flex; align-items:center; gap:4px; text-decoration:none;">
+            OCR 확인 <i data-lucide="external-link" style="width:13px; height:13px;"></i>
+          </a>
+        </div>
+      </div>
+    </div>
+    <div style="padding:8px 24px 24px; display:flex; justify-content:flex-end; gap:12px;">
+      <button onclick="closeOcrFewModal()" style="background:#F0F0F0; color:#494949; border:none; border-radius:8px; height:40px; padding:0 20px; font-size:16px; font-weight:700; cursor:pointer; font-family:inherit;">취소</button>
+      <button onclick="proceedToRunModal('ocrFewModal')" style="background:white; color:#7E44FB; border:1.5px solid #B28FFD; border-radius:8px; height:40px; padding:0 20px; font-size:16px; font-weight:700; cursor:pointer; font-family:inherit;">이대로 채점 실행</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== OCR 경고 모달 (다수) — 1-2반: 8/14명 미확인 ===== -->
+<div id="ocrManyModal" class="modal-overlay" onclick="if(event.target===this) closeOcrManyModal()">
+  <div class="modal-box">
+    <div style="padding:24px 24px 16px;">
+      <div style="display:flex; align-items:center; gap:10px;">
+        <i data-lucide="triangle-alert" style="width:22px; height:22px; color:#DB3E51; flex-shrink:0;"></i>
+        <span style="font-size:20px; font-weight:700; color:#333;">다수 학생의 OCR 결과가 확인되지 않았습니다</span>
+      </div>
+    </div>
+    <div style="padding:0 24px 24px; display:flex; flex-direction:column; gap:16px;">
+      <div style="background:#FFF5F5; border:1px solid #FFBCBC; border-radius:8px; padding:14px 16px; display:flex; align-items:flex-start; gap:10px;">
+        <i data-lucide="info" style="width:16px; height:16px; color:#DB3E51; flex-shrink:0; margin-top:2px;"></i>
+        <div style="font-size:14px; color:#494949; line-height:1.65;">
+          <strong style="color:#DB3E51;">1-2반 학생 14명 중 8명</strong>의 OCR 결과가 확인되지 않았습니다.<br>
+          활동지의 특정 문항 구성으로 인해 손글씨 인식률이 낮을 수 있습니다.<br>
+          채점 전 OCR 결과를 일괄 검토하는 것을 권장합니다.
+        </div>
+      </div>
+    </div>
+    <div style="padding:8px 24px 24px; display:flex; justify-content:flex-end; gap:12px;">
+      <button onclick="closeOcrManyModal()" style="background:#F0F0F0; color:#494949; border:none; border-radius:8px; height:40px; padding:0 20px; font-size:16px; font-weight:700; cursor:pointer; font-family:inherit;">취소</button>
+      <button onclick="location.href='task_ocr_review_v1.html'" style="background:white; color:#7E44FB; border:1.5px solid #B28FFD; border-radius:8px; height:40px; padding:0 20px; font-size:16px; font-weight:700; cursor:pointer; font-family:inherit; display:inline-flex; align-items:center; gap:6px;">
+        <i data-lucide="external-link" style="width:15px; height:15px;"></i>OCR 결과 확인하러 가기
+      </button>
+      <button onclick="proceedToRunModal('ocrManyModal')" style="background:#7E44FB; color:white; border:none; border-radius:8px; height:40px; padding:0 20px; font-size:16px; font-weight:700; cursor:pointer; font-family:inherit;">이대로 채점 실행</button>
+    </div>
+  </div>
+</div>
 
 <!-- ===== AI 채점 실행 모달 ===== -->
 <div id="runModal" class="modal-overlay" onclick="if(event.target===this) closeRunModal()">
@@ -391,17 +469,17 @@
 
 <script>
   // Modal open/close
-  function openRunModal() {
-    document.getElementById('runModal').classList.add('open');
-  }
-  function closeRunModal() {
-    document.getElementById('runModal').classList.remove('open');
-  }
-  function openRerunModal() {
-    document.getElementById('rerunModal').classList.add('open');
-  }
-  function closeRerunModal() {
-    document.getElementById('rerunModal').classList.remove('open');
+  function openRunModal() { document.getElementById('runModal').classList.add('open'); lucide.createIcons(); }
+  function closeRunModal() { document.getElementById('runModal').classList.remove('open'); }
+  function openRerunModal() { document.getElementById('rerunModal').classList.add('open'); lucide.createIcons(); }
+  function closeRerunModal() { document.getElementById('rerunModal').classList.remove('open'); }
+  function openOcrFewModal() { document.getElementById('ocrFewModal').classList.add('open'); lucide.createIcons(); }
+  function closeOcrFewModal() { document.getElementById('ocrFewModal').classList.remove('open'); }
+  function openOcrManyModal() { document.getElementById('ocrManyModal').classList.add('open'); lucide.createIcons(); }
+  function closeOcrManyModal() { document.getElementById('ocrManyModal').classList.remove('open'); }
+  function proceedToRunModal(fromModalId) {
+    document.getElementById(fromModalId).classList.remove('open');
+    openRunModal();
   }
 
   // Radio toggle
