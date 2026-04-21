@@ -49,14 +49,14 @@
     .progress-bar-fill { background:#7E44FB; height:100%; border-radius:4px; transition:width 0.3s; }
 
     /* Radio card */
-    .radio-card { border:2px solid #B3B3B3; border-radius:12px; padding:14px 16px; cursor:pointer; display:flex; align-items:center; gap:12px; transition:border-color 0.15s; }
-    .radio-card.selected { border:5px solid #7E44FB; padding:11px 13px; }
-    .radio-card .radio-dot { width:20px; height:20px; border-radius:50%; border:2px solid #B3B3B3; flex-shrink:0; display:flex; align-items:center; justify-content:center; }
-    .radio-card.selected .radio-dot { border-color:#7E44FB; }
-    .radio-card.selected .radio-dot::after { content:''; width:10px; height:10px; border-radius:50%; background:#7E44FB; }
+    .radio-card { border:none; border-radius:0; padding:0; cursor:pointer; display:flex; align-items:center; gap:10px; transition:none; }
+    .radio-card.selected { border:none; padding:0; }
+    .radio-card .radio-dot { width:20px; height:20px; border-radius:50%; border:1.5px solid #B3B3B3; flex-shrink:0; display:flex; align-items:center; justify-content:center; background:white; }
+    .radio-card.selected .radio-dot { border-color:#7E44FB; border-width:5px; }
+    .radio-card.selected .radio-dot::after { content:none; }
 
     /* Checkbox */
-    .chk { width:20px; height:20px; border-radius:4px; border:2px solid #B3B3B3; flex-shrink:0; display:flex; align-items:center; justify-content:center; cursor:pointer; }
+    .chk { width:20px; height:20px; border-radius:2px; border:1px solid #B3B3B3; flex-shrink:0; display:flex; align-items:center; justify-content:center; cursor:pointer; }
     .chk.checked { background:#7E44FB; border-color:#7E44FB; }
     .chk.checked::after { content:''; display:block; width:6px; height:10px; border:solid white; border-width:0 2px 2px 0; transform:rotate(45deg) translateY(-1px); }
 
@@ -258,7 +258,7 @@
       <!-- 채점 대상 -->
       <div>
         <div style="font-size:16px; font-weight:700; color:#333; margin-bottom:10px;">AI 채점 대상</div>
-        <div style="border:1px solid #D9D9D9; border-radius:12px; overflow:hidden;">
+        <div style="border:1px solid #D9D9D9; border-radius:8px; overflow:hidden;">
           <!-- Header row -->
           <div style="background:#F8F8F8; padding:12px 16px; display:flex; align-items:center; gap:10px; border-bottom:1px solid #D9D9D9;">
             <div class="chk checked" onclick="toggleRunAll(this)"></div>
@@ -329,7 +329,7 @@
       <!-- 채점 대상 -->
       <div>
         <div style="font-size:16px; font-weight:700; color:#333; margin-bottom:10px;">AI 채점 대상</div>
-        <div style="border:1px solid #D9D9D9; border-radius:12px; overflow:hidden;">
+        <div style="border:1px solid #D9D9D9; border-radius:8px; overflow:hidden;">
           <!-- Header row -->
           <div style="background:#F8F8F8; padding:12px 16px; display:flex; align-items:center; gap:10px; border-bottom:1px solid #D9D9D9;">
             <div class="chk checked" onclick="toggleRerunAll(this)"></div>
