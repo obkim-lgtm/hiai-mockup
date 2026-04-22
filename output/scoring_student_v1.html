@@ -84,6 +84,39 @@
     }
     .purple-btn:hover { background: #6c35e0; }
 
+    /* B안 좌측 OCR 뷰어 */
+    .ocr-b-tab-wrap {
+      display: flex; align-items: center; gap: 8px;
+      background: #F0EAFF; border-bottom: 2px solid #E6E0FF;
+      padding: 10px 20px; flex-shrink: 0;
+    }
+    .ocr-b-tab {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 6px 16px; border-radius: 8px; border: 1px solid #B28FFD; cursor: pointer;
+      font-size: 14px; font-weight: 700; color: #7E44FB;
+      background: white; transition: all 0.15s; font-family: inherit;
+    }
+    .ocr-b-tab.active { background: #7E44FB; color: white; border-color: #7E44FB; }
+    .ocr-uncertain {
+      background: #FFF4CC; border-bottom: 2px solid #E07000;
+      cursor: pointer; position: relative; border-radius: 2px;
+    }
+    .ocr-uncertain:hover::after {
+      content: attr(data-hint); position: absolute; bottom: calc(100% + 6px); left: 0;
+      background: #333; color: white; font-size: 12px; font-weight: 400;
+      padding: 5px 10px; border-radius: 6px; white-space: nowrap; z-index: 10;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    }
+    .ocr-b-q-label {
+      display: inline-flex; align-items: center; background: #F0EAFF; color: #7E44FB;
+      border-radius: 100px; padding: 3px 12px; font-size: 13px; font-weight: 800;
+      margin-bottom: 8px;
+    }
+    .ocr-b-q-desc { font-size: 13px; color: #808080; font-weight: 700; margin-bottom: 10px; }
+    .ocr-b-q-text { font-size: 16px; color: #333; line-height: 1.85; }
+    .ocr-b-editable { cursor: text; border-radius: 8px; padding: 14px 16px; border: 1px solid transparent; transition: background 0.12s, border-color 0.12s; }
+    .ocr-b-editable:hover { background: #F8F8F8 !important; border-color: #D9D9D9 !important; }
+
     /* OCR 문항 카드 */
     .rubric-ocr-section{ border:1px solid #E6E6E6; border-radius:12px; margin-bottom:12px; overflow:hidden; }
     .rubric-ocr-header{ display:flex; align-items:center; gap:8px; padding:10px 14px; background:#F8F8F8; border-bottom:1px solid #E6E6E6; flex-wrap:wrap; }
@@ -108,7 +141,7 @@
 <!-- 상단 고정 타이틀바 -->
 <div style="position:sticky;top:0;z-index:50;height:68px;display:flex;align-items:stretch;background:#F8F8F8;border-top:1px solid #D9D9D9;border-bottom:1px solid #D9D9D9;">
   <!-- 뒤로가기 버튼 -->
-  <button onclick="location.href='scoring_detail_v1.html'" style="width:68px;height:68px;background:#7E44FB;border:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;flex-shrink:0;padding:0;">
+  <button id="btn-back" onclick="goBack()" style="width:68px;height:68px;background:#7E44FB;border:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;flex-shrink:0;padding:0;">
     <i data-lucide="arrow-left" style="width:28px;height:28px;color:white;"></i>
     <span style="font-size:14px;font-weight:700;color:white;line-height:1;">이전으로</span>
   </button>
@@ -152,8 +185,8 @@
 <!-- 메인 컨텐츠 -->
 <div class="main-content">
 
-  <!-- 좌측: 뷰어 -->
-  <div style="flex:1;min-width:0;display:flex;flex-direction:column;">
+  <!-- 좌측 A안: 이미지 뷰어 -->
+  <div id="left-panel-a" style="flex:1;min-width:0;display:flex;flex-direction:column;">
 
     <!-- 툴바 -->
     <div style="background:#494949;height:48px;padding:0 16px;display:flex;align-items:center;gap:16px;flex-shrink:0;">
@@ -165,9 +198,7 @@
       <button onclick="changeViewerPage(1)" style="width:28px;height:28px;background:none;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;border-radius:4px;" onmouseover="this.style.background='rgba(255,255,255,0.1)'" onmouseout="this.style.background='none'">
         <i data-lucide="chevron-right" style="width:18px;height:18px;color:white;"></i>
       </button>
-
       <div style="width:1px;height:20px;background:rgba(255,255,255,0.2);"></div>
-
       <!-- 회전 -->
       <button onclick="rotateViewer(-90)" style="width:28px;height:28px;background:none;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;border-radius:4px;" onmouseover="this.style.background='rgba(255,255,255,0.1)'" onmouseout="this.style.background='none'">
         <i data-lucide="rotate-ccw" style="width:16px;height:16px;color:white;"></i>
@@ -175,7 +206,6 @@
       <button onclick="rotateViewer(90)" style="width:28px;height:28px;background:none;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;border-radius:4px;" onmouseover="this.style.background='rgba(255,255,255,0.1)'" onmouseout="this.style.background='none'">
         <i data-lucide="rotate-cw" style="width:16px;height:16px;color:white;"></i>
       </button>
-
       <!-- 줌 컨트롤 -->
       <div style="display:flex;align-items:center;gap:6px;margin-left:auto;">
         <button onclick="changeViewerZoom(-10)" style="width:28px;height:28px;background:none;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;border-radius:4px;" onmouseover="this.style.background='rgba(255,255,255,0.1)'" onmouseout="this.style.background='none'">
@@ -194,6 +224,52 @@
     </div>
   </div>
 
+  <!-- 좌측 B안: Pensive OCR 뷰어 (eval=B일 때만 표시) -->
+  <div id="left-panel-b" style="flex:1;min-width:0;display:none;flex-direction:column;">
+    <!-- 탭 토글 바 -->
+    <div class="ocr-b-tab-wrap">
+      <button class="ocr-b-tab active" id="left-tab-text" onclick="switchLeftTab('text')">
+        <i data-lucide="align-left" style="width:14px;height:14px;"></i>전사 텍스트
+      </button>
+      <button class="ocr-b-tab" id="left-tab-original" onclick="switchLeftTab('original')">
+        <i data-lucide="file-image" style="width:14px;height:14px;"></i>원본 제출물
+      </button>
+      <span id="left-uncertain-chip" style="display:none;margin-left:auto;background:#FFF4CC;border:1px solid #E07000;border-radius:100px;padding:3px 12px;font-size:12px;font-weight:800;color:#E07000;align-items:center;gap:4px;">
+        <i data-lucide="triangle-alert" style="width:11px;height:11px;"></i>
+        <span id="left-uncertain-count"></span>개 불확실 구간
+      </span>
+    </div>
+    <!-- 전사 텍스트 패널 -->
+    <div id="left-text-panel" style="flex:1;overflow-y:auto;padding:28px 36px;background:white;">
+      <div id="left-ocr-content" style="display:flex;flex-direction:column;gap:28px;"></div>
+    </div>
+    <!-- 원본 제출물 패널 (기존 이미지 뷰어) -->
+    <div id="left-original-panel" style="display:none;flex:1;flex-direction:column;">
+      <div style="background:#494949;height:48px;padding:0 16px;display:flex;align-items:center;gap:16px;flex-shrink:0;">
+        <button style="width:28px;height:28px;background:none;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;border-radius:4px;" onmouseover="this.style.background='rgba(255,255,255,0.1)'" onmouseout="this.style.background='none'">
+          <i data-lucide="chevron-left" style="width:18px;height:18px;color:white;"></i>
+        </button>
+        <span style="font-size:14px;color:white;min-width:36px;text-align:center;">1 / 1</span>
+        <button style="width:28px;height:28px;background:none;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;border-radius:4px;" onmouseover="this.style.background='rgba(255,255,255,0.1)'" onmouseout="this.style.background='none'">
+          <i data-lucide="chevron-right" style="width:18px;height:18px;color:white;"></i>
+        </button>
+        <div style="width:1px;height:20px;background:rgba(255,255,255,0.2);"></div>
+        <div style="display:flex;align-items:center;gap:6px;margin-left:auto;">
+          <button style="width:28px;height:28px;background:none;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;border-radius:4px;" onmouseover="this.style.background='rgba(255,255,255,0.1)'" onmouseout="this.style.background='none'">
+            <i data-lucide="minus" style="width:16px;height:16px;color:white;"></i>
+          </button>
+          <span style="font-size:13px;color:white;min-width:38px;text-align:center;">100%</span>
+          <button style="width:28px;height:28px;background:none;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;border-radius:4px;" onmouseover="this.style.background='rgba(255,255,255,0.1)'" onmouseout="this.style.background='none'">
+            <i data-lucide="plus" style="width:16px;height:16px;color:white;"></i>
+          </button>
+        </div>
+      </div>
+      <div style="flex:1;overflow:auto;background:#EBEBEA;padding:24px;">
+        <img src="https://www.figma.com/api/mcp/asset/b3209b87-f272-4ff4-a2d2-5d585c5847f6" style="width:100%;height:auto;display:block;" alt="학생 원본 제출물">
+      </div>
+    </div>
+  </div>
+
   <!-- 우측: 채점 패널 -->
   <div style="width:612px;flex-shrink:0;overflow-y:auto;background:white;border-left:1px solid #D9D9D9;">
 
@@ -209,9 +285,8 @@
         <!-- 총점 -->
         <div style="display:flex;align-items:baseline;gap:4px;">
           <span style="font-size:16px;color:#333;">총점</span>
-          <span style="font-size:18px;font-weight:700;color:#333;">30 / 50</span>
+          <span style="font-size:18px;font-weight:700;color:#333;">30 / 45</span>
           <span style="font-size:16px;color:#333;">점</span>
-          <span style="font-size:18px;font-weight:700;color:#333;">(B)</span>
         </div>
         <!-- OCR 결과 확인 버튼 -->
         <button onclick="openOcrPopup()" style="background:white;border:1px solid #B28FFD;border-radius:8px;height:36px;padding:0 14px;font-size:14px;font-weight:700;color:#7E44FB;cursor:pointer;display:inline-flex;align-items:center;gap:6px;" onmouseover="this.style.background='#F7F4FF'" onmouseout="this.style.background='white'">
@@ -542,6 +617,217 @@
 </div>
 
 <script>
+  // ── 뒤로가기: from 파라미터 처리 ──
+  function goBack() {
+    var params = new URLSearchParams(location.search);
+    var from = params.get('from');
+    var evalType = params.get('eval') || 'A';
+    var classNum = params.get('classNum') || '1';
+    if (evalType === 'B' && from === 'scoring_list_v1.html') {
+      location.href = 'scoring_list_v1.html?showClass=' + classNum;
+    } else if (from) {
+      location.href = from;
+    } else {
+      location.href = 'scoring_detail_v1.html';
+    }
+  }
+
+  // ── B안 OCR 데이터 (독후 활동 보고서 — 사라진 스푼) ──
+  var OCR_DATA_B = {
+    '10101': { needsReview: false, questions: [
+      { label:'문항 1', desc:'이 책의 핵심 내용을 간략히 요약하시오.', spans:[{text:'원소 주기율표에 얽힌 과학자들의 이야기를 통해 원소들이 발견된 역사를 흥미롭게 풀어낸 책이다. 각 원소는 독특한 성질을 가지고 있으며 그 발견 과정에는 경쟁과 헌신의 역사가 담겨 있다.'}]},
+      { label:'문항 2', desc:'책에서 인상 깊었던 과학자 또는 원소의 발견 이야기를 소개하시오.', spans:[{text:'마리 퀴리가 방사성 원소인 폴로늄과 라듐을 발견하는 이야기가 가장 인상 깊었다. 그녀는 두 개의 노벨상을 수상했지만 방사선에 의한 건강 문제로 고통받았다.'}]},
+      { label:'문항 3', desc:'책에서 다룬 원소 중 하나를 선택해 우리 삶과의 연관성을 설명하시오.', spans:[{text:'리튬은 현재 스마트폰과 전기차 배터리의 핵심 소재로, 일상 속 전자기기 사용과 직결되어 있다. 재생 가능 에너지 저장에도 필수적인 원소다.'}]},
+      { label:'문항 4', desc:'과학 발전에서 국가 간 경쟁이 미친 영향을 서술하시오.', spans:[{text:'냉전 시대 미국과 소련의 우주 경쟁은 새로운 소재와 원소 연구를 촉진시켰다. 경쟁이 없었다면 과학 발전의 속도는 훨씬 더뎠을 것이다.'}]},
+      { label:'문항 5', desc:'이 책을 읽고 더 알고 싶어진 점을 쓰시오.', spans:[{text:'주기율표에서 아직 발견되지 않은 원소가 있는지, 그리고 인공 원소를 실용적으로 활용할 수 있는지 더 알아보고 싶다.'}]}
+    ]},
+    '10102': { needsReview: true, questions: [
+      { label:'문항 1', desc:'이 책의 핵심 내용을 간략히 요약하시오.', spans:[{text:'이 책은 원소 주기율표를 중심으로 과학자들이 원소를 발견해 온 역사를 흥미롭게 서술한다. 단순한 화학 지식이 아닌 인간의 도전과 실수를 통해 과학이 발전해 온 과정을 보여준다.'}]},
+      { label:'문항 2', desc:'책에서 인상 깊었던 과학자 또는 원소의 발견 이야기를 소개하시오.', spans:[
+        {text:'빌헬름 뢴트겐이 X선을 발견한 이야기가 기억에 남는다. 실험 중 우연히 X선의 존재를 알게 되었는데, '},
+        {text:'처음에는 그 원인을', uncertain:true, hint:'\'처음에는 그 원인을\' — 필기 불명확, 원본 확인 필요'},
+        {text:' 이해하지 못했지만 지속적인 연구로 사상 최초로 내부 신체를 들여다볼 수 있는 기술을 만들어냈다.'}
+      ]},
+      { label:'문항 3', desc:'책에서 다룬 원소 중 하나를 선택해 우리 삶과의 연관성을 설명하시오.', spans:[
+        {text:'수은은 과거 체온계와 형광등에 쓰였지만 독성이 밝혀지면서 규제되었다. '},
+        {text:'일본 미나마타', uncertain:true, hint:'\'일본 미나마타\' — 고유명사 인식 불확실'},
+        {text:' 병 사례처럼 수은 중독은 신경계에 심각한 피해를 주며, 현재는 '},
+        {text:'부작용을 동반할 수 있다는', uncertain:true, hint:'\'부작용을 동반할 수 있다는\' — 필기 흐릿함, 원본 대조 필요'},
+        {text:' 점에서 대체 소재 연구가 활발하다.'}
+      ]},
+      { label:'문항 4', desc:'과학 발전에서 국가 간 경쟁이 미친 영향을 서술하시오.', spans:[{text:'과학 경쟁이 항상 나쁜 것은 아니다. 서로 다른 국가의 과학자들이 경쟁하면서도 논문과 학술대회를 통해 지식을 공유했기에 과학이 빠르게 발전할 수 있었다.'}]},
+      { label:'문항 5', desc:'이 책을 읽고 더 알고 싶어진 점을 쓰시오.', spans:[{text:'주기율표에 아직 빈자리가 남아 있는지, 그리고 이론적으로 존재할 수 있는 가장 무거운 원소의 한계는 무엇인지 더 공부해보고 싶다.'}]}
+    ]},
+    '10103': { needsReview: false, questions: [
+      { label:'문항 1', desc:'이 책의 핵심 내용을 간략히 요약하시오.', spans:[{text:'원소 발견의 역사를 통해 인류가 물질 세계를 어떻게 이해해 왔는지를 보여주는 책이다. 과학자들의 경쟁과 협력, 실수와 성공이 어우러진 흥미로운 이야기다.'}]},
+      { label:'문항 2', desc:'책에서 인상 깊었던 과학자 또는 원소의 발견 이야기를 소개하시오.', spans:[{text:'드미트리 멘델레예프가 꿈에서 주기율표의 완성된 모습을 보고 깨어나 그것을 기록했다는 일화가 인상 깊었다. 직관과 논리가 결합된 위대한 발견이었다.'}]},
+      { label:'문항 3', desc:'책에서 다룬 원소 중 하나를 선택해 우리 삶과의 연관성을 설명하시오.', spans:[{text:'실리콘은 반도체의 핵심 원소로, 현대 디지털 문명 전체를 지탱하는 소재다. 컴퓨터와 스마트폰이 없는 일상은 상상하기 어렵다.'}]},
+      { label:'문항 4', desc:'과학 발전에서 국가 간 경쟁이 미친 영향을 서술하시오.', spans:[{text:'2차 세계대전 당시 핵무기 개발 경쟁은 원자물리학의 급격한 발전을 이끌었다. 과학의 군사적 활용이라는 윤리 문제도 함께 제기했다.'}]},
+      { label:'문항 5', desc:'이 책을 읽고 더 알고 싶어진 점을 쓰시오.', spans:[{text:'미래에 새로운 원소가 더 발견될 수 있는지, 그리고 현재 주기율표 118번 이후의 원소들은 어떤 성질을 가질지 궁금하다.'}]}
+    ]},
+    'default': { needsReview: false, questions: [
+      { label:'문항 1', desc:'이 책의 핵심 내용을 간략히 요약하시오.', spans:[{text:'원소 주기율표에 얽힌 과학자들의 이야기를 통해 원소들이 발견된 역사를 흥미롭게 풀어낸 책이다. 각 원소는 독특한 성질을 가지고 있으며 그 발견 과정에는 경쟁과 헌신의 역사가 담겨 있다.'}]},
+      { label:'문항 2', desc:'책에서 인상 깊었던 과학자 또는 원소의 발견 이야기를 소개하시오.', spans:[{text:'헨리 모즐리의 이야기가 슬프면서도 인상 깊었다. 원자번호 개념을 확립한 천재 과학자였지만 1차 세계대전에 참전해 27세의 나이로 전사했다.'}]},
+      { label:'문항 3', desc:'책에서 다룬 원소 중 하나를 선택해 우리 삶과의 연관성을 설명하시오.', spans:[{text:'탄소는 생명체의 근간이 되는 원소로, 다이아몬드부터 흑연까지 다양한 형태로 존재한다. 최근 탄소 나노튜브 등 신소재 연구에서도 핵심적인 역할을 한다.'}]},
+      { label:'문항 4', desc:'과학 발전에서 국가 간 경쟁이 미친 영향을 서술하시오.', spans:[{text:'국가 간 경쟁은 과학 발전을 가속화하기도 하지만 연구 결과의 공유를 막아 오히려 발전을 저해하기도 한다. 균형 있는 협력이 필요하다.'}]},
+      { label:'문항 5', desc:'이 책을 읽고 더 알고 싶어진 점을 쓰시오.', spans:[{text:'책에서 다루지 않은 원소들의 이야기와, 현재 연구 중인 새로운 합성 원소들이 실제로 어떤 성질을 보이는지 더 알아보고 싶다.'}]}
+    ]}
+  };
+
+  // ── B안 좌측 패널 초기화 ──
+  function initLeftPanelB(studentId) {
+    // B안 데모: 모든 학생에게 이준호(10102) OCR 결과(불확실 구간 포함) 동일 적용
+    var data = OCR_DATA_B['10102'];
+    // 불확실 구간 카운트
+    var uncertainCount = 0;
+    data.questions.forEach(function(q) {
+      q.spans.forEach(function(sp) { if (sp.uncertain) uncertainCount++; });
+    });
+    // 불확실 칩 표시
+    var chip = document.getElementById('left-uncertain-chip');
+    if (chip) {
+      if (uncertainCount > 0) {
+        chip.style.display = 'inline-flex';
+        document.getElementById('left-uncertain-count').textContent = uncertainCount;
+      }
+    }
+    // OCR 텍스트 렌더
+    var container = document.getElementById('left-ocr-content');
+    var html = '';
+    // 책 타이틀 헤더
+    html += '<div style="display:flex;align-items:center;gap:8px;padding-bottom:20px;border-bottom:1px solid #F0F0F0;margin-bottom:4px;">';
+    html += '<i data-lucide="book-open" style="width:18px;height:18px;color:#7E44FB;flex-shrink:0;"></i>';
+    html += '<div><div style="font-size:15px;font-weight:800;color:#333;">독후 활동 보고서 <span style="font-weight:400;color:#808080;">사라진 스푼 — 샘 킨 지음</span></div></div>';
+    html += '</div>';
+    data.questions.forEach(function(q, qi) {
+      var hasUncertain = q.spans.some(function(sp){ return sp.uncertain; });
+      var fullText = q.spans.map(function(sp){ return sp.text; }).join('');
+      html += '<div>';
+      html += '<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap;">';
+      html += '<span class="ocr-b-q-label">' + q.label + '</span>';
+      html += '<span class="ocr-b-q-desc">' + q.desc + '</span>';
+      if (hasUncertain) {
+        html += '<span id="left-unc-chip-' + qi + '" style="display:inline-flex;align-items:center;gap:4px;background:#FFF4CC;border:1px solid #E07000;border-radius:100px;padding:2px 8px;font-size:11px;font-weight:800;color:#E07000;margin-left:auto;">'
+              + '<i data-lucide="triangle-alert" style="width:11px;height:11px;"></i>확인 필요</span>';
+      }
+      html += '</div>';
+      if (hasUncertain) {
+        html += '<div id="left-ocr-body-' + qi + '" class="ocr-b-q-text ocr-b-editable" onclick="leftOcrEdit(' + qi + ')" '
+              + 'style="background:#FFFBEB;border:1px solid #FFD966;border-radius:8px;padding:14px 16px;">'
+              + fullText + '</div>';
+        html += '<textarea id="left-ocr-ta-' + qi + '" onblur="leftOcrSave(' + qi + ')" '
+              + 'style="display:none;width:100%;background:#FFFBEB;border:2px solid #E07000;border-radius:8px;padding:14px 16px;'
+              + 'font-family:inherit;font-size:16px;line-height:1.85;color:#333;outline:none;resize:none;overflow:hidden;box-sizing:border-box;" rows="3">'
+              + fullText + '</textarea>';
+      } else {
+        html += '<div id="left-ocr-body-' + qi + '" class="ocr-b-q-text ocr-b-editable" onclick="leftOcrEdit(' + qi + ')">'
+              + fullText + '</div>';
+        html += '<textarea id="left-ocr-ta-' + qi + '" onblur="leftOcrSave(' + qi + ')" '
+              + 'style="display:none;width:100%;background:white;border:2px solid #7E44FB;border-radius:8px;padding:14px 16px;'
+              + 'font-family:inherit;font-size:16px;line-height:1.85;color:#333;outline:none;resize:none;overflow:hidden;box-sizing:border-box;" rows="3">'
+              + fullText + '</textarea>';
+      }
+      html += '</div>';
+    });
+    container.innerHTML = html;
+    lucide.createIcons();
+  }
+
+  // ── B안 좌측 OCR 인라인 편집 ──
+  var _leftEditingIdx = null;
+
+  function leftOcrEdit(qi) {
+    if (_leftEditingIdx === qi) return;
+    if (_leftEditingIdx !== null) leftOcrSave(_leftEditingIdx);
+    var body = document.getElementById('left-ocr-body-' + qi);
+    var ta   = document.getElementById('left-ocr-ta-' + qi);
+    if (!body || !ta) return;
+    ta.value = body.innerText.trim();
+    body.style.display = 'none';
+    ta.style.display = 'block';
+    ta.style.height = 'auto';
+    ta.style.height = Math.max(ta.scrollHeight, 80) + 'px';
+    ta.oninput = function(){ this.style.height = 'auto'; this.style.height = this.scrollHeight + 'px'; };
+    // 편집 중 칩 교체
+    var chip = document.getElementById('left-unc-chip-' + qi);
+    if (chip) chip.innerHTML = '<i data-lucide="pencil" style="width:11px;height:11px;"></i>편집 중';
+    lucide.createIcons();
+    _leftEditingIdx = qi;
+    ta.focus();
+  }
+
+  function leftOcrSave(qi) {
+    var body = document.getElementById('left-ocr-body-' + qi);
+    var ta   = document.getElementById('left-ocr-ta-' + qi);
+    if (!ta || ta.style.display === 'none') return;
+    _leftEditingIdx = null;
+    body.textContent = ta.value;
+    body.style.display = 'block';
+    ta.style.display = 'none';
+    var chip = document.getElementById('left-unc-chip-' + qi);
+    if (chip) {
+      // 불확실 문항: 칩을 초록 "저장됨" → "확인 완료"로 전환
+      chip.style.background = '#F1F9F3'; chip.style.borderColor = '#00AF3D'; chip.style.color = '#00AF3D';
+      chip.innerHTML = '<i data-lucide="check" style="width:11px;height:11px;"></i>저장됨';
+      lucide.createIcons();
+      setTimeout(function(){
+        chip.style.background = '#FFF4CC'; chip.style.borderColor = '#E07000'; chip.style.color = '#E07000';
+        chip.innerHTML = '<i data-lucide="triangle-alert" style="width:11px;height:11px;"></i>확인 완료';
+        lucide.createIcons();
+      }, 1500);
+    } else {
+      // 일반 문항: 텍스트 옆에 "저장됨" 뱃지 잠깐 표시
+      var row = body.closest('div');
+      var badge = document.createElement('span');
+      badge.style.cssText = 'font-size:12px;font-weight:800;color:#00AF3D;display:inline-flex;align-items:center;gap:3px;margin-left:8px;';
+      badge.innerHTML = '✓ 저장됨';
+      body.insertAdjacentElement('afterend', badge);
+      setTimeout(function(){ badge.style.opacity = '0'; badge.style.transition = 'opacity .4s'; }, 1200);
+      setTimeout(function(){ badge.remove(); }, 1700);
+    }
+  }
+
+  function switchLeftTab(tab) {
+    var textPanel = document.getElementById('left-text-panel');
+    var origPanel = document.getElementById('left-original-panel');
+    var tabText = document.getElementById('left-tab-text');
+    var tabOrig = document.getElementById('left-tab-original');
+    if (tab === 'text') {
+      textPanel.style.display = 'block';
+      origPanel.style.display = 'none';
+      tabText.classList.add('active');
+      tabOrig.classList.remove('active');
+    } else {
+      textPanel.style.display = 'none';
+      origPanel.style.display = 'flex';
+      tabText.classList.remove('active');
+      tabOrig.classList.add('active');
+    }
+  }
+
+  // ── 페이지 진입 시 A/B 패널 전환 ──
+  (function() {
+    var params = new URLSearchParams(location.search);
+    var evalType = params.get('eval') || 'A';
+    var studentId = params.get('id') || '10101';
+    var studentName = params.get('name');
+    if (evalType === 'B') {
+      // 좌측: B안 OCR 뷰어 표시
+      document.getElementById('left-panel-a').style.display = 'none';
+      var lb = document.getElementById('left-panel-b');
+      lb.style.display = 'flex';
+      initLeftPanelB(studentId);
+      // 오른쪽 OCR 결과 확인 버튼 숨기기 (B안은 왼쪽에서 직접 수정)
+      var ocrBtn = document.querySelector('button[onclick="openOcrPopup()"]');
+      if (ocrBtn) ocrBtn.closest('div').style.display = 'none';
+      // 타이틀바 학생명 업데이트
+      if (studentName) {
+        var nameEl = document.querySelector('#studentDropdownBtn span');
+        if (nameEl) nameEl.textContent = studentId + ' ' + studentName;
+      }
+    }
+  })();
+
   // Lucide 아이콘 초기화
   lucide.createIcons();
 
@@ -558,12 +844,13 @@
     {id:'10130', name:'김문항', status:'완료', statusCls:'#00AF3D', link:'scoring_student_kimmh_v1.html'},
     {id:'10131', name:'김하이', status:'완료', statusCls:'#00AF3D', link:'scoring_student_kimhi_v1.html'}
   ];
-  var CURRENT_STUDENT_ID = '10101';
+  var _sdParams = new URLSearchParams(location.search);
+  var CURRENT_STUDENT_ID = _sdParams.get('id') || '10101';
   (function initStudentDropdown(){
     var list = document.getElementById('studentDropdownList');
     list.innerHTML = STUDENT_LIST.map(function(s){
       var isCurrent = s.id === CURRENT_STUDENT_ID;
-      return '<div class="sd-item" data-link="'+s.link+'" style="padding:10px 16px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;'+(isCurrent?'background:#F7F4FF;':'')+'font-size:16px;font-weight:'+(isCurrent?'700':'400')+';color:#333;">'
+      return '<div class="sd-item" data-link="'+s.link+'" data-id="'+s.id+'" data-name="'+s.name+'" style="padding:10px 16px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;'+(isCurrent?'background:#F7F4FF;':'')+'font-size:16px;font-weight:'+(isCurrent?'700':'400')+';color:#333;">'
         +'<span>'+s.id+' '+s.name+'</span>'
         +'<span style="font-size:13px;font-weight:700;color:'+s.statusCls+';">'+s.status+'</span>'
         +'</div>';
@@ -572,7 +859,22 @@
     list.querySelectorAll('.sd-item').forEach(function(el){
       el.addEventListener('mouseenter',function(){if(!this.style.background.includes('F7F4FF'))this.style.background='#F8F8F8';});
       el.addEventListener('mouseleave',function(){if(!this.style.background.includes('F7F4FF'))this.style.background='';});
-      el.addEventListener('click',function(){location.href=this.getAttribute('data-link');});
+      el.addEventListener('click',function(){
+        var link = this.getAttribute('data-link');
+        var sid = this.getAttribute('data-id');
+        var sname = this.getAttribute('data-name');
+        var p = new URLSearchParams(location.search);
+        // 현재 컨텍스트(eval/from/classNum) 유지하고 학생 id/name만 갱신
+        p.set('id', sid);
+        p.set('name', sname);
+        // 같은 페이지면 기존 쿼리 유지 + id/name 갱신, 다른 페이지면 해당 파일로 이동
+        if (link && link.indexOf('scoring_student_v1.html') !== 0) {
+          // 별도 파일(예: kimmh, kimhi) — 쿼리 없이 이동
+          location.href = link;
+        } else {
+          location.href = 'scoring_student_v1.html?' + p.toString();
+        }
+      });
     });
     // toggle
     document.getElementById('studentDropdownBtn').addEventListener('click',function(e){
@@ -647,8 +949,8 @@
   function changeViewerPage(d) { viewerPage = Math.max(1, Math.min(viewerTotal, viewerPage + d)); applyViewerTransform(); }
 
   // ── OCR 팝업 ──
-  var OCR_NEEDS_REVIEW = true;
-  var OCR_REVIEW_COUNT = 2;
+  var OCR_NEEDS_REVIEW = false;
+  var OCR_REVIEW_COUNT = 0;
 
   // 문항별 OCR 데이터 (목업)
   var OCR_QUESTIONS = [

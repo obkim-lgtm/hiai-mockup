@@ -7,8 +7,42 @@
   <title>과제물 관리 — OCR 확인</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pretendard@1.3.9/dist/web/static/pretendard.css">
   <style>
     @import url('https://cdn.rawgit.com/moonspam/NanumSquareRound/master/nanumsquareround.min.css');
+    .ocr-b-font { font-family: 'Pretendard', -apple-system, sans-serif !important; }
+    /* OCR 불확실 구간 */
+    .ocr-uncertain {
+      background: #FFF4CC;
+      border-bottom: 2px solid #E07000;
+      border-radius: 2px;
+      padding: 0 1px;
+      cursor: help;
+      position: relative;
+    }
+    .ocr-uncertain::after {
+      content: attr(data-hint);
+      display: none;
+      position: absolute;
+      bottom: calc(100% + 6px);
+      left: 50%;
+      transform: translateX(-50%);
+      background: #333;
+      color: white;
+      font-size: 12px;
+      font-family: 'NanumSquareRound', sans-serif;
+      white-space: nowrap;
+      padding: 4px 8px;
+      border-radius: 6px;
+      z-index: 100;
+      pointer-events: none;
+    }
+    .ocr-uncertain:hover::after { display: block; }
+    /* OCR-B 탭 토글 */
+    .ocr-b-tab-wrap { display:inline-flex; gap:4px; background:#EBEBEB; padding:4px; border-radius:10px; }
+    .ocr-b-tab { height:34px; padding:0 16px; border:none; border-radius:7px; font-size:14px; font-weight:700; cursor:pointer; font-family:inherit; transition:all .15s; }
+    .ocr-b-tab.active { background:#7E44FB; color:white; }
+    .ocr-b-tab.inactive { background:transparent; color:#808080; }
     *{ font-family:'NanumSquareRound',-apple-system,sans-serif; box-sizing:border-box; }
     body{ margin:0; background:#EDF1FC; color:#222; font-size:16px; min-width:1280px; }
     a{ text-decoration:none; color:inherit; }
@@ -729,6 +763,113 @@
   </div>
 </div>
 
+<!-- ===== 화면 3: B안 OCR 결과 확인 (전사 텍스트 + 원본 대조) ===== -->
+<div id="screen-ocr-b" class="screen">
+
+  <!-- 상단 고정 바 -->
+  <div style="position:sticky;top:0;z-index:50;height:68px;display:flex;align-items:stretch;background:#F8F8F8;border-top:1px solid #D9D9D9;border-bottom:1px solid #D9D9D9;">
+    <!-- 이전으로 버튼 (다크 틸 블록) -->
+    <button onclick="goBackFromOcrB()" style="width:68px;height:68px;background:#7E44FB;border:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;flex-shrink:0;padding:0;" onmouseover="this.style.opacity='.88'" onmouseout="this.style.opacity='1'">
+      <i data-lucide="arrow-left" style="width:28px;height:28px;color:white;"></i>
+      <span style="font-size:14px;font-weight:700;color:white;line-height:1;">이전으로</span>
+    </button>
+    <!-- 타이틀바 영역 -->
+    <div style="flex:1;display:flex;align-items:center;justify-content:space-between;padding:0 24px;">
+      <!-- 좌측: 학생 드롭다운 -->
+      <div style="display:flex;align-items:center;gap:16px;">
+        <div id="ocrBStudentDropWrap" style="position:relative;">
+          <div id="ocrBStudentDropBtn" onclick="toggleOcrBDropdown()" style="background:white;border:1px solid #D4D3D1;border-radius:6px;padding:8px 12px 8px 16px;min-width:300px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;">
+            <span id="ocr-b-student-name" style="font-size:20px;font-weight:700;color:#333;">이준호 (10102)</span>
+            <i data-lucide="chevron-down" style="width:20px;height:20px;color:#333;flex-shrink:0;margin-left:8px;"></i>
+          </div>
+          <div id="ocrBStudentDropList" style="display:none;position:absolute;top:calc(100% + 4px);left:0;min-width:300px;max-height:380px;overflow-y:auto;background:white;border:1px solid #D4D3D1;border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,.12);z-index:200;padding:4px 0;">
+            <div id="ocr-b-dropdown-list"></div>
+          </div>
+        </div>
+        <span id="ocr-b-confirm-count" style="font-size:15px;color:#494949;white-space:nowrap;"></span>
+      </div>
+      <!-- 우측: 이전/다음 + 확인완료 -->
+      <div style="display:flex;align-items:center;gap:16px;">
+        <div style="display:flex;align-items:center;gap:0;">
+          <button id="ocr-b-btn-prev" onclick="navStudentB(-1)" style="background:none;border:none;font-size:16px;font-weight:700;color:#494949;cursor:pointer;padding:0 12px;">&lt; 이전 학생</button>
+          <div style="width:1px;height:20px;background:#D9D9D9;"></div>
+          <button id="ocr-b-btn-next" onclick="navStudentB(1)" style="background:none;border:none;font-size:16px;font-weight:700;color:#494949;cursor:pointer;padding:0 12px;">다음 학생 &gt;</button>
+        </div>
+        <button id="ocr-b-btn-confirm" onclick="confirmOCR_B()" style="height:40px;background:#7E44FB;color:white;border:none;border-radius:8px;padding:0 20px;font-size:15px;font-weight:800;font-family:inherit;cursor:pointer;display:inline-flex;align-items:center;gap:8px;">
+          <i data-lucide="check" style="width:16px;height:16px;"></i>확인완료
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 확인 필요 경고 배너 -->
+  <div id="ocr-b-review-banner" style="display:none;padding:10px 24px;background:#FFF5F5;border-bottom:1px solid #FFBCBC;align-items:center;gap:10px;">
+    <i data-lucide="triangle-alert" style="width:16px;height:16px;color:#DB3E51;flex-shrink:0;"></i>
+    <span style="font-size:14px;color:#494949;font-weight:700;">
+      <strong style="color:#DB3E51;">OCR 결과 확인 필요</strong> — <strong id="ocr-b-suspect-count" style="color:#DB3E51;">0개</strong> 문항에서 인식 불확실 구간이 감지되었습니다. 하이라이트된 단어를 원본 제출물과 대조해 주세요.
+    </span>
+  </div>
+
+  <!-- 메인 분할 레이아웃 -->
+  <div id="ocr-b-split" style="display:flex;height:calc(100vh - 68px);">
+
+    <!-- 좌측: 탭 패널 -->
+    <div style="width:58%;min-width:0;display:flex;flex-direction:column;border-right:1px solid #E6E6E6;background:white;">
+
+      <!-- 탭 토글 헤더 -->
+      <div style="padding:14px 24px;border-bottom:1px solid #EBEBEB;display:flex;align-items:center;gap:14px;flex-shrink:0;background:white;">
+        <div class="ocr-b-tab-wrap">
+          <button id="ocr-b-tab-text" class="ocr-b-tab active" onclick="switchOcrBTab('text')">
+            <i data-lucide="scan-text" style="width:13px;height:13px;display:inline-block;vertical-align:-2px;margin-right:5px;"></i>전사 텍스트
+          </button>
+          <button id="ocr-b-tab-original" class="ocr-b-tab inactive" onclick="switchOcrBTab('original')">
+            <i data-lucide="file-image" style="width:13px;height:13px;display:inline-block;vertical-align:-2px;margin-right:5px;"></i>원본 제출물
+          </button>
+        </div>
+        <span id="ocr-b-uncertain-badge" style="display:none;background:#FFF4CC;color:#E07000;font-size:12px;font-weight:700;padding:3px 10px;border-radius:100px;border:1px solid #FFD580;">
+          <i data-lucide="triangle-alert" style="width:11px;height:11px;display:inline-block;vertical-align:-1px;margin-right:3px;"></i><span id="ocr-b-uncertain-count">0</span>개 불확실 구간
+        </span>
+      </div>
+
+      <!-- 전사 텍스트 패널 -->
+      <div id="ocr-b-text-panel" class="ocr-b-font" style="flex:1;overflow-y:auto;padding:28px 32px 40px;"></div>
+
+      <!-- 원본 제출물 패널 -->
+      <div id="ocr-b-original-panel" style="display:none;flex:1;overflow-y:auto;padding:24px;background:#5A5A5A;gap:20px;flex-direction:column;">
+        <div style="background:white;box-shadow:0 2px 16px rgba(0,0,0,.35);width:100%;max-width:540px;margin:0 auto;min-height:720px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;">
+          <i data-lucide="image" style="width:40px;height:40px;color:#D9D9D9;"></i>
+          <p style="font-size:14px;color:#B3B3B3;margin:0;text-align:center;">원본 스캔 이미지 (1 / 2)</p>
+        </div>
+        <div style="background:white;box-shadow:0 2px 16px rgba(0,0,0,.35);width:100%;max-width:540px;margin:0 auto;min-height:720px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;margin-top:20px;">
+          <i data-lucide="image" style="width:40px;height:40px;color:#D9D9D9;"></i>
+          <p style="font-size:14px;color:#B3B3B3;margin:0;text-align:center;">원본 스캔 이미지 (2 / 2)</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 우측: 채점 루브릭 패널 -->
+    <div style="width:42%;min-width:0;overflow-y:auto;background:#F8F8F8;">
+      <div style="padding:20px 20px 32px;">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px;">
+          <i data-lucide="clipboard-list" style="width:16px;height:16px;color:#7E44FB;"></i>
+          <span style="font-size:16px;font-weight:800;color:#222;">채점 루브릭</span>
+          <span style="background:#F0EAFF;color:#7E44FB;font-size:11px;font-weight:700;padding:2px 8px;border-radius:100px;">독후 활동 보고서</span>
+        </div>
+        <!-- 총점 -->
+        <div style="background:white;border-radius:12px;padding:14px 18px;margin-bottom:14px;border:1px solid #E6E0FF;display:flex;align-items:center;justify-content:space-between;">
+          <span style="font-size:14px;font-weight:700;color:#494949;">총점</span>
+          <div style="display:flex;align-items:baseline;gap:4px;">
+            <span id="ocr-b-total-score" style="font-size:28px;font-weight:800;color:#7E44FB;">-</span>
+            <span style="font-size:14px;color:#808080;">/ 15점</span>
+          </div>
+        </div>
+        <!-- 루브릭 항목 -->
+        <div id="ocr-b-rubric-items" style="display:flex;flex-direction:column;gap:10px;"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- 토스트 -->
 <div id="toast" class="toast toast-success">
   <i data-lucide="circle-check-big" style="width:20px; height:20px; flex-shrink:0;"></i>
@@ -1096,6 +1237,176 @@ const STUDENTS_B2 = [
   { id:'10209', name:'고은찬', date:'04/19 10:33 선생님 업로드', files:1, ocrStatusAfter:'confirmed',   needsReview:false }
 ];
 
+// ── B안 OCR 전사 텍스트 데이터 (독후 활동 보고서 — 사라진 스푼) ──
+const OCR_DATA_B = {
+  '10101': { needsReview: false, rubricScores: [4, 3, 4, 3, 3], questions: [
+    { label:'문항 1', desc:'이 책의 핵심 내용을 간략히 요약하시오.', spans:[
+      { text:'원소 주기율표에 얽힌 과학자들의 이야기를 통해 원소들이 발견된 역사를 흥미롭게 풀어낸 책이다. 갈륨으로 만든 숟가락이 뜨거운 물에 녹아 사라지는 것처럼, 각 원소는 독특한 성질을 가지고 있으며 그 발견 과정에는 경쟁과 헌신의 역사가 담겨 있다.' }
+    ]},
+    { label:'문항 2', desc:'책에서 인상 깊었던 과학자 또는 원소의 발견 이야기를 소개하시오.', spans:[
+      { text:'마리 퀴리의 이야기가 특히 인상 깊었다. 그녀는 방사성 원소인 라듐과 폴로늄을 발견했지만 방사선의 위험성을 모른 채 연구에 헌신하다 생을 마감했다. 과학 발전을 위한 그녀의 헌신은 오늘날에도 귀감이 된다.' }
+    ]},
+    { label:'문항 3', desc:'책에서 다룬 원소 중 하나를 선택해 우리 삶과의 연관성을 설명하시오.', spans:[
+      { text:'리튬은 현재 우리 생활에서 없어서는 안 될 원소이다. 스마트폰과 전기차 배터리에 사용되며, 에너지 저장 기술의 핵심 소재다. 처음엔 광물로만 여겨졌지만 지금은 미래 에너지의 열쇠가 되었다.' }
+    ]},
+    { label:'문항 4', desc:'과학 발전에서 국가 간 경쟁이 미친 영향을 서술하시오.', spans:[
+      { text:'원자폭탄 개발을 둘러싼 미국과 소련의 경쟁은 과학 기술을 빠르게 발전시켰지만, 동시에 인류에게 큰 위협을 가져다주기도 했다. 경쟁이 반드시 긍정적인 결과만 낳지 않는다는 것을 알 수 있었다.' }
+    ]},
+    { label:'문항 5', desc:'이 책을 읽고 더 알고 싶어진 점을 쓰시오.', spans:[
+      { text:'아직 발견되지 않은 원소가 있는지, 그리고 새로 합성되는 초중원소들이 실제로 어떤 용도로 활용될 수 있을지 궁금하다. 또한 방사성 원소가 암 치료 등 의학 분야에서 어떻게 더 발전할 수 있는지도 알고 싶다.' }
+    ]}
+  ]},
+  '10102': { needsReview: true, rubricScores: [null, null, null, null, null], questions: [
+    { label:'문항 1', desc:'이 책의 핵심 내용을 간략히 요약하시오.', spans:[
+      { text:'이 책은 원소 주기율표를 중심으로 각 원소의 발견 역사와 그에 얽힌 과학자들의 삶을 이야기 형식으로 풀어낸 책이다. 단순한 화학 지식이 아닌, 인간의 도전과 실수, 그리고 때로는 비극적인 운명을 통해 과학이 발전해 온 과정을 보여준다.' }
+    ]},
+    { label:'문항 2', desc:'책에서 인상 깊었던 과학자 또는 원소의 발견 이야기를 소개하시오.', uncertain: true, spans:[
+      { text:'빌헬름 뢴트겐이 X선을 발견한 이야기가 기억에 남는다. 그는 실험 중 우연히 형광이 빛나는 것을 보고 X선의 존재를 알게 되었는데, ' },
+      { text:'처음에는 그 원인을', uncertain: true, hint:'\'원인\'인지 \'현상\'인지 확인 필요' },
+      { text:' 이해하지 못했지만 끝까지 탐구해 인류 역사상 최초로 내부 신체를 들여다볼 수 있는 기술을 만들어냈다. 자신의 발견에 ' },
+      { text:'특허를 출원하지 않은', uncertain: true, hint:'\'특허를 출원하지 않은\'인지 \'특허를 신청한\'인지 확인 필요' },
+      { text:' 그의 선택도 매우 인상 깊었다.' }
+    ]},
+    { label:'문항 3', desc:'책에서 다룬 원소 중 하나를 선택해 우리 삶과의 연관성을 설명하시오.', uncertain: true, spans:[
+      { text:'수은에 관한 내용이 흥미로웠다. 과거에는 수은을 온도계, 거울 등에 널리 사용했지만 현재는 독성이 밝혀져 대부분 대체되었다. 특히 ' },
+      { text:'일본 미나마타', uncertain: true, hint:'지명 불명확 — \'미나마타\'인지 확인 필요' },
+      { text:' 지역에서 수은 오염으로 인한 집단 발병 사례는 화학 물질 관리의 중요성을 일깨워 준다. 과학 기술의 발전이 ' },
+      { text:'부작용을 동반할 수 있다는', uncertain: true, hint:'\'부작용을 동반\'인지 다른 표현인지 확인 필요' },
+      { text:' 것을 배웠다.' }
+    ]},
+    { label:'문항 4', desc:'과학 발전에서 국가 간 경쟁이 미친 영향을 서술하시오.', spans:[
+      { text:'냉전 시대 미국과 소련의 우주 경쟁은 과학 기술 발전에 큰 촉매가 되었다. 서로를 이기기 위한 경쟁이 오히려 인류 전체의 기술 발전을 앞당겼다는 것이 아이러니하다. 하지만 핵무기 개발처럼 과도한 경쟁은 인류에게 위협이 될 수도 있다.' }
+    ]},
+    { label:'문항 5', desc:'이 책을 읽고 더 알고 싶어진 점을 쓰시오.', spans:[
+      { text:'방사성 원소가 암 치료 등 의학 분야에서 어떻게 활용되는지 더 알고 싶다. 또한 앞으로 새롭게 발견되거나 합성될 원소가 있다면 그것이 인류의 삶에 어떤 영향을 줄지도 궁금하다.' }
+    ]}
+  ]},
+  '10103': { needsReview: false, rubricScores: [null, null, null, null, null], questions: [
+    { label:'문항 1', desc:'이 책의 핵심 내용을 간략히 요약하시오.', spans:[{ text:'원소 주기율표의 각 원소와 그 발견 역사를 흥미로운 이야기 형식으로 소개한 책이다.' }]},
+    { label:'문항 2', desc:'책에서 인상 깊었던 과학자 또는 원소의 발견 이야기를 소개하시오.', spans:[{ text:'노벨 형제와 다이너마이트 발명 이야기가 인상 깊었다. 노벨의 발명이 후에 노벨 평화상으로 이어진 역사가 흥미로웠다.' }]},
+    { label:'문항 3', desc:'책에서 다룬 원소 중 하나를 선택해 우리 삶과의 연관성을 설명하시오.', spans:[{ text:'탄소는 우리 생활 전반에 걸쳐 사용된다. 연필의 흑연부터 다이아몬드, 현재는 탄소나노튜브까지 다양한 형태로 활용된다.' }]},
+    { label:'문항 4', desc:'과학 발전에서 국가 간 경쟁이 미친 영향을 서술하시오.', spans:[{ text:'과학 경쟁은 기술 발전을 가속화하지만 윤리적 문제를 수반하기도 한다. 핵 개발이 대표적인 예이다.' }]},
+    { label:'문항 5', desc:'이 책을 읽고 더 알고 싶어진 점을 쓰시오.', spans:[{ text:'아직 채워지지 않은 원소들이 발견될 가능성과, 그 원소들의 특성이 어떨지 궁금하다.' }]}
+  ]},
+  '10104': { needsReview: false, rubricScores: [4, 4, 3, 2, 2], questions: [
+    { label:'문항 1', desc:'이 책의 핵심 내용을 간략히 요약하시오.', spans:[
+      { text:'원소 주기율표의 탄생과 각 원소 발견에 얽힌 과학자들의 삶과 경쟁을 흥미롭게 풀어낸 책이다. 화학이라는 딱딱한 학문을 인간의 이야기로 풀어내 쉽게 읽을 수 있었다.' }
+    ]},
+    { label:'문항 2', desc:'책에서 인상 깊었던 과학자 또는 원소의 발견 이야기를 소개하시오.', spans:[
+      { text:'길버트 루이스가 노벨상을 받지 못한 이야기가 안타까웠다. 공유결합 이론을 정립한 그의 업적은 현대 화학의 근간이지만 개인적 갈등으로 인해 노벨상 수상이 계속 좌절되었다. 과학계에서도 인간관계가 얼마나 중요한지를 보여주는 사례였다.' }
+    ]},
+    { label:'문항 3', desc:'책에서 다룬 원소 중 하나를 선택해 우리 삶과의 연관성을 설명하시오.', spans:[
+      { text:'인은 생명 유지에 필수적인 원소다. DNA와 세포막의 구성 성분이며, 비료의 핵심 재료로 농업 생산성을 높인다. 책에서 언급된 것처럼 과거에 성냥 제조에 쓰인 황린이 노동자들에게 큰 피해를 준 역사는 과학 기술의 양면성을 잘 보여준다.' }
+    ]},
+    { label:'문항 4', desc:'과학 발전에서 국가 간 경쟁이 미친 영향을 서술하시오.', spans:[
+      { text:'핵무기 개발 경쟁에서 시작된 원자력 기술은 이후 원자력 발전으로 평화적 활용이 이루어졌다. 경쟁이 기술 발전을 앞당기는 동시에 인류에게 위협도 가져다주는 이중적 결과를 낳는다는 점이 인상적이었다.' }
+    ]},
+    { label:'문항 5', desc:'이 책을 읽고 더 알고 싶어진 점을 쓰시오.', spans:[
+      { text:'원소들이 별의 핵융합을 통해 생성된다고 하는데, 우주에서 원소가 만들어지는 과정을 더 깊이 알고 싶다. 또한 인공 원소들이 실생활에서 실제로 활용되는 사례가 있는지도 궁금하다.' }
+    ]}
+  ]},
+  '10105': { needsReview: false, rubricScores: [null, null, null, null, null], questions: [
+    { label:'문항 1', desc:'이 책의 핵심 내용을 간략히 요약하시오.', spans:[
+      { text:'118개 원소 각각의 발견 스토리를 과학사적 사건과 엮어 소개한 책이다. 원소 하나하나에 얽힌 인간 드라마를 통해 과학이 단순한 지식의 집합이 아님을 알 수 있었다.' }
+    ]},
+    { label:'문항 2', desc:'책에서 인상 깊었던 과학자 또는 원소의 발견 이야기를 소개하시오.', uncertain: true, spans:[
+      { text:'드미트리 멘델레예프가 주기율표를 꿈에서 발견했다는 이야기가 인상적이었다. 오랜 연구 끝에 ' },
+      { text:'잠을 자다가', uncertain: true, hint:'\'잠을 자다가\'인지 \'꿈을 꾸다가\'인지 확인 필요' },
+      { text:' 주기율표의 구조가 떠올랐다는 일화는 과학적 직관과 무의식의 역할을 보여준다. 그가 예측한 빈칸의 원소들이 이후 실제로 발견된 것도 놀라웠다.' }
+    ]},
+    { label:'문항 3', desc:'책에서 다룬 원소 중 하나를 선택해 우리 삶과의 연관성을 설명하시오.', spans:[
+      { text:'실리콘은 반도체의 핵심 소재로 현대 디지털 문명을 가능하게 한다. 스마트폰부터 인공위성까지 실리콘 없이는 존재하지 않는 기술들이 수없이 많다. 흔한 모래에서 추출한 원소가 세상을 바꿨다는 사실이 흥미롭다.' }
+    ]},
+    { label:'문항 4', desc:'과학 발전에서 국가 간 경쟁이 미친 영향을 서술하시오.', spans:[
+      { text:'우주 경쟁은 로켓 기술과 위성 기술을 비약적으로 발전시켰다. 그 덕분에 오늘날 GPS, 기상 예보, 인터넷 통신이 가능해졌다. 경쟁의 부산물이 오히려 인류 전체에게 혜택을 준 셈이다.' }
+    ]},
+    { label:'문항 5', desc:'이 책을 읽고 더 알고 싶어진 점을 쓰시오.', spans:[
+      { text:'아직 합성되지 않은 원소가 이론상 얼마나 더 존재할 수 있는지, 그리고 초중원소들의 수명이 왜 그렇게 짧은지 궁금하다.' }
+    ]}
+  ]},
+  '10106': { needsReview: false, rubricScores: [3, 4, 3, 1, 2], questions: [
+    { label:'문항 1', desc:'이 책의 핵심 내용을 간략히 요약하시오.', spans:[
+      { text:'사라진 스푼은 원소 주기율표에 얽힌 과학자들의 발견 역사를 흥미롭게 풀어낸 책이다. 단순한 화학책이 아닌 과학과 역사, 인간 이야기가 어우러진 책이었다.' }
+    ]},
+    { label:'문항 2', desc:'책에서 인상 깊었던 과학자 또는 원소의 발견 이야기를 소개하시오.', spans:[
+      { text:'오토 한과 리제 마이트너의 이야기가 인상 깊었다. 핵분열을 함께 연구했지만 나치 독일의 박해로 마이트너가 망명할 수밖에 없었고, 결국 노벨상은 한에게만 돌아갔다. 과학적 성과가 정치와 차별로 인해 왜곡된 역사가 안타까웠다.' }
+    ]},
+    { label:'문항 3', desc:'책에서 다룬 원소 중 하나를 선택해 우리 삶과의 연관성을 설명하시오.', spans:[
+      { text:'아이오딘은 우리 몸의 갑상샘 호르몬 합성에 반드시 필요한 원소다. 소금에 아이오딘을 첨가하는 정책 덕분에 갑상샘 질환이 크게 줄었다는 사실이 화학이 공중 보건에 기여한 좋은 예라고 생각한다.' }
+    ]},
+    { label:'문항 4', desc:'과학 발전에서 국가 간 경쟁이 미친 영향을 서술하시오.', spans:[
+      { text:'냉전 시대의 과학 경쟁은 빠른 기술 발전을 이끌었지만, 그 과정에서 무기 개발에 집중하는 부작용도 있었다. 평화적 협력이 경쟁보다 더 지속 가능한 발전을 이끈다고 생각한다.' }
+    ]},
+    { label:'문항 5', desc:'이 책을 읽고 더 알고 싶어진 점을 쓰시오.', spans:[
+      { text:'희토류 원소들이 왜 미래 기술에서 그렇게 중요한지, 그리고 그 희소성이 국제 분쟁으로 이어지는 구체적인 사례를 더 알고 싶다.' }
+    ]}
+  ]},
+  '10107': { needsReview: false, rubricScores: [null, null, null, null, null], questions: [
+    { label:'문항 1', desc:'이 책의 핵심 내용을 간략히 요약하시오.', spans:[
+      { text:'주기율표의 원소들이 어떻게 발견되었는지를 과학자들의 삶과 함께 소개한 책이다. 화학 지식이 없어도 흥미롭게 읽을 수 있는 과학 교양서였다.' }
+    ]},
+    { label:'문항 2', desc:'책에서 인상 깊었던 과학자 또는 원소의 발견 이야기를 소개하시오.', spans:[
+      { text:'어니스트 러더퍼드가 원자핵을 발견한 이야기가 인상적이었다. 얇은 금박에 알파 입자를 쏘았을 때 대부분은 통과하지만 일부가 튕겨 나온다는 결과에서 원자 내부에 작은 핵이 있다는 것을 발견했다. 관찰에서 이론을 도출하는 과학적 방법을 잘 보여준 사례였다.' }
+    ]},
+    { label:'문항 3', desc:'책에서 다룬 원소 중 하나를 선택해 우리 삶과의 연관성을 설명하시오.', spans:[
+      { text:'알루미늄은 한때 금보다 귀한 금속이었지만, 제련 기술이 개발된 이후 가장 흔하게 쓰이는 금속이 되었다. 음료 캔부터 항공기까지 다양한 곳에 쓰이는 알루미늄을 보며 기술 발전이 가치를 바꾼다는 것을 깨달았다.' }
+    ]},
+    { label:'문항 4', desc:'과학 발전에서 국가 간 경쟁이 미친 영향을 서술하시오.', spans:[
+      { text:'경쟁은 단기적으로 기술 발전을 앞당기지만 과학자 개인에게는 큰 압박이 된다. 원소 명명권을 둘러싼 국가 간 갈등처럼, 과학에서도 정치와 이해관계가 얽히면 순수한 탐구 정신이 흔들릴 수 있다.' }
+    ]},
+    { label:'문항 5', desc:'이 책을 읽고 더 알고 싶어진 점을 쓰시오.', spans:[
+      { text:'원소들이 우주에서 만들어지는 핵합성 과정이 궁금하다. 철보다 무거운 원소들이 초신성 폭발로 생성된다는 내용을 더 자세히 공부해보고 싶다.' }
+    ]}
+  ]},
+  '10108': { needsReview: false, rubricScores: [4, 3, 3, 2, 1], questions: [
+    { label:'문항 1', desc:'이 책의 핵심 내용을 간략히 요약하시오.', spans:[
+      { text:'118가지 원소 각각의 발견 과정과 그에 얽힌 역사적 사건을 흥미로운 에피소드로 엮은 과학 교양서다. 원소 주기율표가 단순한 표가 아니라 인류의 지적 도전의 집약체임을 알게 해주는 책이다.' }
+    ]},
+    { label:'문항 2', desc:'책에서 인상 깊었던 과학자 또는 원소의 발견 이야기를 소개하시오.', spans:[
+      { text:'글렌 시보그가 아메리슘 등 여러 초우라늄 원소를 발견하고 자신의 이름을 딴 원소(시보귬)가 생전에 명명된 유일한 과학자가 된 이야기가 흥미로웠다. 과학에 인생을 바친 사람이 역사에 남는 방식이 인상적이었다.' }
+    ]},
+    { label:'문항 3', desc:'책에서 다룬 원소 중 하나를 선택해 우리 삶과의 연관성을 설명하시오.', spans:[
+      { text:'타이타늄은 가볍고 강한 금속으로 항공우주, 의료 임플란트, 스포츠 용품에 두루 사용된다. 인체 친화적이라 뼈 대체재로도 쓰인다는 점이 화학이 의학과 연결되는 훌륭한 사례라고 생각한다.' }
+    ]},
+    { label:'문항 4', desc:'과학 발전에서 국가 간 경쟁이 미친 영향을 서술하시오.', spans:[
+      { text:'맨해튼 프로젝트는 전쟁이라는 극단적 경쟁 상황에서 과학 기술이 얼마나 빠르게 발전하는지 보여준 사례다. 하지만 그 결과가 히로시마와 나가사키의 비극으로 이어진 점에서 과학 기술에 대한 윤리적 책임이 얼마나 중요한지 알 수 있다.' }
+    ]},
+    { label:'문항 5', desc:'이 책을 읽고 더 알고 싶어진 점을 쓰시오.', spans:[
+      { text:'희귀한 원소들이 실제로 어느 나라에 얼마나 매장되어 있는지, 그리고 그것이 국제 자원 분쟁과 어떻게 연결되는지가 궁금하다.' }
+    ]}
+  ]},
+  '10109': { needsReview: false, rubricScores: [3, 3, 3, 2, 2], questions: [
+    { label:'문항 1', desc:'이 책의 핵심 내용을 간략히 요약하시오.', spans:[
+      { text:'이 책은 원소 주기율표를 중심으로 원소들이 어떻게 발견되고 이름이 붙었는지를 과학사 속 인물들의 이야기와 함께 설명한다. 과학 역사의 빛과 그늘을 균형 있게 보여주는 점이 인상적이었다.' }
+    ]},
+    { label:'문항 2', desc:'책에서 인상 깊었던 과학자 또는 원소의 발견 이야기를 소개하시오.', spans:[
+      { text:'헨리 모즐리의 이야기가 슬프면서도 인상 깊었다. 원자번호의 개념을 확립한 천재 과학자였지만 1차 세계대전에 참전해 갈리폴리 전투에서 27세의 나이로 전사했다. 전쟁이 과학의 미래를 얼마나 앗아가는지를 보여준 사례였다.' }
+    ]},
+    { label:'문항 3', desc:'책에서 다룬 원소 중 하나를 선택해 우리 삶과의 연관성을 설명하시오.', spans:[
+      { text:'비스무트는 납의 독성 없이 비슷한 특성을 가져 무독성 대체재로 각광받는다. 화장품, 의약품, 낚시 추 등에 사용되며 환경 오염 없이 기존 소재를 대체할 수 있는 친환경 원소다.' }
+    ]},
+    { label:'문항 4', desc:'과학 발전에서 국가 간 경쟁이 미친 영향을 서술하시오.', spans:[
+      { text:'과학 경쟁이 항상 나쁜 것은 아니다. 서로 다른 국가의 과학자들이 경쟁하면서도 논문과 학술대회를 통해 지식을 공유했기에 과학이 빠르게 발전할 수 있었다. 경쟁과 협력이 균형을 이룰 때 최선의 결과가 나온다고 생각한다.' }
+    ]},
+    { label:'문항 5', desc:'이 책을 읽고 더 알고 싶어진 점을 쓰시오.', spans:[
+      { text:'주기율표에 아직 빈자리가 남아 있는지, 그리고 이론적으로 존재할 수 있는 가장 무거운 원소의 한계는 무엇인지 더 공부해보고 싶다.' }
+    ]}
+  ]}
+};
+
+// ── B안 OCR 루브릭 기준 ──
+const RUBRIC_B = [
+  { id:'r1', label:'내용 이해', desc:'책의 핵심 내용을 정확히 이해하고 설명함', maxScore:4 },
+  { id:'r2', label:'비판적 사고', desc:'과학·역사 개념에 대한 자신의 생각을 논리적으로 표현함', maxScore:4 },
+  { id:'r3', label:'연관성', desc:'원소와 실생활의 연관성을 구체적으로 서술함', maxScore:3 },
+  { id:'r4', label:'표현력', desc:'자신의 생각을 명확하고 유창하게 표현함', maxScore:2 },
+  { id:'r5', label:'창의성', desc:'독창적인 관점이나 연결고리를 제시함', maxScore:2 }
+];
+
+var currentOcrBStudentIdx = 0; // B1 기준 인덱스
+var ocrBActiveTab = 'text';
+var ocrBScoreMap = {}; // studentId → scores array
+
 // ── 학급 제출 상세: 반별 상태 ──
 var currentListClass = 1;
 var currentEvalType = 'A';
@@ -1168,7 +1479,7 @@ function showScreen(id) {
   document.querySelectorAll('.screen').forEach(function(s){ s.classList.remove('active'); });
   document.getElementById(id).classList.add('active');
   var gnb = document.getElementById('gnb');
-  if (gnb) gnb.style.display = (id === 'screen-ocr') ? 'none' : '';
+  if (gnb) gnb.style.display = (id === 'screen-ocr' || id === 'screen-ocr-b') ? 'none' : '';
   window.scrollTo(0,0);
   lucide.createIcons();
 }
@@ -1193,14 +1504,250 @@ function goToOCR(studentTableIdx) {
 }
 
 function goToOCR_B(b1Idx) {
-  // B안 1반: STUDENTS_B1 기준 인덱스 → 동일한 OCR 화면(A안 공유) 사용
-  // ocrStudents 중 가장 가까운 인덱스로 매핑
-  var idx = Math.min(b1Idx, ocrStudents.length - 1);
-  if (idx < 0) idx = 0;
-  currentStudentIdx = idx;
-  currentPageIdx = 0;
-  renderOCRView();
-  showScreen('screen-ocr');
+  // B안 1반: screen-ocr-b로 이동
+  var idx = Math.max(0, Math.min(b1Idx, STUDENTS_B1.length - 1));
+  currentOcrBStudentIdx = idx;
+  ocrBActiveTab = 'text';
+  renderOCRView_B();
+  showScreen('screen-ocr-b');
+}
+
+// ── B안 OCR 화면 렌더 ──
+function renderOCRView_B() {
+  var students = STUDENTS_B1;
+  var student = students[currentOcrBStudentIdx];
+  if (!student) return;
+
+  // GNB 숨기기
+  var gnb = document.getElementById('gnb');
+  if (gnb) gnb.style.display = 'none';
+
+  // 학생 이름 갱신
+  document.getElementById('ocr-b-student-name').textContent = student.name + ' (' + student.id + ')';
+
+  // 드롭다운 목록
+  var listEl = document.getElementById('ocr-b-dropdown-list');
+  if (listEl) {
+    var ddHtml = '';
+    students.forEach(function(s, i) {
+      var isCurrent = i === currentOcrBStudentIdx;
+      var statusIcon = s.ocrStatus === 'confirmed'
+        ? '<i data-lucide="circle-check" style="width:13px;height:13px;color:#00AF3D;flex-shrink:0;"></i>'
+        : (s.needsReview
+          ? '<i data-lucide="triangle-alert" style="width:13px;height:13px;color:#DB3E51;flex-shrink:0;"></i>'
+          : '<i data-lucide="circle" style="width:13px;height:13px;color:#808080;flex-shrink:0;"></i>');
+      ddHtml += '<div onclick="jumpToOcrBStudent(' + i + ')" style="padding:10px 16px;cursor:pointer;display:flex;align-items:center;gap:10px;background:' + (isCurrent ? '#F7F4FF' : 'transparent') + ';font-weight:' + (isCurrent ? '800' : '400') + ';" onmouseover="this.style.background=\'#F8F8F8\'" onmouseout="this.style.background=\'' + (isCurrent ? '#F7F4FF' : 'transparent') + '\'">';
+      ddHtml += statusIcon;
+      ddHtml += '<span style="font-size:15px;color:#333;">' + s.name + '</span>';
+      ddHtml += '<span style="font-size:13px;color:#808080;margin-left:auto;">' + s.id + '</span>';
+      ddHtml += '</div>';
+    });
+    listEl.innerHTML = ddHtml;
+    lucide.createIcons();
+  }
+
+  // 확인 현황
+  var confirmedCount = students.filter(function(s){ return s.ocrStatus === 'confirmed'; }).length;
+  document.getElementById('ocr-b-confirm-count').textContent = '확인완료 ' + confirmedCount + ' / ' + students.length;
+
+  // 이전/다음 버튼
+  var btnPrev = document.getElementById('ocr-b-btn-prev');
+  var btnNext = document.getElementById('ocr-b-btn-next');
+  if (btnPrev) { btnPrev.disabled = currentOcrBStudentIdx === 0; btnPrev.style.opacity = currentOcrBStudentIdx === 0 ? '0.4' : '1'; }
+  if (btnNext) { btnNext.disabled = currentOcrBStudentIdx === students.length - 1; btnNext.style.opacity = currentOcrBStudentIdx === students.length - 1 ? '0.4' : '1'; }
+
+  // 경고 배너
+  var banner = document.getElementById('ocr-b-review-banner');
+  var split = document.getElementById('ocr-b-split');
+  if (student.needsReview) {
+    banner.style.display = 'flex';
+    if (split) split.style.height = 'calc(100vh - 68px - 42px)';
+  } else {
+    banner.style.display = 'none';
+    if (split) split.style.height = 'calc(100vh - 68px)';
+  }
+
+  // 확인완료 버튼 상태
+  var btnConfirm = document.getElementById('ocr-b-btn-confirm');
+  if (btnConfirm) {
+    if (student.ocrStatus === 'confirmed') {
+      btnConfirm.style.background = '#00AF3D';
+      btnConfirm.innerHTML = '<i data-lucide="check" style="width:16px;height:16px;"></i>확인완료';
+    } else {
+      btnConfirm.style.background = '#7E44FB';
+      btnConfirm.innerHTML = '<i data-lucide="check" style="width:16px;height:16px;"></i>확인완료';
+    }
+  }
+
+  // 탭 초기화
+  switchOcrBTab(ocrBActiveTab);
+
+  // 루브릭 렌더
+  renderOcrBRubric(student);
+
+  lucide.createIcons();
+}
+
+function switchOcrBTab(tabName) {
+  ocrBActiveTab = tabName;
+  var textPanel = document.getElementById('ocr-b-text-panel');
+  var origPanel = document.getElementById('ocr-b-original-panel');
+  var tabText = document.getElementById('ocr-b-tab-text');
+  var tabOrig = document.getElementById('ocr-b-tab-original');
+
+  if (tabName === 'text') {
+    if (textPanel) textPanel.style.display = 'block';
+    if (origPanel) origPanel.style.display = 'none';
+    if (tabText) { tabText.className = 'ocr-b-tab active'; }
+    if (tabOrig) { tabOrig.className = 'ocr-b-tab inactive'; }
+    // 텍스트 렌더
+    var student = STUDENTS_B1[currentOcrBStudentIdx];
+    if (student) renderOcrBText(student);
+  } else {
+    if (textPanel) textPanel.style.display = 'none';
+    if (origPanel) { origPanel.style.display = 'flex'; }
+    if (tabText) { tabText.className = 'ocr-b-tab inactive'; }
+    if (tabOrig) { tabOrig.className = 'ocr-b-tab active'; }
+  }
+  lucide.createIcons();
+}
+
+function renderOcrBText(student) {
+  var panel = document.getElementById('ocr-b-text-panel');
+  if (!panel) return;
+  var data = OCR_DATA_B[student.id];
+  if (!data) {
+    panel.innerHTML = '<div style="padding:40px;text-align:center;color:#B3B3B3;"><i data-lucide="alert-circle" style="width:24px;height:24px;margin-bottom:8px;"></i><br>OCR 데이터가 없습니다.</div>';
+    return;
+  }
+
+  // 불확실 구간 카운트
+  var uncertainCount = 0;
+  data.questions.forEach(function(q) {
+    if (q.spans) q.spans.forEach(function(s){ if(s.uncertain) uncertainCount++; });
+  });
+  var badge = document.getElementById('ocr-b-uncertain-badge');
+  var countEl = document.getElementById('ocr-b-uncertain-count');
+  var suspectEl = document.getElementById('ocr-b-suspect-count');
+  if (badge) badge.style.display = uncertainCount > 0 ? 'inline-flex' : 'none';
+  if (countEl) countEl.textContent = uncertainCount;
+  if (suspectEl) suspectEl.textContent = data.questions.filter(function(q){ return q.uncertain; }).length + '개';
+
+  var html = '';
+  // 책 제목 헤더
+  html += '<div style="margin-bottom:24px;padding-bottom:16px;border-bottom:1px solid #EBEBEB;">';
+  html += '<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">';
+  html += '<i data-lucide="book-open" style="width:15px;height:15px;color:#7E44FB;"></i>';
+  html += '<span style="font-size:13px;font-weight:700;color:#7E44FB;">독후 활동 보고서</span>';
+  html += '<span style="font-size:12px;color:#808080;margin-left:4px;">사라진 스푼 — 샘 킨 지음</span>';
+  html += '</div>';
+  html += '<div style="font-size:13px;color:#808080;">학생: ' + student.name + ' (' + student.id + ')</div>';
+  html += '</div>';
+
+  data.questions.forEach(function(q, qi) {
+    var hasUncertain = q.uncertain || (q.spans && q.spans.some(function(s){ return s.uncertain; }));
+    html += '<div style="margin-bottom:28px;">';
+    // 문항 헤더
+    html += '<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap;">';
+    html += '<span style="background:#F0EAFF;color:#7E44FB;font-size:12px;font-weight:700;padding:3px 10px;border-radius:100px;">' + q.label + '</span>';
+    html += '<span style="font-size:14px;color:#494949;font-weight:700;">' + q.desc + '</span>';
+    if (hasUncertain) {
+      html += '<span style="background:#FFF4CC;color:#E07000;font-size:11px;font-weight:700;padding:2px 8px;border-radius:100px;border:1px solid #FFD580;display:inline-flex;align-items:center;gap:3px;margin-left:auto;">';
+      html += '<i data-lucide="triangle-alert" style="width:10px;height:10px;"></i>확인 필요</span>';
+    }
+    html += '</div>';
+    // 본문 텍스트 (스팬 단위 렌더)
+    html += '<div style="font-size:16px;line-height:1.9;color:#222;padding:14px 18px;background:#FAFAFA;border-radius:8px;border:1px solid #EBEBEB;">';
+    if (q.spans) {
+      q.spans.forEach(function(span) {
+        if (span.uncertain) {
+          html += '<span class="ocr-uncertain" data-hint="' + (span.hint || '확인 필요') + '">' + span.text + '</span>';
+        } else {
+          html += span.text;
+        }
+      });
+    }
+    html += '</div>';
+    html += '</div>';
+  });
+
+  panel.innerHTML = html;
+  lucide.createIcons();
+}
+
+function renderOcrBRubric(student) {
+  var itemsEl = document.getElementById('ocr-b-rubric-items');
+  var totalEl = document.getElementById('ocr-b-total-score');
+  if (!itemsEl) return;
+
+  var data = OCR_DATA_B[student.id];
+  var scores = ocrBScoreMap[student.id] || (data ? data.rubricScores.slice() : RUBRIC_B.map(function(){ return null; }));
+  if (!ocrBScoreMap[student.id]) ocrBScoreMap[student.id] = scores;
+
+  var html = '';
+  RUBRIC_B.forEach(function(criterion, ci) {
+    var score = scores[ci];
+    html += '<div style="background:white;border-radius:12px;padding:14px 16px;border:1px solid #E6E6E6;">';
+    html += '<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:10px;">';
+    html += '<div>';
+    html += '<div style="font-size:14px;font-weight:800;color:#222;margin-bottom:3px;">' + criterion.label + ' <span style="color:#808080;font-weight:400;font-size:12px;">(/' + criterion.maxScore + '점)</span></div>';
+    html += '<div style="font-size:12px;color:#808080;line-height:1.5;">' + criterion.desc + '</div>';
+    html += '</div>';
+    // 점수 입력 (버튼식)
+    html += '<div style="display:flex;gap:4px;flex-shrink:0;">';
+    for (var v = 0; v <= criterion.maxScore; v++) {
+      var isSelected = score === v;
+      html += '<button onclick="setOcrBScore(\'' + student.id + '\',' + ci + ',' + v + ')" style="width:28px;height:28px;border-radius:6px;border:1.5px solid ' + (isSelected ? '#7E44FB' : '#D9D9D9') + ';background:' + (isSelected ? '#7E44FB' : 'white') + ';color:' + (isSelected ? 'white' : '#494949') + ';font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;">' + v + '</button>';
+    }
+    html += '</div>';
+    html += '</div>';
+    html += '</div>';
+  });
+
+  itemsEl.innerHTML = html;
+
+  // 총점
+  var total = scores.reduce(function(sum, s){ return sum + (s !== null ? s : 0); }, 0);
+  var hasAnyScore = scores.some(function(s){ return s !== null; });
+  if (totalEl) totalEl.textContent = hasAnyScore ? total : '-';
+}
+
+function setOcrBScore(studentId, criterionIdx, value) {
+  if (!ocrBScoreMap[studentId]) {
+    var data = OCR_DATA_B[studentId];
+    ocrBScoreMap[studentId] = data ? data.rubricScores.slice() : RUBRIC_B.map(function(){ return null; });
+  }
+  ocrBScoreMap[studentId][criterionIdx] = value;
+  renderOcrBRubric(STUDENTS_B1[currentOcrBStudentIdx]);
+}
+
+function navStudentB(dir) {
+  var newIdx = currentOcrBStudentIdx + dir;
+  if (newIdx < 0 || newIdx >= STUDENTS_B1.length) return;
+  currentOcrBStudentIdx = newIdx;
+  ocrBActiveTab = 'text';
+  renderOCRView_B();
+}
+
+function jumpToOcrBStudent(idx) {
+  currentOcrBStudentIdx = idx;
+  ocrBActiveTab = 'text';
+  document.getElementById('ocrBStudentDropList').style.display = 'none';
+  renderOCRView_B();
+}
+
+function toggleOcrBDropdown() {
+  var el = document.getElementById('ocrBStudentDropList');
+  if (el) el.style.display = el.style.display === 'none' ? 'block' : 'none';
+}
+
+function confirmOCR_B() {
+  var student = STUDENTS_B1[currentOcrBStudentIdx];
+  if (!student) return;
+  student.ocrStatus = 'confirmed';
+  student.needsReview = false;
+  showToast('OCR 결과를 확인완료 처리했습니다.', 'success');
+  renderOCRView_B();
 }
 
 // ── OCR 뷰 렌더 ──
@@ -1790,9 +2337,21 @@ renderTable();
 lucide.createIcons();
 
 // ── URL 해시 라우팅 ──
+var ocrBFromUrl = null; // 외부에서 진입 시 돌아갈 URL
+
 (function() {
+  // from 파라미터 저장
+  var params = new URLSearchParams(location.search);
+  var from = params.get('from');
+  if (from) ocrBFromUrl = from;
+
   var hash = window.location.hash;
-  if (hash.startsWith('#ocr=')) {
+  if (hash.startsWith('#ocr-b=')) {
+    // B안 학생 채점 상세 직접 진입
+    var sid = hash.replace('#ocr-b=', '');
+    var idx = STUDENTS_B1.findIndex(function(s){ return s.id === sid; });
+    goToOCR_B(idx !== -1 ? idx : 0);
+  } else if (hash.startsWith('#ocr=')) {
     var sid = hash.replace('#ocr=', '');
     var student = STUDENTS.find(function(s){ return s.id === sid; });
     if (student && student.status !== '미제출' && student.ocrStatus !== 'processing') {
@@ -1806,6 +2365,14 @@ lucide.createIcons();
     showScreen('screen-list');
   }
 })();
+
+function goBackFromOcrB() {
+  if (ocrBFromUrl) {
+    location.href = ocrBFromUrl;
+  } else {
+    goToList();
+  }
+}
 </script>
 </body>
 </html>
