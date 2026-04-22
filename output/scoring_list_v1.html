@@ -218,45 +218,6 @@
               <div style="width:158px; text-align:center;"><button class="btn-ghost" style="justify-content:center; width:100%;">수동 채점 진행</button></div>
             </div>
 
-            <!-- Row 4: 1-4반 (채점 진행중) -->
-            <div style="display:flex; align-items:center; height:58px; border-bottom:1px solid #D9D9D9; font-size:16px; color:#333;">
-              <div style="width:80px; text-align:center;"><span style="background:#F2F5FF; color:#5890FF; border-radius:100px; padding:3px 10px; font-size:14px; font-weight:700;">진행</span></div>
-              <div style="width:80px; text-align:center;"><span style="background:#F0F0F0; color:#494949; border-radius:100px; padding:3px 10px; font-size:14px; font-weight:700;">비공개</span></div>
-              <div style="width:80px; text-align:center; font-weight:700;">1-4</div>
-              <div style="flex:1; display:flex; align-items:center; gap:10px; padding:0 16px;">
-                <div class="progress-bar-bg" style="max-width:100px;"><div class="progress-bar-fill" style="width:57%;"></div></div>
-                <span style="font-size:14px; color:#808080; font-weight:700;">8/14</span>
-              </div>
-              <div style="width:120px; text-align:center; font-weight:700; color:#333;">32</div>
-              <div style="width:260px; display:flex; align-items:center; justify-content:center; gap:8px;">
-                <button class="btn-primary" style="height:36px; font-size:14px;" onclick="openRerunModal()">
-                  <i data-lucide="rotate-cw" style="width:16px; height:16px;"></i>재실행
-                </button>
-                <button class="btn-secondary" style="height:36px; font-size:14px;">
-                  <i data-lucide="chart-column-decreasing" style="width:16px; height:16px;"></i>AI 점수 확인
-                </button>
-              </div>
-              <div style="width:158px; text-align:center;"><button class="btn-ghost" style="justify-content:center; width:100%;" onclick="location.href='scoring_detail_v1.html'">채점 결과 상세</button></div>
-            </div>
-
-            <!-- Row 5: 1-5반 (AI 채점 진행중) -->
-            <div style="display:flex; align-items:center; height:58px; font-size:16px; color:#333;">
-              <div style="width:80px; text-align:center;"><span style="background:#F1F9F3; color:#00AF3D; border-radius:100px; padding:3px 10px; font-size:14px; font-weight:700;">완료</span></div>
-              <div style="width:80px; text-align:center;"><span style="background:#F7F4FF; color:#7E44FB; border-radius:100px; padding:3px 10px; font-size:14px; font-weight:700;">공개</span></div>
-              <div style="width:80px; text-align:center; font-weight:700;">1-5</div>
-              <div style="flex:1; display:flex; align-items:center; gap:10px; padding:0 16px;">
-                <div class="progress-bar-bg" style="max-width:100px;"><div class="progress-bar-fill" style="width:100%;"></div></div>
-                <span style="font-size:14px; color:#333; font-weight:700;">14/14</span>
-              </div>
-              <div style="width:120px; text-align:center; font-weight:700; color:#333;">38</div>
-              <div style="width:260px; text-align:center;">
-                <span style="display:inline-flex; align-items:center; gap:6px; color:#7E44FB; font-size:16px; font-weight:700;">
-                  <i data-lucide="loader-circle" style="width:18px; height:18px;" class="animate-spin"></i>AI 채점 진행 중
-                </span>
-              </div>
-              <div style="width:158px; text-align:center;"><button class="btn-ghost" style="opacity:0.5; cursor:default; justify-content:center; width:100%;" disabled>채점 결과 상세</button></div>
-            </div>
-
           </div>
         </div>
 
@@ -307,26 +268,6 @@
               <div style="flex:1; display:flex; align-items:center; gap:10px; padding:0 16px;"><div class="progress-bar-bg" style="max-width:100px;"><div class="progress-bar-fill" style="width:0%;"></div></div><span style="font-size:14px; color:#808080; font-weight:700;">0/14</span></div>
               <div style="width:120px; text-align:center; color:#808080;">-</div>
               <div style="width:260px; text-align:center;"><button class="btn-primary" style="height:36px;" onclick="openOcrFirstModal()"><i data-lucide="wand-sparkles" style="width:16px; height:16px;"></i>AI 채점 실행</button></div>
-              <div style="width:158px; text-align:center;"><button class="btn-ghost" style="justify-content:center; width:100%; opacity:0.4; cursor:default;" disabled>채점 결과 상세</button></div>
-            </div>
-            <!-- B안 1-4: OCR 모두 정상 -->
-            <div style="display:flex; align-items:center; height:58px; border-bottom:1px solid #D9D9D9; font-size:16px; color:#333;">
-              <div style="width:80px; text-align:center;"><span style="background:#F2F5FF; color:#5890FF; border-radius:100px; padding:3px 10px; font-size:14px; font-weight:700;">진행</span></div>
-              <div style="width:80px; text-align:center;"><span style="background:#F0F0F0; color:#494949; border-radius:100px; padding:3px 10px; font-size:14px; font-weight:700;">비공개</span></div>
-              <div style="width:80px; text-align:center; font-weight:700;">1-4</div>
-              <div style="flex:1; display:flex; align-items:center; gap:10px; padding:0 16px;"><div class="progress-bar-bg" style="max-width:100px;"><div class="progress-bar-fill" style="width:0%;"></div></div><span style="font-size:14px; color:#808080; font-weight:700;">0/14</span></div>
-              <div style="width:120px; text-align:center; color:#808080;">-</div>
-              <div style="width:260px; text-align:center;"><button class="btn-primary" style="height:36px;" onclick="openOcrFirstModal('clean')"><i data-lucide="wand-sparkles" style="width:16px; height:16px;"></i>AI 채점 실행</button></div>
-              <div style="width:158px; text-align:center;"><button class="btn-ghost" style="justify-content:center; width:100%; opacity:0.4; cursor:default;" disabled>채점 결과 상세</button></div>
-            </div>
-            <!-- B안 1-5 -->
-            <div style="display:flex; align-items:center; height:58px; font-size:16px; color:#333;">
-              <div style="width:80px; text-align:center;"><span style="background:#F8F8F8; color:#808080; border-radius:100px; padding:3px 10px; font-size:14px; font-weight:700;">예정</span></div>
-              <div style="width:80px; text-align:center;"><span style="background:#F0F0F0; color:#494949; border-radius:100px; padding:3px 10px; font-size:14px; font-weight:700;">비공개</span></div>
-              <div style="width:80px; text-align:center; font-weight:700;">1-5</div>
-              <div style="flex:1; display:flex; align-items:center; gap:10px; padding:0 16px;"><div class="progress-bar-bg" style="max-width:100px;"><div class="progress-bar-fill" style="width:0%;"></div></div><span style="font-size:14px; color:#808080; font-weight:700;">0/14</span></div>
-              <div style="width:120px; text-align:center; color:#808080;">-</div>
-              <div style="width:260px; text-align:center;"><button class="btn-primary" style="height:36px; opacity:0.4; cursor:default;" disabled><i data-lucide="wand-sparkles" style="width:16px; height:16px;"></i>AI 채점 실행</button></div>
               <div style="width:158px; text-align:center;"><button class="btn-ghost" style="justify-content:center; width:100%; opacity:0.4; cursor:default;" disabled>채점 결과 상세</button></div>
             </div>
           </div>
