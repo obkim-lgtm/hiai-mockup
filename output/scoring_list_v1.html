@@ -501,31 +501,45 @@
       <!-- 결과 목록 -->
       <div style="padding:0 28px 20px;">
         <div style="border:1px solid #FFD6B0;border-radius:12px;overflow:hidden;background:#FFFAF5;">
-          <div style="padding:10px 16px;display:flex;align-items:center;gap:8px;border-bottom:1px solid #FFD6B0;">
-            <i data-lucide="triangle-alert" style="width:14px;height:14px;color:#FF8C4C;flex-shrink:0;"></i>
-            <span style="font-size:14px;font-weight:700;color:#333;">10301 이지후</span>
-            <span style="font-size:12px;font-weight:700;background:#FFEDD5;color:#FF8C4C;border-radius:100px;padding:2px 8px;">문항 2</span>
+          <div style="padding:10px 16px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #FFD6B0;">
+            <div style="display:flex;align-items:center;gap:8px;">
+              <i data-lucide="triangle-alert" style="width:14px;height:14px;color:#FF8C4C;flex-shrink:0;"></i>
+              <span style="font-size:15px;font-weight:700;color:#333;">10301 이지후</span>
+              <span style="font-size:12px;font-weight:700;background:#FFEDD5;color:#FF8C4C;border-radius:100px;padding:2px 8px;">2개 문항</span>
+            </div>
+            <a href="task_ocr_review_v1.html#ocr=10301" target="_blank" style="font-size:14px;font-weight:700;color:#7E44FB;display:flex;align-items:center;gap:4px;text-decoration:none;">
+              OCR 결과 확인 <i data-lucide="external-link" style="width:13px;height:13px;"></i>
+            </a>
           </div>
-          <div style="padding:10px 16px;display:flex;align-items:center;gap:8px;border-bottom:1px solid #FFD6B0;">
-            <i data-lucide="triangle-alert" style="width:14px;height:14px;color:#FF8C4C;flex-shrink:0;"></i>
-            <span style="font-size:14px;font-weight:700;color:#333;">10304 박서준</span>
-            <span style="font-size:12px;font-weight:700;background:#FFEDD5;color:#FF8C4C;border-radius:100px;padding:2px 8px;">문항 1</span>
-            <span style="font-size:12px;font-weight:700;background:#FFEDD5;color:#FF8C4C;border-radius:100px;padding:2px 8px;">문항 3</span>
+          <div style="padding:10px 16px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #FFD6B0;">
+            <div style="display:flex;align-items:center;gap:8px;">
+              <i data-lucide="triangle-alert" style="width:14px;height:14px;color:#FF8C4C;flex-shrink:0;"></i>
+              <span style="font-size:15px;font-weight:700;color:#333;">10304 박서준</span>
+              <span style="font-size:12px;font-weight:700;background:#FFEDD5;color:#FF8C4C;border-radius:100px;padding:2px 8px;">2개 문항</span>
+            </div>
+            <a href="task_ocr_review_v1.html#ocr=10304" target="_blank" style="font-size:14px;font-weight:700;color:#7E44FB;display:flex;align-items:center;gap:4px;text-decoration:none;">
+              OCR 결과 확인 <i data-lucide="external-link" style="width:13px;height:13px;"></i>
+            </a>
           </div>
-          <div style="padding:10px 16px;display:flex;align-items:center;gap:8px;">
-            <i data-lucide="triangle-alert" style="width:14px;height:14px;color:#FF8C4C;flex-shrink:0;"></i>
-            <span style="font-size:14px;font-weight:700;color:#333;">10307 한다솜</span>
-            <span style="font-size:12px;font-weight:700;background:#FFEDD5;color:#FF8C4C;border-radius:100px;padding:2px 8px;">문항 2</span>
+          <div style="padding:10px 16px;display:flex;align-items:center;justify-content:space-between;">
+            <div style="display:flex;align-items:center;gap:8px;">
+              <i data-lucide="triangle-alert" style="width:14px;height:14px;color:#FF8C4C;flex-shrink:0;"></i>
+              <span style="font-size:15px;font-weight:700;color:#333;">10307 한다솜</span>
+              <span style="font-size:12px;font-weight:700;background:#FFEDD5;color:#FF8C4C;border-radius:100px;padding:2px 8px;">1개 문항</span>
+            </div>
+            <a href="task_ocr_review_v1.html#ocr=10307" target="_blank" style="font-size:14px;font-weight:700;color:#7E44FB;display:flex;align-items:center;gap:4px;text-decoration:none;">
+              OCR 결과 확인 <i data-lucide="external-link" style="width:13px;height:13px;"></i>
+            </a>
           </div>
         </div>
       </div>
       <!-- 액션 버튼 -->
       <div style="padding:0 28px 28px;display:flex;gap:10px;">
-        <button onclick="location.href='task_ocr_review_v1.html'" style="flex:1;background:white;color:#7E44FB;border:1.5px solid #B28FFD;border-radius:10px;height:48px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;display:inline-flex;align-items:center;justify-content:center;gap:6px;">
-          <i data-lucide="file-search" style="width:16px;height:16px;"></i>OCR 결과 확인
+        <button onclick="location.href='task_ocr_review_v1.html#list'" style="flex:1;background:white;color:#7E44FB;border:1.5px solid #B28FFD;border-radius:10px;height:48px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;">
+          과제물 확인하러 가기
         </button>
-        <button onclick="closeOcrFirstModal(); proceedToRunModal('ocrFirstModal')" style="flex:1;background:#7E44FB;color:white;border:none;border-radius:10px;height:48px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;display:inline-flex;align-items:center;justify-content:center;gap:6px;">
-          <i data-lucide="wand-sparkles" style="width:16px;height:16px;"></i>바로 채점 진행
+        <button onclick="closeOcrFirstModal(); proceedToRunModal('ocrFirstModal')" style="flex:1;background:#7E44FB;color:white;border:none;border-radius:10px;height:48px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;">
+          이대로 채점 진행하기
         </button>
       </div>
     </div>
@@ -882,9 +896,11 @@
   };
 
   var currentClassB = 1;
+  var currentEvalPlan = 'B'; // 'B' | 'C' — 학생 상세로 eval 파라미터 전달용
 
   function showClassB(classNum) {
     currentClassB = classNum;
+    currentEvalPlan = 'B';
     var data = CLASS_B_DATA[classNum];
     if (!data) return;
 
@@ -902,6 +918,7 @@
   // C안: B안 학급 상세 플로우를 그대로 재사용, 라벨만 '평가명(최종)'
   function showClassC(classNum) {
     showClassB(classNum);
+    currentEvalPlan = 'C';
     var subtitleEl = document.getElementById('class-b-subtitle');
     if (subtitleEl) subtitleEl.textContent = '평가명(최종) — 1-' + classNum + '반 채점 결과';
   }
@@ -938,7 +955,7 @@
   }
 
   function goToStudentDetail(studentId, studentName) {
-    location.href = 'scoring_student_v1.html?id=' + studentId + '&name=' + encodeURIComponent(studentName) + '&eval=B&classNum=' + currentClassB + '&from=scoring_list_v1.html';
+    location.href = 'scoring_student_v1.html?id=' + studentId + '&name=' + encodeURIComponent(studentName) + '&eval=' + currentEvalPlan + '&classNum=' + currentClassB + '&from=scoring_list_v1.html';
   }
 
   // ── OCR 먼저 진행 모달 (B안 1-3반 / 1-4반) ──
@@ -971,7 +988,7 @@
     lucide.createIcons();
     ocrFirstCount = 0;
     _updateOcrProgress();
-    var interval = Math.round(10000 / ocrFirstTotal); // ~1111ms per student
+    var interval = Math.round(5000 / ocrFirstTotal); // 5s total
     ocrFirstTimer = setInterval(function() {
       ocrFirstCount++;
       _updateOcrProgress();

@@ -799,62 +799,64 @@
     </span>
   </div>
 
-  <!-- 메인 분할 레이아웃 -->
+  <!-- 메인 분할 레이아웃 — 좌: 과제물 원본 / 우: OCR 인식 결과(편집) -->
   <div id="ocr-b-split" style="display:flex;height:calc(100vh - 68px);">
 
-    <!-- 좌측: 탭 패널 -->
-    <div style="width:58%;min-width:0;display:flex;flex-direction:column;border-right:1px solid #E6E6E6;background:white;">
-
-      <!-- 탭 토글 헤더 -->
-      <div style="padding:14px 24px;border-bottom:1px solid #EBEBEB;display:flex;align-items:center;gap:14px;flex-shrink:0;background:white;">
-        <div class="ocr-b-tab-wrap">
-          <button id="ocr-b-tab-text" class="ocr-b-tab active" onclick="switchOcrBTab('text')">
-            <i data-lucide="scan-text" style="width:13px;height:13px;display:inline-block;vertical-align:-2px;margin-right:5px;"></i>전사 텍스트
-          </button>
-          <button id="ocr-b-tab-original" class="ocr-b-tab inactive" onclick="switchOcrBTab('original')">
-            <i data-lucide="file-image" style="width:13px;height:13px;display:inline-block;vertical-align:-2px;margin-right:5px;"></i>원본 제출물
-          </button>
+    <!-- 좌측: 과제물 원본 스캔 -->
+    <div style="width:56%;min-width:0;display:flex;flex-direction:column;border-right:1px solid #E6E6E6;background:#5A5A5A;">
+      <!-- 툴바 (Figma 2087:51336) -->
+      <div style="background:#494949;display:flex;align-items:center;gap:20px;padding:4px 20px;flex-shrink:0;min-height:44px;">
+        <!-- 파일명 -->
+        <div style="width:294px;font-size:16px;color:white;font-family:'NanumSquareRound',sans-serif;line-height:1.4;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">1학년1반과제파일.pdf</div>
+        <!-- 우측 컨트롤 그룹 -->
+        <div style="display:flex;align-items:center;gap:20px;">
+          <!-- 페이지 네비 -->
+          <div style="display:flex;align-items:center;gap:12px;">
+            <button onclick="ocrBPageChange(-1)" style="background:#333;border:none;border-radius:4px;width:40px;padding:2px 8px;color:white;font-size:16px;font-family:inherit;line-height:1.4;cursor:pointer;text-align:center;"><span id="ocr-b-page-cur">4</span></button>
+            <span style="font-size:16px;color:white;line-height:1.4;">/</span>
+            <div style="background:transparent;display:flex;align-items:center;justify-content:center;border-radius:4px;width:40px;padding:2px 8px;color:white;font-size:16px;line-height:1.4;text-align:center;"><span id="ocr-b-page-total">120</span></div>
+          </div>
+          <!-- 줌 컨트롤 -->
+          <div style="display:flex;align-items:center;gap:4px;">
+            <button onclick="ocrBZoomChange(-10)" style="background:white;border:none;border-radius:100px;width:20px;height:20px;display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0;" aria-label="축소">
+              <i data-lucide="minus" style="width:14px;height:14px;color:#333;"></i>
+            </button>
+            <div style="padding:4px 8px;width:60px;text-align:center;"><span id="ocr-b-zoom-pct" style="font-size:16px;color:white;line-height:1.4;">100%</span></div>
+            <button onclick="ocrBZoomChange(10)" style="background:white;border:none;border-radius:100px;width:20px;height:20px;display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0;" aria-label="확대">
+              <i data-lucide="plus" style="width:14px;height:14px;color:#333;"></i>
+            </button>
+          </div>
         </div>
-        <span id="ocr-b-uncertain-badge" style="display:none;background:#FFF4CC;color:#E07000;font-size:12px;font-weight:700;padding:3px 10px;border-radius:100px;border:1px solid #FFD580;">
-          <i data-lucide="triangle-alert" style="width:11px;height:11px;display:inline-block;vertical-align:-1px;margin-right:3px;"></i><span id="ocr-b-uncertain-count">0</span>개 불확실 구간
+        <!-- 불확실 칩 (우측 끝) -->
+        <span id="ocr-b-uncertain-badge" style="display:none;margin-left:auto;background:#FFF4CC;color:#E07000;font-size:12px;font-weight:700;padding:3px 10px;border-radius:100px;border:1px solid #FFD580;align-items:center;gap:4px;">
+          <i data-lucide="triangle-alert" style="width:11px;height:11px;"></i><span id="ocr-b-uncertain-count">0</span>개 불확실 구간
         </span>
       </div>
-
-      <!-- 전사 텍스트 패널 -->
-      <div id="ocr-b-text-panel" class="ocr-b-font" style="flex:1;overflow-y:auto;padding:28px 32px 40px;"></div>
-
-      <!-- 원본 제출물 패널 -->
-      <div id="ocr-b-original-panel" style="display:none;flex:1;overflow-y:auto;padding:24px;background:#5A5A5A;gap:20px;flex-direction:column;">
-        <div style="background:white;box-shadow:0 2px 16px rgba(0,0,0,.35);width:100%;max-width:540px;margin:0 auto;min-height:720px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;">
-          <i data-lucide="image" style="width:40px;height:40px;color:#D9D9D9;"></i>
-          <p style="font-size:14px;color:#B3B3B3;margin:0;text-align:center;">원본 스캔 이미지 (1 / 2)</p>
-        </div>
-        <div style="background:white;box-shadow:0 2px 16px rgba(0,0,0,.35);width:100%;max-width:540px;margin:0 auto;min-height:720px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;margin-top:20px;">
-          <i data-lucide="image" style="width:40px;height:40px;color:#D9D9D9;"></i>
-          <p style="font-size:14px;color:#B3B3B3;margin:0;text-align:center;">원본 스캔 이미지 (2 / 2)</p>
-        </div>
+      <!-- 스캔 이미지 본문 -->
+      <div id="ocr-b-scan-viewport" style="flex:1;overflow:auto;padding:24px;display:flex;flex-direction:column;gap:20px;align-items:center;">
+        <img id="ocr-b-scan-image" src="../screens/student_submission.png" style="background:white;box-shadow:0 2px 16px rgba(0,0,0,.35);width:100%;max-width:540px;height:auto;display:block;transform-origin:top center;transition:transform .15s;" alt="학생 원본 제출물">
       </div>
     </div>
 
-    <!-- 우측: 채점 루브릭 패널 -->
-    <div style="width:42%;min-width:0;overflow-y:auto;background:#F8F8F8;">
-      <div style="padding:20px 20px 32px;">
-        <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px;">
-          <i data-lucide="clipboard-list" style="width:16px;height:16px;color:#7E44FB;"></i>
-          <span style="font-size:16px;font-weight:800;color:#222;">채점 루브릭</span>
-          <span style="background:#F0EAFF;color:#7E44FB;font-size:11px;font-weight:700;padding:2px 8px;border-radius:100px;">독후 활동 보고서</span>
+    <!-- 우측: OCR 인식 결과 (편집 가능) -->
+    <div style="width:44%;min-width:0;overflow-y:auto;background:white;">
+      <div style="padding:16px 20px 0;">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">
+          <i data-lucide="scan-text" style="width:16px;height:16px;color:#7E44FB;"></i>
+          <span style="font-size:16px;font-weight:800;color:#222;">OCR 인식 결과</span>
         </div>
-        <!-- 총점 -->
-        <div style="background:white;border-radius:12px;padding:14px 18px;margin-bottom:14px;border:1px solid #E6E0FF;display:flex;align-items:center;justify-content:space-between;">
-          <span style="font-size:14px;font-weight:700;color:#494949;">총점</span>
-          <div style="display:flex;align-items:baseline;gap:4px;">
-            <span id="ocr-b-total-score" style="font-size:28px;font-weight:800;color:#7E44FB;">-</span>
-            <span style="font-size:14px;color:#808080;">/ 15점</span>
-          </div>
+        <div style="padding:10px 14px;background:#F7F4FF;border-radius:8px;display:flex;gap:8px;align-items:flex-start;margin-bottom:16px;">
+          <i data-lucide="pencil-line" style="width:14px;height:14px;color:#7E44FB;flex-shrink:0;margin-top:2px;"></i>
+          <span style="font-size:13px;color:#494949;line-height:1.6;flex:1;"><strong>인식된 텍스트가 원본과 맞는지 확인해 주세요.</strong> 하이라이트된 구간을 클릭하면 직접 수정할 수 있습니다.</span>
         </div>
-        <!-- 루브릭 항목 -->
-        <div id="ocr-b-rubric-items" style="display:flex;flex-direction:column;gap:10px;"></div>
       </div>
+      <!-- OCR 텍스트 영역 -->
+      <div id="ocr-b-text-panel" class="ocr-b-font" style="padding:0 20px 32px;"></div>
+      <!-- (숨김 유지) 원본 제출물 탭 레거시 DOM — 기존 switchOcrBTab 호출 호환 -->
+      <div id="ocr-b-original-panel" style="display:none;"></div>
+      <!-- (숨김 유지) 루브릭 레거시 DOM — renderRubric 호출 호환 -->
+      <div id="ocr-b-rubric-items" style="display:none;"></div>
+      <span id="ocr-b-total-score" style="display:none;">-</span>
     </div>
   </div>
 </div>
@@ -1593,6 +1595,25 @@ function renderOCRView_B() {
   renderOcrBRubric(student);
 
   lucide.createIcons();
+}
+
+// ── screen-ocr-b 원본 스캔 툴바 ──
+var _ocrBZoom = 100;
+function ocrBZoomChange(delta) {
+  _ocrBZoom = Math.max(50, Math.min(200, _ocrBZoom + delta));
+  var pct = document.getElementById('ocr-b-zoom-pct');
+  var img = document.getElementById('ocr-b-scan-image');
+  if (pct) pct.textContent = _ocrBZoom + '%';
+  if (img) img.style.transform = 'scale(' + (_ocrBZoom / 100) + ')';
+}
+function ocrBPageChange(delta) {
+  var cur = document.getElementById('ocr-b-page-cur');
+  var tot = document.getElementById('ocr-b-page-total');
+  if (!cur || !tot) return;
+  var c = parseInt(cur.textContent, 10) || 1;
+  var t = parseInt(tot.textContent, 10) || 1;
+  c = Math.max(1, Math.min(t, c + delta));
+  cur.textContent = c;
 }
 
 function switchOcrBTab(tabName) {
