@@ -269,16 +269,7 @@
   </div>
 </div>
 
-<!-- 재채점 유도 배너 (C안 · needsRescoring=true일 때만 노출) -->
-<div id="student-rescore-banner" style="display:none;align-items:center;gap:12px;padding:10px 24px;background:#FFF8F3;border-bottom:1px solid #FFD6B0;">
-  <i data-lucide="triangle-alert" style="width:16px;height:16px;color:#E07000;flex-shrink:0;"></i>
-  <span style="flex:1;font-size:13px;color:#7A3D00;font-weight:700;line-height:1.5;">
-    <strong style="color:#E07000;">최신 OCR 결과가 반영되지 않은 AI 채점 결과입니다.</strong> 채점을 재실행해주세요.
-  </span>
-  <button onclick="rerunAiScoring()" style="background:#7E44FB;color:white;border:none;border-radius:8px;height:32px;padding:0 14px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;display:inline-flex;align-items:center;gap:6px;flex-shrink:0;">
-    <i data-lucide="wand-sparkles" style="width:14px;height:14px;"></i>AI 채점 재실행
-  </button>
-</div>
+<!-- 재채점 유도 배너: 이 학생(김희)은 OCR 변경 없음 — 표시 안 함 -->
 
 <!-- 메인 컨텐츠 -->
 <div class="main-content">
@@ -769,31 +760,12 @@
 </div>
 
 <script>
-  // 플랜 배지 업데이트 (A/B/C) + C안 재채점 유도 배너
+  // 플랜 배지 업데이트 (A/B/C)
   (function(){
     var ev = new URLSearchParams(location.search).get('eval') || 'A';
     var b = document.getElementById('score-plan-badge');
     if (b) b.textContent = '(' + ev + ')';
-    if (ev === 'C') {
-      var rb = document.getElementById('student-rescore-banner');
-      if (rb) {
-        rb.style.display = 'flex';
-        var mc = document.querySelector('.main-content');
-        if (mc) mc.style.height = 'calc(100vh - 68px - 42px)';
-      }
-    }
   })();
-  // AI 채점 재실행 (개별)
-  function rerunAiScoring() {
-    showToast('loading', '이 학생의 AI 채점을 재실행합니다...');
-    setTimeout(function(){
-      showToast('success', 'AI 채점이 재실행되어 결과가 갱신되었습니다.');
-      var rb = document.getElementById('student-rescore-banner');
-      if (rb) rb.style.display = 'none';
-      var mc = document.querySelector('.main-content');
-      if (mc) mc.style.height = 'calc(100vh - 68px)';
-    }, 1400);
-  }
   // Lucide 아이콘 초기화
   lucide.createIcons();
 

@@ -186,15 +186,12 @@
   </div>
 </div>
 
-<!-- 재채점 유도 배너 (C안 · needsRescoring=true일 때만 노출) -->
-<div id="student-rescore-banner" style="display:none;align-items:center;gap:12px;padding:10px 24px;background:#FFF8F3;border-bottom:1px solid #FFD6B0;">
-  <i data-lucide="triangle-alert" style="width:16px;height:16px;color:#E07000;flex-shrink:0;"></i>
-  <span style="flex:1;font-size:13px;color:#7A3D00;font-weight:700;line-height:1.5;">
-    <strong style="color:#E07000;">최신 OCR 결과가 반영되지 않은 AI 채점 결과입니다.</strong> 채점을 재실행해주세요.
+<!-- 재채점 유도 배너 (C안 · needsRescoring=true일 때만 노출) — OCR 확인 필요 배너와 동일 스타일 -->
+<div id="student-rescore-banner" style="display:none;align-items:center;gap:10px;padding:10px 20px;background:#FFF5F5;border-bottom:1px solid #FFBCBC;">
+  <i data-lucide="triangle-alert" style="width:15px;height:15px;color:#DB3E51;flex-shrink:0;"></i>
+  <span style="font-size:13px;color:#494949;font-weight:700;line-height:1.5;">
+    <strong style="color:#DB3E51;">최신 OCR 결과가 반영되지 않은 AI 채점 결과입니다.</strong> 채점을 재실행해주세요.
   </span>
-  <button onclick="rerunAiScoring()" style="background:#7E44FB;color:white;border:none;border-radius:8px;height:32px;padding:0 14px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;display:inline-flex;align-items:center;gap:6px;flex-shrink:0;">
-    <i data-lucide="wand-sparkles" style="width:14px;height:14px;"></i>AI 채점 재실행
-  </button>
 </div>
 
 <!-- 메인 컨텐츠 -->
@@ -869,8 +866,8 @@
     // 플랜 배지 (A/B/C) 업데이트 — Figma 736:10853
     var planBadge = document.getElementById('score-plan-badge');
     if (planBadge) planBadge.textContent = '(' + evalType + ')';
-    // C안 재채점 유도 배너 — 데모용으로 C안 진입 시 항상 표시
-    if (evalType === 'C') {
+    // C안 재채점 유도 배너 — 3번째 학생(10103 박지민)만 OCR 변경됐다고 가정
+    if (evalType === 'C' && studentId === '10103') {
       var rb = document.getElementById('student-rescore-banner');
       if (rb) {
         rb.style.display = 'flex';
