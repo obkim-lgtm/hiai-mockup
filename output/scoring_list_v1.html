@@ -782,19 +782,6 @@
       <!-- 패널 -->
       <div style="background:white; border-radius:0 0 20px 20px; padding:28px 24px; box-shadow:0 4px 36px 0 rgba(95,102,178,0.16);">
 
-        <!-- 재채점 유도 배너 (C안 전용 · needsRescoring=true일 때만 노출) -->
-        <div id="class-rescore-banner" style="display:none;align-items:center;gap:14px;background:#FFF8F3;border:1px solid #FFD6B0;border-radius:12px;padding:14px 20px;margin-bottom:20px;">
-          <div style="width:36px;height:36px;border-radius:50%;background:#FF8C4C;color:#fff;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-            <i data-lucide="triangle-alert" style="width:18px;height:18px;"></i>
-          </div>
-          <div style="flex:1;font-size:14px;color:#7A3D00;line-height:1.55;">
-            <strong style="color:#E07000;">OCR 또는 과제물이 수정되었습니다.</strong> 현재 점수는 최신 결과를 반영하지 않았을 수 있어요.
-          </div>
-          <button onclick="openRescoreDialog()" style="background:#7E44FB;color:white;border:none;border-radius:8px;height:36px;padding:0 16px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;display:inline-flex;align-items:center;gap:6px;flex-shrink:0;">
-            <i data-lucide="rotate-cw" style="width:14px;height:14px;"></i>재채점 실행
-          </button>
-        </div>
-
         <!-- 타이틀 행 -->
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; gap:24px;">
           <div>
@@ -859,32 +846,6 @@
 
   <div style="background:#EDF1FC; height:120px;"></div>
 </div><!-- /screen-class-b -->
-
-<!-- ===== 재채점 실행 다이얼로그 (C안) ===== -->
-<div id="rescoreDialog" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:1000;align-items:center;justify-content:center;">
-  <div style="background:white;border-radius:24px;box-shadow:0 4px 12px rgba(95,102,178,0.16);width:480px;max-width:90vw;overflow:hidden;">
-    <!-- 헤더 -->
-    <div style="padding:24px 24px 16px;position:relative;">
-      <h3 style="margin:0;font-size:18px;font-weight:800;color:#222631;">AI 재채점 실행</h3>
-      <button onclick="closeRescoreDialog()" style="position:absolute;top:11px;right:11px;width:36px;height:36px;border-radius:6px;background:transparent;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;" aria-label="닫기">
-        <i data-lucide="x" style="width:20px;height:20px;color:#808080;"></i>
-      </button>
-    </div>
-    <!-- 본문 -->
-    <div style="padding:0 24px 24px;font-size:14px;color:#494949;line-height:1.7;">
-      <p style="margin:0 0 12px;"><strong style="color:#222;">평가 전체를 다시 채점합니다.</strong></p>
-      <p style="margin:0 0 6px;">· 교사가 수정한 점수·피드백은 그대로 유지됩니다.</p>
-      <p style="margin:0;">· AI 채점 결과만 최신 OCR 기준으로 다시 생성됩니다.</p>
-    </div>
-    <!-- 푸터 -->
-    <div style="padding:8px 24px 16px;display:flex;justify-content:flex-end;gap:12px;">
-      <button onclick="closeRescoreDialog()" style="background:transparent;color:#7E44FB;border:1px solid #B28FFD;border-radius:8px;height:40px;padding:0 20px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;">취소</button>
-      <button onclick="confirmRescore()" style="background:#7E44FB;color:white;border:none;border-radius:8px;height:40px;padding:0 20px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;display:inline-flex;align-items:center;gap:6px;">
-        <i data-lucide="rotate-cw" style="width:14px;height:14px;"></i>재채점 실행
-      </button>
-    </div>
-  </div>
-</div>
 
 <!-- ===== Toast ===== -->
 <div id="toast" class="toast">
@@ -955,34 +916,11 @@
   }
 
   // C안: B안 학급 상세 플로우를 그대로 재사용, 라벨만 '평가명(최종)'
-  // C안은 "채점 완료" 상태 가정 + 데모 목적으로 OCR 수정 발생(needsRescoring=true) 상태로 진입
-  var needsRescoring = true; // 데모: C안은 기본적으로 stale 상태
   function showClassC(classNum) {
     showClassB(classNum);
     currentEvalPlan = 'C';
     var subtitleEl = document.getElementById('class-b-subtitle');
     if (subtitleEl) subtitleEl.textContent = '평가명(최종) — 1-' + classNum + '반 채점 결과';
-    // 재채점 유도 배너 노출 (C안 + stale일 때만)
-    var banner = document.getElementById('class-rescore-banner');
-    if (banner) banner.style.display = needsRescoring ? 'flex' : 'none';
-    lucide.createIcons();
-  }
-
-  // ── 재채점 실행 다이얼로그 ──
-  function openRescoreDialog() {
-    var dlg = document.getElementById('rescoreDialog');
-    if (dlg) { dlg.style.display = 'flex'; lucide.createIcons(); }
-  }
-  function closeRescoreDialog() {
-    var dlg = document.getElementById('rescoreDialog');
-    if (dlg) dlg.style.display = 'none';
-  }
-  function confirmRescore() {
-    closeRescoreDialog();
-    needsRescoring = false;
-    var banner = document.getElementById('class-rescore-banner');
-    if (banner) banner.style.display = 'none';
-    showToast('success', '재채점을 시작했습니다. 완료 후 결과가 갱신됩니다.');
   }
 
   function renderClassBTable(students) {
