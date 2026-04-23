@@ -269,6 +269,14 @@
   </div>
 </div>
 
+<!-- 재채점 유도 배너 (C안 · needsRescoring=true일 때만 노출) -->
+<div id="student-rescore-banner" style="display:none;align-items:center;gap:10px;padding:10px 24px;background:#FFF8F3;border-bottom:1px solid #FFD6B0;">
+  <i data-lucide="triangle-alert" style="width:16px;height:16px;color:#E07000;flex-shrink:0;"></i>
+  <span style="font-size:13px;color:#7A3D00;font-weight:700;line-height:1.5;">
+    <strong style="color:#E07000;">최신 OCR이 반영되지 않은 점수입니다.</strong> 이전 화면으로 돌아가 재채점을 실행하세요.
+  </span>
+</div>
+
 <!-- 메인 컨텐츠 -->
 <div class="main-content">
 
@@ -758,11 +766,19 @@
 </div>
 
 <script>
-  // 플랜 배지 업데이트 (A/B/C)
+  // 플랜 배지 업데이트 (A/B/C) + C안 재채점 유도 배너
   (function(){
     var ev = new URLSearchParams(location.search).get('eval') || 'A';
     var b = document.getElementById('score-plan-badge');
     if (b) b.textContent = '(' + ev + ')';
+    if (ev === 'C') {
+      var rb = document.getElementById('student-rescore-banner');
+      if (rb) {
+        rb.style.display = 'flex';
+        var mc = document.querySelector('.main-content');
+        if (mc) mc.style.height = 'calc(100vh - 68px - 42px)';
+      }
+    }
   })();
   // Lucide 아이콘 초기화
   lucide.createIcons();
