@@ -1690,20 +1690,25 @@ function renderOcrBText(student) {
       }
     }
 
-    html += '<div style="margin-bottom:20px;background:white;border:1px solid #E6E6E6;border-radius:10px;overflow:hidden;">';
+    var chipHtml = hasUncertain
+      ? '<span class="rubric-suspect-chip"><i data-lucide="triangle-alert" style="width:11px;height:11px;"></i>확인 필요</span>'
+      : '';
+
+    html += '<div class="rubric-ocr-section">';
     // 문항 헤더
-    html += '<div style="display:flex;align-items:center;gap:8px;padding:12px 16px;background:#FAFAFA;border-bottom:1px solid #EBEBEB;flex-wrap:wrap;">';
-    html += '<span style="background:#F0EAFF;color:#7E44FB;font-size:12px;font-weight:700;padding:3px 10px;border-radius:100px;">' + q.label + '</span>';
-    html += '<span style="font-size:14px;color:#494949;font-weight:700;flex:1;min-width:0;">' + q.desc + '</span>';
-    if (hasUncertain) {
-      html += '<span style="background:#FFEFEF;color:#DB3E51;font-size:11px;font-weight:700;padding:2px 8px;border-radius:100px;border:1px solid #FFBCBC;display:inline-flex;align-items:center;gap:3px;">';
-      html += '<i data-lucide="triangle-alert" style="width:10px;height:10px;"></i>확인 필요</span>';
-    }
+    html += '<div class="rubric-ocr-header">';
+    html += '<span class="badge badge-purple" style="background:#F0EAFF;color:#7E44FB;font-size:12px;font-weight:700;padding:3px 10px;border-radius:100px;">' + q.label + '</span>';
+    html += '<span class="rubric-ocr-desc">' + q.desc + '</span>';
+    html += chipHtml;
+    html += '<button onclick="editSection(this,' + qi + ')" title="편집" style="background:none;border:none;cursor:pointer;color:#B3B3B3;padding:2px 4px;flex-shrink:0;display:flex;align-items:center;" onmouseover="this.style.color=\'#7E44FB\'" onmouseout="this.style.color=\'#B3B3B3\'">';
+    html += '<i data-lucide="pencil" style="width:13px;height:13px;"></i></button>';
     html += '</div>';
-    // 본문 텍스트 (하이라이팅 없음)
-    html += '<div style="font-size:15px;line-height:1.85;color:#222;padding:14px 18px;">';
-    html += bodyText;
+    // 본문 (클릭 시 편집)
+    html += '<div class="rubric-ocr-body" id="group-body-' + qi + '" onclick="editSectionByBody(this,' + qi + ')">';
+    html += '<span style="color:#333;">' + bodyText + '</span>';
     html += '</div>';
+    // textarea (편집 모드)
+    html += '<textarea id="group-ta-' + qi + '" onblur="saveSection(this,' + qi + ')" style="display:none;width:100%;border:none;border-top:1px solid #D4BBFF;padding:12px 15px;font-family:inherit;font-size:15px;line-height:1.85;color:#333;outline:none;resize:none;overflow:hidden;box-sizing:border-box;" rows="4">' + bodyText + '</textarea>';
     // 문항 단위 인식 불확실 노트
     if (hasUncertain && noticeText) {
       html += '<div class="ocr-uncertainty-note">';
