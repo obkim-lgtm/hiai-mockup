@@ -795,7 +795,7 @@
   <div id="ocr-b-review-banner" style="display:none;padding:10px 24px;background:#FFF5F5;border-bottom:1px solid #FFBCBC;align-items:center;gap:10px;">
     <i data-lucide="triangle-alert" style="width:16px;height:16px;color:#DB3E51;flex-shrink:0;"></i>
     <span style="font-size:14px;color:#494949;font-weight:700;">
-      <strong style="color:#DB3E51;">OCR 결과 확인 필요</strong> — <strong id="ocr-b-suspect-count" style="color:#DB3E51;">0개</strong> 문항에서 인식 불확실 구간이 감지되었습니다. 하이라이트된 단어를 원본 제출물과 대조해 주세요.
+      <strong style="color:#DB3E51;">OCR 결과 확인 필요</strong> — <strong id="ocr-b-suspect-count" style="color:#DB3E51;">0개</strong> 문항에서 인식 불확실 구간이 감지되었습니다. 해당 문항 아래 AI 메모를 확인하고 원본과 대조해 주세요.
     </span>
   </div>
 
@@ -829,7 +829,7 @@
         </div>
         <!-- 불확실 칩 (우측 끝) -->
         <span id="ocr-b-uncertain-badge" style="display:none;margin-left:auto;background:#FFF4CC;color:#E07000;font-size:12px;font-weight:700;padding:3px 10px;border-radius:100px;border:1px solid #FFD580;align-items:center;gap:4px;">
-          <i data-lucide="triangle-alert" style="width:11px;height:11px;"></i><span id="ocr-b-uncertain-count">0</span>개 불확실 구간
+          <i data-lucide="triangle-alert" style="width:11px;height:11px;"></i><span id="ocr-b-uncertain-count">0</span>개 문항 확인 필요
         </span>
       </div>
       <!-- 스캔 이미지 본문 -->
@@ -847,7 +847,7 @@
         </div>
         <div style="padding:10px 14px;background:#F7F4FF;border-radius:8px;display:flex;gap:8px;align-items:flex-start;margin-bottom:16px;">
           <i data-lucide="pencil-line" style="width:14px;height:14px;color:#7E44FB;flex-shrink:0;margin-top:2px;"></i>
-          <span style="font-size:13px;color:#494949;line-height:1.6;flex:1;"><strong>인식된 텍스트가 원본과 맞는지 확인해 주세요.</strong> 하이라이트된 구간을 클릭하면 직접 수정할 수 있습니다.</span>
+          <span style="font-size:13px;color:#494949;line-height:1.6;flex:1;"><strong>인식된 텍스트가 원본과 맞는지 확인해 주세요.</strong> 확인이 필요한 문항은 아래 AI 메모를 참고해 원본과 대조 후 수정하세요.</span>
         </div>
       </div>
       <!-- OCR 텍스트 영역 -->
@@ -1649,17 +1649,17 @@ function renderOcrBText(student) {
     return;
   }
 
-  // 불확실 구간 카운트
-  var uncertainCount = 0;
-  data.questions.forEach(function(q) {
-    if (q.spans) q.spans.forEach(function(s){ if(s.uncertain) uncertainCount++; });
+  // 불확실 문항 카운트 (문항 단위)
+  var uncertainQuestions = data.questions.filter(function(q){
+    return q.uncertain || (q.spans && q.spans.some(function(s){ return s.uncertain; }));
   });
+  var uncertainCount = uncertainQuestions.length;
   var badge = document.getElementById('ocr-b-uncertain-badge');
   var countEl = document.getElementById('ocr-b-uncertain-count');
   var suspectEl = document.getElementById('ocr-b-suspect-count');
   if (badge) badge.style.display = uncertainCount > 0 ? 'inline-flex' : 'none';
   if (countEl) countEl.textContent = uncertainCount;
-  if (suspectEl) suspectEl.textContent = data.questions.filter(function(q){ return q.uncertain; }).length + '개';
+  if (suspectEl) suspectEl.textContent = uncertainCount + '개';
 
   var html = '';
   // 책 제목 헤더
@@ -1674,28 +1674,43 @@ function renderOcrBText(student) {
 
   data.questions.forEach(function(q, qi) {
     var hasUncertain = q.uncertain || (q.spans && q.spans.some(function(s){ return s.uncertain; }));
-    html += '<div style="margin-bottom:28px;">';
+    // 본문 전체 텍스트 (하이라이팅 없이 합치기)
+    var bodyText = '';
+    if (q.spans) {
+      q.spans.forEach(function(span){ bodyText += span.text; });
+    }
+    // 문항 단위 인식 불확실 메시지 구성
+    var noticeText = q.uncertainty;
+    if (!noticeText && hasUncertain) {
+      var hints = (q.spans || []).filter(function(s){ return s.uncertain && s.hint; }).map(function(s){ return s.hint; });
+      if (hints.length) {
+        noticeText = '이 문항의 답변에서 ' + hints.length + '개 구간의 판독이 불확실합니다. (' + hints.join(' · ') + ') 원본 이미지와 대조 후 수정해 주세요.';
+      } else {
+        noticeText = '이 문항의 답변 일부 글자 판독이 불확실합니다. 원본 이미지와 대조 후 수정해 주세요.';
+      }
+    }
+
+    html += '<div style="margin-bottom:20px;background:white;border:1px solid #E6E6E6;border-radius:10px;overflow:hidden;">';
     // 문항 헤더
-    html += '<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap;">';
+    html += '<div style="display:flex;align-items:center;gap:8px;padding:12px 16px;background:#FAFAFA;border-bottom:1px solid #EBEBEB;flex-wrap:wrap;">';
     html += '<span style="background:#F0EAFF;color:#7E44FB;font-size:12px;font-weight:700;padding:3px 10px;border-radius:100px;">' + q.label + '</span>';
-    html += '<span style="font-size:14px;color:#494949;font-weight:700;">' + q.desc + '</span>';
+    html += '<span style="font-size:14px;color:#494949;font-weight:700;flex:1;min-width:0;">' + q.desc + '</span>';
     if (hasUncertain) {
-      html += '<span style="background:#FFF4CC;color:#E07000;font-size:11px;font-weight:700;padding:2px 8px;border-radius:100px;border:1px solid #FFD580;display:inline-flex;align-items:center;gap:3px;margin-left:auto;">';
+      html += '<span style="background:#FFEFEF;color:#DB3E51;font-size:11px;font-weight:700;padding:2px 8px;border-radius:100px;border:1px solid #FFBCBC;display:inline-flex;align-items:center;gap:3px;">';
       html += '<i data-lucide="triangle-alert" style="width:10px;height:10px;"></i>확인 필요</span>';
     }
     html += '</div>';
-    // 본문 텍스트 (스팬 단위 렌더)
-    html += '<div style="font-size:16px;line-height:1.9;color:#222;padding:14px 18px;background:#FAFAFA;border-radius:8px;border:1px solid #EBEBEB;">';
-    if (q.spans) {
-      q.spans.forEach(function(span) {
-        if (span.uncertain) {
-          html += '<span class="ocr-uncertain" data-hint="' + (span.hint || '확인 필요') + '">' + span.text + '</span>';
-        } else {
-          html += span.text;
-        }
-      });
-    }
+    // 본문 텍스트 (하이라이팅 없음)
+    html += '<div style="font-size:15px;line-height:1.85;color:#222;padding:14px 18px;">';
+    html += bodyText;
     html += '</div>';
+    // 문항 단위 인식 불확실 노트
+    if (hasUncertain && noticeText) {
+      html += '<div class="ocr-uncertainty-note">';
+      html += '<span class="ocr-uncertainty-label"><i data-lucide="triangle-alert" style="width:12px;height:12px;"></i>AI 인식 불확실</span>';
+      html += '<span class="ocr-uncertainty-text">' + noticeText + '</span>';
+      html += '</div>';
+    }
     html += '</div>';
   });
 
