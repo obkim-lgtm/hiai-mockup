@@ -145,6 +145,7 @@ const _q = typeof window!=="undefined" ? new URLSearchParams(window.location.sea
 const _qid = _q && _q.get("id");
 const _qname = _q && _q.get("name");
 const _qcls = _q && _q.get("cls");
+const _noReport = _q && _q.get("noReport") === "1";
 const STUDENT = {
   id:   _qid  || "10201",
   name: _qname|| "김하나",
@@ -425,6 +426,63 @@ function App(){
 
   const isAttention = STUDENT.status==="attention";
 
+  /* ─── 공통 래퍼 ─── */
+  const Shell = ({children}) => (
+    <div style={{minHeight:"100vh"}}>
+      <div className="no-print"><GnbTeacher/></div>
+      <div className="no-print"><TitleBarTeacher/></div>
+      <div style={{display:"flex",flexDirection:"column",alignItems:"center",padding:"40px 36px",minHeight:760}}>
+       <div style={{width:"100%",maxWidth:1200}}>
+        <div className="no-print"><MyHomeTabs active={5}/></div>
+        <div style={{background:"white",borderRadius:"0 0 16px 16px",border:"1px solid #E6E6E6",padding:"28px 24px"}}>
+          <div className="no-print" style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:20}}>
+            <div>
+              <div style={{fontSize:24,fontWeight:700,color:"#333"}}>평가 리포트</div>
+              <div style={{fontSize:16,fontWeight:400,color:"#333",lineHeight:1.55,marginTop:8}}>수업 단위 종합 현황과 학생별 리포트를 확인할 수 있습니다.</div>
+            </div>
+          </div>
+          <div className="no-print" style={{display:"flex",gap:4,borderBottom:"2px solid #7E44FB",marginBottom:20}}>
+            <button className="sub-tab-off" onClick={()=>{location.href="class_report_v1.html";}}>수업 리포트</button>
+            <button className="sub-tab-on"  onClick={()=>{location.href="class_report_v1.html?tab=student";}}>학생 리포트</button>
+          </div>
+          <div className="no-print" style={{display:"flex",gap:8,marginBottom:16}}>
+            <div style={{display:"flex",alignItems:"center",gap:8,padding:"0 14px",height:40,border:"1px solid #D9D9D9",borderRadius:8,fontSize:13,fontWeight:800}}>대상 검색 <span style={{color:"#7E44FB"}}>{_qcls || "1-2"} ▾</span></div>
+            <div style={{display:"flex",alignItems:"center",gap:8,padding:"0 14px",height:40,border:"1px solid #D9D9D9",borderRadius:8,fontSize:13,fontWeight:800}}>{STUDENT.id} {STUDENT.name} ▾</div>
+          </div>
+          {children}
+        </div>
+        <div style={{height:48}}/>
+       </div>
+      </div>
+    </div>
+  );
+
+  /* ─── 빈 상태 (리포트 미생성) ─── */
+  if(_noReport) return (
+    <Shell>
+      <div style={{display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:"80px 24px",textAlign:"center",gap:20}}>
+        <div style={{width:80,height:80,borderRadius:"50%",background:"#F8F8F8",border:"2px dashed #D9D9D9",display:"flex",alignItems:"center",justifyContent:"center",fontSize:36}}>📋</div>
+        <div>
+          <div style={{fontSize:20,fontWeight:900,color:"#333",marginBottom:10}}>
+            {nick(STUDENT.name)} 리포트가 아직 생성되지 않았어요
+          </div>
+          <div style={{fontSize:15,color:"#808080",lineHeight:1.7}}>
+            AI 채점이 완료되면 리포트를 생성할 수 있어요.<br/>
+            채점이 끝난 과제가 있는지 먼저 확인해 주세요.
+          </div>
+        </div>
+        <div style={{display:"flex",gap:10,marginTop:8}}>
+          <button className="btn-out" onClick={()=>location.href="class_report_v1.html?tab=student"}>
+            <Icon name="arrow-left" size={16}/>학생 목록으로
+          </button>
+          <button className="btn-pri" onClick={()=>location.href="scoring_list_v1.html"}>
+            <Icon name="bot" size={16}/>AI 채점 화면으로
+          </button>
+        </div>
+      </div>
+    </Shell>
+  );
+
   return (
     <div style={{minHeight:"100vh"}}>
       <div className="no-print"><GnbTeacher/></div>
@@ -435,25 +493,6 @@ function App(){
         <div className="no-print"><MyHomeTabs active={5}/></div>
 
         <div style={{background:"white",borderRadius:"0 0 16px 16px",border:"1px solid #E6E6E6",padding:"28px 24px"}}>
-          {/* Panel 헤더 */}
-          <div className="no-print" style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:20}}>
-            <div>
-              <div style={{fontSize:24,fontWeight:700,color:"#333"}}>평가 리포트</div>
-              <div style={{fontSize:16,fontWeight:400,color:"#333",lineHeight:1.55,marginTop:8}}>수업 단위 종합 현황과 학생별 리포트를 확인할 수 있습니다.</div>
-            </div>
-          </div>
-
-          {/* 서브탭 */}
-          <div className="no-print" style={{display:"flex",gap:4,borderBottom:"2px solid #7E44FB",marginBottom:20}}>
-            <button className="sub-tab-off" onClick={()=>{location.href="class_report_v1.html";}}>수업 리포트</button>
-            <button className="sub-tab-on"  onClick={()=>{location.href="class_report_v1.html?tab=student";}}>학생 리포트</button>
-          </div>
-
-          {/* 학생 드롭다운 */}
-          <div className="no-print" style={{display:"flex",gap:8,marginBottom:16}}>
-            <div style={{display:"flex",alignItems:"center",gap:8,padding:"0 14px",height:40,border:"1px solid #D9D9D9",borderRadius:8,fontSize:13,fontWeight:800}}>대상 검색 <span style={{color:"#7E44FB"}}>{_qcls || "1-2"} ▾</span></div>
-            <div style={{display:"flex",alignItems:"center",gap:8,padding:"0 14px",height:40,border:"1px solid #D9D9D9",borderRadius:8,fontSize:13,fontWeight:800}}>{STUDENT.id} {STUDENT.name} ▾</div>
-          </div>
 
           {/* ─── 교사 보조 스트립 (PDF 제외) ─── */}
           <div className="teacher-strip no-print">
