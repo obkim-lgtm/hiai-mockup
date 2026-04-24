@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "hiai-mockup",
+      "runtimeExecutable": "cmd",
+      "runtimeArgs": ["/c", "C:\\hiai_serve\\serve.bat"],
+      "port": 3502
+    }
+  ]
+}

@@ -636,7 +636,7 @@
     var evalType = params.get('eval') || 'A';
     var classNum = params.get('classNum') || '1';
     if ((evalType === 'B' || evalType === 'C') && from === 'scoring_list_v1.html') {
-      location.href = 'scoring_list_v1.html?showClass=' + classNum;
+      location.href = 'scoring_list_v1.html?showClass=' + classNum + '&eval=' + evalType;
     } else if (from) {
       location.href = from;
     } else {

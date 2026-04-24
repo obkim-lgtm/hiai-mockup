@@ -174,7 +174,7 @@
         <div class="tab">평가 대상</div>
         <div class="tab" onclick="location.href='evaluation_design_v3_260403.html'">평가 설계</div>
         <div class="tab on">과제물 관리</div>
-        <div class="tab" onclick="location.href='scoring_list_v1.html'">AI 채점</div>
+        <div class="tab" onclick="goScoringList()">AI 채점</div>
         <div class="tab" onclick="location.href='report_list_v1.html'">평가 리포트</div>
       </div>
       <div class="panel" style="min-height:500px;">
@@ -384,7 +384,7 @@
         <div class="tab">평가 대상</div>
         <div class="tab" onclick="location.href='evaluation_design_v3_260403.html'">평가 설계</div>
         <div class="tab on">과제물 관리</div>
-        <div class="tab" onclick="location.href='scoring_list_v1.html'">AI 채점</div>
+        <div class="tab" onclick="goScoringList()">AI 채점</div>
         <div class="tab" onclick="location.href='report_list_v1.html'">평가 리포트</div>
       </div>
       <div class="panel" style="min-height:500px;">
@@ -482,7 +482,7 @@
           <div class="tab">평가 대상</div>
           <div class="tab" onclick="location.href='evaluation_design_v3_260403.html'">평가 설계</div>
           <div class="tab on">과제물 관리</div>
-          <div class="tab" onclick="location.href='scoring_list_v1.html'">AI 채점</div>
+          <div class="tab" onclick="goScoringList()">AI 채점</div>
           <div class="tab" onclick="location.href='report_list_v1.html'">평가 리포트</div>
         </div>
         <div class="panel" style="min-height:500px;">
@@ -2355,6 +2355,12 @@ function uploadAndGoList() {
       }
     }, 300);
   }
+}
+
+// 탭 "AI 채점" 이동 — eval 파라미터 유지
+function goScoringList() {
+  var ev = new URLSearchParams(location.search).get('eval');
+  location.href = 'scoring_list_v1.html' + (ev ? ('?eval=' + ev) : '');
 }
 
 // 배너의 "지금 OCR 진행" 버튼 → 팝업 없이 바로 진행(일괄)

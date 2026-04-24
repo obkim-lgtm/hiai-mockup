@@ -130,7 +130,7 @@
       <div class="tab-inactive" onclick="location.href='eval_home_v6_260403.html'"><span style="font-size:20px; font-weight:700; color:#000;">평가 홈</span></div>
       <div class="tab-inactive"><span style="font-size:20px; font-weight:700; color:#000;">평가 대상</span></div>
       <div class="tab-inactive" onclick="location.href='evaluation_design_v3_260403.html'"><span style="font-size:20px; font-weight:700; color:#000;">평가 설계</span></div>
-      <div class="tab-inactive" onclick="location.href='task_ocr_review_v1.html'"><span style="font-size:20px; font-weight:700; color:#000;">과제물 관리</span></div>
+      <div class="tab-inactive" onclick="goTaskReview()"><span style="font-size:20px; font-weight:700; color:#000;">과제물 관리</span></div>
       <div class="tab-active"><span style="font-size:20px; font-weight:800; color:#341761;">AI 채점</span></div>
       <div class="tab-inactive" onclick="location.href='report_list_v1.html'"><span style="font-size:20px; font-weight:700; color:#000;">평가 리포트</span></div>
     </div>
@@ -774,7 +774,7 @@
         <div style="flex:1; height:60px; background:#CBD6F4; border-radius:20px 20px 0 0; display:flex; align-items:center; justify-content:center; cursor:pointer;" onclick="location.href='eval_home_v6_260403.html'"><span style="font-size:20px; font-weight:700; color:#000;">평가 홈</span></div>
         <div style="flex:1; height:60px; background:#CBD6F4; border-radius:20px 20px 0 0; display:flex; align-items:center; justify-content:center;"><span style="font-size:20px; font-weight:700; color:#000;">평가 대상</span></div>
         <div style="flex:1; height:60px; background:#CBD6F4; border-radius:20px 20px 0 0; display:flex; align-items:center; justify-content:center; cursor:pointer;" onclick="location.href='evaluation_design_v3_260403.html'"><span style="font-size:20px; font-weight:700; color:#000;">평가 설계</span></div>
-        <div style="flex:1; height:60px; background:#CBD6F4; border-radius:20px 20px 0 0; display:flex; align-items:center; justify-content:center; cursor:pointer;" onclick="location.href='task_ocr_review_v1.html'"><span style="font-size:20px; font-weight:700; color:#000;">과제물 관리</span></div>
+        <div style="flex:1; height:60px; background:#CBD6F4; border-radius:20px 20px 0 0; display:flex; align-items:center; justify-content:center; cursor:pointer;" onclick="goTaskReview()"><span style="font-size:20px; font-weight:700; color:#000;">과제물 관리</span></div>
         <div style="flex:1; height:60px; background:white; border-radius:20px 20px 0 0; display:flex; align-items:center; justify-content:center;"><span style="font-size:20px; font-weight:800; color:#341761;">AI 채점</span></div>
         <div style="flex:1; height:60px; background:#CBD6F4; border-radius:20px 20px 0 0; display:flex; align-items:center; justify-content:center; cursor:pointer;" onclick="location.href='report_list_v1.html'"><span style="font-size:20px; font-weight:700; color:#000;">평가 리포트</span></div>
       </div>
@@ -897,6 +897,9 @@
 
   var currentClassB = 1;
   var currentEvalPlan = 'B'; // 'B' | 'C' — 학생 상세로 eval 파라미터 전달용
+  function goTaskReview() {
+    location.href = 'task_ocr_review_v1.html?eval=' + currentEvalPlan;
+  }
 
   function showClassB(classNum) {
     currentClassB = classNum;
@@ -1110,8 +1113,13 @@
     // scoring_student_v1.html에서 뒤로가기 시 학급 상세 화면 복원
     var params = new URLSearchParams(location.search);
     var showClass = params.get('showClass');
+    var evalParam = params.get('eval');
     if (showClass) {
-      showClassB(parseInt(showClass));
+      if (evalParam === 'C') {
+        showClassC(parseInt(showClass));
+      } else {
+        showClassB(parseInt(showClass));
+      }
     }
   });
 </script>
