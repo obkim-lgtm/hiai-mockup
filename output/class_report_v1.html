@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<link rel="icon" href="../screens/favicon_src.png" type="image/png"/>
+<title>수업 리포트 v1</title>
+<link rel="stylesheet" href="https://cdn.rawgit.com/moonspam/NanumSquareRound/master/nanumsquareround.min.css"/>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/prop-types@15.8.1/prop-types.min.js"></script>
+<script src="https://unpkg.com/recharts@2.12.7/umd/Recharts.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<style>
+  *{font-family:'NanumSquareRound',-apple-system,sans-serif;box-sizing:border-box}
+  body{margin:0;background:#EDF1FC;color:#222}
+  .tab-active  {flex:1;height:60px;background:#fff;border-radius:20px 20px 0 0;display:flex;align-items:center;justify-content:center;cursor:default}
+  .tab-inactive{flex:1;height:60px;background:#CBD6F4;border-radius:20px 20px 0 0;display:flex;align-items:center;justify-content:center;cursor:pointer}
+  .tab-inactive:hover{background:#b9c8f0}
+  .sub-tab-on {height:40px;padding:0 20px;border-radius:8px 8px 0 0;border:0;background:#7E44FB;color:#fff;font-size:16px;font-weight:800;cursor:pointer;font-family:inherit}
+  .sub-tab-off{height:40px;padding:0 20px;border-radius:8px 8px 0 0;border:0;background:#F0EEFF;color:#7E44FB;font-size:16px;font-weight:800;cursor:pointer;font-family:inherit}
+  .btn-pri{background:#7E44FB;color:#fff;border:0;border-radius:8px;height:36px;padding:0 16px;font-size:14px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:6px;font-family:inherit;white-space:nowrap}
+  .btn-out{background:#fff;color:#494949;border:1px solid #D9D9D9;border-radius:8px;height:36px;padding:0 16px;font-size:14px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:6px;font-family:inherit;white-space:nowrap}
+  .chip-on {display:inline-flex;align-items:center;height:36px;padding:0 16px;border-radius:100px;border:1.5px solid #7E44FB;background:#F7F4FF;color:#7E44FB;font-size:15px;font-weight:800;cursor:pointer;white-space:nowrap}
+  .chip-off{display:inline-flex;align-items:center;height:36px;padding:0 16px;border-radius:100px;border:1.5px solid #D9D9D9;background:#fff;color:#494949;font-size:15px;font-weight:800;cursor:pointer;white-space:nowrap}
+  .cluster-card{background:#fff;border:1px solid #E6E6E6;border-radius:16px;overflow:hidden;flex:1;min-width:0}
+  .student-row{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-bottom:1px dashed #F0F0F0;font-size:15px}
+  .student-row:last-child{border-bottom:none}
+  a.report-link{color:#7E44FB;font-weight:800;font-size:14px;text-decoration:none}
+  a.report-link:hover{text-decoration:underline}
+  @keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const {useState,useMemo,useEffect} = React;
+
+/* Lucide 아이콘 — <Icon name="..." size={20} color="#..." /> */
+function Icon({name,size=20,color="currentColor",strokeWidth=2,style={}}){
+  useEffect(()=>{ if(window.lucide) lucide.createIcons(); });
+  return <i data-lucide={name} style={{width:size,height:size,color,strokeWidth,display:"inline-flex",alignItems:"center",justifyContent:"center",flexShrink:0,...style}}/>;
+}
+const {ResponsiveContainer,BarChart,Bar,XAxis,YAxis,Tooltip,Cell,
+       ComposedChart,Line,CartesianGrid,Legend} = Recharts;
+
+/* ─── 에셋 ─── */
+const LOGO = {
+  icon:"https://www.figma.com/api/mcp/asset/aa025bb4-24f6-4ca0-99f2-d38cd7831f19",
+  top: "https://www.figma.com/api/mcp/asset/da5b9c15-214c-4011-8dbb-6edd9aecdffd",
+  btm: "https://www.figma.com/api/mcp/asset/a0d914fb-8e28-426b-a514-ecaca4d93549",
+  ai:  "https://www.figma.com/api/mcp/asset/9f7e059a-12a4-40b7-ab5b-2623dfdbbbd6",
+  back:"https://www.figma.com/api/mcp/asset/a09068e4-f527-4908-902b-b581237aea6c",
+};
+
+/* ─── 더미 데이터 ─── */
+const ASSIGNMENTS = [
+  {id:"a1", title:"미래 사회 예측 시나리오", max:30, date:"25.04.28"},
+  {id:"a2", title:"독후감 1차 과제",         max:30, date:"25.05.10"},
+  {id:"a3", title:"독후감 2차 과제",         max:30, date:"25.05.28"},
+];
+/* 차트 축 등 좁은 공간용 — 순서 기반 자동 생성 */
+function axisLabel(idx){ return `과제 ${idx+1}`; }
+
+const STUDENTS = [
+  {id:"10101",cls:"1-1",name:"강지훈", scores:[28,27,26]},
+  {id:"10102",cls:"1-1",name:"김서연", scores:[26,25,24]},
+  {id:"10103",cls:"1-1",name:"박민준", scores:[14,13,11]},
+  {id:"10104",cls:"1-1",name:"이수정", scores:[22,21,20]},
+  {id:"10105",cls:"1-1",name:"최유진", scores:[29,28,27]},
+  {id:"10106",cls:"1-1",name:"정다은", scores:[18,17,14]},
+  {id:"10107",cls:"1-1",name:"황태양", scores:[25,24,23]},
+  {id:"10201",cls:"1-2",name:"김하나", scores:[23,20,17]},
+  {id:"10202",cls:"1-2",name:"최민지", scores:[26,26,26]},
+  {id:"10203",cls:"1-2",name:"이하린", scores:[30, null, null]},
+  {id:"10204",cls:"1-2",name:"한아영", scores:[27,26,26]},
+  {id:"10205",cls:"1-2",name:"김민경", scores:[24,22,21]},
+  {id:"10206",cls:"1-2",name:"오준혁", scores:[12,10, 9]},
+  {id:"10207",cls:"1-2",name:"신예원", scores:[20,19,18]},
+  {id:"10301",cls:"1-3",name:"정우성", scores:[22,18,15]},
+  {id:"10302",cls:"1-3",name:"오수민", scores:[28,28,27]},
+  {id:"10303",cls:"1-3",name:"윤지호", scores:[14,13,13]},
+  {id:"10304",cls:"1-3",name:"임채원", scores:[26,25,24]},
+  {id:"10305",cls:"1-3",name:"류승민", scores:[19,18,17]},
+  {id:"10306",cls:"1-3",name:"백소율", scores:[27,26,25]},
+];
+
+/* ─── 군집 정의 ─── */
+const CLUSTERS = [
+  {key:"high",  label:"목표 달성",     pctMin:0.8, color:"#00AF3D", bg:"#F1F9F3", light:"#E2F5E9", icon:"🏆"},
+  {key:"mid",   label:"성장 중",       pctMin:0.6, color:"#7E44FB", bg:"#F7F4FF", light:"#EDE8FF", icon:"📈"},
+  {key:"low",   label:"집중 지원 필요", pctMin:0,   color:"#FF8C4C", bg:"#FFF8F3", light:"#FFE8D6", icon:"🎯"},
+];
+
+const AI_PATTERNS = {
+  high:{
+    patterns:["자료 인용과 논리 전개가 일관되게 우수함","과제 전반에 걸쳐 본인 관점이 명확히 드러남"],
+    suggest:"심화 주제 제시 또는 또래 멘토링 역할 부여를 권장합니다.",
+  },
+  mid:{
+    patterns:["주장은 있으나 근거가 1~2가지에 그침","자료 활용은 되나 본인 해석 연결이 약함"],
+    suggest:"PREP 구조(주장-근거-사례-주장) 템플릿 제공 후 단계적 서술 연습을 권장합니다.",
+  },
+  low:{
+    patterns:["근거 없이 주장만 나열되는 경우 반복","분량 미달 또는 과제 구조를 따르지 않는 사례 다수"],
+    suggest:"짧은 문단 쓰기(3문장) 선행 과제 부여 후 점진 확장 방식을 권장합니다. 개별 면담 우선 검토 필요.",
+  },
+};
+
+/* ─── 헬퍼 ─── */
+function getStudentData(selectedIds){
+  return STUDENTS.map(s=>{
+    const selected = ASSIGNMENTS.filter(a=>selectedIds.includes(a.id));
+    const maxTotal = selected.reduce((sum,a)=>sum+a.max,0);
+    const scored = selected.map(a=>{
+      const idx = ASSIGNMENTS.findIndex(x=>x.id===a.id);
+      return s.scores[idx];
+    });
+    const hasNull = scored.some(v=>v===null);
+    const total = hasNull ? null : scored.reduce((s,v)=>s+v,0);
+    const pct = (total!=null && maxTotal>0) ? total/maxTotal : null;
+    let cluster = null;
+    if(pct!==null){
+      if(pct>=0.8) cluster="high";
+      else if(pct>=0.6) cluster="mid";
+      else cluster="low";
+    }
+    return {...s, total, maxTotal, pct, cluster, scored, hasNull};
+  });
+}
+
+function buildHistData(studentData, assignmentId){
+  const aIdx = ASSIGNMENTS.findIndex(a=>a.id===assignmentId);
+  const aMax = ASSIGNMENTS[aIdx].max;
+  void aIdx; // used below
+  const buckets = Math.min(aMax,6);
+  const size = aMax/buckets;
+  const bins = Array.from({length:buckets},(_,i)=>{
+    const lo=Math.round(i*size), hi=Math.round((i+1)*size);
+    return {range:`${lo}–${hi}`, count:0, lo, hi};
+  });
+  studentData.forEach(s=>{
+    const sc = s.scores[aIdx];
+    if(sc===null) return;
+    const bi = Math.min(Math.floor(sc/size), buckets-1);
+    bins[bi].count++;
+  });
+  return bins;
+}
+
+function buildStackData(selectedIds, studentData){
+  return selectedIds.map(aid=>{
+    const a = ASSIGNMENTS.find(x=>x.id===aid);
+    const aIdx = ASSIGNMENTS.findIndex(x=>x.id===aid);
+    const high = studentData.filter(s=>s.scores[aIdx]!==null && s.scores[aIdx]/a.max>=0.8).length;
+    const mid  = studentData.filter(s=>s.scores[aIdx]!==null && s.scores[aIdx]/a.max>=0.6 && s.scores[aIdx]/a.max<0.8).length;
+    const low  = studentData.filter(s=>s.scores[aIdx]!==null && s.scores[aIdx]/a.max<0.6).length;
+    return {name:axisLabel(aIdx), title:a.title, high, mid, low};
+  });
+}
+
+/* ─── GNB ─── */
+function GNB(){
+  return (
+    <div style={{background:"#fff",height:98,borderBottom:"1px solid #D9D9D9",display:"flex",alignItems:"center",justifyContent:"center",padding:"0 36px"}}>
+      <div style={{flex:1,maxWidth:1200,minWidth:960,display:"flex",alignItems:"center",justifyContent:"space-between",padding:"0 36px"}}>
+        <div style={{display:"flex",alignItems:"center",gap:8}}>
+          <div style={{width:58,height:42,overflow:"hidden",position:"relative",flexShrink:0}}>
+            <img src={LOGO.icon} alt="HiAI" style={{position:"absolute",left:"50%",transform:"translateX(-50%)",height:"100%",width:"auto",objectFit:"cover"}}/>
+          </div>
+          <div style={{position:"relative",width:150,height:41,flexShrink:0}}>
+            <img src={LOGO.top} alt="" style={{position:"absolute",top:0,left:0,width:79.842,height:16.284}}/>
+            <img src={LOGO.btm} alt="" style={{position:"absolute",top:24.08,left:0.31,width:149.692,height:16.422}}/>
+          </div>
+        </div>
+        <div style={{display:"flex",alignItems:"center",gap:52,fontSize:20}}>
+          <span style={{color:"#7E44FB",fontWeight:800}}>나의 평가</span>
+          <span style={{color:"#000",fontWeight:700}}>평가 자료실</span>
+          <span style={{color:"#000",fontWeight:700}}>고객센터</span>
+        </div>
+        <div style={{display:"flex",alignItems:"center",gap:12}}>
+          <img src={LOGO.ai} alt="" style={{width:36,height:36}}/>
+          <span style={{fontSize:20,fontWeight:700}}>김동* 님</span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function TitleBar(){
+  return (
+    <div style={{background:"linear-gradient(to right,#6562f5 4%,#9b68f3 97.86%)",height:86,display:"flex",alignItems:"center",justifyContent:"center",padding:"0 36px"}}>
+      <div style={{flex:1,maxWidth:1200,minWidth:960,padding:"0 36px"}}>
+        <span style={{fontSize:28,fontWeight:800,color:"#fff"}}>1학년 국어</span>
+      </div>
+    </div>
+  );
+}
+
+function Tabs(){
+  const tabs=[
+    {t:"평가 홈",      href:"eval_home_v6_260403.html"},
+    {t:"평가 대상",    href:null},
+    {t:"평가 설계",    href:"evaluation_design_v3_260403.html"},
+    {t:"과제물 관리",  href:"task_ocr_review_v1.html"},
+    {t:"AI 채점",     href:"scoring_list_v1.html"},
+    {t:"평가 리포트",  href:null}, // 현재 화면
+  ];
+  return (
+    <div style={{display:"flex",gap:12}}>
+      {tabs.map((x,i)=>(
+        <div key={i} className={i===5?"tab-active":"tab-inactive"}
+          onClick={()=>{ if(x.href) window.location.href=x.href; }}>
+          <span style={{fontSize:20,fontWeight:i===5?800:700,color:i===5?"#341761":"#000"}}>{x.t}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+/* ─── 군집 카드 ─── */
+function ClusterCard({cluster, students, selectedIds, aiStatus}){
+  const [open, setOpen] = useState(false);
+  const pat = AI_PATTERNS[cluster.key];
+  const count = students.length;
+  const total = STUDENTS.length;
+  const avgPct = count>0 ? Math.round(students.reduce((s,st)=>s+(st.pct||0),0)/count*100) : 0;
+  const avgScore = count>0 ? (students.reduce((s,st)=>s+(st.total||0),0)/count).toFixed(1) : 0;
+  const maxScore = count>0 ? students[0]?.maxTotal : 0;
+
+  /* 미니 분포: 선택 과제별 평균 */
+  const miniData = selectedIds.map((aid,si)=>{
+    const a = ASSIGNMENTS.find(x=>x.id===aid);
+    const aIdx = ASSIGNMENTS.findIndex(x=>x.id===aid);
+    const vals = students.map(s=>s.scores[aIdx]).filter(v=>v!==null);
+    const avg = vals.length>0 ? vals.reduce((s,v)=>s+v,0)/vals.length : 0;
+    return {title:a.title, label:axisLabel(aIdx), avg:parseFloat(avg.toFixed(1)), max:a.max};
+  });
+
+  return (
+    <div className="cluster-card">
+      {/* 헤더 */}
+      <div style={{background:cluster.bg,padding:"18px 20px",borderBottom:`2px solid ${cluster.color}`}}>
+        <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:8}}>
+          <div style={{display:"flex",alignItems:"center",gap:8}}>
+            <span style={{fontSize:20}}>{cluster.icon}</span>
+            <span style={{fontSize:18,fontWeight:900,color:"#222"}}>{cluster.label}</span>
+          </div>
+          <span style={{fontSize:14,color:cluster.color,fontWeight:900,background:"#fff",padding:"4px 12px",borderRadius:100,border:`1px solid ${cluster.color}`}}>
+            {count}명 · {Math.round(count/total*100)}%
+          </span>
+        </div>
+        <div style={{display:"flex",gap:24}}>
+          <div><div style={{fontSize:13,color:"#808080",fontWeight:800}}>그룹 평균</div>
+            <div style={{fontSize:24,fontWeight:900,color:cluster.color}}>{avgScore}<span style={{fontSize:14,color:"#B3B3B3"}}> / {maxScore}점</span></div>
+          </div>
+          <div><div style={{fontSize:13,color:"#808080",fontWeight:800}}>달성률</div>
+            <div style={{fontSize:24,fontWeight:900,color:cluster.color}}>{avgPct}<span style={{fontSize:14,color:"#B3B3B3"}}>%</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div style={{padding:"16px 20px"}}>
+        {/* 과제별 평균 미니바 */}
+        {count>0 && (
+          <div style={{marginBottom:14}}>
+            <div style={{fontSize:13,color:"#808080",fontWeight:800,marginBottom:10}}>과제별 그룹 평균</div>
+            {miniData.map((d,i)=>(
+              <div key={i} style={{marginBottom:12}}>
+                {/* 과제명 — 전체 너비, 말줄임 + 툴팁 */}
+                <div title={d.title} style={{fontSize:14,color:"#494949",fontWeight:700,marginBottom:5,
+                  whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis",maxWidth:"100%",
+                  display:"flex",alignItems:"center",gap:5}}>
+                  <span style={{flexShrink:0,color:"#B3B3B3"}}>{d.label}</span>
+                  <span style={{color:"#D9D9D9"}}>·</span>
+                  <span style={{overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{d.title}</span>
+                </div>
+                {/* 바 + 점수 */}
+                <div style={{display:"flex",alignItems:"center",gap:10}}>
+                  <div style={{flex:1,height:12,background:"#F0F0F0",borderRadius:999,overflow:"hidden"}}>
+                    <div style={{height:"100%",width:`${d.avg/d.max*100}%`,background:cluster.color,borderRadius:999,transition:"width 0.4s"}}/>
+                  </div>
+                  <div style={{fontSize:15,fontWeight:900,color:cluster.color,width:54,textAlign:"right",flexShrink:0}}>
+                    {d.avg}<span style={{fontSize:12,color:"#B3B3B3",fontWeight:700}}>점</span>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* AI 공통 패턴 */}
+        <div style={{background:"#F8F8F8",borderRadius:10,padding:"14px 16px",marginBottom:14,position:"relative"}}>
+          <div style={{fontSize:14,fontWeight:900,color:"#494949",marginBottom:10,display:"flex",alignItems:"center",gap:6}}>
+            <span>📌</span><span>이 그룹에서 반복되는 패턴</span>
+            <span style={{fontSize:12,color:"#B3B3B3",fontWeight:700,marginLeft:4}}>AI 분석</span>
+          </div>
+
+          {aiStatus==="idle" && (
+            <div style={{padding:"18px 4px",textAlign:"center"}}>
+              <div style={{fontSize:14,color:"#B3B3B3",lineHeight:1.55}}>
+                군집 구성은 점수 기반이라 위에 바로 표시됩니다.<br/>
+                <span style={{fontSize:12}}>공통 패턴·지도 제안 문장은 상단 <b style={{color:"#7E44FB"}}>AI 코멘트 생성하기</b> 버튼을 눌러주세요.</span>
+              </div>
+            </div>
+          )}
+
+          {aiStatus==="generating" && (
+            <div style={{padding:"18px 4px",textAlign:"center"}}>
+              <div style={{display:"inline-flex",alignItems:"center",gap:8,fontSize:14,color:"#7E44FB",fontWeight:800}}>
+                <span style={{display:"inline-block",width:14,height:14,border:"2px solid #EDE8FF",borderTopColor:"#7E44FB",borderRadius:"50%",animation:"spin 0.8s linear infinite"}}/>
+                AI가 그룹 패턴을 분석 중입니다…
+              </div>
+            </div>
+          )}
+
+          {(aiStatus==="done"||aiStatus==="stale") && <>
+            {pat.patterns.map((p,i)=>(
+              <div key={i} style={{display:"flex",alignItems:"flex-start",gap:8,marginBottom:6,fontSize:15,lineHeight:1.6,opacity:aiStatus==="stale"?0.55:1}}>
+                <span style={{color:cluster.color,fontWeight:900,flexShrink:0,marginTop:1}}>·</span>
+                <span>{p}</span>
+              </div>
+            ))}
+            <div style={{marginTop:12,paddingTop:12,borderTop:"1px dashed #E6E6E6",opacity:aiStatus==="stale"?0.55:1}}>
+              <div style={{fontSize:14,fontWeight:900,color:"#5890FF",marginBottom:5,display:"flex",alignItems:"center",gap:6}}>
+                <span>🎯</span><span>교사 지도 제안</span>
+              </div>
+              <div style={{fontSize:15,lineHeight:1.65,color:"#333"}}>{pat.suggest}</div>
+            </div>
+          </>}
+        </div>
+
+        {/* 학생 목록 토글 */}
+        <button onClick={()=>setOpen(!open)} style={{width:"100%",background:"none",border:"1px solid #E6E6E6",borderRadius:8,padding:"10px 14px",display:"flex",alignItems:"center",justifyContent:"space-between",cursor:"pointer",fontFamily:"inherit"}}>
+          <span style={{fontSize:15,fontWeight:800,color:"#494949"}}>학생 목록 {count}명</span>
+          <span style={{fontSize:14,color:"#7E44FB",fontWeight:800}}>{open?"▲ 닫기":"▼ 펼치기"}</span>
+        </button>
+        {open && (
+          <div style={{marginTop:8,border:"1px solid #F0F0F0",borderRadius:8,overflow:"hidden"}}>
+            {count===0
+              ? <div style={{padding:"16px",textAlign:"center",fontSize:14,color:"#B3B3B3"}}>해당 그룹 학생 없음</div>
+              : students.map(s=>(
+                <div key={s.id} className="student-row">
+                  <div style={{display:"flex",alignItems:"center",gap:10}}>
+                    <span style={{fontSize:13,color:"#808080"}}>{s.cls}</span>
+                    <span style={{fontSize:15,fontWeight:800}}>{s.name}</span>
+                    {s.hasNull && <span style={{fontSize:12,background:"#FFEFEF",color:"#DB3E51",padding:"2px 6px",borderRadius:4,fontWeight:800}}>미제출</span>}
+                  </div>
+                  <div style={{display:"flex",alignItems:"center",gap:14}}>
+                    <span style={{fontSize:15,fontWeight:900,color:cluster.color}}>
+                      {s.total!=null ? `${s.total}점` : "-"}
+                      <span style={{fontSize:12,color:"#B3B3B3",fontWeight:700}}> / {s.maxTotal}</span>
+                    </span>
+                    <a href={`student_report_v1.html?id=${s.id}&name=${encodeURIComponent(s.name)}&cls=${s.cls}`} className="report-link">상세 ›</a>
+                  </div>
+                </div>
+              ))
+            }
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+/* ─── 학생 리포트 리스트 뷰 ─── */
+function StudentListView({selectedClass, setSelectedClass}){
+  const classes = ["all", ...Array.from(new Set(STUDENTS.map(s=>s.cls)))];
+  const maxTotal = ASSIGNMENTS.reduce((s,a)=>s+a.max, 0);
+
+  /* 학생별 총점·달성률·상태 계산 (전체 과제 기준) */
+  const rows = STUDENTS
+    .filter(s=>selectedClass==="all" || s.cls===selectedClass)
+    .map(s=>{
+      const scores = s.scores;
+      const submitted = scores.filter(v=>v!=null);
+      const total = submitted.reduce((x,y)=>x+y,0);
+      const missing = scores.length - submitted.length;
+      const pct = Math.round(total/maxTotal*100);
+      let cluster = pct>=80 ? "high" : pct>=60 ? "mid" : "low";
+      return {...s, total, missing, pct, cluster};
+    })
+    .sort((a,b)=> a.cls.localeCompare(b.cls) || a.id.localeCompare(b.id));
+
+  const clusterMeta = {
+    high:{label:"목표 달성", color:"#00AF3D", bg:"#F1F9F3"},
+    mid: {label:"성장 중",   color:"#7E44FB", bg:"#F7F4FF"},
+    low: {label:"집중 지원", color:"#FF8C4C", bg:"#FFF8F3"},
+  };
+
+  return (
+    <div>
+      {/* 필터바 */}
+      <div style={{display:"flex",alignItems:"center",gap:12,marginBottom:16}}>
+        <span style={{fontSize:15,fontWeight:900,color:"#341761"}}>학급</span>
+        <div style={{display:"flex",gap:6}}>
+          {classes.map(c=>(
+            <button key={c}
+              onClick={()=>setSelectedClass(c)}
+              className={selectedClass===c?"chip-on":"chip-off"}>
+              {c==="all"?"전체":c}
+            </button>
+          ))}
+        </div>
+        <span style={{fontSize:14,color:"#808080",marginLeft:"auto"}}>
+          총 <b style={{color:"#7E44FB"}}>{rows.length}</b>명
+        </span>
+      </div>
+
+      {/* 테이블 */}
+      <div style={{border:"1px solid #E6E6E6",borderRadius:12,overflow:"hidden"}}>
+        {/* 헤더 */}
+        <div style={{display:"grid",gridTemplateColumns:"80px 80px 1fr 1fr 140px 120px 80px",
+          background:"#F8F8F8",padding:"12px 16px",fontSize:14,fontWeight:800,color:"#494949",borderBottom:"1px solid #E6E6E6"}}>
+          <div>학급</div>
+          <div>학번</div>
+          <div>이름</div>
+          <div>총점</div>
+          <div>달성률</div>
+          <div>상태</div>
+          <div style={{textAlign:"right"}}>리포트</div>
+        </div>
+        {/* 행 */}
+        {rows.length===0
+          ? <div style={{padding:"40px",textAlign:"center",color:"#B3B3B3",fontSize:15}}>해당 학급에 학생이 없습니다.</div>
+          : rows.map(r=>{
+              const meta = clusterMeta[r.cluster];
+              return (
+                <div key={r.id} style={{display:"grid",gridTemplateColumns:"80px 80px 1fr 1fr 140px 120px 80px",
+                  padding:"14px 16px",alignItems:"center",borderBottom:"1px solid #F0F0F0",fontSize:15}}>
+                  <div style={{color:"#808080"}}>{r.cls}</div>
+                  <div style={{color:"#808080"}}>{r.id}</div>
+                  <div style={{display:"flex",alignItems:"center",gap:8}}>
+                    <span style={{fontWeight:800}}>{r.name}</span>
+                    {r.missing>0 && <span style={{fontSize:12,background:"#FFEFEF",color:"#DB3E51",padding:"2px 6px",borderRadius:4,fontWeight:800}}>미제출 {r.missing}</span>}
+                  </div>
+                  <div style={{fontWeight:900,color:meta.color}}>
+                    {r.total}<span style={{color:"#B3B3B3",fontWeight:700,fontSize:13}}> / {maxTotal}점</span>
+                  </div>
+                  <div style={{display:"flex",alignItems:"center",gap:8}}>
+                    <div style={{flex:1,height:8,background:"#F0F0F0",borderRadius:999,overflow:"hidden",maxWidth:100}}>
+                      <div style={{height:"100%",width:`${Math.min(r.pct,100)}%`,background:meta.color,borderRadius:999}}/>
+                    </div>
+                    <span style={{fontSize:14,fontWeight:900,color:meta.color,minWidth:36}}>{r.pct}%</span>
+                  </div>
+                  <div>
+                    <span style={{fontSize:13,fontWeight:800,color:meta.color,background:meta.bg,padding:"4px 10px",borderRadius:100}}>
+                      {meta.label}
+                    </span>
+                  </div>
+                  <div style={{textAlign:"right"}}>
+                    <a href={`student_report_v1.html?id=${r.id}&name=${encodeURIComponent(r.name)}&cls=${r.cls}`} style={{color:"#7E44FB",fontWeight:800,fontSize:14,textDecoration:"none"}}>상세 ›</a>
+                  </div>
+                </div>
+              );
+            })
+        }
+      </div>
+    </div>
+  );
+}
+
+/* ─── 분포 차트 ─── */
+function DistributionChart({selectedIds, studentData}){
+  const isSingle = selectedIds.length===1;
+
+  if(isSingle){
+    const data = buildHistData(studentData, selectedIds[0]);
+    const a = ASSIGNMENTS.find(x=>x.id===selectedIds[0]);
+    const aIdx = ASSIGNMENTS.findIndex(x=>x.id===selectedIds[0]);
+    return (
+      <div>
+        <div title={a.title} style={{fontSize:14,color:"#808080",fontWeight:800,marginBottom:10,
+          whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis",maxWidth:"100%"}}>
+          {axisLabel(aIdx)} · {a.title} 점수 분포
+        </div>
+        <ResponsiveContainer width="100%" height={180}>
+          <BarChart data={data} margin={{top:4,right:4,left:-20,bottom:0}}>
+            <CartesianGrid strokeDasharray="3 3" stroke="#F0F0F0" vertical={false}/>
+            <XAxis dataKey="range" tick={{fontSize:13,fill:"#808080"}} axisLine={false} tickLine={false}/>
+            <YAxis tick={{fontSize:12,fill:"#B3B3B3"}} axisLine={false} tickLine={false}/>
+            <Tooltip contentStyle={{fontSize:13}} formatter={v=>[`${v}명`,"인원"]}/>
+            <Bar dataKey="count" radius={[4,4,0,0]} maxBarSize={40}>
+              {data.map((d,i)=>{
+                const mid = (d.lo+d.hi)/2;
+                const pct = mid/a.max;
+                const fill = pct>=0.8?"#00AF3D":pct>=0.6?"#7E44FB":"#FF8C4C";
+                return <Cell key={i} fill={fill}/>;
+              })}
+            </Bar>
+          </BarChart>
+        </ResponsiveContainer>
+        <div style={{display:"flex",gap:16,justifyContent:"center",marginTop:4}}>
+          {[{c:"#00AF3D",l:"목표 달성 (80%↑)"},{c:"#7E44FB",l:"성장 중 (60~80%)"},{c:"#FF8C4C",l:"집중 지원 필요 (60%↓)"}].map(x=>(
+            <div key={x.l} style={{display:"flex",alignItems:"center",gap:5,fontSize:13}}>
+              <div style={{width:8,height:8,borderRadius:2,background:x.c}}/>
+              <span style={{color:"#808080"}}>{x.l}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  /* 복수 선택: 과제별 군집 구성 스택 바 */
+  const data = buildStackData(selectedIds, studentData);
+  return (
+    <div>
+      <div style={{fontSize:14,color:"#808080",fontWeight:800,marginBottom:10}}>과제별 군집 구성 변화</div>
+      <ResponsiveContainer width="100%" height={180}>
+        <BarChart data={data} margin={{top:4,right:4,left:-20,bottom:0}}>
+          <CartesianGrid strokeDasharray="3 3" stroke="#F0F0F0" vertical={false}/>
+          <XAxis dataKey="name" tick={{fontSize:13,fill:"#494949"}} axisLine={false} tickLine={false}/>
+          <YAxis tick={{fontSize:12,fill:"#B3B3B3"}} axisLine={false} tickLine={false}/>
+          <Tooltip contentStyle={{fontSize:13}} formatter={(v,n)=>[`${v}명`, n==="high"?"목표 달성":n==="mid"?"성장 중":"집중 지원 필요"]}/>
+          <Bar dataKey="high" stackId="a" fill="#00AF3D" name="high" radius={[0,0,0,0]}/>
+          <Bar dataKey="mid"  stackId="a" fill="#7E44FB" name="mid"/>
+          <Bar dataKey="low"  stackId="a" fill="#FF8C4C" name="low" radius={[4,4,0,0]}/>
+        </BarChart>
+      </ResponsiveContainer>
+      <div style={{display:"flex",gap:16,justifyContent:"center",marginTop:4}}>
+        {[{c:"#00AF3D",l:"목표 달성"},{c:"#7E44FB",l:"성장 중"},{c:"#FF8C4C",l:"집중 지원 필요"}].map(x=>(
+          <div key={x.l} style={{display:"flex",alignItems:"center",gap:5,fontSize:13}}>
+            <div style={{width:8,height:8,borderRadius:2,background:x.c}}/>
+            <span style={{color:"#808080"}}>{x.l}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+/* ─── 메인 ─── */
+function App(){
+  /* URL ?tab=student 이면 학생 리포트로 진입 */
+  const initialTab = (typeof window!=="undefined" && new URLSearchParams(window.location.search).get("tab")==="student") ? "student" : "class";
+  const [subTab, setSubTab] = useState(initialTab);
+  /* 전체는 수백명 될 수 있어 기본은 첫 학급 */
+  const firstClass = STUDENTS[0]?.cls || "all";
+  const [selectedClass, setSelectedClass] = useState(firstClass);
+  const [selectedIds, setSelectedIds] = useState(["a1","a2","a3"]);
+
+  /* AI 그룹 분석 상태: idle(최초) | generating | done | stale(변경감지) */
+  const [aiStatus, setAiStatus] = useState("idle");
+  const [aiGeneratedAt, setAiGeneratedAt] = useState(null);
+  const [aiGeneratedKey, setAiGeneratedKey] = useState(null); // 생성 시점의 범위 스냅샷
+
+  const currentKey = selectedIds.slice().sort().join(",");
+  /* 범위 바뀌면 stale로 (단, 생성된 적 있을 때만) */
+  useEffect(()=>{
+    if(aiStatus==="done" && aiGeneratedKey && aiGeneratedKey!==currentKey){
+      setAiStatus("stale");
+    }
+  },[currentKey]);
+
+  function handleGenerateAi(){
+    setAiStatus("generating");
+    setTimeout(()=>{
+      const now = new Date();
+      const fmt = `${String(now.getMonth()+1).padStart(2,"0")}/${String(now.getDate()).padStart(2,"0")} ${String(now.getHours()).padStart(2,"0")}:${String(now.getMinutes()).padStart(2,"0")}`;
+      setAiGeneratedAt(fmt);
+      setAiGeneratedKey(currentKey);
+      setAiStatus("done");
+    }, 2200);
+  }
+
+  function toggleAssignment(id){
+    setSelectedIds(prev=>{
+      if(prev.includes(id)){
+        if(prev.length===1) return prev; // 최소 1개
+        return prev.filter(x=>x!==id);
+      }
+      return [...prev, id];
+    });
+  }
+
+  function selectAll(){
+    setSelectedIds(ASSIGNMENTS.map(a=>a.id));
+  }
+
+  const studentData = useMemo(()=>getStudentData(selectedIds),[selectedIds]);
+
+  const clusterGroups = useMemo(()=>{
+    const result={};
+    CLUSTERS.forEach(c=>{ result[c.key]=studentData.filter(s=>s.cluster===c.key); });
+    return result;
+  },[studentData]);
+
+  return (
+    <div style={{minHeight:"100vh"}}>
+      <GNB/>
+      <TitleBar/>
+      <div style={{display:"flex",flexDirection:"column",alignItems:"center",padding:"40px 36px",minHeight:760}}>
+        <div style={{width:"100%",maxWidth:1200}}>
+          <Tabs/>
+          <div style={{background:"#fff",borderRadius:"0 0 20px 20px",padding:"28px 24px",boxShadow:"0 4px 36px rgba(95,102,178,0.16)"}}>
+
+            {/* 패널 헤더 */}
+            <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:20}}>
+              <div>
+                <div style={{fontSize:24,fontWeight:700,color:"#333"}}>평가 리포트</div>
+                <div style={{fontSize:16,fontWeight:400,color:"#333",lineHeight:1.55,marginTop:8}}>수업 단위 종합 현황과 학생별 리포트를 확인할 수 있습니다.</div>
+              </div>
+              <button className="btn-pri"><Icon name="download" size={20} color="#fff"/>점수 다운로드</button>
+            </div>
+
+            {/* 서브탭 */}
+            <div style={{display:"flex",gap:4,borderBottom:"2px solid #7E44FB",marginBottom:24}}>
+              <button className={subTab==="class"?"sub-tab-on":"sub-tab-off"} onClick={()=>setSubTab("class")}>수업 리포트</button>
+              <button className={subTab==="student"?"sub-tab-on":"sub-tab-off"} onClick={()=>setSubTab("student")}>학생 리포트</button>
+            </div>
+
+            {subTab==="student" && <StudentListView selectedClass={selectedClass} setSelectedClass={setSelectedClass}/>}
+
+            {subTab==="class" && (<>
+              {/* 평가 범위 선택 */}
+              <div style={{background:"#F8F8F8",borderRadius:12,padding:"18px 22px",marginBottom:24}}>
+                <div style={{display:"flex",alignItems:"center",gap:12,flexWrap:"wrap"}}>
+                  <span style={{fontSize:15,fontWeight:900,color:"#341761",flexShrink:0}}>평가 범위</span>
+                  <button className={selectedIds.length===ASSIGNMENTS.length?"chip-on":"chip-off"} onClick={selectAll}>
+                    전체 평가
+                  </button>
+                  <div style={{width:1,height:22,background:"#D9D9D9"}}/>
+                  {ASSIGNMENTS.map((a,i)=>{
+                    const isOn = selectedIds.includes(a.id)&&selectedIds.length<ASSIGNMENTS.length;
+                    return (
+                      <button key={a.id} title={a.title}
+                        className={isOn?"chip-on":"chip-off"}
+                        onClick={()=>toggleAssignment(a.id)}
+                        style={{maxWidth:200,overflow:"hidden"}}>
+                        {isOn && <span style={{marginRight:4,flexShrink:0}}>✓</span>}
+                        <span style={{whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis",display:"block"}}>
+                          {axisLabel(i)} · {a.title}
+                        </span>
+                      </button>
+                    );
+                  })}
+                  <span style={{fontSize:13,color:"#B3B3B3",marginLeft:4}}>복수 선택 가능</span>
+                </div>
+                <div style={{marginTop:12,fontSize:14,color:"#808080"}}>
+                  선택됨: <b style={{color:"#7E44FB"}}>{selectedIds.length===ASSIGNMENTS.length?"전체 과제 (3개)":ASSIGNMENTS.filter((a,i)=>selectedIds.includes(a.id)).map((a,_,arr,i)=>axisLabel(ASSIGNMENTS.indexOf(a))).join(", ")}</b>
+                  &nbsp;·&nbsp; 기준 만점: <b>{studentData[0]?.maxTotal||0}점</b>
+                  &nbsp;·&nbsp; 군집 기준: 달성률 80%↑ / 60~80% / 60%↓
+                </div>
+              </div>
+
+              {/* 분포 차트 + 요약 KPI */}
+              <div style={{display:"grid",gridTemplateColumns:"1fr 300px",gap:16,marginBottom:24}}>
+                <div style={{background:"#F8F8F8",borderRadius:12,padding:"20px 22px"}}>
+                  <div style={{fontSize:18,fontWeight:900,color:"#341761",marginBottom:14}}>
+                    {selectedIds.length===1?"점수 분포":"과제별 군집 구성 변화"}
+                  </div>
+                  <DistributionChart selectedIds={selectedIds} studentData={studentData}/>
+                </div>
+                <div style={{display:"flex",flexDirection:"column",gap:10}}>
+                  {CLUSTERS.map(c=>{
+                    const cnt=clusterGroups[c.key]?.length||0;
+                    return (
+                      <div key={c.key} style={{background:c.bg,borderRadius:12,padding:"16px 18px",flex:1,display:"flex",alignItems:"center",gap:14}}>
+                        <span style={{fontSize:24}}>{c.icon}</span>
+                        <div>
+                          <div style={{fontSize:14,fontWeight:800,color:"#808080"}}>{c.label}</div>
+                          <div style={{fontSize:24,fontWeight:900,color:c.color}}>
+                            {cnt}<span style={{fontSize:14,color:"#B3B3B3",fontWeight:700}}>명</span>
+                            <span style={{fontSize:14,color:c.color,fontWeight:700,marginLeft:6}}>{Math.round(cnt/STUDENTS.length*100)}%</span>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* AI 그룹 분석 컨트롤 바 */}
+              <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",
+                background:aiStatus==="stale"?"#FFF8F3":"#F8F8F8",
+                border:aiStatus==="stale"?"1px solid #FFD5B3":"1px solid #E6E6E6",
+                borderRadius:12,padding:"14px 18px",marginBottom:16}}>
+                <div style={{display:"flex",alignItems:"center",gap:10}}>
+                  <span style={{fontSize:18}}>🧠</span>
+                  <div>
+                    <div style={{fontSize:15,fontWeight:900,color:"#341761"}}>AI 그룹 코멘트 생성</div>
+                    <div style={{fontSize:13,color:"#808080",marginTop:2,lineHeight:1.5}}>
+                      {aiStatus==="idle"   && <>군집 구성·평균·과제별 점수는 점수 기반이라 즉시 표시됩니다.<br/>AI는 그룹별 공통 패턴과 지도 제안 문장만 생성합니다. (약 3~5분 소요)</>}
+                      {aiStatus==="generating" && "AI가 3개 군집의 공통 패턴과 지도 제안을 생성 중입니다…"}
+                      {aiStatus==="done"   && <>마지막 생성: <b style={{color:"#494949"}}>{aiGeneratedAt}</b> · 현재 범위 기준 최신 상태입니다.</>}
+                      {aiStatus==="stale"  && <>마지막 생성: <b style={{color:"#494949"}}>{aiGeneratedAt}</b> · 평가 범위가 바뀌어 결과가 현재 선택과 일치하지 않습니다.</>}
+                    </div>
+                  </div>
+                </div>
+                <div style={{display:"flex",alignItems:"center",gap:10}}>
+                  {aiStatus==="stale" && (
+                    <span style={{fontSize:12,fontWeight:800,color:"#FF8C4C",background:"#FFE8D6",padding:"4px 10px",borderRadius:100}}>업데이트 필요</span>
+                  )}
+                  {aiStatus==="idle"       && <button className="btn-pri" onClick={handleGenerateAi}><Icon name="wand-sparkles" size={16}/>AI 코멘트 생성하기</button>}
+                  {aiStatus==="generating" && <button className="btn-pri" disabled style={{opacity:0.6,cursor:"default"}}><Icon name="wand-sparkles" size={16}/>분석 중…</button>}
+                  {aiStatus==="done"       && <button className="btn-out" onClick={handleGenerateAi}><Icon name="wand-sparkles" size={16}/>다시 생성</button>}
+                  {aiStatus==="stale"      && <button className="btn-pri" onClick={handleGenerateAi}><Icon name="wand-sparkles" size={16}/>업데이트</button>}
+                </div>
+              </div>
+
+              {/* 군집 카드 3개 */}
+              <div style={{display:"flex",gap:14,alignItems:"flex-start"}}>
+                {CLUSTERS.map(c=>(
+                  <ClusterCard key={c.key} cluster={c} students={clusterGroups[c.key]||[]} selectedIds={selectedIds} aiStatus={aiStatus}/>
+                ))}
+              </div>
+            </>)}
+
+          </div>
+        </div>
+        <div style={{height:48}}/>
+      </div>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App/>);
+</script>
+</body>
+</html>
