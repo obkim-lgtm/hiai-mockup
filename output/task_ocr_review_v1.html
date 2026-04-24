@@ -2406,9 +2406,25 @@ function closeOcrAskB(startNow) {
     lucide.createIcons();
   } else {
     showToast('OCR 인식을 나중에 진행할 수 있습니다.', 'success');
-    // 배너: OCR 대기 상태 표시 (개별 업로드·일괄 업로드 공통)
+    // 배너: OCR 미진행(빨강) 상태 표시 — 이전에 진행중(파랑)이었을 수 있으므로 innerHTML 복원
     var bannerB2 = document.getElementById('list-b-ocr-pending-banner');
-    if (bannerB2) bannerB2.style.display = 'flex';
+    if (bannerB2) {
+      bannerB2.style.background = '#FFF5F5';
+      bannerB2.style.borderColor = '#FFBCBC';
+      bannerB2.innerHTML =
+        '<div style="display:flex; align-items:center; gap:10px;">' +
+          '<i data-lucide="triangle-alert" style="width:16px; height:16px; color:#DB3E51; flex-shrink:0;"></i>' +
+          '<div style="display:flex; flex-direction:column; gap:3px;">' +
+            '<span style="font-size:14px; color:#DB3E51; font-weight:800;">OCR 인식이 아직 진행되지 않았습니다.</span>' +
+            '<span style="font-size:13px; color:#B53040;">파일이 업로드된 상태입니다. OCR 인식을 진행하면 AI 채점을 시작할 수 있습니다.</span>' +
+          '</div>' +
+        '</div>' +
+        '<button onclick="showOcrAskB()" style="flex-shrink:0;height:32px;background:#DB3E51;color:white;border:none;border-radius:6px;padding:0 14px;font-size:13px;font-weight:700;font-family:inherit;cursor:pointer;white-space:nowrap;display:inline-flex;align-items:center;gap:6px;">' +
+          '<i data-lucide="scan-text" style="width:14px;height:14px;"></i>지금 OCR 진행' +
+        '</button>';
+      bannerB2.style.display = 'flex';
+      lucide.createIcons();
+    }
   }
 }
 
