@@ -1418,6 +1418,7 @@ var b2OcrStarted = false; // (deprecated, kept for compatibility) B안 2반 OCR 
 var b2OcrStartedIds = null; // null | 'all' | Set<string> — 개별 업로드는 해당 학생만 갱신
 var pendingUploadMode = 'bulk'; // 'bulk' | 'individual'
 var pendingUploadStudentId = null;
+var individuallyUploadedIds = {}; // 미업로드반에서 개별 업로드한 학생 ID 추적 ({id: true})
 function isB2OcrStartedFor(id) {
   if (b2OcrStartedIds === 'all') return true;
   if (b2OcrStartedIds && typeof b2OcrStartedIds.has === 'function') return b2OcrStartedIds.has(id);
@@ -2248,14 +2249,33 @@ function renderTableB() {
   var html = '';
 
   if (!isUploaded) {
-    // 3~5반: 미업로드, 전체 미제출
-    STUDENTS.forEach(function(s) {
-      var cols = '<td style="text-align:center;"><span class="badge badge-red">미제출</span></td>';
+    // 3~5반: 미업로드 — 개별 업로드한 학생은 업로드완료/OCR 상태 반영
+    STUDENTS.forEach(function(s, idx) {
+      var uploaded = !!individuallyUploadedIds[s.id];
+      var ocrStarted = isB2OcrStartedFor(s.id);
+      var statusCell, dateCell, filesCell, ocrCell;
+      if (uploaded) {
+        if (ocrStarted) {
+          statusCell = '<span class="badge badge-blue">OCR완료</span>';
+          ocrCell = '<span style="display:inline-flex;align-items:center;gap:4px;color:#808080;font-weight:700;font-size:13px;cursor:pointer;" onclick="goToOCR_B(' + idx + ')"><i data-lucide="circle" style="width:14px;height:14px;"></i>미확인</span>';
+        } else {
+          statusCell = '<span class="badge badge-green">업로드완료</span>';
+          ocrCell = '<span style="display:inline-flex;align-items:center;gap:4px;color:#B3B3B3;font-weight:700;font-size:13px;"><i data-lucide="clock" style="width:14px;height:14px;"></i>대기중</span>';
+        }
+        dateCell = '<td>04/24 선생님 업로드</td>';
+        filesCell = '<td style="text-align:center;">1</td>';
+      } else {
+        statusCell = '<span class="badge badge-red">미제출</span>';
+        dateCell = '<td style="color:#B3B3B3;">-</td>';
+        filesCell = '<td style="text-align:center;">0</td>';
+        ocrCell = '-';
+      }
+      var cols = '<td style="text-align:center;">' + statusCell + '</td>';
       cols += '<td style="font-weight:700;">' + s.id + '</td>';
       cols += '<td>' + s.name + '</td>';
-      cols += '<td style="color:#B3B3B3;">-</td>';
-      cols += '<td style="text-align:center;">0</td>';
-      cols += '<td style="text-align:center;">-</td>';
+      cols += dateCell;
+      cols += filesCell;
+      cols += '<td style="text-align:center;">' + ocrCell + '</td>';
       cols += '<td style="text-align:center;"><button onclick="openStudentUploadModal(\'' + s.id + '\',\'' + s.name + '\')" style="background:none;border:none;cursor:pointer;font-family:inherit;display:inline-flex;align-items:center;gap:4px;color:#7E44FB;font-size:13px;font-weight:700;padding:4px 8px;border-radius:6px;" onmouseover="this.style.background=\'#F7F4FF\'" onmouseout="this.style.background=\'none\'"><i data-lucide="paperclip" style="width:13px;height:13px;flex-shrink:0;"></i>파일 추가/제거</button></td>';
       html += '<tr>' + cols + '</tr>';
     });
@@ -2453,6 +2473,7 @@ function submitStudentUpload() {
   var saveBtn = document.getElementById('student-upload-save');
   if (saveBtn && saveBtn.disabled) return;
   pendingUploadMode = 'individual';
+  if (pendingUploadStudentId) individuallyUploadedIds[pendingUploadStudentId] = true;
   var processing = document.getElementById('student-upload-state-processing');
   processing.style.display = 'flex';
   lucide.createIcons();
