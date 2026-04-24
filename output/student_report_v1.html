@@ -468,7 +468,8 @@ function App(){
               <span style={{fontSize:13,color:"#808080"}}>반 {STUDENT.classRank} · 학년 {STUDENT.gradeRank} · 미제출 {STUDENT.missing}건</span>
             </div>
             <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
-              <button className="btn-out" onClick={()=>setSeteukOpen(true)}><Icon name="wand-sparkles" size={16}/>세특 문체 변환</button>
+              {/* 세특 문체 변환 — 준비 중, 일시 숨김 */}
+              {false && <button className="btn-out" onClick={()=>setSeteukOpen(true)}><Icon name="wand-sparkles" size={16}/>세특 문체 변환</button>}
               <button className="btn-out"><Icon name="chevron-left" size={16}/>이전 학생</button>
               <button className="btn-out">다음 학생<Icon name="chevron-right" size={16}/></button>
               <button className="btn-pri" onClick={()=>setPrintOpen(true)}><Icon name="download" size={16}/>PDF 내보내기</button>
