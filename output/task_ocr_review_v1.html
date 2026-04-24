@@ -1414,7 +1414,15 @@ var ocrBScoreMap = {}; // studentId → scores array
 var currentListClass = 1;
 var currentStateClass = 1; // B안 상태 매핑용 (C안은 반 번호와 상태가 다름)
 var currentEvalType = 'A';
-var b2OcrStarted = false; // B안 2반 OCR 진행 여부
+var b2OcrStarted = false; // (deprecated, kept for compatibility) B안 2반 OCR 진행 여부
+var b2OcrStartedIds = null; // null | 'all' | Set<string> — 개별 업로드는 해당 학생만 갱신
+var pendingUploadMode = 'bulk'; // 'bulk' | 'individual'
+var pendingUploadStudentId = null;
+function isB2OcrStartedFor(id) {
+  if (b2OcrStartedIds === 'all') return true;
+  if (b2OcrStartedIds && typeof b2OcrStartedIds.has === 'function') return b2OcrStartedIds.has(id);
+  return false;
+}
 
 function showListForClass(classNum, evalType) {
   currentListClass = classNum;
@@ -2254,7 +2262,7 @@ function renderTableB() {
   } else {
     students.forEach(function(s, i) {
       var statusBadge;
-      if (!isB2 || !b2OcrStarted) {
+      if (!isB2 || !isB2OcrStartedFor(s.id)) {
         statusBadge = '<span class="badge badge-green">업로드완료</span>';
       } else {
         var st2 = s.ocrStatusAfter;
@@ -2282,7 +2290,7 @@ function renderTableB() {
       } else if (isB2) {
         // B2: OCR 상태에 따라 렌더
         var b2OcrCell;
-        if (!b2OcrStarted) {
+        if (!isB2OcrStartedFor(s.id)) {
           // OCR 미시작: 대기중
           b2OcrCell = '<span style="display:inline-flex;align-items:center;gap:4px;color:#B3B3B3;font-weight:700;font-size:13px;"><i data-lucide="clock" style="width:14px;height:14px;"></i>대기중</span>';
         } else {
@@ -2310,6 +2318,8 @@ function renderTableB() {
 }
 
 function uploadAndGoList() {
+  pendingUploadMode = 'bulk';
+  pendingUploadStudentId = null;
   showScreen('screen-list');
   showToast('과제물이 업로드되었습니다.', 'success');
   if (currentEvalType === 'B') {
@@ -2336,7 +2346,16 @@ function closeOcrAskB(startNow) {
   var modal = document.getElementById('modal-ocr-ask-b');
   if (modal) modal.style.display = 'none';
   if (startNow) {
-    b2OcrStarted = true;
+    // 업로드 범위에 따라 OCR 진행 대상 결정
+    if (pendingUploadMode === 'individual' && pendingUploadStudentId) {
+      if (b2OcrStartedIds !== 'all') {
+        if (!b2OcrStartedIds || typeof b2OcrStartedIds.has !== 'function') b2OcrStartedIds = new Set();
+        b2OcrStartedIds.add(pendingUploadStudentId);
+      }
+    } else {
+      b2OcrStartedIds = 'all';
+    }
+    b2OcrStarted = true; // 호환성 유지
     showToast('OCR 인식을 시작합니다. 완료 후 결과를 확인해 주세요.', 'success');
     // 배너: OCR대기 → 처리중 상태로 전환
     var bannerB2 = document.getElementById('list-b-ocr-pending-banner');
@@ -2352,6 +2371,10 @@ function closeOcrAskB(startNow) {
           '</div>' +
         '</div>';
       bannerB2.style.display = 'flex';
+      // 5초 후 자동 숨김
+      setTimeout(function() {
+        if (bannerB2) bannerB2.style.display = 'none';
+      }, 5000);
     }
     // 테이블 재렌더 — B2 행에 처리중 스피너 표시
     renderTable();
@@ -2372,6 +2395,8 @@ function closeOcrStartModal() {
 }
 
 function openStudentUploadModal(studentId, studentName) {
+  // 업로드 컨텍스트 저장 — OCR 진행 시 해당 학생만 갱신
+  pendingUploadStudentId = studentId;
   // 타이틀: "{학생명} 학생 파일 추가/제거"
   document.getElementById('student-upload-title').textContent = studentName + ' 학생 파일 추가/제거';
   // 초기 상태: 칩 숨김, 업로드 버튼 활성, 저장 비활성
@@ -2427,6 +2452,7 @@ function removeStudentUploadFile() {
 function submitStudentUpload() {
   var saveBtn = document.getElementById('student-upload-save');
   if (saveBtn && saveBtn.disabled) return;
+  pendingUploadMode = 'individual';
   var processing = document.getElementById('student-upload-state-processing');
   processing.style.display = 'flex';
   lucide.createIcons();
