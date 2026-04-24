@@ -2376,6 +2376,11 @@ function closeOcrAskB(startNow) {
       b2OcrStartedIds = 'all';
     }
     b2OcrStarted = true; // 호환성 유지
+    // OCR 1건 이상 시작되면 상단 "OCR 결과 확인" 버튼 활성화
+    var ocrBtn2 = document.getElementById('btn-ocr-confirm');
+    var ocrWrap2 = document.getElementById('btn-ocr-confirm-wrap');
+    if (ocrBtn2) { ocrBtn2.disabled = false; ocrBtn2.style.opacity = '1'; ocrBtn2.style.cursor = 'pointer'; ocrBtn2.style.pointerEvents = ''; }
+    if (ocrWrap2) { ocrWrap2.removeAttribute('title'); ocrWrap2.style.cursor = ''; }
     showToast('OCR 인식을 시작합니다. 완료 후 결과를 확인해 주세요.', 'success');
     // 배너: OCR대기 → 처리중 상태로 전환
     var bannerB2 = document.getElementById('list-b-ocr-pending-banner');
