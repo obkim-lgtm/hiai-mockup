@@ -891,13 +891,7 @@
         <div style="width:32px;height:32px;border:3px solid #E6E0FF;border-top:3px solid #7E44FB;border-radius:50%;animation:spin 1s linear infinite;"></div>
         <p style="font-size:14px;color:#808080;margin:0;">업로드 중입니다...</p>
       </div>
-      <!-- 완료 -->
-      <div id="student-upload-state-done" style="display:none;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:24px 0;">
-        <i data-lucide="circle-check-big" style="width:40px;height:40px;color:#00AF3D;"></i>
-        <p style="font-size:15px;font-weight:800;color:#222;margin:0;">업로드 완료</p>
-        <p style="font-size:13px;color:#808080;margin:0;">과제 파일이 성공적으로 업로드되었습니다.</p>
-        <button onclick="document.getElementById('studentUploadModal').style.display='none'" style="height:36px;background:#7E44FB;color:white;border:none;border-radius:8px;padding:0 16px;font-size:14px;font-weight:700;font-family:inherit;cursor:pointer;">확인</button>
-      </div>
+      <!-- 완료: 업로드 성공 후 OCR 진행 여부 팝업(modal-ocr-ask-b)으로 전환 — 별도 UI 없음 -->
     </div>
   </div>
 </div>
@@ -955,7 +949,7 @@
       <div style="background:#F8F8F8;border-radius:12px;padding:16px 18px;display:flex;flex-direction:column;gap:10px;">
         <div style="display:flex;align-items:flex-start;gap:10px;">
           <i data-lucide="file-text" style="width:18px;height:18px;color:#7E44FB;flex-shrink:0;margin-top:2px;"></i>
-          <p style="font-size:15px;color:#333;margin:0;line-height:1.55;">PDF가 학생별로 분할되어 저장되었습니다.<br>OCR 인식을 <strong>지금 진행</strong>하면 AI 채점을 바로 시작할 수 있습니다.</p>
+          <p style="font-size:15px;color:#333;margin:0;line-height:1.55;">업로드된 과제물의 OCR 인식을 <strong>지금 진행</strong>하면 AI 채점을 바로 시작할 수 있습니다.</p>
         </div>
         <div style="display:flex;align-items:flex-start;gap:10px;">
           <i data-lucide="clock" style="width:18px;height:18px;color:#808080;flex-shrink:0;margin-top:2px;"></i>
@@ -2346,6 +2340,9 @@ function closeOcrAskB(startNow) {
     lucide.createIcons();
   } else {
     showToast('OCR 인식을 나중에 진행할 수 있습니다.', 'success');
+    // 배너: OCR 대기 상태 표시 (개별 업로드·일괄 업로드 공통)
+    var bannerB2 = document.getElementById('list-b-ocr-pending-banner');
+    if (bannerB2) bannerB2.style.display = 'flex';
   }
 }
 
@@ -2373,9 +2370,10 @@ function submitStudentUpload() {
   lucide.createIcons();
   setTimeout(function() {
     processing.style.display = 'none';
-    document.getElementById('student-upload-state-done').style.display = 'flex';
-    lucide.createIcons();
+    // 개별 업로드 완료 → 일괄 업로드와 동일한 OCR 진행 여부 팝업 재사용
+    document.getElementById('studentUploadModal').style.display = 'none';
     renderTable();
+    showOcrAskB();
   }, 1500);
 }
 
