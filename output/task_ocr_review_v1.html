@@ -1419,6 +1419,7 @@ var b2OcrStartedIds = null; // null | 'all' | Set<string> — 개별 업로드�
 var pendingUploadMode = 'bulk'; // 'bulk' | 'individual'
 var pendingUploadStudentId = null;
 var individuallyUploadedIds = {}; // 미업로드반에서 개별 업로드한 학생 ID 추적 ({id: true})
+var bulkUploadedClasses = {}; // 미업로드반에서 PDF 일괄 업로드한 반 번호 추적 ({classNum: true})
 function isB2OcrStartedFor(id) {
   if (b2OcrStartedIds === 'all') return true;
   if (b2OcrStartedIds && typeof b2OcrStartedIds.has === 'function') return b2OcrStartedIds.has(id);
@@ -2250,9 +2251,10 @@ function renderTableB() {
 
   if (!isUploaded) {
     // 3~5반: 미업로드 — 개별 업로드한 학생은 업로드완료/OCR 상태 반영
+    var bulkUploaded = !!bulkUploadedClasses[currentListClass];
     STUDENTS.forEach(function(s, idx) {
-      var uploaded = !!individuallyUploadedIds[s.id];
-      var ocrStarted = isB2OcrStartedFor(s.id);
+      var uploaded = bulkUploaded || !!individuallyUploadedIds[s.id];
+      var ocrStarted = isB2OcrStartedFor(s.id) || (bulkUploaded && b2OcrStartedIds === 'all');
       var statusCell, dateCell, filesCell, ocrCell;
       if (uploaded) {
         if (ocrStarted) {
@@ -2340,6 +2342,9 @@ function renderTableB() {
 function uploadAndGoList() {
   pendingUploadMode = 'bulk';
   pendingUploadStudentId = null;
+  // 현재 반을 일괄 업로드 완료 상태로 표시 → 목록에서 전원 제출·파일 수 1로 반영
+  if (currentListClass) bulkUploadedClasses[currentListClass] = true;
+  renderTable();
   showScreen('screen-list');
   showToast('과제물이 업로드되었습니다.', 'success');
   if (currentEvalType === 'B') {
