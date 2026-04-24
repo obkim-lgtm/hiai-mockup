@@ -168,7 +168,7 @@
               <div style="flex:1; display:flex; align-items:center; gap:10px; padding:0 16px;"><div class="progress-bar-bg" style="max-width:100px;"><div class="progress-bar-fill" style="width:100%;"></div></div><span style="font-size:14px; color:#333; font-weight:700;">9/9</span></div>
               <div style="width:120px; text-align:center; font-weight:700; color:#333;">12.6</div>
               <div style="width:260px; display:flex; align-items:center; justify-content:center; gap:8px;">
-                <button class="btn-primary" style="height:36px; font-size:14px;" onclick="showClassC(1)"><i data-lucide="rotate-cw" style="width:16px; height:16px;"></i>재실행</button>
+                <button class="btn-primary" style="height:36px; font-size:14px;" onclick="openRerunModal(1)"><i data-lucide="rotate-cw" style="width:16px; height:16px;"></i>재실행</button>
                 <button class="btn-secondary" style="height:36px; font-size:14px;"><i data-lucide="chart-column-decreasing" style="width:16px; height:16px;"></i>AI 점수 확인</button>
               </div>
               <div style="width:158px; text-align:center;"><button class="btn-ghost" style="justify-content:center; width:100%;" onclick="showClassC(1)">채점 결과 상세 <i data-lucide="chevron-right" style="width:14px;height:14px;"></i></button></div>
@@ -292,7 +292,7 @@
               <div style="flex:1; display:flex; align-items:center; gap:10px; padding:0 16px;"><div class="progress-bar-bg" style="max-width:100px;"><div class="progress-bar-fill" style="width:100%;"></div></div><span style="font-size:14px; color:#333; font-weight:700;">9/9</span></div>
               <div style="width:120px; text-align:center; font-weight:700; color:#333;">12.6</div>
               <div style="width:260px; display:flex; align-items:center; justify-content:center; gap:8px;">
-                <button class="btn-primary" style="height:36px; font-size:14px;" onclick="showClassB(1)"><i data-lucide="rotate-cw" style="width:16px; height:16px;"></i>재실행</button>
+                <button class="btn-primary" style="height:36px; font-size:14px;" onclick="openRerunModal(1)"><i data-lucide="rotate-cw" style="width:16px; height:16px;"></i>재실행</button>
                 <button class="btn-secondary" style="height:36px; font-size:14px;"><i data-lucide="chart-column-decreasing" style="width:16px; height:16px;"></i>AI 점수 확인</button>
               </div>
               <div style="width:158px; text-align:center;"><button class="btn-ghost" style="justify-content:center; width:100%;" onclick="showClassB(1)">채점 결과 상세 <i data-lucide="chevron-right" style="width:14px;height:14px;"></i></button></div>
@@ -305,7 +305,7 @@
               <div style="flex:1; display:flex; align-items:center; gap:10px; padding:0 16px;"><div class="progress-bar-bg" style="max-width:100px;"><div class="progress-bar-fill" style="width:100%;"></div></div><span style="font-size:14px; color:#333; font-weight:700;">9/9</span></div>
               <div style="width:120px; text-align:center; font-weight:700; color:#333;">11.4</div>
               <div style="width:260px; display:flex; align-items:center; justify-content:center; gap:8px;">
-                <button class="btn-primary" style="height:36px; font-size:14px;" onclick="showClassB(2)"><i data-lucide="rotate-cw" style="width:16px; height:16px;"></i>재실행</button>
+                <button class="btn-primary" style="height:36px; font-size:14px;" onclick="openRerunModal(2)"><i data-lucide="rotate-cw" style="width:16px; height:16px;"></i>재실행</button>
                 <button class="btn-secondary" style="height:36px; font-size:14px;"><i data-lucide="chart-column-decreasing" style="width:16px; height:16px;"></i>AI 점수 확인</button>
               </div>
               <div style="width:158px; text-align:center;"><button class="btn-ghost" style="justify-content:center; width:100%;" onclick="showClassB(2)">채점 결과 상세 <i data-lucide="chevron-right" style="width:14px;height:14px;"></i></button></div>
@@ -669,8 +669,9 @@
     <!-- Body -->
     <div style="padding:0 24px 24px 24px; display:flex; flex-direction:column; gap:20px;">
       <div style="font-size:14px; color:#333; line-height:1.55;">
-        AI 채점을 재실행합니다. 채점 대상 학생을 선택하고 채점 수준을 설정한 뒤 실행 버튼을 눌러주세요.<br>
-        과제를 제출하지 않은 학생은 선택할 수 없습니다.
+        AI Assistant 자동 채점을 진행할 학생과 AI 채점 수준을 선택해 주세요.<br>
+        AI 채점 결과를 기반으로 채점 수준을 조정하여 해당 학생에 대한 AI Assistant 자동 채점을 재실행합니다.<br>
+        AI는 선생님을 보조하는 역할을 하며 채점의 최종 권한은 선생님에게만 있습니다.
       </div>
 
       <!-- 채점 대상 -->
