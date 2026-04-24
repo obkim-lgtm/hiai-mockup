@@ -431,7 +431,7 @@
               <span style="font-size:13px; color:#7A5200;">파일이 업로드된 상태입니다. OCR 인식을 진행하면 AI 채점을 시작할 수 있습니다.</span>
             </div>
           </div>
-          <button onclick="showOcrAskB()" style="flex-shrink:0;height:32px;background:#E07000;color:white;border:none;border-radius:6px;padding:0 14px;font-size:13px;font-weight:700;font-family:inherit;cursor:pointer;white-space:nowrap;display:inline-flex;align-items:center;gap:6px;">
+          <button onclick="startOcrFromBanner()" style="flex-shrink:0;height:32px;background:#E07000;color:white;border:none;border-radius:6px;padding:0 14px;font-size:13px;font-weight:700;font-family:inherit;cursor:pointer;white-space:nowrap;display:inline-flex;align-items:center;gap:6px;">
             <i data-lucide="scan-text" style="width:14px;height:14px;"></i>지금 OCR 진행
           </button>
         </div>
@@ -1212,7 +1212,7 @@ function renderTable() {
 
   // 스피너 애니메이션
   var style = document.createElement('style');
-  style.textContent = '@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}.spin{animation:spin 1s linear infinite;}';
+  style.textContent = '@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}.spin{animation:spin 1s linear infinite;}.ocr-progress-bg{background:#DCE6FF;border-radius:4px;height:6px;width:100%;overflow:hidden;}.ocr-progress-fill{background:#5890FF;height:100%;border-radius:4px;width:0%;transition:width 0.4s linear;}';
   document.head.appendChild(style);
 }
 
@@ -2357,6 +2357,13 @@ function uploadAndGoList() {
   }
 }
 
+// 배너의 "지금 OCR 진행" 버튼 → 팝업 없이 바로 진행(일괄)
+function startOcrFromBanner() {
+  pendingUploadMode = 'bulk';
+  pendingUploadStudentId = null;
+  closeOcrAskB(true);
+}
+
 function showOcrAskB() {
   var modal = document.getElementById('modal-ocr-ask-b');
   if (modal) { modal.style.display = 'flex'; lucide.createIcons(); }
@@ -2388,14 +2395,27 @@ function closeOcrAskB(startNow) {
       bannerB2.style.background = '#F2F5FF';
       bannerB2.style.borderColor = '#B8C9FF';
       bannerB2.innerHTML =
-        '<div style="display:flex;align-items:center;gap:10px;">' +
+        '<div style="display:flex;align-items:center;gap:12px;flex:1;">' +
           '<i data-lucide="loader" style="width:16px;height:16px;color:#5890FF;flex-shrink:0;" class="spin"></i>' +
-          '<div style="display:flex;flex-direction:column;gap:3px;">' +
-            '<span style="font-size:14px;color:#5890FF;font-weight:800;">OCR 인식이 진행 중입니다.</span>' +
-            '<span style="font-size:13px;color:#4A6FCC;">완료되면 결과를 확인할 수 있습니다.</span>' +
+          '<div style="display:flex;flex-direction:column;gap:6px;flex:1;min-width:0;">' +
+            '<div style="display:flex;align-items:center;justify-content:space-between;gap:12px;">' +
+              '<span style="font-size:14px;color:#5890FF;font-weight:800;">OCR 인식이 진행 중입니다.</span>' +
+              '<span id="ocr-progress-pct" style="font-size:13px;color:#5890FF;font-weight:700;flex-shrink:0;">0%</span>' +
+            '</div>' +
+            '<div class="ocr-progress-bg"><div id="ocr-progress-fill" class="ocr-progress-fill"></div></div>' +
           '</div>' +
         '</div>';
       bannerB2.style.display = 'flex';
+      // 프로그레스바 애니메이션 (0→100% / 약 4.5초)
+      var fill = document.getElementById('ocr-progress-fill');
+      var pct = document.getElementById('ocr-progress-pct');
+      var p = 0;
+      var progTimer = setInterval(function(){
+        p += 5 + Math.random()*8;
+        if (p >= 100) { p = 100; clearInterval(progTimer); }
+        if (fill) fill.style.width = p + '%';
+        if (pct) pct.textContent = Math.round(p) + '%';
+      }, 220);
       // 5초 후 자동 숨김
       setTimeout(function() {
         if (bannerB2) bannerB2.style.display = 'none';
@@ -2419,7 +2439,7 @@ function closeOcrAskB(startNow) {
             '<span style="font-size:13px; color:#B53040;">파일이 업로드된 상태입니다. OCR 인식을 진행하면 AI 채점을 시작할 수 있습니다.</span>' +
           '</div>' +
         '</div>' +
-        '<button onclick="showOcrAskB()" style="flex-shrink:0;height:32px;background:#DB3E51;color:white;border:none;border-radius:6px;padding:0 14px;font-size:13px;font-weight:700;font-family:inherit;cursor:pointer;white-space:nowrap;display:inline-flex;align-items:center;gap:6px;">' +
+        '<button onclick="startOcrFromBanner()" style="flex-shrink:0;height:32px;background:#DB3E51;color:white;border:none;border-radius:6px;padding:0 14px;font-size:13px;font-weight:700;font-family:inherit;cursor:pointer;white-space:nowrap;display:inline-flex;align-items:center;gap:6px;">' +
           '<i data-lucide="scan-text" style="width:14px;height:14px;"></i>지금 OCR 진행' +
         '</button>';
       bannerB2.style.display = 'flex';
