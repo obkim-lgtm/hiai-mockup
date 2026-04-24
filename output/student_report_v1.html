@@ -146,6 +146,7 @@ const _qid = _q && _q.get("id");
 const _qname = _q && _q.get("name");
 const _qcls = _q && _q.get("cls");
 const _noReport = _q && _q.get("noReport") === "1";
+const _reason   = _q && _q.get("reason"); // "unscored" | "pending"
 const STUDENT = {
   id:   _qid  || "10201",
   name: _qname|| "김하나",
@@ -461,24 +462,49 @@ function App(){
   if(_noReport) return (
     <Shell>
       <div style={{display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:"80px 24px",textAlign:"center",gap:20}}>
-        <div style={{width:80,height:80,borderRadius:"50%",background:"#F8F8F8",border:"2px dashed #D9D9D9",display:"flex",alignItems:"center",justifyContent:"center",fontSize:36}}>📋</div>
-        <div>
-          <div style={{fontSize:20,fontWeight:900,color:"#333",marginBottom:10}}>
-            {nick(STUDENT.name)} 리포트가 아직 생성되지 않았어요
+
+        {_reason==="pending" ? (<>
+          {/* 채점 완료 · 교사 미생성 */}
+          <div style={{width:80,height:80,borderRadius:"50%",background:"#F2ECFF",display:"flex",alignItems:"center",justifyContent:"center",fontSize:36}}>✨</div>
+          <div>
+            <div style={{fontSize:20,fontWeight:900,color:"#333",marginBottom:10}}>
+              AI 채점이 완료됐어요
+            </div>
+            <div style={{fontSize:15,color:"#808080",lineHeight:1.7}}>
+              채점 결과를 바탕으로 리포트를 생성할 수 있어요.<br/>
+              내용을 확인한 후 리포트를 생성해 학생에게 전달해 보세요.
+            </div>
           </div>
-          <div style={{fontSize:15,color:"#808080",lineHeight:1.7}}>
-            AI 채점이 완료되면 리포트를 생성할 수 있어요.<br/>
-            채점이 끝난 과제가 있는지 먼저 확인해 주세요.
+          <div style={{display:"flex",gap:10,marginTop:8}}>
+            <button className="btn-out" onClick={()=>location.href="class_report_v1.html?tab=student"}>
+              <Icon name="arrow-left" size={16}/>학생 목록으로
+            </button>
+            <button className="btn-pri" onClick={()=>location.href=`student_report_v1.html?id=${STUDENT.id}&name=${encodeURIComponent(STUDENT.name)}&cls=${_qcls||"1-2"}`}>
+              <Icon name="wand-sparkles" size={16}/>리포트 생성하기
+            </button>
           </div>
-        </div>
-        <div style={{display:"flex",gap:10,marginTop:8}}>
-          <button className="btn-out" onClick={()=>location.href="class_report_v1.html?tab=student"}>
-            <Icon name="arrow-left" size={16}/>학생 목록으로
-          </button>
-          <button className="btn-pri" onClick={()=>location.href="scoring_list_v1.html"}>
-            <Icon name="bot" size={16}/>AI 채점 화면으로
-          </button>
-        </div>
+        </>) : (<>
+          {/* 채점 미완료 · 미제출 포함 */}
+          <div style={{width:80,height:80,borderRadius:"50%",background:"#F8F8F8",border:"2px dashed #D9D9D9",display:"flex",alignItems:"center",justifyContent:"center",fontSize:36}}>📋</div>
+          <div>
+            <div style={{fontSize:20,fontWeight:900,color:"#333",marginBottom:10}}>
+              리포트가 아직 생성되지 않았어요
+            </div>
+            <div style={{fontSize:15,color:"#808080",lineHeight:1.7}}>
+              미제출·미채점 과제가 있어 리포트를 만들 수 없어요.<br/>
+              AI 채점을 먼저 완료해 주세요.
+            </div>
+          </div>
+          <div style={{display:"flex",gap:10,marginTop:8}}>
+            <button className="btn-out" onClick={()=>location.href="class_report_v1.html?tab=student"}>
+              <Icon name="arrow-left" size={16}/>학생 목록으로
+            </button>
+            <button className="btn-pri" onClick={()=>location.href="scoring_list_v1.html"}>
+              <Icon name="bot" size={16}/>AI 채점 화면으로
+            </button>
+          </div>
+        </>)}
+
       </div>
     </Shell>
   );

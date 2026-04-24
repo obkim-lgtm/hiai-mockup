@@ -454,7 +454,7 @@ function StudentListView({selectedClass, setSelectedClass}){
                     {r.hasReport
                       ? <a href={`student_report_v1.html?id=${r.id}&name=${encodeURIComponent(r.name)}&cls=${r.cls}`}
                            style={{color:"#7E44FB",fontWeight:800,fontSize:14,textDecoration:"none"}}>상세 ›</a>
-                      : <a href={`student_report_v1.html?id=${r.id}&name=${encodeURIComponent(r.name)}&cls=${r.cls}&noReport=1`}
+                      : <a href={`student_report_v1.html?id=${r.id}&name=${encodeURIComponent(r.name)}&cls=${r.cls}&noReport=1&reason=${r.missing>0?"unscored":"pending"}`}
                            style={{display:"inline-flex",alignItems:"center",gap:4,color:"#B3B3B3",fontWeight:800,fontSize:12,textDecoration:"none",
                              background:"#F8F8F8",border:"1px solid #E6E6E6",borderRadius:6,padding:"4px 10px"}}>
                            미생성
