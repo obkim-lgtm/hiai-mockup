@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<link rel="icon" href="../screens/favicon_src.png" type="image/png"/>
+<title>채점 결과 대시보드 v1 | HiAI</title>
+<link rel="stylesheet" href="https://cdn.rawgit.com/moonspam/NanumSquareRound/master/nanumsquareround.min.css"/>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/prop-types@15.8.1/prop-types.min.js"></script>
+<script src="https://unpkg.com/recharts@2.12.7/umd/Recharts.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<style>
+  *{font-family:'NanumSquareRound',-apple-system,sans-serif;box-sizing:border-box}
+  body{margin:0;background:#EDF1FC;color:#222;font-size:16px;min-width:1280px}
+  a{text-decoration:none;color:inherit}
+
+  /* GNB */
+  .gnb{background:#fff;height:98px;border-bottom:1px solid #D9D9D9;display:flex;align-items:center;justify-content:center;padding:0 36px}
+  .gnb-inner{flex:1;max-width:1280px;display:flex;align-items:center;justify-content:space-between;padding:0 36px}
+  .gnb-menu{display:flex;align-items:center;gap:52px;font-size:20px}
+
+  /* Page head */
+  .page-head{background:linear-gradient(90deg,#6562F5 4%,#9B68F3 98%);height:86px;display:flex;align-items:center;justify-content:center;padding:0 36px}
+  .page-head-inner{flex:1;max-width:1280px;display:flex;align-items:center;gap:12px;padding:0 36px;color:#fff}
+  .page-head-inner h1{font-size:28px;font-weight:800;margin:0}
+  .page-head-inner .sep{width:1px;height:24px;background:rgba(255,255,255,.5)}
+
+  /* Wrap, Tabs, Panel */
+  .wrap{max-width:1200px;margin:0 auto;padding:40px 36px 80px}
+  .tabs{display:flex;gap:12px}
+  .tab{flex:1;height:60px;background:#CBD6F4;border-radius:20px 20px 0 0;display:flex;align-items:center;justify-content:center;color:#000;font-weight:700;font-size:20px;cursor:pointer}
+  .tab.on{background:#fff;color:#341761;font-weight:800}
+  .panel{background:#fff;border-radius:0 0 20px 20px;padding:28px 24px;box-shadow:0 4px 36px rgba(95,102,178,.16)}
+
+  /* Title */
+  .title-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;gap:24px}
+  .title-row h2{font-size:24px;font-weight:700;margin:0;color:#333}
+  .title-desc{color:#494949;font-size:16px;margin-top:8px;line-height:1.55}
+
+  /* Buttons */
+  .btn{display:inline-flex;align-items:center;gap:8px;height:36px;padding:0 16px;border-radius:8px;font-size:16px;font-weight:700;cursor:pointer;border:1px solid transparent;white-space:nowrap;font-family:inherit}
+  .btn-pri{background:#7E44FB;color:#fff;border:none}
+  .btn-pri:hover{background:#6D34EB}
+  .btn-sec{background:#fff;color:#7E44FB;border-color:#B28FFD}
+  .btn-sec:hover{background:#F7F4FF}
+  .btn-out{background:#fff;color:#494949;border-color:#D9D9D9}
+  .btn-out:hover{background:#F8F8F8}
+
+  /* KPI cards */
+  .kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:22px}
+  .kpi-card{background:#fff;border:1px solid #E6E6E6;border-radius:14px;padding:14px 18px;display:flex;flex-direction:column;gap:6px}
+  .kpi-card.accent{background:linear-gradient(135deg,#F7F4FF 0%,#FFFFFF 60%);border-color:#E0D2FF}
+  .kpi-label{display:flex;align-items:center;gap:6px;font-size:13px;color:#808080;font-weight:700}
+  .kpi-value{font-size:28px;font-weight:800;color:#222631;line-height:1.2;display:flex;align-items:baseline;gap:4px}
+  .kpi-value .unit{font-size:16px;font-weight:700;color:#808080}
+  .kpi-sub{font-size:12px;color:#808080;font-weight:600;margin-top:2px}
+  .kpi-sub strong{color:#7E44FB}
+
+  /* Chart grid */
+  .chart-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}
+  .chart-card{background:#fff;border:1px solid #E6E6E6;border-radius:14px;padding:14px 18px 16px;display:flex;flex-direction:column;gap:6px}
+  .chart-card.span2{grid-column:span 2}
+  .chart-title{display:flex;align-items:center;gap:8px;font-size:16px;font-weight:800;color:#333}
+  .chart-sub{font-size:13px;color:#808080;font-weight:600}
+  .chart-legend{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-top:8px}
+  .legend-dot{display:flex;align-items:center;gap:5px;font-size:12px;color:#808080;font-weight:700}
+  .legend-dot .dot{width:10px;height:10px;border-radius:3px}
+
+  /* Student table */
+  .stu-section{margin-top:18px;border:1px solid #E6E6E6;border-radius:14px;overflow:hidden;background:#fff}
+  .stu-section-head{display:flex;align-items:center;justify-content:space-between;padding:12px 18px;background:#F8F8F8;border-bottom:1px solid #F0F0F0}
+  .stu-section-head h3{margin:0;font-size:16px;font-weight:800;color:#222;display:flex;align-items:center;gap:8px}
+  .stu-search{display:flex;align-items:center;gap:8px;background:white;border:1px solid #D9D9D9;border-radius:8px;padding:6px 12px;width:240px}
+  .stu-search input{flex:1;border:none;outline:none;font-size:13px;font-family:inherit;background:transparent}
+  table.stu-table{width:100%;border-collapse:collapse;font-size:14px}
+  table.stu-table thead th{background:#F8F8F8;color:#494949;font-weight:700;text-align:center;padding:12px 8px;border-bottom:1px solid #E6E6E6;font-size:13px;cursor:pointer;user-select:none}
+  table.stu-table thead th:hover{background:#F0F0F0}
+  table.stu-table tbody td{padding:12px 8px;border-bottom:1px solid #F5F5F5;text-align:center;color:#222}
+  table.stu-table tbody tr:hover{background:#FAFAFE;cursor:pointer}
+  .badge{display:inline-flex;align-items:center;padding:2px 10px;border-radius:100px;font-size:11px;font-weight:800}
+  .b-done{background:#F1F9F3;color:#00AF3D}
+  .b-no{background:#FFEFEF;color:#DB3E51}
+  .b-todo{background:#FFF4E6;color:#E07000}
+  .grade-badge{display:inline-flex;align-items:center;justify-content:center;min-width:28px;height:24px;padding:0 8px;border-radius:6px;font-size:12px;font-weight:800}
+  .g-A{background:#E0F4E6;color:#008C32}
+  .g-B{background:#E5DDFF;color:#5E29D8}
+  .g-C{background:#FFEDD5;color:#E07000}
+  .g-D{background:#FFE4E4;color:#DB3E51}
+  .g-F{background:#F0F0F0;color:#808080}
+
+  .link{color:#7E44FB;font-weight:700;display:inline-flex;align-items:center;gap:4px;cursor:pointer;font-size:13px}
+  .link:hover{text-decoration:underline}
+</style>
+</head>
+<body>
+
+<!-- GNB -->
+<div class="gnb">
+  <div class="gnb-inner">
+    <div style="display:flex;align-items:center;gap:8px">
+      <div style="width:58px;height:42px;overflow:hidden;position:relative;flex-shrink:0">
+        <img src="../screens/logo_icon.png" style="position:absolute;left:50%;transform:translateX(-50%);height:100%;width:auto;object-fit:cover" alt="">
+      </div>
+      <div style="position:relative;width:150px;height:41px">
+        <img src="../screens/logo_text_top.svg" style="position:absolute;top:0;left:0;width:79.842px;height:16.284px" alt="">
+        <img src="../screens/logo_text_bottom.svg" style="position:absolute;top:24.08px;left:0.31px;width:149.692px;height:16.422px" alt="">
+      </div>
+    </div>
+    <div class="gnb-menu">
+      <span style="color:#7E44FB;font-weight:800">나의 평가</span>
+      <span style="color:#000;font-weight:700">평가 자료실</span>
+      <span style="color:#000;font-weight:700">고객센터</span>
+    </div>
+    <div style="display:flex;align-items:center;gap:12px">
+      <div style="width:36px;height:36px;background:#F0EAFF;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><i data-lucide="bot" style="width:20px;height:20px;color:#7E44FB;"></i></div>
+      <span style="font-size:20px;font-weight:700">김동* 님</span>
+    </div>
+  </div>
+</div>
+
+<!-- Page head -->
+<div class="page-head">
+  <div class="page-head-inner">
+    <button onclick="location.href='scoring_detail_v1.html'" style="width:36px;height:36px;background:rgba(255,255,255,0.2);border:none;border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><i data-lucide="arrow-left" style="width:20px;height:20px;color:white;"></i></button>
+    <h1>1학년 국어</h1>
+    <span class="sep"></span>
+    <span style="font-size:24px;font-weight:700">채점 결과 대시보드</span>
+  </div>
+</div>
+
+<div class="wrap">
+  <!-- Tabs -->
+  <div class="tabs">
+    <div class="tab" onclick="location.href='eval_home_v6_260403.html'">평가 홈</div>
+    <div class="tab">평가 대상</div>
+    <div class="tab" onclick="location.href='evaluation_design_v3_260403.html'">평가 설계</div>
+    <div class="tab" onclick="location.href='task_ocr_review_v1.html'">과제물 관리</div>
+    <div class="tab on">AI 채점</div>
+    <div class="tab" onclick="location.href='class_report_v1.html'">평가 리포트</div>
+  </div>
+
+  <div class="panel">
+    <!-- Title row -->
+    <div class="title-row">
+      <div>
+        <h2>1-1반 채점 결과 대시보드</h2>
+        <div class="title-desc">학급 전체의 채점 진행 현황과 성취 수준을 한눈에 파악할 수 있습니다.</div>
+      </div>
+      <div style="display:flex;gap:8px;flex-shrink:0">
+        <button class="btn btn-out" onclick="location.href='scoring_detail_v1.html'">
+          <i data-lucide="list" style="width:16px;height:16px"></i>
+          채점 진행 결과로
+        </button>
+      </div>
+    </div>
+
+    <!-- React 마운트 영역 -->
+    <div id="dashboard-root"></div>
+  </div>
+</div>
+
+<script>lucide.createIcons();</script>
+
+<script type="text/babel">
+const {useState,useMemo,useEffect} = React;
+const {ResponsiveContainer,BarChart,Bar,XAxis,YAxis,Tooltip,Cell,LabelList,CartesianGrid} = Recharts;
+
+/* ─── 더미 데이터 — 1-1반 21명 (데미안 독서 감상문 평가) ─── */
+/* 만점 50점 = 루브릭 합 (구체성 15 + 분량 15 + 창의성 15 = 45) + 보너스 영역 (시연 단순화: total = rubrics 합) */
+const STUDENTS = [
+  {id:'10101', name:'김서윤', total:42, status:'완료',  rubrics:[15,15,12], questions:[10,8,7,9,8]},
+  {id:'10102', name:'이준호', total:38, status:'완료',  rubrics:[10,15,13], questions:[9,8,5,9,7]},
+  {id:'10103', name:'박지민', total:30, status:'완료',  rubrics:[15,10,5],  questions:[7,7,4,7,5]},
+  {id:'10104', name:'최유진', total:45, status:'완료',  rubrics:[15,15,15], questions:[10,9,8,10,8]},
+  {id:'10105', name:'정현우', total:35, status:'완료',  rubrics:[10,10,15], questions:[8,7,5,9,6]},
+  {id:'10106', name:'한가람', total:33, status:'완료',  rubrics:[10,10,13], questions:[8,7,5,8,5]},
+  {id:'10107', name:'오세훈', total:28, status:'완료',  rubrics:[10,8,10],  questions:[6,6,4,7,5]},
+  {id:'10108', name:'한지우', total:40, status:'완료',  rubrics:[15,10,15], questions:[9,8,7,9,7]},
+  {id:'10109', name:'권나리', total:36, status:'완료',  rubrics:[10,11,15], questions:[8,8,5,9,6]},
+  {id:'10110', name:'이민재', total:25, status:'완료',  rubrics:[5,10,10],  questions:[5,6,3,6,5]},
+  {id:'10111', name:'김도윤', total:43, status:'완료',  rubrics:[15,15,13], questions:[10,9,7,10,7]},
+  {id:'10112', name:'박지유', total:38, status:'완료',  rubrics:[12,11,15], questions:[9,8,6,9,6]},
+  {id:'10113', name:'장하늘', total:32, status:'완료',  rubrics:[10,10,12], questions:[7,7,5,8,5]},
+  {id:'10114', name:'문서연', total:45, status:'완료',  rubrics:[15,15,15], questions:[10,9,8,10,8]},
+  {id:'10115', name:'송지호', total:34, status:'완료',  rubrics:[12,10,12], questions:[8,7,5,8,6]},
+  {id:'10116', name:'유나경', total:41, status:'완료',  rubrics:[14,12,15], questions:[9,9,7,9,7]},
+  {id:'10117', name:'배수현', total:18, status:'완료',  rubrics:[5,5,8],    questions:[4,4,3,4,3]},
+  {id:'10118', name:'홍시우', total:39, status:'완료',  rubrics:[12,12,15], questions:[9,8,6,9,7]},
+  {id:'10119', name:'노유진', total:null, status:'미응시', rubrics:null, questions:null},
+  {id:'10120', name:'전민호', total:null, status:'미제출', rubrics:null, questions:null},
+  {id:'10121', name:'심지원', total:null, status:'미응시', rubrics:null, questions:null}
+];
+
+const MAX_TOTAL = 50;
+const RUBRICS = [
+  {idx:0, name:'작성 내용의 구체성', max:15},
+  {idx:1, name:'작성 분량 수준',     max:15},
+  {idx:2, name:'작성의 창의성',     max:15}
+];
+const QUESTIONS = [
+  {idx:0, label:'문항 1', short:'줄거리 요약'},
+  {idx:1, label:'문항 2', short:'인상 깊은 인물'},
+  {idx:2, label:'문항 3', short:'갈등 구조 분석'},
+  {idx:3, label:'문항 4', short:'작가 주제'},
+  {idx:4, label:'문항 5', short:'삶에 적용'}
+];
+
+/* ─── 등급 산정 (만점 50 기준) ─── */
+function gradeOf(total){
+  if(total === null || total === undefined) return null;
+  if(total >= 45) return 'A';
+  if(total >= 35) return 'B';
+  if(total >= 25) return 'C';
+  if(total >= 15) return 'D';
+  return 'F';
+}
+const GRADE_COLORS = {A:'#00AF3D', B:'#5E29D8', C:'#E07000', D:'#DB3E51', F:'#808080'};
+const GRADE_RANGE  = {A:'45~50', B:'35~44', C:'25~34', D:'15~24', F:'0~14'};
+
+/* ─── KPI 통계 계산 ─── */
+function calcStats(){
+  const completed = STUDENTS.filter(s => s.total !== null);
+  const totalCount = STUDENTS.length;
+  const completedCount = completed.length;
+  const noShowCount = STUDENTS.filter(s => s.status === '미응시' || s.status === '미제출').length;
+  const sum = completed.reduce((a,s)=>a + s.total, 0);
+  const mean = completedCount > 0 ? sum/completedCount : 0;
+  const variance = completedCount > 0
+    ? completed.reduce((a,s)=>a + Math.pow(s.total - mean, 2), 0) / completedCount
+    : 0;
+  const sd = Math.sqrt(variance);
+  const max = completed.length ? Math.max(...completed.map(s=>s.total)) : 0;
+  const min = completed.length ? Math.min(...completed.map(s=>s.total)) : 0;
+  return {totalCount, completedCount, noShowCount, mean, sd, max, min};
+}
+
+function calcGradeDist(){
+  const dist = {A:0,B:0,C:0,D:0,F:0};
+  STUDENTS.forEach(s=>{
+    const g = gradeOf(s.total);
+    if(g) dist[g]++;
+  });
+  return ['A','B','C','D','F'].map(g => ({grade:g, count:dist[g], range:GRADE_RANGE[g]}));
+}
+
+function calcRubricsAvg(){
+  const completed = STUDENTS.filter(s => s.rubrics);
+  return RUBRICS.map(r => {
+    const sum = completed.reduce((a,s)=>a + s.rubrics[r.idx], 0);
+    const avg = completed.length ? sum/completed.length : 0;
+    return {name:r.name, avg:Number(avg.toFixed(1)), max:r.max, pct: avg/r.max};
+  });
+}
+
+function calcQuestionsAvg(){
+  const completed = STUDENTS.filter(s => s.questions);
+  return QUESTIONS.map(q => {
+    const sum = completed.reduce((a,s)=>a + s.questions[q.idx], 0);
+    const avg = completed.length ? sum/completed.length : 0;
+    return {label:q.label, short:q.short, avg:Number(avg.toFixed(1)), max:10, pct: avg/10};
+  });
+}
+
+/* ─── 컴포넌트 ─── */
+function App(){
+  const stats = useMemo(()=>calcStats(), []);
+  const meanGrade = gradeOf(Math.round(stats.mean));
+  const progressPct = Math.round(stats.completedCount / stats.totalCount * 100);
+
+  return (
+    <>
+      {/* KPI 카드 */}
+      <div className="kpi-grid">
+        <div className="kpi-card accent">
+          <div className="kpi-label">채점 진행률</div>
+          <div className="kpi-value">{stats.completedCount}<span className="unit">/ {stats.totalCount}명</span></div>
+          <div className="kpi-sub"><strong>{progressPct}%</strong> 완료 · 미응시·미제출 {stats.noShowCount}명</div>
+        </div>
+        <div className="kpi-card">
+          <div className="kpi-label">학급 평균</div>
+          <div className="kpi-value">{stats.mean.toFixed(1)}<span className="unit">/ {MAX_TOTAL}점</span></div>
+          <div className="kpi-sub">평균 등급 <strong>{meanGrade}</strong> · 50점 만점</div>
+        </div>
+        <div className="kpi-card">
+          <div className="kpi-label">점수 편차 (표준편차)</div>
+          <div className="kpi-value">{stats.sd.toFixed(1)}<span className="unit">점</span></div>
+          <div className="kpi-sub">학생 간 점수 차이 — 클수록 분산도가 큼</div>
+        </div>
+        <div className="kpi-card">
+          <div className="kpi-label">최고 / 최저</div>
+          <div className="kpi-value">{stats.max}<span className="unit">/ {stats.min}점</span></div>
+          <div className="kpi-sub">점수 범위 <strong>{stats.max - stats.min}점</strong></div>
+        </div>
+      </div>
+
+      {/* 차트 그리드 */}
+      <div className="chart-grid">
+        <ChartCard title="성취 등급 분포" icon="award" sub="A~F 학생 수">
+          <DistributionChart/>
+        </ChartCard>
+        <ChartCard title="채점요소별 평균" icon="layers" sub="채점기준 3개 항목 (만점 15점)">
+          <RubricsChart/>
+        </ChartCard>
+        <ChartCard title="문항별 평균 점수" icon="list-ordered" sub="문항 1~5 학급 평균 (만점 10점)" span2={true}>
+          <QuestionsChart/>
+        </ChartCard>
+      </div>
+
+      {/* 학생 점수표 */}
+      <StudentTable/>
+    </>
+  );
+}
+
+function ChartCard({title, sub, span2, children}){
+  return (
+    <div className={"chart-card" + (span2 ? " span2" : "")}>
+      <div className="chart-title">{title}</div>
+      <div className="chart-sub">{sub}</div>
+      {children}
+    </div>
+  );
+}
+
+function DistributionChart(){
+  const data = useMemo(()=>calcGradeDist(), []);
+  return (
+    <>
+      <ResponsiveContainer width="100%" height={220}>
+        <BarChart data={data} margin={{top:16,right:8,left:-20,bottom:0}}>
+          <CartesianGrid strokeDasharray="3 3" stroke="#F0F0F0" vertical={false}/>
+          <XAxis dataKey="grade" tick={{fontSize:14,fill:'#494949',fontWeight:700}} axisLine={false} tickLine={false}/>
+          <YAxis tick={{fontSize:12,fill:'#B3B3B3'}} axisLine={false} tickLine={false} allowDecimals={false}/>
+          <Tooltip
+            contentStyle={{fontSize:13,borderRadius:8,border:'1px solid #E6E6E6'}}
+            formatter={(v,n,p)=>[`${v}명 (${p.payload.range}점)`, p.payload.grade + '등급']}
+            labelFormatter={()=>''}
+          />
+          <Bar dataKey="count" radius={[6,6,0,0]} maxBarSize={56}>
+            {data.map((d,i)=>(
+              <Cell key={i} fill={GRADE_COLORS[d.grade]}/>
+            ))}
+            <LabelList dataKey="count" position="top" style={{fontSize:13,fontWeight:800,fill:'#333'}} formatter={v => v ? v + '명' : ''}/>
+          </Bar>
+        </BarChart>
+      </ResponsiveContainer>
+      <div className="chart-legend">
+        {['A','B','C','D','F'].map(g=>(
+          <div key={g} className="legend-dot">
+            <div className="dot" style={{background:GRADE_COLORS[g]}}/>
+            <span>{g} ({GRADE_RANGE[g]}점)</span>
+          </div>
+        ))}
+      </div>
+    </>
+  );
+}
+
+function RubricsChart(){
+  const data = useMemo(()=>calcRubricsAvg(), []);
+  return (
+    <>
+      <ResponsiveContainer width="100%" height={220}>
+        <BarChart data={data} layout="vertical" margin={{top:8,right:48,left:36,bottom:0}}>
+          <CartesianGrid strokeDasharray="3 3" stroke="#F0F0F0" horizontal={false}/>
+          <XAxis type="number" domain={[0, 15]} tick={{fontSize:12,fill:'#B3B3B3'}} axisLine={false} tickLine={false}/>
+          <YAxis type="category" dataKey="name" tick={{fontSize:12,fill:'#494949',fontWeight:700}} axisLine={false} tickLine={false} width={100}/>
+          <Tooltip
+            contentStyle={{fontSize:13,borderRadius:8,border:'1px solid #E6E6E6'}}
+            formatter={(v,n,p)=>[`${v} / 15점 (${Math.round(p.payload.pct*100)}%)`, '학급 평균']}
+            labelFormatter={l=>l}
+          />
+          <Bar dataKey="avg" radius={[0,6,6,0]} maxBarSize={26}>
+            {data.map((d,i)=>{
+              const fill = d.pct >= 0.8 ? '#00AF3D' : d.pct >= 0.6 ? '#7E44FB' : '#FF8C4C';
+              return <Cell key={i} fill={fill}/>;
+            })}
+            <LabelList dataKey="avg" position="right" style={{fontSize:13,fontWeight:800,fill:'#333'}}/>
+          </Bar>
+        </BarChart>
+      </ResponsiveContainer>
+      <div className="chart-legend">
+        <div className="legend-dot"><div className="dot" style={{background:'#00AF3D'}}/><span>목표 달성 (80%↑)</span></div>
+        <div className="legend-dot"><div className="dot" style={{background:'#7E44FB'}}/><span>성장 중 (60~80%)</span></div>
+        <div className="legend-dot"><div className="dot" style={{background:'#FF8C4C'}}/><span>집중 지원 필요 (60%↓)</span></div>
+      </div>
+    </>
+  );
+}
+
+function QuestionsChart(){
+  const data = useMemo(()=>calcQuestionsAvg(), []);
+  return (
+    <>
+      <ResponsiveContainer width="100%" height={240}>
+        <BarChart data={data} margin={{top:16,right:16,left:-12,bottom:24}}>
+          <CartesianGrid strokeDasharray="3 3" stroke="#F0F0F0" vertical={false}/>
+          <XAxis
+            dataKey="label"
+            tick={({x,y,payload})=>{
+              const item = data.find(d => d.label === payload.value);
+              return (
+                <g transform={`translate(${x},${y+8})`}>
+                  <text textAnchor="middle" fontSize={13} fontWeight={700} fill="#494949">{payload.value}</text>
+                  <text textAnchor="middle" fontSize={11} fill="#808080" y={16}>{item ? item.short : ''}</text>
+                </g>
+              );
+            }}
+            axisLine={false} tickLine={false} interval={0} height={40}
+          />
+          <YAxis domain={[0,10]} tick={{fontSize:12,fill:'#B3B3B3'}} axisLine={false} tickLine={false}/>
+          <Tooltip
+            contentStyle={{fontSize:13,borderRadius:8,border:'1px solid #E6E6E6'}}
+            formatter={(v,n,p)=>[`${v} / 10점 (${Math.round(p.payload.pct*100)}%)`, p.payload.short]}
+            labelFormatter={l=>l}
+          />
+          <Bar dataKey="avg" radius={[6,6,0,0]} maxBarSize={56}>
+            {data.map((d,i)=>{
+              const fill = d.pct >= 0.8 ? '#00AF3D' : d.pct >= 0.6 ? '#7E44FB' : '#FF8C4C';
+              return <Cell key={i} fill={fill}/>;
+            })}
+            <LabelList dataKey="avg" position="top" style={{fontSize:13,fontWeight:800,fill:'#333'}}/>
+          </Bar>
+        </BarChart>
+      </ResponsiveContainer>
+      <div className="chart-legend">
+        <div className="legend-dot"><div className="dot" style={{background:'#00AF3D'}}/><span>높은 정답률 (80%↑)</span></div>
+        <div className="legend-dot"><div className="dot" style={{background:'#7E44FB'}}/><span>중간 (60~80%)</span></div>
+        <div className="legend-dot"><div className="dot" style={{background:'#FF8C4C'}}/><span>난이도 높음 (60%↓)</span></div>
+      </div>
+    </>
+  );
+}
+
+function StudentTable(){
+  const [sortKey, setSortKey] = useState('id');
+  const [sortDir, setSortDir] = useState('asc');
+  const [query, setQuery] = useState('');
+
+  const sorted = useMemo(()=>{
+    const filtered = STUDENTS.filter(s =>
+      !query || s.name.includes(query) || s.id.includes(query)
+    );
+    const copy = [...filtered];
+    copy.sort((a,b)=>{
+      let av, bv;
+      if(sortKey === 'id'){ av=a.id; bv=b.id; }
+      else if(sortKey === 'name'){ av=a.name; bv=b.name; }
+      else if(sortKey === 'total'){ av=a.total ?? -1; bv=b.total ?? -1; }
+      else if(sortKey === 'grade'){ av=gradeOf(a.total) ?? 'Z'; bv=gradeOf(b.total) ?? 'Z'; }
+      else { av=a.status; bv=b.status; }
+      if(av < bv) return sortDir === 'asc' ? -1 : 1;
+      if(av > bv) return sortDir === 'asc' ?  1 : -1;
+      return 0;
+    });
+    return copy;
+  }, [sortKey, sortDir, query]);
+
+  function toggleSort(key){
+    if(sortKey === key) setSortDir(sortDir === 'asc' ? 'desc' : 'asc');
+    else { setSortKey(key); setSortDir('asc'); }
+  }
+
+  function gotoStudent(s){
+    if(s.status !== '완료') return;
+    // 정현우(10105)는 v2 시안 페이지로, 나머지는 v1
+    const file = s.id === '10105' ? 'scoring_student_v2.html' : 'scoring_student_v1.html';
+    location.href = `${file}?id=${s.id}&name=${encodeURIComponent(s.name)}&from=scoring_dashboard_v1.html`;
+  }
+
+  function statusBadge(status){
+    if(status === '완료') return <span className="badge b-done">완료</span>;
+    if(status === '미응시') return <span className="badge b-no">미응시</span>;
+    if(status === '미제출') return <span className="badge b-no">미제출</span>;
+    return <span className="badge b-todo">{status}</span>;
+  }
+
+  function gradeBadge(total){
+    const g = gradeOf(total);
+    if(!g) return <span style={{color:'#B3B3B3',fontSize:13}}>—</span>;
+    return <span className={`grade-badge g-${g}`}>{g}</span>;
+  }
+
+  function SortIndicator({k}){
+    if(sortKey !== k) return <span style={{color:'#D0D0D0',marginLeft:4,fontSize:11}}>↕</span>;
+    return <span style={{color:'#7E44FB',marginLeft:4,fontSize:11,fontWeight:800}}>{sortDir === 'asc' ? '↑' : '↓'}</span>;
+  }
+
+  return (
+    <div className="stu-section">
+      <div className="stu-section-head">
+        <h3>학생별 점수 ({STUDENTS.length}명)</h3>
+        <div className="stu-search">
+          <i data-lucide="search" style={{width:14,height:14,color:'#B3B3B3'}}/>
+          <input
+            value={query}
+            onChange={e=>setQuery(e.target.value)}
+            placeholder="이름·학번 검색"
+          />
+        </div>
+      </div>
+      <table className="stu-table">
+        <thead>
+          <tr>
+            <th style={{width:90}} onClick={()=>toggleSort('id')}>학번<SortIndicator k="id"/></th>
+            <th style={{width:100}} onClick={()=>toggleSort('name')}>이름<SortIndicator k="name"/></th>
+            <th style={{width:90}} onClick={()=>toggleSort('total')}>총점<SortIndicator k="total"/></th>
+            <th style={{width:70}} onClick={()=>toggleSort('grade')}>등급<SortIndicator k="grade"/></th>
+            <th style={{width:90}}>구체성</th>
+            <th style={{width:90}}>분량</th>
+            <th style={{width:90}}>창의성</th>
+            <th style={{width:90}} onClick={()=>toggleSort('status')}>상태<SortIndicator k="status"/></th>
+            <th style={{width:90}}>상세</th>
+          </tr>
+        </thead>
+        <tbody>
+          {sorted.map(s=>(
+            <tr key={s.id} onClick={()=>gotoStudent(s)}>
+              <td style={{color:'#494949',fontWeight:600}}>{s.id}</td>
+              <td style={{color:'#222',fontWeight:700}}>{s.name}</td>
+              <td style={{fontWeight:800,color:'#222'}}>{s.total !== null ? `${s.total}/${MAX_TOTAL}` : <span style={{color:'#B3B3B3'}}>—</span>}</td>
+              <td>{gradeBadge(s.total)}</td>
+              <td style={{color:s.rubrics ? '#494949' : '#B3B3B3'}}>{s.rubrics ? s.rubrics[0] : '—'}</td>
+              <td style={{color:s.rubrics ? '#494949' : '#B3B3B3'}}>{s.rubrics ? s.rubrics[1] : '—'}</td>
+              <td style={{color:s.rubrics ? '#494949' : '#B3B3B3'}}>{s.rubrics ? s.rubrics[2] : '—'}</td>
+              <td>{statusBadge(s.status)}</td>
+              <td>
+                {s.status === '완료'
+                  ? <span className="link" onClick={e=>{e.stopPropagation(); gotoStudent(s);}}>채점 보기 <i data-lucide="arrow-right" style={{width:12,height:12}}/></span>
+                  : <span style={{color:'#B3B3B3',fontSize:13}}>—</span>}
+              </td>
+            </tr>
+          ))}
+          {sorted.length === 0 && (
+            <tr><td colSpan={9} style={{padding:40,color:'#B3B3B3',fontSize:14}}>검색 결과가 없습니다.</td></tr>
+          )}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('dashboard-root')).render(<App/>);
+</script>
+
+</body>
+</html>
