@@ -2,8 +2,9 @@ const http = require('http');
 const fs = require('fs');
 const path = require('path');
 
-const ROOT = path.join(__dirname, 'output');
-const PORT = process.env.PORT || 5501;
+const ROOT = __dirname;
+const OUTPUT_DIR = path.join(__dirname, 'output');
+const PORT = process.env.PORT || 3502;
 
 const MIME = {
   '.html': 'text/html; charset=utf-8',
@@ -17,10 +18,10 @@ const MIME = {
 
 function getLatestFile() {
   try {
-    const files = fs.readdirSync(ROOT).filter(f => f.endsWith('.html'));
+    const files = fs.readdirSync(OUTPUT_DIR).filter(f => f.endsWith('.html'));
     if (!files.length) return '/index.html';
-    files.sort((a, b) => fs.statSync(path.join(ROOT, b)).mtimeMs - fs.statSync(path.join(ROOT, a)).mtimeMs);
-    return '/' + files[0];
+    files.sort((a, b) => fs.statSync(path.join(OUTPUT_DIR, b)).mtimeMs - fs.statSync(path.join(OUTPUT_DIR, a)).mtimeMs);
+    return '/output/' + files[0];
   } catch { return '/index.html'; }
 }
 
