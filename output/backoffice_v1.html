@@ -1,0 +1,2018 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=1440">
+<title>하이러닝 AI 서·논술형 평가 서비스 — 관리자 페이지</title>
+<link rel="icon" href="../screens/favicon_src.png" type="image/png">
+<link rel="stylesheet" href="https://cdn.rawgit.com/moonspam/NanumSquareRound/master/nanumsquareround.min.css">
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<style>
+  :root{
+    --purple-50:#F7F4FF; --purple-100:#F2ECFF; --purple-200:#E3E4F8;
+    --purple-600:#b28ffd; --purple-800:#7E44FB; --purple-950:#341761;
+    --gray-50:#F8F8F8; --gray-100:#F0F0F0; --gray-200:#E6E6E6; --gray-300:#D9D9D9;
+    --gray-500:#B3B3B3; --gray-700:#808080; --gray-800:#494949; --gray-900:#333333;
+    --green-100:#F1F9F3; --green-600:#00AF3D;
+    --orange-100:#FFEDD5; --orange-600:#FF8C4C;
+    --blue-100:#F2F5FF; --blue-600:#5890FF;
+    --red-100:#FFEFEF; --red-600:#DB3E51;
+    --shadow-card:0 4px 36px rgba(95,102,178,0.16);
+    --header-h:64px;
+    --sidebar-w:260px;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;font-family:'NanumSquareRound',-apple-system,sans-serif;background:#FAFAFA;color:#000}
+  button{font-family:inherit;cursor:pointer}
+  a{color:inherit;text-decoration:none}
+
+  /* ===== Header ===== */
+  .topbar{position:fixed;top:0;left:0;right:0;height:var(--header-h);background:#fff;border-bottom:1px solid var(--gray-200);display:flex;align-items:center;justify-content:space-between;padding:0 24px;z-index:50}
+  .topbar-left{display:flex;align-items:center;gap:16px}
+  .ham{width:40px;height:40px;display:flex;align-items:center;justify-content:center;border-radius:8px;color:var(--purple-800);background:transparent;border:none;transition:background .15s}
+  .ham:hover{background:var(--purple-50)}
+  .brand{display:flex;flex-direction:column;line-height:1.15}
+  .brand-sub{font-size:12px;color:var(--gray-700);font-weight:400}
+  .brand-main{font-size:18px;color:#000;font-weight:800}
+  .topbar-right{display:flex;align-items:center;gap:8px}
+  .user-pill{display:flex;align-items:center;gap:6px;padding:8px 12px;border-radius:8px;color:var(--purple-800);font-weight:700;font-size:15px}
+  .user-pill:hover{background:var(--purple-50)}
+
+  /* ===== Sidebar ===== */
+  .sidebar{position:fixed;top:var(--header-h);left:0;bottom:0;width:var(--sidebar-w);background:#fff;border-right:1px solid var(--gray-200);overflow-y:auto;padding:20px 16px 40px;transition:transform .22s ease;z-index:40}
+  .sidebar.closed{transform:translateX(calc(-1 * var(--sidebar-w)))}
+  .nav-section{margin-top:18px}
+  .nav-section:first-child{margin-top:0}
+  .nav-label{font-size:13px;color:var(--purple-800);font-weight:800;padding:6px 12px;letter-spacing:-.2px}
+  .nav-item{display:flex;align-items:center;gap:10px;padding:11px 12px;border-radius:10px;font-size:15px;color:var(--gray-900);font-weight:700;margin-top:2px;cursor:pointer;border:none;background:transparent;width:100%;text-align:left}
+  .nav-item .lucide{width:18px;height:18px;color:var(--gray-700)}
+  .nav-item:hover{background:var(--gray-50)}
+  .nav-item.active{background:var(--purple-800);color:#fff}
+  .nav-item.active .lucide{color:#fff}
+  .nav-item.disabled{color:var(--gray-500)}
+  .nav-item.disabled .lucide{color:var(--gray-500)}
+
+  /* ===== Main ===== */
+  .main{margin-top:var(--header-h);margin-left:var(--sidebar-w);padding:32px 40px 64px;transition:margin-left .22s ease;min-height:calc(100vh - var(--header-h))}
+  .main.full{margin-left:0}
+
+  /* ===== Cards / Panels ===== */
+  .panel{background:#fff;border-radius:20px;box-shadow:var(--shadow-card);padding:28px 24px}
+  .page-title{font-size:24px;font-weight:800;color:#000;text-align:center;margin:8px 0 24px}
+  .section-title{display:flex;align-items:center;gap:8px;font-size:18px;font-weight:800;color:#000;margin:32px 0 12px}
+  .section-title::before{content:"";display:inline-block;width:3px;height:18px;background:var(--purple-800);border-radius:2px}
+
+  /* KPI grid */
+  .kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}
+  .kpi{background:#fff;border:1px solid var(--gray-200);border-radius:14px;padding:16px 20px 14px;text-align:center;box-shadow:0 2px 8px rgba(95,102,178,.06)}
+  .kpi h4{font-size:14px;color:var(--gray-800);font-weight:700;margin:0 0 6px}
+  .kpi .num{font-size:24px;font-weight:800;color:var(--purple-950);letter-spacing:-.5px;line-height:1.15}
+  .kpi .num em{font-style:normal;font-size:16px;font-weight:800;color:var(--purple-950);margin-left:2px}
+  .kpi .accum{margin-top:4px;font-size:12px;color:var(--gray-700);font-weight:400}
+
+  /* Chart panels */
+  .chart-row{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:24px}
+  .chart-card{background:#fff;border:1px solid var(--gray-200);border-radius:16px;padding:20px 20px 16px}
+  .chart-card h4{margin:0 0 18px;text-align:center;font-size:16px;font-weight:800;color:#000}
+  .bar-wrap{display:flex;align-items:flex-end;gap:14px;padding:0 8px 8px;height:170px;border-left:1px solid var(--gray-200);border-bottom:1px solid var(--gray-200);position:relative;margin-left:38px}
+  .y-axis{position:absolute;left:-38px;top:0;bottom:0;width:34px;display:flex;flex-direction:column-reverse;justify-content:space-between;align-items:flex-end;font-size:11px;color:var(--gray-700);padding:2px 4px 0 0}
+  .y-axis span{transform:translateY(50%)}
+  .bar-col{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;position:relative}
+  .bar-col .val{font-size:12px;font-weight:700;color:var(--gray-800);margin-bottom:4px}
+  .bar-col .bar{width:100%;max-width:42px;background:var(--purple-600);border-radius:4px 4px 0 0}
+  .bar-col .lbl{margin-top:8px;font-size:12px;color:var(--gray-800);font-weight:700}
+
+  /* Recent table */
+  .recent-head{display:flex;align-items:center;justify-content:space-between;margin:8px 0 12px}
+  .recent-title{font-size:16px;font-weight:800;color:#000;display:flex;align-items:center;gap:8px}
+  .recent-title::before{content:"";display:inline-block;width:3px;height:16px;background:var(--purple-800);border-radius:2px}
+  .btn-outline-purple{display:inline-flex;align-items:center;gap:6px;height:36px;padding:0 16px;border-radius:8px;border:1px solid var(--purple-600);background:#fff;color:var(--purple-800);font-weight:700;font-size:14px}
+  .btn-outline-purple:hover{background:var(--purple-50)}
+  .btn-primary{display:inline-flex;align-items:center;gap:6px;height:40px;padding:0 24px;border-radius:8px;background:var(--purple-800);color:#fff;font-weight:800;font-size:15px;border:none}
+  .btn-primary:hover{filter:brightness(1.05)}
+
+  table.data{width:100%;border-collapse:separate;border-spacing:0;font-size:14px}
+  table.data thead th{background:var(--gray-50);color:var(--gray-800);font-weight:800;font-size:14px;padding:12px 16px;text-align:center;border-top:1px solid var(--gray-200);border-bottom:1px solid var(--gray-200)}
+  table.data thead th:first-child{border-top-left-radius:8px;border-bottom-left-radius:8px}
+  table.data thead th:last-child{border-top-right-radius:8px;border-bottom-right-radius:8px}
+  table.data tbody td{padding:18px 16px;text-align:center;border-bottom:1px solid var(--gray-200);color:#000;font-weight:400}
+  table.data tbody tr:hover{background:#FAFBFF}
+  .link-detail{color:var(--purple-800);font-weight:700}
+  .link-detail:hover{text-decoration:underline}
+
+  /* Search bar */
+  .search-grid{display:grid;grid-template-columns:90px 1fr;row-gap:14px;column-gap:16px;align-items:center}
+  .search-grid label{font-size:14px;color:var(--gray-800);font-weight:700}
+  .search-grid input{height:40px;padding:0 14px;border:1px solid var(--gray-300);border-radius:8px;background:#fff;font-family:inherit;font-size:14px;color:#000;outline:none;transition:border-color .15s}
+  .search-grid input:focus{border-color:var(--purple-800)}
+  .search-foot{display:flex;justify-content:flex-end;margin-top:18px}
+
+  /* Coming soon */
+  .coming{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:96px 24px;color:var(--gray-700);text-align:center}
+  .coming .ico{width:64px;height:64px;border-radius:50%;background:var(--purple-50);display:flex;align-items:center;justify-content:center;color:var(--purple-800);margin-bottom:18px}
+  .coming h2{font-size:20px;font-weight:800;color:var(--gray-800);margin:0 0 6px}
+  .coming p{font-size:14px;color:var(--gray-700);margin:0}
+
+  /* Dashboard header (title + period filter) */
+  .dash-head{display:flex;justify-content:space-between;align-items:flex-start;gap:24px;margin:4px 0 20px}
+  .dash-head-left h1{font-size:22px;font-weight:800;color:#000;margin:0 0 6px;line-height:1.3}
+  .dash-head-left .sub{font-size:13px;color:var(--gray-700);font-weight:400}
+  .dash-head-right{display:flex;align-items:center;gap:12px;flex-shrink:0}
+  .period-seg{display:inline-flex;border:1px solid var(--gray-300);border-radius:8px;overflow:hidden;background:#fff}
+  .seg-btn{height:36px;padding:0 16px;border:none;background:#fff;color:var(--gray-800);font-weight:700;font-size:14px;border-right:1px solid var(--gray-300)}
+  .seg-btn:last-child{border-right:none}
+  .seg-btn.active{background:var(--purple-800);color:#fff}
+  .seg-btn:hover:not(.active){background:var(--gray-50)}
+  .period-range{display:inline-flex;align-items:center;gap:8px;height:36px;padding:0 12px;border:1px solid var(--gray-300);border-radius:8px;background:#fff;color:var(--gray-800);font-size:14px;font-weight:700}
+  .period-range .lucide{width:16px;height:16px;color:var(--purple-800)}
+  .period-range input{border:none;outline:none;font-family:inherit;font-size:14px;font-weight:700;color:var(--gray-800);width:96px;text-align:center;background:transparent}
+  .period-range span.dash{color:var(--gray-500)}
+
+  /* Donut chart */
+  .donut-wrap{display:flex;align-items:center;gap:18px;padding:8px 4px}
+  .donut{width:140px;height:140px;border-radius:50%;flex-shrink:0;position:relative}
+  .donut::before{content:"";position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:62%;height:62%;background:#fff;border-radius:50%}
+  .donut-total{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;z-index:2;font-weight:800;color:var(--purple-950)}
+  .donut-total .t-num{font-size:22px;line-height:1}
+  .donut-total .t-lbl{font-size:11px;color:var(--gray-700);font-weight:700;margin-top:4px}
+  .legend{flex:1;display:flex;flex-direction:column;gap:8px;font-size:13px}
+  .legend-row{display:flex;align-items:center;gap:8px;color:var(--gray-800);font-weight:700}
+  .legend-dot{width:10px;height:10px;border-radius:3px;flex-shrink:0}
+  .legend-row .pct{margin-left:auto;color:var(--gray-700);font-weight:400}
+
+  /* Horizontal bar (TOP N) */
+  .hbar-wrap{display:flex;flex-direction:column;gap:10px;padding:6px 4px}
+  .hbar-row{display:grid;grid-template-columns:24px 1fr 56px;align-items:center;gap:10px;font-size:13px}
+  .hbar-rank{font-weight:800;color:var(--purple-800);text-align:center}
+  .hbar-bar-wrap{position:relative;background:var(--gray-100);border-radius:6px;height:24px;overflow:hidden}
+  .hbar-bar{position:absolute;left:0;top:0;bottom:0;background:linear-gradient(90deg,var(--purple-600),var(--purple-800));border-radius:6px}
+  .hbar-name{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:#000;font-weight:700;font-size:13px;z-index:2;white-space:nowrap}
+  .hbar-val{text-align:right;color:var(--gray-800);font-weight:800}
+
+  /* 3-column chart row */
+  .chart-row-3{grid-template-columns:1fr 1fr 1.2fr}
+  .chart-period{font-size:13px;font-weight:400;color:var(--gray-700);margin-left:6px}
+
+  /* Keyword search bar */
+  .kw-search{display:flex;align-items:center;gap:10px;margin-top:12px}
+  .kw-label{font-size:14px;color:var(--gray-800);font-weight:800;margin-right:6px}
+  .kw-select{height:40px;padding:0 36px 0 14px;border:1px solid var(--gray-300);border-radius:8px;background:#fff url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23494949' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>") no-repeat right 12px center;-webkit-appearance:none;appearance:none;font-family:inherit;font-size:14px;color:#000;font-weight:700;min-width:140px}
+  .kw-input{flex:1;height:40px;padding:0 14px;border:1px solid var(--gray-300);border-radius:8px;background:#fff;font-family:inherit;font-size:14px;color:#000;outline:none}
+  .kw-input:focus{border-color:var(--purple-800)}
+
+  .list-meta{display:flex;align-items:center;justify-content:space-between;margin:18px 0 6px;font-size:14px;color:var(--gray-800);font-weight:700}
+
+  /* Pagination */
+  .pagination{display:flex;justify-content:center;align-items:center;gap:6px;margin:24px 0 4px}
+  .page-btn{min-width:34px;height:34px;padding:0 10px;border-radius:8px;border:1px solid transparent;background:transparent;color:var(--gray-800);font-weight:700;font-size:14px}
+  .page-btn:hover{background:var(--gray-50)}
+  .page-btn.active{background:var(--purple-800);color:#fff}
+  .page-btn.nav{color:var(--gray-700)}
+  .page-btn[disabled]{color:var(--gray-300);cursor:not-allowed;background:transparent}
+
+  /* Row hover indicates clickable */
+  #teacherBody tr{cursor:pointer}
+  #teacherBody td.id-cell{font-family:'Menlo','Consolas',monospace;font-size:13px;color:var(--gray-800)}
+
+  /* Action buttons in table */
+  .row-actions{display:inline-flex;gap:8px;justify-content:center;flex-wrap:nowrap}
+  .icon-btn{display:inline-flex;align-items:center;gap:4px;height:30px;padding:0 12px;border-radius:6px;border:1px solid var(--gray-300);background:#fff;color:var(--gray-800);font-weight:700;font-size:13px;white-space:nowrap;flex-shrink:0}
+  .icon-btn .lucide{width:14px;height:14px}
+  .icon-btn:hover{background:var(--gray-50)}
+  .icon-btn.edit{border-color:var(--purple-600);color:var(--purple-800)}
+  .icon-btn.edit:hover{background:var(--purple-50)}
+  .icon-btn.log{border-color:#CBD6F4;color:var(--blue-600)}
+  .icon-btn.log:hover{background:var(--blue-100)}
+  .icon-btn.del{border-color:#FFB5BE;color:var(--red-600)}
+  .icon-btn.del:hover{background:var(--red-100)}
+
+  /* Log result badge */
+  .badge{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:100px;font-size:12px;font-weight:800}
+  .badge.ok{background:var(--green-100);color:var(--green-600)}
+  .badge.fail{background:var(--red-100);color:var(--red-600)}
+  .log-summary{display:flex;gap:24px;align-items:center;padding:14px 18px;background:var(--purple-50);border:1px solid var(--purple-200);border-radius:10px;margin-top:14px;font-size:13px;color:var(--gray-800);font-weight:700}
+  .log-summary span em{font-style:normal;color:var(--gray-700);font-weight:400;margin-right:6px}
+  .log-summary .accent{color:var(--purple-800);font-weight:800}
+
+  /* Form stack (label above) */
+  .form-grid-stack{grid-template-columns:120px 1fr;gap:18px 16px;align-items:start}
+  .form-grid-stack label{padding-top:10px}
+  .form-grid label .req{color:var(--red-600);font-style:normal;margin-left:2px}
+  .form-grid textarea{padding:12px 14px;border:1px solid var(--gray-300);border-radius:8px;background:#fff;font-family:inherit;font-size:14px;color:#000;outline:none;line-height:1.6;resize:vertical;width:100%}
+  .form-grid textarea:focus{border-color:var(--purple-800)}
+
+  /* Dropzone */
+  .dropzone{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:28px 16px;border:1.5px dashed var(--gray-300);border-radius:12px;background:var(--gray-50);color:var(--gray-700);cursor:pointer;transition:border-color .15s, background .15s}
+  .dropzone:hover{border-color:var(--purple-600);background:var(--purple-50);color:var(--purple-800)}
+  .dropzone .lucide{color:var(--purple-800)}
+  .dz-main{font-size:14px;font-weight:700;color:var(--gray-800)}
+  .dz-link{color:var(--purple-800);text-decoration:underline}
+  .dz-sub{font-size:12px;color:var(--gray-700)}
+  .file-chip{display:inline-flex;align-items:center;gap:8px;margin-top:10px;padding:8px 12px;border:1px solid var(--gray-200);border-radius:8px;background:#fff;font-size:14px;color:#000;font-weight:700;max-width:100%}
+  .file-chip .size{color:var(--gray-700);font-weight:400;margin-left:6px}
+  .file-chip .chip-x{margin-left:8px;width:22px;height:22px;display:flex;align-items:center;justify-content:center;border:none;background:var(--gray-100);border-radius:50%;color:var(--gray-700);cursor:pointer}
+  .file-chip .chip-x:hover{background:var(--gray-200);color:#000}
+
+  /* Toggle switch */
+  .toggle-row{display:flex;align-items:center;gap:10px;padding-top:8px}
+  .switch{position:relative;display:inline-block;width:44px;height:24px;flex-shrink:0}
+  .switch input{opacity:0;width:0;height:0}
+  .switch-track{position:absolute;inset:0;background:var(--gray-300);border-radius:24px;transition:background .15s;cursor:pointer}
+  .switch-thumb{position:absolute;top:3px;left:3px;width:18px;height:18px;background:#fff;border-radius:50%;transition:left .15s;box-shadow:0 1px 3px rgba(0,0,0,.15)}
+  .switch input:checked + .switch-track{background:var(--purple-800)}
+  .switch input:checked + .switch-track .switch-thumb{left:23px}
+  .toggle-hint{font-size:13px;color:var(--gray-700)}
+
+  /* Ops tabs */
+  .ops-tabs{display:flex;gap:6px;margin-top:24px;border-bottom:1px solid var(--gray-200)}
+  .ops-tab{display:inline-flex;align-items:center;gap:6px;height:42px;padding:0 18px;border:none;background:transparent;color:var(--gray-700);font-weight:700;font-size:15px;border-bottom:2px solid transparent;margin-bottom:-1px;cursor:pointer}
+  .ops-tab:hover{color:var(--gray-900)}
+  .ops-tab.active{color:var(--purple-800);border-bottom-color:var(--purple-800)}
+  .ops-tab .lucide{color:currentColor}
+  .ops-pane{padding-top:18px}
+  .rank-cell{font-weight:800;color:var(--purple-800)}
+
+  /* Resource visibility cell */
+  .vis-pill{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:100px;font-size:12px;font-weight:800}
+  .vis-pill.on{background:var(--green-100);color:var(--green-600)}
+  .vis-pill.off{background:var(--gray-100);color:var(--gray-700)}
+  .icon-btn.preview{border-color:#CBD6F4;color:var(--blue-600)}
+  .icon-btn.preview:hover{background:var(--blue-100)}
+  .file-link{display:inline-flex;align-items:center;gap:6px;color:var(--purple-800);font-weight:700}
+  .file-link .lucide{width:14px;height:14px}
+
+  /* Modal */
+  .overlay{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:1000;display:flex;align-items:flex-start;justify-content:center;padding:60px 20px;overflow-y:auto}
+  .modal{background:#fff;border-radius:20px;box-shadow:0 4px 36px rgba(95,102,178,.24);width:100%;max-width:512px;display:flex;flex-direction:column;animation:modalIn .18s ease}
+  .modal-sm{max-width:420px}
+  .modal-md{max-width:560px}
+  .modal-lg{max-width:980px}
+  @keyframes modalIn{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
+  .modal-head{display:flex;align-items:center;justify-content:space-between;padding:20px 24px 12px}
+  .modal-head h2{font-size:18px;font-weight:800;color:#000;margin:0}
+  .modal-x{width:32px;height:32px;display:flex;align-items:center;justify-content:center;border:none;background:transparent;border-radius:6px;color:var(--gray-700)}
+  .modal-x:hover{background:var(--gray-50)}
+  .modal-body{padding:8px 24px 20px;overflow-y:auto;max-height:calc(100vh - 220px)}
+  .modal-foot{display:flex;justify-content:flex-end;gap:10px;padding:12px 24px 20px;border-top:1px solid var(--gray-100)}
+  .btn-outline{display:inline-flex;align-items:center;gap:6px;height:40px;padding:0 18px;border-radius:8px;border:1px solid var(--gray-300);background:#fff;color:var(--gray-800);font-weight:700;font-size:14px}
+  .btn-outline:hover{background:var(--gray-50)}
+  .btn-danger{display:inline-flex;align-items:center;gap:6px;height:40px;padding:0 18px;border-radius:8px;border:none;background:var(--red-600);color:#fff;font-weight:800;font-size:14px}
+  .btn-danger:hover{filter:brightness(1.05)}
+
+  /* Form */
+  .form-grid{display:grid;grid-template-columns:96px 1fr;gap:14px 16px;align-items:center}
+  .form-grid label{font-size:14px;color:var(--gray-800);font-weight:700}
+  .form-grid input,.form-grid select{height:40px;padding:0 12px;border:1px solid var(--gray-300);border-radius:8px;background:#fff;font-family:inherit;font-size:14px;color:#000;outline:none}
+  .form-grid input:focus,.form-grid select:focus{border-color:var(--purple-800)}
+  .form-grid input[disabled]{background:var(--gray-50);color:var(--gray-500)}
+  .form-grid select{padding-right:36px;background:#fff url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23494949' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>") no-repeat right 12px center;-webkit-appearance:none;appearance:none}
+
+  /* Confirm block */
+  .confirm-block{display:flex;gap:14px;padding:8px 0}
+  .confirm-icon{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+  .confirm-icon .lucide{width:22px;height:22px}
+  .confirm-icon.danger{background:var(--red-100);color:var(--red-600)}
+  .confirm-title{font-size:16px;font-weight:800;color:#000;margin:6px 0 6px}
+  .confirm-sub{font-size:13px;color:var(--gray-700);font-weight:400;line-height:1.55}
+
+  /* Stats modal profile */
+  .stats-profile{display:flex;align-items:center;gap:16px;padding:16px 18px;background:var(--gray-50);border-radius:12px}
+  .stats-avatar{width:48px;height:48px;border-radius:50%;background:var(--purple-50);color:var(--purple-800);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:18px;flex-shrink:0}
+  .stats-meta{flex:1;display:flex;flex-direction:column;gap:4px}
+  .stats-meta .name{font-size:18px;font-weight:800;color:#000}
+  .stats-meta .meta-row{display:flex;gap:18px;font-size:13px;color:var(--gray-800);font-weight:700}
+  .stats-meta .meta-row span em{font-style:normal;color:var(--gray-700);font-weight:400;margin-right:6px}
+  .stats-toolbar{display:flex;align-items:center;margin-top:18px;gap:12px}
+
+  /* Toast */
+  .toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#00AF3D;color:#fff;padding:14px 22px;border-radius:8px;font-weight:700;font-size:15px;box-shadow:0 8px 32px rgba(0,0,0,.16);z-index:2000;display:flex;align-items:center;gap:10px;animation:toastIn .2s ease}
+  .toast.error{background:var(--red-600)}
+  @keyframes toastIn{from{opacity:0;transform:translate(-50%,12px)}to{opacity:1;transform:translate(-50%,0)}}
+
+  .hidden{display:none !important}
+</style>
+</head>
+<body>
+
+<!-- ============ Top bar ============ -->
+<header class="topbar">
+  <div class="topbar-left">
+    <button class="ham" id="hamBtn" aria-label="메뉴">
+      <i data-lucide="menu" style="width:22px;height:22px"></i>
+    </button>
+    <div class="brand">
+      <span class="brand-sub">AI기반 서·논술형 평가 서비스</span>
+      <span class="brand-main">관리자 페이지</span>
+    </div>
+  </div>
+  <div class="topbar-right">
+    <button class="user-pill">
+      CS님
+      <i data-lucide="chevron-down" style="width:16px;height:16px"></i>
+    </button>
+  </div>
+</header>
+
+<!-- ============ Sidebar ============ -->
+<aside class="sidebar" id="sidebar">
+  <div class="nav-section">
+    <div class="nav-label">서비스 사용 조회</div>
+    <button class="nav-item active" data-target="dashboard">
+      <i data-lucide="layout-dashboard"></i> 대시보드
+    </button>
+    <button class="nav-item disabled" data-target="coming" data-name="일별 사용량 조회">
+      <i data-lucide="calendar-days"></i> 일별 사용량 조회
+    </button>
+    <button class="nav-item disabled" data-target="coming" data-name="교사별 사용량 조회">
+      <i data-lucide="file-bar-chart"></i> 교사별 사용량 조회
+    </button>
+    <button class="nav-item disabled" data-target="coming" data-name="크레딧 관리">
+      <i data-lucide="sparkles"></i> 크레딧 관리
+    </button>
+  </div>
+  <div class="nav-section">
+    <div class="nav-label">평가 모니터링</div>
+    <button class="nav-item" data-target="evalDesign">
+      <i data-lucide="clipboard-list"></i> 평가 설계 내역
+    </button>
+    <button class="nav-item" data-target="opsData">
+      <i data-lucide="bar-chart-3"></i> 평가 운영 데이터
+    </button>
+    <button class="nav-item disabled" data-target="coming" data-name="AI 채점 내역">
+      <i data-lucide="square-pen"></i> AI 채점 내역
+    </button>
+  </div>
+  <div class="nav-section">
+    <div class="nav-label">사용자 조회</div>
+    <button class="nav-item" data-target="teachers">
+      <i data-lucide="user"></i> 교사 목록 조회
+    </button>
+    <button class="nav-item disabled" data-target="coming" data-name="학교 목록 조회">
+      <i data-lucide="building-2"></i> 학교 목록 조회
+    </button>
+  </div>
+  <div class="nav-section">
+    <div class="nav-label">운영 관리</div>
+    <button class="nav-item disabled" data-target="coming" data-name="운영자 조회">
+      <i data-lucide="search"></i> 운영자 조회
+    </button>
+    <button class="nav-item" data-target="resources">
+      <i data-lucide="folder-open"></i> 평가 자료 관리
+    </button>
+    <button class="nav-item disabled" data-target="coming" data-name="공지사항">
+      <i data-lucide="megaphone"></i> 공지사항
+    </button>
+    <button class="nav-item disabled" data-target="coming" data-name="문의사항">
+      <i data-lucide="help-circle"></i> 문의사항
+    </button>
+  </div>
+</aside>
+
+<!-- ============ Main ============ -->
+<main class="main" id="main">
+
+  <!-- ===== View: Dashboard ===== -->
+  <section class="view" id="view-dashboard">
+    <div class="panel">
+
+      <!-- Dash header: title + period filter -->
+      <div class="dash-head">
+        <div class="dash-head-left">
+          <h1>하이러닝 AI 서·논술형 평가 서비스 사용 현황</h1>
+          <div class="sub">2026-04-28 18:00 기준 · 자동 갱신 매 1시간</div>
+        </div>
+        <div class="dash-head-right">
+          <div class="period-seg" id="periodSeg">
+            <button class="seg-btn" data-period="day">일별</button>
+            <button class="seg-btn active" data-period="week">주별</button>
+            <button class="seg-btn" data-period="month">월별</button>
+          </div>
+          <div class="period-range">
+            <i data-lucide="calendar"></i>
+            <input type="text" value="2026-04-01" id="dateFrom">
+            <span class="dash">~</span>
+            <input type="text" value="2026-04-28" id="dateTo">
+          </div>
+        </div>
+      </div>
+
+      <!-- 평가 현황 -->
+      <h3 class="section-title">평가 현황</h3>
+      <div class="kpi-row">
+        <div class="kpi">
+          <h4>이번 달 평가등록</h4>
+          <div class="num">6,478<em>건</em></div>
+          <div class="accum">(누적 34,252건)</div>
+        </div>
+        <div class="kpi">
+          <h4>이번 달 평가계획 AI 실행</h4>
+          <div class="num">4,220<em>건</em></div>
+          <div class="accum">(누적 23,024건)</div>
+        </div>
+        <div class="kpi">
+          <h4>이번 달 채점 AI 실행</h4>
+          <div class="num">417,128<em>건</em></div>
+          <div class="accum">(누적 1,724,539건)</div>
+        </div>
+        <div class="kpi">
+          <h4>이번 달 채점 완료 학생 수</h4>
+          <div class="num">99,121<em>명</em></div>
+          <div class="accum">(누적 455,813명)</div>
+        </div>
+      </div>
+
+      <!-- 사용자 현황 -->
+      <h3 class="section-title">사용자 현황</h3>
+      <div class="kpi-row" style="grid-template-columns:repeat(3,1fr)">
+        <div class="kpi">
+          <h4>이용 학교</h4>
+          <div class="num">1,284<em>개교</em></div>
+          <div class="accum">(이번 달 신규 38개교)</div>
+        </div>
+        <div class="kpi">
+          <h4>이용 동의 교사</h4>
+          <div class="num">12,409<em>명</em></div>
+          <div class="accum">(이번 달 신규 412명)</div>
+        </div>
+        <div class="kpi">
+          <h4>이번 달 활성 교사</h4>
+          <div class="num">3,872<em>명</em></div>
+          <div class="accum">(전월 대비 +18.2%)</div>
+        </div>
+      </div>
+
+      <!-- 사용 추이 -->
+      <h3 class="section-title">사용 추이</h3>
+      <div class="chart-row">
+        <div class="chart-card">
+          <h4>평가 등록 수 <span class="chart-period" id="regPeriodLbl">(주별)</span></h4>
+          <div class="bar-wrap" id="chartReg"></div>
+        </div>
+        <div class="chart-card">
+          <h4>AI 채점 실행 수 <span class="chart-period" id="scorePeriodLbl">(주별)</span></h4>
+          <div class="bar-wrap" id="chartScore"></div>
+        </div>
+      </div>
+
+      <!-- 사용 분포 -->
+      <h3 class="section-title">사용 분포</h3>
+      <div class="chart-row chart-row-3">
+        <div class="chart-card">
+          <h4>학교급별 사용 분포</h4>
+          <div class="donut-wrap">
+            <div class="donut" id="donutLevel">
+              <div class="donut-total">
+                <div class="t-num">1,284</div>
+                <div class="t-lbl">학교 (개교)</div>
+              </div>
+            </div>
+            <div class="legend" id="legendLevel"></div>
+          </div>
+        </div>
+        <div class="chart-card">
+          <h4>과목별 평가 분포</h4>
+          <div class="donut-wrap">
+            <div class="donut" id="donutSubject">
+              <div class="donut-total">
+                <div class="t-num">6,478</div>
+                <div class="t-lbl">평가 (건)</div>
+              </div>
+            </div>
+            <div class="legend" id="legendSubject"></div>
+          </div>
+        </div>
+        <div class="chart-card">
+          <h4>학교별 평가 등록 TOP 5</h4>
+          <div class="hbar-wrap" id="hbarTop"></div>
+        </div>
+      </div>
+
+      <!-- Recent table -->
+      <div class="recent-head" style="margin-top:32px">
+        <div class="recent-title">최근 등록된 평가</div>
+        <button class="btn-outline-purple" data-goto="evalDesign">전체 평가 보기</button>
+      </div>
+      <table class="data">
+        <thead>
+          <tr>
+            <th style="width:18%">학교명</th>
+            <th style="width:10%">교사명</th>
+            <th style="width:14%">과목명</th>
+            <th>평가명</th>
+            <th style="width:18%">등록일시</th>
+            <th style="width:10%">상세 내역</th>
+          </tr>
+        </thead>
+        <tbody id="recentBody"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ===== View: Eval Design ===== -->
+  <section class="view hidden" id="view-evalDesign">
+    <div class="panel">
+      <h1 style="font-size:22px;font-weight:800;margin:0 0 24px">평가 설계 내역</h1>
+
+      <div class="search-grid">
+        <label for="f-teacher">교사명</label><input id="f-teacher" type="text" placeholder="">
+        <label for="f-id">사용자ID</label><input id="f-id" type="text" placeholder="">
+        <label for="f-school">학교명</label><input id="f-school" type="text" placeholder="">
+        <label for="f-class">수업명</label><input id="f-class" type="text" placeholder="">
+        <label for="f-eval">평가명</label><input id="f-eval" type="text" placeholder="">
+      </div>
+      <div class="search-foot">
+        <button class="btn-outline-purple" id="btnSearch" style="height:40px">
+          <i data-lucide="search" style="width:16px;height:16px"></i> 검색
+        </button>
+      </div>
+
+      <table class="data" style="margin-top:24px">
+        <thead>
+          <tr>
+            <th style="width:16%">등록일시</th>
+            <th style="width:16%">학교명</th>
+            <th style="width:9%">교사명</th>
+            <th style="width:14%">수업명</th>
+            <th>평가명</th>
+            <th style="width:10%">상세 내역</th>
+          </tr>
+        </thead>
+        <tbody id="evalBody"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ===== View: Ops Data (평가 운영 데이터) ===== -->
+  <section class="view hidden" id="view-opsData">
+    <div class="panel">
+      <div class="dash-head" style="margin-bottom:18px">
+        <div class="dash-head-left">
+          <h1 style="font-size:22px">평가 운영 데이터</h1>
+          <div class="sub">학교별·개인별 평가 등록 수와 AI 채점 횟수, 평가 목록을 조회·다운로드합니다.</div>
+        </div>
+        <div class="dash-head-right">
+          <div class="period-seg" id="opsPeriodSeg">
+            <button class="seg-btn" data-period="day">일별</button>
+            <button class="seg-btn active" data-period="week">주별</button>
+            <button class="seg-btn" data-period="month">월별</button>
+          </div>
+          <div class="period-range">
+            <i data-lucide="calendar"></i>
+            <input type="text" id="opsDateFrom" value="2026-04-01">
+            <span class="dash">~</span>
+            <input type="text" id="opsDateTo" value="2026-04-28">
+          </div>
+          <button class="btn-primary" id="btnOpsExcel">
+            <i data-lucide="download" style="width:16px;height:16px"></i> 엑셀 다운로드
+          </button>
+        </div>
+      </div>
+
+      <!-- 공용 KPI -->
+      <div class="kpi-row" style="grid-template-columns:repeat(4,1fr)">
+        <div class="kpi"><h4>평가 등록</h4><div class="num" id="opsKpiEval">0<em>건</em></div><div class="accum">조회 기간 합계</div></div>
+        <div class="kpi"><h4>평가계획 AI 실행</h4><div class="num" id="opsKpiPlan">0<em>건</em></div><div class="accum">조회 기간 합계</div></div>
+        <div class="kpi"><h4>채점 AI 실행</h4><div class="num" id="opsKpiScore">0<em>건</em></div><div class="accum">조회 기간 합계</div></div>
+        <div class="kpi"><h4>채점 학생</h4><div class="num" id="opsKpiStu">0<em>명</em></div><div class="accum">조회 기간 합계</div></div>
+      </div>
+
+      <!-- 탭 -->
+      <div class="ops-tabs">
+        <button class="ops-tab active" data-ops-tab="school">
+          <i data-lucide="building-2" style="width:16px;height:16px"></i> 학교별
+        </button>
+        <button class="ops-tab" data-ops-tab="teacher">
+          <i data-lucide="user" style="width:16px;height:16px"></i> 개인별
+        </button>
+        <button class="ops-tab" data-ops-tab="list">
+          <i data-lucide="list" style="width:16px;height:16px"></i> 평가 목록
+        </button>
+      </div>
+
+      <!-- 학교별 -->
+      <div class="ops-pane" id="opsPane-school">
+        <table class="data" style="margin-top:0">
+          <thead>
+            <tr>
+              <th style="width:6%">순위</th>
+              <th>학교명</th>
+              <th style="width:8%">학교급</th>
+              <th style="width:11%">평가 등록</th>
+              <th style="width:11%">평가계획 AI</th>
+              <th style="width:11%">채점 AI</th>
+              <th style="width:11%">채점 학생</th>
+              <th style="width:10%">활성 교사</th>
+            </tr>
+          </thead>
+          <tbody id="opsSchoolBody"></tbody>
+        </table>
+      </div>
+
+      <!-- 개인별 -->
+      <div class="ops-pane hidden" id="opsPane-teacher">
+        <div class="kw-search" style="margin-top:0">
+          <span class="kw-label">키워드 검색</span>
+          <select id="opsTField" class="kw-select">
+            <option value="name">교사명</option>
+            <option value="school">학교명</option>
+            <option value="subject">교과</option>
+          </select>
+          <input id="opsTText" type="text" class="kw-input" placeholder="검색어를 입력하세요">
+          <button class="btn-outline-purple" id="btnOpsTeacherSearch" style="height:40px">
+            <i data-lucide="search" style="width:16px;height:16px"></i> 검색
+          </button>
+        </div>
+        <div class="list-meta"><span id="opsTTotalLbl">총 0명</span></div>
+        <table class="data" style="margin-top:0">
+          <thead>
+            <tr>
+              <th style="width:6%">순위</th>
+              <th style="width:11%">교사명</th>
+              <th>학교</th>
+              <th style="width:14%">교과</th>
+              <th style="width:10%">평가 등록</th>
+              <th style="width:11%">평가계획 AI</th>
+              <th style="width:10%">채점 AI</th>
+              <th style="width:10%">채점 학생</th>
+            </tr>
+          </thead>
+          <tbody id="opsTeacherBody"></tbody>
+        </table>
+        <div class="pagination" id="opsTeacherPager"></div>
+      </div>
+
+      <!-- 평가 목록 -->
+      <div class="ops-pane hidden" id="opsPane-list">
+        <div class="list-meta"><span id="opsListTotalLbl">총 0건</span></div>
+        <table class="data" style="margin-top:0">
+          <thead>
+            <tr>
+              <th style="width:14%">등록일시</th>
+              <th style="width:14%">학교명</th>
+              <th style="width:9%">교사명</th>
+              <th style="width:8%">교과</th>
+              <th>평가명</th>
+              <th style="width:10%">평가계획 AI</th>
+              <th style="width:9%">채점 AI</th>
+              <th style="width:9%">상세</th>
+            </tr>
+          </thead>
+          <tbody id="opsListBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== View: Teachers ===== -->
+  <section class="view hidden" id="view-teachers">
+    <div class="panel">
+      <div class="dash-head" style="margin-bottom:18px">
+        <div class="dash-head-left">
+          <h1 style="font-size:22px">교사 목록 조회</h1>
+          <div class="sub">교사 계정을 조회·등록·수정·삭제합니다. 행을 클릭하면 접속·사용 통계를 볼 수 있습니다.</div>
+        </div>
+        <div class="dash-head-right">
+          <button class="btn-primary" id="btnTeacherCreate">
+            <i data-lucide="plus" style="width:16px;height:16px"></i> 교사 등록
+          </button>
+        </div>
+      </div>
+
+      <div class="kw-search">
+        <span class="kw-label">키워드 검색</span>
+        <select id="tFilterField" class="kw-select">
+          <option value="name">교사명</option>
+          <option value="id">사용자ID</option>
+          <option value="school">학교명</option>
+          <option value="subject">교과</option>
+        </select>
+        <input id="tFilterText" type="text" class="kw-input" placeholder="검색어를 입력하세요">
+        <button class="btn-outline-purple" id="btnTeacherSearch" style="height:40px">
+          <i data-lucide="search" style="width:16px;height:16px"></i> 검색
+        </button>
+      </div>
+
+      <div class="list-meta"><span id="tTotalLbl">총 0명</span></div>
+
+      <table class="data" style="margin-top:12px">
+        <thead>
+          <tr>
+            <th style="width:6%">NO</th>
+            <th style="width:28%">사용자ID</th>
+            <th style="width:10%">이름</th>
+            <th style="width:18%">학교명</th>
+            <th style="width:18%">교과</th>
+            <th style="width:20%">관리</th>
+          </tr>
+        </thead>
+        <tbody id="teacherBody"></tbody>
+      </table>
+
+      <div class="pagination" id="teacherPager"></div>
+    </div>
+  </section>
+
+  <!-- ===== View: Resources (평가자료실 관리) ===== -->
+  <section class="view hidden" id="view-resources">
+    <div class="panel">
+      <div class="dash-head" style="margin-bottom:18px">
+        <div class="dash-head-left">
+          <h1 style="font-size:22px">평가 자료 관리</h1>
+          <div class="sub">교육청에서 전체 교사에게 공유하는 평가 참고 자료를 등록·수정·삭제합니다. 등록된 자료는 교사 화면 [평가 자료실 → 평가 참고 자료]에 노출됩니다.</div>
+        </div>
+        <div class="dash-head-right">
+          <button class="btn-primary" id="btnResourceCreate">
+            <i data-lucide="plus" style="width:16px;height:16px"></i> 자료 등록
+          </button>
+        </div>
+      </div>
+
+      <div class="kw-search">
+        <span class="kw-label">키워드 검색</span>
+        <select id="rFilterField" class="kw-select">
+          <option value="title">제목</option>
+          <option value="fileName">파일명</option>
+        </select>
+        <input id="rFilterText" type="text" class="kw-input" placeholder="검색어를 입력하세요">
+        <button class="btn-outline-purple" id="btnResourceSearch" style="height:40px">
+          <i data-lucide="search" style="width:16px;height:16px"></i> 검색
+        </button>
+      </div>
+
+      <div class="list-meta"><span id="rTotalLbl">총 0개</span></div>
+
+      <table class="data" style="margin-top:12px">
+        <thead>
+          <tr>
+            <th style="width:6%">번호</th>
+            <th>제목</th>
+            <th style="width:12%">작성일</th>
+            <th style="width:10%">노출</th>
+            <th style="width:26%">관리</th>
+          </tr>
+        </thead>
+        <tbody id="resourceBody"></tbody>
+      </table>
+
+      <div class="pagination" id="resourcePager"></div>
+    </div>
+  </section>
+
+  <!-- ===== View: Coming Soon ===== -->
+  <section class="view hidden" id="view-coming">
+    <div class="panel">
+      <div class="coming">
+        <div class="ico"><i data-lucide="hammer" style="width:28px;height:28px"></i></div>
+        <h2 id="comingName">준비 중인 화면입니다</h2>
+        <p>해당 메뉴는 1차 백오피스 범위 외 항목으로, 후속 단계에서 기획·디자인 진행 예정입니다.</p>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- ============ Modal: Teacher form (create / edit) ============ -->
+<div class="overlay hidden" id="overlay-teacher-form">
+  <div class="modal modal-md">
+    <div class="modal-head">
+      <h2 id="tFormTitle">교사 등록</h2>
+      <button class="modal-x" data-close="teacher-form" aria-label="닫기">
+        <i data-lucide="x" style="width:18px;height:18px"></i>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <label>사용자ID</label>
+        <input id="fId" type="text" placeholder="자동 생성됩니다">
+
+        <label>이름</label>
+        <input id="fName" type="text" placeholder="예: 김민준">
+
+        <label>학교명</label>
+        <select id="fSchool">
+          <option>경기도고등학교</option>
+          <option>경기도중학교</option>
+          <option>경기도초등학교</option>
+        </select>
+
+        <label>교과</label>
+        <select id="fSubject">
+          <option>국어</option>
+          <option>영어</option>
+          <option>수학</option>
+          <option>사회</option>
+          <option>과학</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn-outline" data-close="teacher-form">취소</button>
+      <button class="btn-primary" id="btnTeacherSave">저장</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ Modal: Delete confirm ============ -->
+<div class="overlay hidden" id="overlay-teacher-delete">
+  <div class="modal modal-sm">
+    <div class="modal-head">
+      <h2>교사 삭제</h2>
+      <button class="modal-x" data-close="teacher-delete" aria-label="닫기">
+        <i data-lucide="x" style="width:18px;height:18px"></i>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="confirm-block">
+        <div class="confirm-icon danger"><i data-lucide="trash-2"></i></div>
+        <div>
+          <div class="confirm-title" id="dConfirmTitle">교사를 삭제하시겠습니까?</div>
+          <div class="confirm-sub">삭제된 교사 계정은 복구할 수 없으며, 등록된 평가 이력은 보존됩니다.</div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn-outline" data-close="teacher-delete">취소</button>
+      <button class="btn-danger" id="btnTeacherDeleteConfirm">네, 삭제합니다</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ Modal: Teacher stats (접속/사용 상세) ============ -->
+<div class="overlay hidden" id="overlay-teacher-stats">
+  <div class="modal modal-lg">
+    <div class="modal-head">
+      <h2>접속 현황 및 사용자 통계</h2>
+      <button class="modal-x" data-close="teacher-stats" aria-label="닫기">
+        <i data-lucide="x" style="width:18px;height:18px"></i>
+      </button>
+    </div>
+    <div class="modal-body">
+      <!-- Profile -->
+      <div class="stats-profile" id="statsProfile"></div>
+
+      <!-- Period -->
+      <div class="stats-toolbar">
+        <div class="period-seg" id="statsPeriodSeg">
+          <button class="seg-btn" data-period="day">일별</button>
+          <button class="seg-btn active" data-period="week">주별</button>
+          <button class="seg-btn" data-period="month">월별</button>
+        </div>
+        <div class="period-range" style="margin-left:auto">
+          <i data-lucide="calendar"></i>
+          <input type="text" id="sDateFrom" value="2026-04-01">
+          <span class="dash">~</span>
+          <input type="text" id="sDateTo" value="2026-04-28">
+        </div>
+      </div>
+
+      <!-- KPIs -->
+      <div class="kpi-row" style="grid-template-columns:repeat(4,1fr);margin-top:14px">
+        <div class="kpi"><h4>접속 횟수</h4><div class="num" id="sKpi1">0<em>회</em></div><div class="accum" id="sKpi1Sub">—</div></div>
+        <div class="kpi"><h4>평가 등록</h4><div class="num" id="sKpi2">0<em>건</em></div><div class="accum" id="sKpi2Sub">—</div></div>
+        <div class="kpi"><h4>평가계획 AI 실행</h4><div class="num" id="sKpi3">0<em>건</em></div><div class="accum" id="sKpi3Sub">—</div></div>
+        <div class="kpi"><h4>채점 AI 실행</h4><div class="num" id="sKpi4">0<em>건</em></div><div class="accum" id="sKpi4Sub">—</div></div>
+      </div>
+
+      <!-- Trend chart -->
+      <div class="chart-card" style="margin-top:18px">
+        <h4>접속·평가 등록 추이 <span class="chart-period" id="sPeriodLbl">(주별)</span></h4>
+        <div class="bar-wrap" id="sChart"></div>
+      </div>
+
+      <!-- Detail table -->
+      <div class="recent-head" style="margin-top:24px">
+        <div class="recent-title">기간별 상세 내역</div>
+      </div>
+      <table class="data">
+        <thead>
+          <tr>
+            <th style="width:18%">기간</th>
+            <th>접속 횟수</th>
+            <th>평가 등록</th>
+            <th>평가계획 AI</th>
+            <th>채점 AI</th>
+            <th>채점 학생 수</th>
+          </tr>
+        </thead>
+        <tbody id="sDetailBody"></tbody>
+      </table>
+    </div>
+    <div class="modal-foot">
+      <button class="btn-outline" data-close="teacher-stats">닫기</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ Modal: Resource form (create / edit) ============ -->
+<div class="overlay hidden" id="overlay-resource-form">
+  <div class="modal modal-lg">
+    <div class="modal-head">
+      <h2 id="rFormTitle">자료 등록</h2>
+      <button class="modal-x" data-close="resource-form" aria-label="닫기">
+        <i data-lucide="x" style="width:18px;height:18px"></i>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid form-grid-stack">
+        <label>제목 <em class="req">*</em></label>
+        <input id="rTitle" type="text" placeholder="예: 2025 경기 논술형 평가 도구 2차 영어">
+
+        <label>첨부파일</label>
+        <div>
+          <div class="dropzone" id="rDropzone">
+            <i data-lucide="upload-cloud" style="width:24px;height:24px"></i>
+            <div class="dz-main">파일을 드래그하거나 <span class="dz-link">파일 선택</span></div>
+            <div class="dz-sub">PDF · HWP · DOCX · ZIP, 최대 50MB</div>
+            <input type="file" id="rFile" hidden>
+          </div>
+          <div class="file-chip hidden" id="rFileChip">
+            <i data-lucide="file-text" style="width:16px;height:16px"></i>
+            <span id="rFileName">—</span>
+            <span class="size" id="rFileSize">—</span>
+            <button class="chip-x" id="rFileRemove" type="button" aria-label="파일 제거">
+              <i data-lucide="x" style="width:14px;height:14px"></i>
+            </button>
+          </div>
+        </div>
+
+        <label>본문</label>
+        <textarea id="rBody" rows="10" placeholder="자료 설명을 입력하세요. 줄바꿈이 사용자 화면에 그대로 반영됩니다."></textarea>
+
+        <label>노출 여부</label>
+        <div class="toggle-row">
+          <label class="switch">
+            <input type="checkbox" id="rVisible" checked>
+            <span class="switch-track"><span class="switch-thumb"></span></span>
+          </label>
+          <span class="toggle-hint">활성 시 교사 화면에 즉시 노출됩니다.</span>
+        </div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn-outline" data-close="resource-form">취소</button>
+      <button class="btn-primary" id="btnResourceSave">저장</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ Modal: Resource delete confirm ============ -->
+<div class="overlay hidden" id="overlay-resource-delete">
+  <div class="modal modal-sm">
+    <div class="modal-head">
+      <h2>자료 삭제</h2>
+      <button class="modal-x" data-close="resource-delete" aria-label="닫기">
+        <i data-lucide="x" style="width:18px;height:18px"></i>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="confirm-block">
+        <div class="confirm-icon danger"><i data-lucide="trash-2"></i></div>
+        <div>
+          <div class="confirm-title" id="rDeleteTitle">자료를 삭제하시겠습니까?</div>
+          <div class="confirm-sub">삭제된 자료는 복구할 수 없으며, 사용자 화면에서도 즉시 사라집니다.</div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn-outline" data-close="resource-delete">취소</button>
+      <button class="btn-danger" id="btnResourceDeleteConfirm">네, 삭제합니다</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ Modal: Teacher login logs ============ -->
+<div class="overlay hidden" id="overlay-teacher-logs">
+  <div class="modal modal-md" style="max-width:760px">
+    <div class="modal-head">
+      <h2>접속 로그 히스토리</h2>
+      <button class="modal-x" data-close="teacher-logs" aria-label="닫기">
+        <i data-lucide="x" style="width:18px;height:18px"></i>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="stats-profile" id="logProfile"></div>
+
+      <div class="log-summary" id="logSummary"></div>
+
+      <table class="data" style="margin-top:14px">
+        <thead>
+          <tr>
+            <th style="width:55%">접속 일시</th>
+            <th>IP</th>
+          </tr>
+        </thead>
+        <tbody id="logBody"></tbody>
+      </table>
+    </div>
+    <div class="modal-foot">
+      <button class="btn-outline" data-close="teacher-logs">닫기</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ Toast ============ -->
+<div id="toast" class="toast hidden"></div>
+
+<script>
+  /* ===== Data ===== */
+  const evalRows = [
+    {ts:'2026-04-28 18:57:23', school:'경기도고등학교', teacher:'윤서연', course:'국어', name:'역함수로 암호만들기(채점요소)'},
+    {ts:'2026-04-28 18:54:09', school:'경기도고등학교', teacher:'윤서연', course:'국어', name:'역함수로 암호만들기(루브릭)'},
+    {ts:'2026-04-28 18:52:33', school:'경기도고등학교', teacher:'윤서연', course:'국어', name:'역함수로 암호만들기(예시답안)'},
+    {ts:'2026-04-28 18:51:07', school:'경기도고등학교', teacher:'윤서연', course:'국어', name:'역함수로 암호만들기(활동지)'},
+    {ts:'2026-04-28 18:33:45', school:'경기도고등학교', teacher:'임지안', course:'사회', name:'전공을 향한 교과 탐색'},
+    {ts:'2026-04-28 18:17:23', school:'경기도고등학교', teacher:'김민호', course:'영어', name:'1학기 1차 논술형'},
+    {ts:'2026-04-28 18:09:12', school:'경기도고등학교', teacher:'안태민', course:'과학', name:'인공지능과 진로탐구'},
+    {ts:'2026-04-28 17:48:04', school:'경기도초등학교', teacher:'신도윤', course:'국어', name:'관용표현을 사용하여 견학기록문 쓰고 제출하기'},
+    {ts:'2026-04-28 17:46:32', school:'경기도중학교',   teacher:'권하린', course:'사회', name:'지속가능한 도시를 만들기 위한 유럽 도시들의 다양한 노력'},
+    {ts:'2026-04-28 17:38:14', school:'경기도고등학교', teacher:'옥시현', course:'수학', name:'AP 미적분학 8-10번'},
+    {ts:'2026-04-28 17:36:48', school:'경기도중학교',   teacher:'전수아', course:'과학', name:'26 3학년 1학기 1차 정기시험'},
+    {ts:'2026-04-28 17:08:04', school:'경기도고등학교', teacher:'고예준', course:'과학', name:'1차 정기시험(앞면)'},
+    {ts:'2026-04-28 16:56:32', school:'경기도중학교',   teacher:'김지유', course:'국어', name:'(최종_1)3학년 수필쓰기 수행평가 (길모퉁이에서 만난 사람)'},
+    {ts:'2026-04-28 16:54:09', school:'경기도고등학교', teacher:'송채원', course:'사회', name:'전통 문화유산 현대적 가치 재창조하기'},
+    {ts:'2026-04-28 16:52:05', school:'경기도초등학교', teacher:'박은서', course:'국어', name:'전기 단상 대본'},
+  ];
+
+  /* === 추이 데이터 (일/주/월) === */
+  const series = {
+    reg: {
+      day:   [{l:'4/22',v:215},{l:'4/23',v:340},{l:'4/24',v:412},{l:'4/25',v:188},{l:'4/26',v:96},{l:'4/27',v:368},{l:'4/28',v:441}],
+      week:  [{l:'4월1주',v:900},{l:'4월2주',v:1774},{l:'4월3주',v:1857},{l:'4월4주',v:1619},{l:'4월5주',v:604}],
+      month: [{l:'25.11',v:3120},{l:'25.12',v:4280},{l:'26.01',v:5430},{l:'26.02',v:5880},{l:'26.03',v:6210},{l:'26.04',v:6478}],
+    },
+    score: {
+      day:   [{l:'4/22',v:24800},{l:'4/23',v:31200},{l:'4/24',v:38600},{l:'4/25',v:18200},{l:'4/26',v:9300},{l:'4/27',v:33100},{l:'4/28',v:42900}],
+      week:  [{l:'4월1주',v:49620},{l:'4월2주',v:113188},{l:'4월3주',v:115809},{l:'4월4주',v:115330},{l:'4월5주',v:37741}],
+      month: [{l:'25.11',v:180000},{l:'25.12',v:245000},{l:'26.01',v:312000},{l:'26.02',v:380000},{l:'26.03',v:410000},{l:'26.04',v:417128}],
+    },
+  };
+  const periodLbl = {day:'(일별)', week:'(주별)', month:'(월별)'};
+  const dateRange = {
+    day:   ['2026-04-22','2026-04-28'],
+    week:  ['2026-04-01','2026-04-28'],
+    month: ['2025-11-01','2026-04-28'],
+  };
+
+  /* === 분포 데이터 === */
+  const levelDist = [
+    {label:'고등', value:642, color:'#7E44FB'},
+    {label:'중등', value:418, color:'#b28ffd'},
+    {label:'초등', value:224, color:'#341761'},
+  ];
+  const subjectDist = [
+    {label:'국어', value:2110, color:'#7E44FB'},
+    {label:'영어', value:1284, color:'#b28ffd'},
+    {label:'수학', value:1196, color:'#5890FF'},
+    {label:'사회', value:1024, color:'#FF8C4C'},
+    {label:'과학', value:864,  color:'#00AF3D'},
+  ];
+  const topSchools = [
+    {name:'경기도고등학교 A', value:412},
+    {name:'경기도중학교 B',   value:298},
+    {name:'경기도고등학교 C', value:264},
+    {name:'경기도초등학교 D', value:201},
+    {name:'경기도고등학교 E', value:187},
+  ];
+
+  /* === Bar chart (재사용) === */
+  function niceMax(v){
+    const mag = Math.pow(10, String(Math.floor(v)).length - 1);
+    return Math.ceil(v / mag) * mag;
+  }
+  function renderChart(rootId, data){
+    const root = document.getElementById(rootId);
+    root.innerHTML = '';
+    const max = niceMax(Math.max(...data.map(d=>d.v)));
+    const ticks = 5; const step = max / ticks;
+    const yTicks = []; for(let i=0;i<=ticks;i++) yTicks.push(i*step);
+    const yax = document.createElement('div');
+    yax.className = 'y-axis';
+    yTicks.forEach(t=>{
+      const s = document.createElement('span');
+      s.textContent = Math.round(t).toLocaleString();
+      yax.appendChild(s);
+    });
+    root.appendChild(yax);
+    data.forEach(d=>{
+      const col = document.createElement('div');
+      col.className = 'bar-col';
+      const h = Math.round((d.v / max) * 100);
+      col.innerHTML = `
+        <span class="val">${d.v.toLocaleString()}</span>
+        <div class="bar" style="height:${h}%"></div>
+        <span class="lbl">${d.l}</span>`;
+      root.appendChild(col);
+    });
+  }
+
+  /* === Donut chart (CSS conic + 범례) === */
+  function renderDonut(donutId, legendId, data){
+    const total = data.reduce((s,d)=>s+d.value, 0);
+    let acc = 0;
+    const stops = data.map(d=>{
+      const start = (acc/total)*100;
+      acc += d.value;
+      const end = (acc/total)*100;
+      return `${d.color} ${start}% ${end}%`;
+    }).join(',');
+    const donut = document.getElementById(donutId);
+    donut.style.background = `conic-gradient(${stops})`;
+    const legend = document.getElementById(legendId);
+    legend.innerHTML = data.map(d=>{
+      const pct = ((d.value/total)*100).toFixed(1);
+      return `<div class="legend-row">
+        <span class="legend-dot" style="background:${d.color}"></span>
+        <span>${d.label}</span>
+        <span class="pct">${d.value.toLocaleString()} (${pct}%)</span>
+      </div>`;
+    }).join('');
+  }
+
+  /* === Horizontal bar (TOP N) === */
+  function renderHBar(rootId, data){
+    const max = Math.max(...data.map(d=>d.value));
+    document.getElementById(rootId).innerHTML = data.map((d,i)=>`
+      <div class="hbar-row">
+        <div class="hbar-rank">${i+1}</div>
+        <div class="hbar-bar-wrap">
+          <div class="hbar-bar" style="width:${(d.value/max)*100}%"></div>
+          <div class="hbar-name">${d.name}</div>
+        </div>
+        <div class="hbar-val">${d.value.toLocaleString()}</div>
+      </div>`).join('');
+  }
+
+  /* === Period state + 갱신 === */
+  let currentPeriod = 'week';
+  function applyPeriod(p){
+    currentPeriod = p;
+    renderChart('chartReg',   series.reg[p]);
+    renderChart('chartScore', series.score[p]);
+    document.getElementById('regPeriodLbl').textContent   = periodLbl[p];
+    document.getElementById('scorePeriodLbl').textContent = periodLbl[p];
+    document.getElementById('dateFrom').value = dateRange[p][0];
+    document.getElementById('dateTo').value   = dateRange[p][1];
+    document.querySelectorAll('#periodSeg .seg-btn').forEach(b=>{
+      b.classList.toggle('active', b.dataset.period === p);
+    });
+  }
+  document.querySelectorAll('#periodSeg .seg-btn').forEach(b=>{
+    b.addEventListener('click', ()=> applyPeriod(b.dataset.period));
+  });
+
+  applyPeriod('week');
+  renderDonut('donutLevel',   'legendLevel',   levelDist);
+  renderDonut('donutSubject', 'legendSubject', subjectDist);
+  renderHBar('hbarTop', topSchools);
+
+  /* ===== Render: tables ===== */
+  function rowHTML(r, withSchool=true){
+    const cells = [];
+    cells.push(`<td>${r.ts}</td>`);
+    if (withSchool) cells.push(`<td>${r.school}</td>`);
+    cells.push(`<td>${r.teacher}</td>`);
+    cells.push(`<td>${r.course}</td>`);
+    cells.push(`<td style="text-align:left">${r.name}</td>`);
+    cells.push(`<td><a class="link-detail" href="#">상세 내역</a></td>`);
+    return `<tr>${cells.join('')}</tr>`;
+  }
+  // Recent (dashboard) — show school first, then teacher/course/name/ts
+  const recentBody = document.getElementById('recentBody');
+  recentBody.innerHTML = evalRows.slice(0,5).map(r=>`
+    <tr>
+      <td>${r.school}</td>
+      <td>${r.teacher}</td>
+      <td>${r.course}</td>
+      <td style="text-align:left">${r.name}</td>
+      <td>${r.ts}</td>
+      <td><a class="link-detail" href="#">상세 내역</a></td>
+    </tr>`).join('');
+
+  // Eval design table
+  document.getElementById('evalBody').innerHTML = evalRows.map(r=>rowHTML(r,true)).join('');
+
+  /* ===== Sidebar toggle + nav ===== */
+  const sidebar = document.getElementById('sidebar');
+  const main    = document.getElementById('main');
+  document.getElementById('hamBtn').addEventListener('click', ()=>{
+    sidebar.classList.toggle('closed');
+    main.classList.toggle('full');
+  });
+
+  function showView(target, name){
+    document.querySelectorAll('.view').forEach(v=>v.classList.add('hidden'));
+    if (target === 'coming'){
+      document.getElementById('view-coming').classList.remove('hidden');
+      document.getElementById('comingName').textContent = (name || '준비 중인 화면입니다');
+    } else {
+      document.getElementById('view-' + target).classList.remove('hidden');
+    }
+    // active state
+    document.querySelectorAll('.nav-item').forEach(b=>b.classList.remove('active'));
+    const navBtn = [...document.querySelectorAll('.nav-item')].find(b=>{
+      if (target === 'coming') return b.dataset.name === name;
+      return b.dataset.target === target;
+    });
+    if (navBtn) navBtn.classList.add('active');
+    window.scrollTo({top:0, behavior:'instant'});
+  }
+
+  document.querySelectorAll('.nav-item').forEach(btn=>{
+    btn.addEventListener('click', ()=> showView(btn.dataset.target, btn.dataset.name));
+  });
+  // "전체 평가 보기" → eval design
+  document.querySelectorAll('[data-goto]').forEach(b=>{
+    b.addEventListener('click', ()=> showView(b.dataset.goto));
+  });
+
+  /* ====================== Teacher list ====================== */
+
+  // 가짜 사용자 ID 생성 (캡처와 비슷한 hash/token 형태)
+  function makeId(){
+    const r = Math.random();
+    if (r < 0.6){
+      // 32+자 hex
+      const hex = '0123456789abcdef';
+      let s = '';
+      for (let i=0;i<40;i++) s += hex[Math.floor(Math.random()*16)];
+      return s;
+    } else {
+      // base62-ish 토큰
+      const ch = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_-';
+      let s = '';
+      for (let i=0;i<22;i++) s += ch[Math.floor(Math.random()*ch.length)];
+      return s;
+    }
+  }
+  function pick(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
+
+  const SURNAMES = ['김','이','박','최','정','강','조','윤','장','임','한','오','서','신','권','황','안','송','전','홍','고','문','양','손','배','백','허','노','심','류'];
+  const GIVEN_NAMES = ['민준','서윤','지호','하윤','도윤','시우','예준','주원','은우','지안','하린','유준','서연','가은','시현','지유','하준','수아','지원','채원','유나','다은','선우','성민','윤아','태민','현우','서진','정우','예린','승우','지민','준영','서희','민서','준호','은서','지영','수빈','시현','채은','지율','준서','연우','다인','은채','윤호','태윤','서아','민지'];
+  const SCHOOLS  = ['경기도고등학교','경기도중학교','경기도초등학교'];
+  const SUBJECTS = ['국어','영어','수학','사회','과학'];
+
+  function makeTeachers(n){
+    const arr = [];
+    for (let i=0;i<n;i++){
+      // 30%는 다중 교과 (콤마 구분)
+      const subjN = Math.random() < 0.3 ? (Math.random() < 0.5 ? 2 : 3) : 1;
+      const subjPool = [...SUBJECTS].sort(()=>Math.random()-.5).slice(0, subjN);
+      arr.push({
+        id: makeId(),
+        name: pick(SURNAMES) + pick(GIVEN_NAMES),
+        school: pick(SCHOOLS),
+        subject: subjPool.join(', ')
+      });
+    }
+    return arr;
+  }
+
+  // 시드 고정 느낌으로 — 매번 같이 보이는 게 좋다면 캡처 모방으로 첫 10명 정해두고 나머지는 랜덤
+  let teachers = [
+    {id:'e734d4fb0856167434cbaefc0c7e4e1c2a8b7d9f', name:'조서윤', school:'경기도고등학교', subject:'국어'},
+    {id:'2rmJGH5e7k2ZA-Dsp5Xrow', name:'노치우', school:'경기도초등학교', subject:'국어'},
+    {id:'d6632ec63a2b83994f7453a88aa78313bc44ee10', name:'송지아', school:'경기도중학교', subject:'과학, 국어, 사회'},
+    {id:'kA1FvqQgmkmOsw12OhijIA', name:'여하린', school:'경기도초등학교', subject:'국어'},
+    {id:'898d6f10792a74b90ec8255d45c972e1afc23bd8', name:'허현주', school:'경기도중학교', subject:'과학'},
+    {id:'f0f5a554c24363bfb901433dcaada1bf4cc77e02', name:'이병주', school:'경기도초등학교', subject:'국어'},
+    {id:'621f0ac892c412244857f19b3333fdc9d1a3b7e6', name:'안정우', school:'경기도고등학교', subject:'과학'},
+    {id:'H6QtEV2H_0646KH7A5KtQg', name:'방완호', school:'경기도고등학교', subject:'사회'},
+    {id:'8d6ed06317e7b7de99de78d1bee6fa3c5179ab48', name:'심태민', school:'경기도고등학교', subject:'과학'},
+    {id:'25a375e6380b8258a6eada1c30231ff9c8a14e72', name:'차혜인', school:'경기도중학교', subject:'국어'},
+  ].concat(makeTeachers(50));
+  // 표시용 총 가입 수 (캡처처럼 '총 N명' 큰 숫자)
+  const TOTAL_TEACHERS_DISPLAY = 115484;
+
+  let tFiltered = teachers.slice();
+  let tPage = 1;
+  const T_PER_PAGE = 10;
+
+  const $ = (sel, root=document) => root.querySelector(sel);
+  const $$ = (sel, root=document) => [...root.querySelectorAll(sel)];
+
+  function renderTeachers(){
+    const start = (tPage - 1) * T_PER_PAGE;
+    const slice = tFiltered.slice(start, start + T_PER_PAGE);
+    const body = $('#teacherBody');
+    if (slice.length === 0){
+      body.innerHTML = `<tr><td colspan="6" style="padding:48px;color:var(--gray-700)">조건에 맞는 교사가 없습니다.</td></tr>`;
+    } else {
+      body.innerHTML = slice.map((t, i)=>`
+        <tr data-id="${t.id}">
+          <td>${start + i + 1}</td>
+          <td class="id-cell">${t.id.length > 36 ? t.id.slice(0,36)+'…' : t.id}</td>
+          <td>${t.name}</td>
+          <td>${t.school}</td>
+          <td>${t.subject}</td>
+          <td>
+            <div class="row-actions">
+              <button class="icon-btn log" data-act="log" data-id="${t.id}">
+                <i data-lucide="history"></i> 로그
+              </button>
+              <button class="icon-btn edit" data-act="edit" data-id="${t.id}">
+                <i data-lucide="pencil"></i> 수정
+              </button>
+              <button class="icon-btn del" data-act="del" data-id="${t.id}">
+                <i data-lucide="trash-2"></i> 삭제
+              </button>
+            </div>
+          </td>
+        </tr>`).join('');
+    }
+    // 총 표시 — 검색 결과와 별개로 누적 가입 수
+    const filterActive = $('#tFilterText').value.trim().length > 0;
+    $('#tTotalLbl').textContent = filterActive
+      ? `검색 결과 ${tFiltered.length.toLocaleString()}명`
+      : `총 ${TOTAL_TEACHERS_DISPLAY.toLocaleString()}명`;
+    renderPager();
+    lucide.createIcons();
+  }
+
+  function renderPager(){
+    const totalPages = Math.max(1, Math.ceil(tFiltered.length / T_PER_PAGE));
+    const cur = tPage;
+    const pager = $('#teacherPager');
+    // 5페이지 윈도우
+    let start = Math.max(1, cur - 2);
+    let end   = Math.min(totalPages, start + 4);
+    start = Math.max(1, end - 4);
+    let html = `<button class="page-btn nav" data-page="prev" ${cur===1?'disabled':''}><i data-lucide="chevron-left" style="width:16px;height:16px"></i></button>`;
+    for (let p=start; p<=end; p++){
+      html += `<button class="page-btn ${p===cur?'active':''}" data-page="${p}">${p}</button>`;
+    }
+    html += `<button class="page-btn nav" data-page="next" ${cur===totalPages?'disabled':''}><i data-lucide="chevron-right" style="width:16px;height:16px"></i></button>`;
+    pager.innerHTML = html;
+  }
+
+  function applyFilter(){
+    const field = $('#tFilterField').value;
+    const q = $('#tFilterText').value.trim().toLowerCase();
+    if (!q){ tFiltered = teachers.slice(); }
+    else { tFiltered = teachers.filter(t => String(t[field]).toLowerCase().includes(q)); }
+    tPage = 1;
+    renderTeachers();
+  }
+
+  // 행 클릭 — 통계 모달 (단, 액션 버튼 클릭은 제외)
+  document.addEventListener('click', (e)=>{
+    const actionBtn = e.target.closest('.icon-btn[data-act]');
+    if (actionBtn){
+      const id = actionBtn.dataset.id;
+      const t = teachers.find(x=>x.id===id);
+      if (!t) return;
+      if (actionBtn.dataset.act === 'edit') openEditModal(t);
+      else if (actionBtn.dataset.act === 'del') openDeleteModal(t);
+      else if (actionBtn.dataset.act === 'log') openLogModal(t);
+      e.stopPropagation();
+      return;
+    }
+    const tr = e.target.closest('#teacherBody tr[data-id]');
+    if (tr){
+      const t = teachers.find(x=>x.id===tr.dataset.id);
+      if (t) openStatsModal(t);
+    }
+  });
+
+  // Pagination clicks
+  document.addEventListener('click', (e)=>{
+    const pb = e.target.closest('#teacherPager .page-btn');
+    if (!pb || pb.disabled) return;
+    const totalPages = Math.max(1, Math.ceil(tFiltered.length / T_PER_PAGE));
+    if (pb.dataset.page === 'prev') tPage = Math.max(1, tPage-1);
+    else if (pb.dataset.page === 'next') tPage = Math.min(totalPages, tPage+1);
+    else tPage = parseInt(pb.dataset.page, 10);
+    renderTeachers();
+  });
+
+  // Search
+  $('#btnTeacherSearch').addEventListener('click', applyFilter);
+  $('#tFilterText').addEventListener('keydown', e=>{ if (e.key==='Enter') applyFilter(); });
+
+  /* ====== Modal helpers ====== */
+  function openOverlay(name){ $('#overlay-' + name).classList.remove('hidden'); }
+  function closeOverlay(name){ $('#overlay-' + name).classList.add('hidden'); }
+  document.addEventListener('click', (e)=>{
+    const x = e.target.closest('[data-close]');
+    if (x){ closeOverlay(x.dataset.close); return; }
+    const overlay = e.target.classList.contains('overlay') ? e.target : null;
+    if (overlay){
+      const id = overlay.id.replace('overlay-','');
+      closeOverlay(id);
+    }
+  });
+
+  /* ====== Create / Edit ====== */
+  let editingId = null;
+  function openEditModal(t){
+    editingId = t ? t.id : null;
+    $('#tFormTitle').textContent = t ? '교사 수정' : '교사 등록';
+    $('#fId').value = t ? t.id : '(저장 시 자동 생성)';
+    $('#fId').disabled = true;
+    $('#fName').value = t ? t.name : '';
+    $('#fSchool').value = t ? t.school : '경기도고등학교';
+    $('#fSubject').value = t ? (t.subject.split(',')[0].trim()) : '국어';
+    openOverlay('teacher-form');
+  }
+  $('#btnTeacherCreate').addEventListener('click', ()=> openEditModal(null));
+
+  $('#btnTeacherSave').addEventListener('click', ()=>{
+    const name = $('#fName').value.trim();
+    if (!name){ showToast('이름을 입력해주세요.', 'error'); return; }
+    if (editingId){
+      const t = teachers.find(x=>x.id===editingId);
+      if (t){
+        t.name = name;
+        t.school = $('#fSchool').value;
+        t.subject = $('#fSubject').value;
+      }
+      showToast('교사 정보가 수정되었습니다.');
+    } else {
+      teachers.unshift({
+        id: makeId(),
+        name,
+        school: $('#fSchool').value,
+        subject: $('#fSubject').value
+      });
+      showToast('교사가 등록되었습니다.');
+    }
+    editingId = null;
+    closeOverlay('teacher-form');
+    applyFilter();
+  });
+
+  /* ====== Delete ====== */
+  let deletingId = null;
+  function openDeleteModal(t){
+    deletingId = t.id;
+    $('#dConfirmTitle').textContent = `${t.name} (${t.school}) 교사를 삭제하시겠습니까?`;
+    openOverlay('teacher-delete');
+  }
+  $('#btnTeacherDeleteConfirm').addEventListener('click', ()=>{
+    teachers = teachers.filter(x => x.id !== deletingId);
+    deletingId = null;
+    closeOverlay('teacher-delete');
+    showToast('교사가 삭제되었습니다.');
+    applyFilter();
+  });
+
+  /* ====== Stats modal ====== */
+  let currentStatsTeacher = null;
+  let currentStatsPeriod = 'week';
+
+  function seedNum(seed, base, variance){
+    // 결정적 의사난수 — 같은 교사·기간·인덱스면 같은 값
+    let h = 2166136261;
+    for (let i=0;i<seed.length;i++) { h ^= seed.charCodeAt(i); h = Math.imul(h, 16777619); }
+    return base + Math.abs(h % variance);
+  }
+
+  function buildStatsSeries(t, period){
+    let labels;
+    if (period === 'day'){
+      labels = ['4/22','4/23','4/24','4/25','4/26','4/27','4/28'];
+    } else if (period === 'week'){
+      labels = ['4월1주','4월2주','4월3주','4월4주','4월5주'];
+    } else {
+      labels = ['25.11','25.12','26.01','26.02','26.03','26.04'];
+    }
+    return labels.map((l, i)=>{
+      const k = t.id + period + i;
+      const access = seedNum(k+'a', period==='day'?2:6, period==='day'?12:40);
+      const reg    = seedNum(k+'r', 1, period==='day'?5:20);
+      const planAi = seedNum(k+'p', 0, period==='day'?4:14);
+      const scoreAi= seedNum(k+'s', 10, period==='day'?80:600);
+      const stu    = seedNum(k+'u', 0, period==='day'?40:240);
+      return {l, access, reg, planAi, scoreAi, stu};
+    });
+  }
+
+  function openStatsModal(t){
+    currentStatsTeacher = t;
+    // Profile
+    $('#statsProfile').innerHTML = `
+      <div class="stats-avatar">${t.name.charAt(0)}</div>
+      <div class="stats-meta">
+        <div class="name">${t.name}</div>
+        <div class="meta-row">
+          <span><em>학교</em>${t.school}</span>
+          <span><em>교과</em>${t.subject}</span>
+          <span><em>사용자ID</em>${t.id.length>20?t.id.slice(0,20)+'…':t.id}</span>
+        </div>
+      </div>`;
+    // 초기: 주별
+    [...$$('#statsPeriodSeg .seg-btn')].forEach(b=>b.classList.toggle('active', b.dataset.period==='week'));
+    currentStatsPeriod = 'week';
+    applyStatsPeriod('week');
+    openOverlay('teacher-stats');
+    lucide.createIcons();
+  }
+
+  function applyStatsPeriod(p){
+    currentStatsPeriod = p;
+    const ranges = {day:['2026-04-22','2026-04-28'], week:['2026-04-01','2026-04-28'], month:['2025-11-01','2026-04-28']};
+    $('#sDateFrom').value = ranges[p][0];
+    $('#sDateTo').value   = ranges[p][1];
+    $('#sPeriodLbl').textContent = periodLbl[p];
+
+    const data = buildStatsSeries(currentStatsTeacher, p);
+    // KPI = 합계
+    const sum = key => data.reduce((s,d)=>s+d[key], 0);
+    const sumAccess = sum('access'), sumReg = sum('reg'), sumPlan = sum('planAi'), sumScore = sum('scoreAi'), sumStu = sum('stu');
+    $('#sKpi1').innerHTML = `${sumAccess.toLocaleString()}<em>회</em>`;
+    $('#sKpi2').innerHTML = `${sumReg.toLocaleString()}<em>건</em>`;
+    $('#sKpi3').innerHTML = `${sumPlan.toLocaleString()}<em>건</em>`;
+    $('#sKpi4').innerHTML = `${sumScore.toLocaleString()}<em>건</em>`;
+    $('#sKpi1Sub').textContent = `${data.length}개 ${({day:'일',week:'주',month:'개월'})[p]} 누적`;
+    $('#sKpi2Sub').textContent = `평균 ${Math.round(sumReg/data.length)}건`;
+    $('#sKpi3Sub').textContent = `평균 ${Math.round(sumPlan/data.length)}건`;
+    $('#sKpi4Sub').textContent = `채점 학생 ${sumStu.toLocaleString()}명`;
+
+    // Chart — 막대 = 평가 등록
+    const chartData = data.map(d=>({l:d.l, v:d.reg}));
+    renderChart('sChart', chartData);
+
+    // 표
+    $('#sDetailBody').innerHTML = data.map(d=>`
+      <tr>
+        <td>${d.l}</td>
+        <td>${d.access.toLocaleString()}회</td>
+        <td>${d.reg.toLocaleString()}건</td>
+        <td>${d.planAi.toLocaleString()}건</td>
+        <td>${d.scoreAi.toLocaleString()}건</td>
+        <td>${d.stu.toLocaleString()}명</td>
+      </tr>`).join('');
+  }
+
+  $$('#statsPeriodSeg .seg-btn').forEach(b=>{
+    b.addEventListener('click', ()=>{
+      $$('#statsPeriodSeg .seg-btn').forEach(x=>x.classList.toggle('active', x===b));
+      applyStatsPeriod(b.dataset.period);
+    });
+  });
+
+  /* ====== Login logs ====== */
+  function buildLoginLogs(t){
+    const logs = [];
+    let cur = new Date('2026-04-28T18:14:00');
+    for (let i=0;i<28;i++){
+      const gap = seedNum(t.id+i+'g', 30, 1470);
+      cur = new Date(cur.getTime() - gap*60*1000);
+      const pad = n => String(n).padStart(2,'0');
+      const ts = `${cur.getFullYear()}-${pad(cur.getMonth()+1)}-${pad(cur.getDate())} ${pad(cur.getHours())}:${pad(cur.getMinutes())}:${pad(cur.getSeconds())}`;
+      const ipA = seedNum(t.id+i+'a', 10, 245);
+      const ipB = seedNum(t.id+i+'b', 1, 254);
+      logs.push({ts, ip: `211.234.${ipA}.${ipB}`});
+    }
+    return logs;
+  }
+
+  function openLogModal(t){
+    $('#logProfile').innerHTML = `
+      <div class="stats-avatar">${t.name.charAt(0)}</div>
+      <div class="stats-meta">
+        <div class="name">${t.name} <span style="font-size:13px;font-weight:400;color:var(--gray-700);margin-left:6px">접속 로그</span></div>
+        <div class="meta-row">
+          <span><em>학교</em>${t.school}</span>
+          <span><em>교과</em>${t.subject}</span>
+          <span><em>사용자ID</em>${t.id.length>20?t.id.slice(0,20)+'…':t.id}</span>
+        </div>
+      </div>`;
+
+    const logs = buildLoginLogs(t);
+    const last = logs[0];
+    $('#logSummary').innerHTML = `
+      <span><em>최근 접속</em><span class="accent">${last.ts}</span></span>
+      <span><em>표시 기간</em>최근 28건</span>
+    `;
+    $('#logBody').innerHTML = logs.map(l=>`
+      <tr>
+        <td>${l.ts}</td>
+        <td>${l.ip}</td>
+      </tr>`).join('');
+    openOverlay('teacher-logs');
+    lucide.createIcons();
+  }
+
+  /* ====================== Ops Data (평가 운영 데이터) ====================== */
+  const opsSchools = [
+    {name:'경기도고등학교 A', level:'고등', evalCount:542, planAi:412, scoreAi:38420, studentCount:9120, activeTeachers:24},
+    {name:'경기도고등학교 B', level:'고등', evalCount:384, planAi:290, scoreAi:28140, studentCount:6840, activeTeachers:18},
+    {name:'경기도고등학교 C', level:'고등', evalCount:298, planAi:220, scoreAi:21560, studentCount:5120, activeTeachers:14},
+    {name:'경기도고등학교 D', level:'고등', evalCount:264, planAi:195, scoreAi:18840, studentCount:4480, activeTeachers:12},
+    {name:'경기도중학교 A',   level:'중등', evalCount:412, planAi:318, scoreAi:31250, studentCount:7320, activeTeachers:20},
+    {name:'경기도중학교 B',   level:'중등', evalCount:287, planAi:214, scoreAi:22480, studentCount:5240, activeTeachers:16},
+    {name:'경기도중학교 C',   level:'중등', evalCount:198, planAi:148, scoreAi:15820, studentCount:3680, activeTeachers:11},
+    {name:'경기도중학교 D',   level:'중등', evalCount:145, planAi:109, scoreAi:12340, studentCount:2940, activeTeachers:9},
+    {name:'경기도초등학교 A', level:'초등', evalCount:201, planAi:152, scoreAi:16240, studentCount:3920, activeTeachers:14},
+    {name:'경기도초등학교 B', level:'초등', evalCount:168, planAi:124, scoreAi:13580, studentCount:3240, activeTeachers:11},
+    {name:'경기도초등학교 C', level:'초등', evalCount:124, planAi:92,  scoreAi:9840,  studentCount:2380, activeTeachers:8},
+    {name:'경기도초등학교 D', level:'초등', evalCount:98,  planAi:73,  scoreAi:7920,  studentCount:1860, activeTeachers:6},
+  ];
+
+  // 교사별 운영 통계 — teachers 시드
+  function buildOpsTeacherStats(){
+    return teachers.map(t=>{
+      const evalCount = seedNum(t.id+'evc', 4, 80);
+      const planAi   = seedNum(t.id+'pai', 2, 60);
+      const scoreAi  = seedNum(t.id+'sai', 200, 3500);
+      const studentCount = seedNum(t.id+'stu', 24, 480);
+      return {...t, evalCount, planAi, scoreAi, studentCount};
+    }).sort((a,b)=>b.evalCount - a.evalCount);
+  }
+  let opsTeachers = [];
+  let opsTFiltered = [];
+  let opsTPage = 1;
+  const OPS_T_PER = 10;
+
+  // 평가 목록 = evalRows + AI 호출 수 컬럼
+  function buildOpsList(){
+    return evalRows.map((r,i)=>({
+      ...r,
+      planAi:  seedNum(r.ts+i+'p', 1, 9),   // 평가 1건당 평가계획 AI 호출 1~9회
+      scoreAi: seedNum(r.ts+i+'s', 60, 320) // 채점 AI 호출 60~380회
+    }));
+  }
+
+  function fmt(n){ return n.toLocaleString(); }
+
+  function renderOpsKpi(){
+    const sum = key => opsSchools.reduce((s,r)=>s+r[key],0);
+    $('#opsKpiEval').innerHTML  = `${fmt(sum('evalCount'))}<em>건</em>`;
+    $('#opsKpiPlan').innerHTML  = `${fmt(sum('planAi'))}<em>건</em>`;
+    $('#opsKpiScore').innerHTML = `${fmt(sum('scoreAi'))}<em>건</em>`;
+    $('#opsKpiStu').innerHTML   = `${fmt(sum('studentCount'))}<em>명</em>`;
+  }
+
+  function renderOpsSchool(){
+    const sorted = [...opsSchools].sort((a,b)=>b.evalCount-a.evalCount);
+    $('#opsSchoolBody').innerHTML = sorted.map((s,i)=>`
+      <tr>
+        <td class="rank-cell">${i+1}</td>
+        <td style="text-align:left;padding-left:18px;font-weight:700">${s.name}</td>
+        <td>${s.level}</td>
+        <td>${fmt(s.evalCount)}건</td>
+        <td>${fmt(s.planAi)}건</td>
+        <td>${fmt(s.scoreAi)}건</td>
+        <td>${fmt(s.studentCount)}명</td>
+        <td>${fmt(s.activeTeachers)}명</td>
+      </tr>`).join('');
+  }
+
+  function renderOpsTeacher(){
+    const start = (opsTPage-1) * OPS_T_PER;
+    const slice = opsTFiltered.slice(start, start+OPS_T_PER);
+    $('#opsTeacherBody').innerHTML = slice.length === 0
+      ? `<tr><td colspan="8" style="padding:48px;color:var(--gray-700)">조건에 맞는 교사가 없습니다.</td></tr>`
+      : slice.map((t,i)=>`
+        <tr>
+          <td class="rank-cell">${start+i+1}</td>
+          <td>${t.name}</td>
+          <td style="text-align:left;padding-left:18px">${t.school}</td>
+          <td>${t.subject}</td>
+          <td>${fmt(t.evalCount)}건</td>
+          <td>${fmt(t.planAi)}건</td>
+          <td>${fmt(t.scoreAi)}건</td>
+          <td>${fmt(t.studentCount)}명</td>
+        </tr>`).join('');
+    $('#opsTTotalLbl').textContent = `총 ${opsTFiltered.length.toLocaleString()}명`;
+
+    // pager
+    const totalPages = Math.max(1, Math.ceil(opsTFiltered.length / OPS_T_PER));
+    const cur = opsTPage;
+    let st = Math.max(1, cur-2); let ed = Math.min(totalPages, st+4); st = Math.max(1, ed-4);
+    let html = `<button class="page-btn nav" data-ops-tpage="prev" ${cur===1?'disabled':''}><i data-lucide="chevron-left" style="width:16px;height:16px"></i></button>`;
+    for (let p=st; p<=ed; p++) html += `<button class="page-btn ${p===cur?'active':''}" data-ops-tpage="${p}">${p}</button>`;
+    html += `<button class="page-btn nav" data-ops-tpage="next" ${cur===totalPages?'disabled':''}><i data-lucide="chevron-right" style="width:16px;height:16px"></i></button>`;
+    $('#opsTeacherPager').innerHTML = html;
+    lucide.createIcons();
+  }
+
+  function renderOpsList(){
+    const list = buildOpsList();
+    $('#opsListBody').innerHTML = list.map(r=>`
+      <tr>
+        <td>${r.ts}</td>
+        <td>${r.school}</td>
+        <td>${r.teacher}</td>
+        <td>${r.course}</td>
+        <td style="text-align:left;padding-left:18px">${r.name}</td>
+        <td>${fmt(r.planAi)}회</td>
+        <td>${fmt(r.scoreAi)}회</td>
+        <td><a class="link-detail" href="#">상세 내역</a></td>
+      </tr>`).join('');
+    $('#opsListTotalLbl').textContent = `총 ${list.length.toLocaleString()}건`;
+  }
+
+  function applyOpsTeacherFilter(){
+    const f = $('#opsTField').value;
+    const q = $('#opsTText').value.trim().toLowerCase();
+    opsTFiltered = !q ? opsTeachers.slice() : opsTeachers.filter(x => String(x[f]).toLowerCase().includes(q));
+    opsTPage = 1;
+    renderOpsTeacher();
+  }
+
+  // 탭 전환
+  document.querySelectorAll('.ops-tab').forEach(b=>{
+    b.addEventListener('click', ()=>{
+      document.querySelectorAll('.ops-tab').forEach(x=>x.classList.toggle('active', x===b));
+      ['school','teacher','list'].forEach(k=>{
+        $('#opsPane-' + k).classList.toggle('hidden', k !== b.dataset.opsTab);
+      });
+    });
+  });
+
+  // 검색
+  $('#btnOpsTeacherSearch').addEventListener('click', applyOpsTeacherFilter);
+  $('#opsTText').addEventListener('keydown', e=>{ if(e.key==='Enter') applyOpsTeacherFilter(); });
+
+  // 페이지네이션 (위임)
+  document.addEventListener('click', (e)=>{
+    const pb = e.target.closest('#opsTeacherPager .page-btn');
+    if (!pb || pb.disabled) return;
+    const totalPages = Math.max(1, Math.ceil(opsTFiltered.length / OPS_T_PER));
+    if (pb.dataset.opsTpage === 'prev') opsTPage = Math.max(1, opsTPage-1);
+    else if (pb.dataset.opsTpage === 'next') opsTPage = Math.min(totalPages, opsTPage+1);
+    else opsTPage = parseInt(pb.dataset.opsTpage, 10);
+    renderOpsTeacher();
+  });
+
+  // 기간 토글 — 라벨/날짜만 갱신 (목업)
+  document.querySelectorAll('#opsPeriodSeg .seg-btn').forEach(b=>{
+    b.addEventListener('click', ()=>{
+      document.querySelectorAll('#opsPeriodSeg .seg-btn').forEach(x=>x.classList.toggle('active', x===b));
+      const ranges = {day:['2026-04-22','2026-04-28'], week:['2026-04-01','2026-04-28'], month:['2025-11-01','2026-04-28']};
+      const r = ranges[b.dataset.period];
+      $('#opsDateFrom').value = r[0];
+      $('#opsDateTo').value = r[1];
+    });
+  });
+
+  // 엑셀 다운로드 — 토스트만
+  $('#btnOpsExcel').addEventListener('click', ()=>{
+    const tab = document.querySelector('.ops-tab.active').dataset.opsTab;
+    const tabName = ({school:'학교별',teacher:'개인별',list:'평가 목록'})[tab];
+    showToast(`엑셀 다운로드를 시작합니다. (${tabName} · ${$('#opsDateFrom').value} ~ ${$('#opsDateTo').value})`);
+  });
+
+  // 초기화 — 즉시 렌더 (hidden 상태에서도 OK)
+  opsTeachers = buildOpsTeacherStats();
+  opsTFiltered = opsTeachers.slice();
+  renderOpsKpi();
+  renderOpsSchool();
+  renderOpsTeacher();
+  renderOpsList();
+
+  /* ====================== Resources (평가자료실 관리) ====================== */
+  const RESOURCE_BODY_TPL = (kind)=> {
+    const detailLines = {
+      eval_kit: ['- 자료명: {title}',
+        '- 수록 내용',
+        ' ° 출제 의도 및 채점 기준 안내',
+        ' ° 학년·교과별 예시 문항 (선택형 / 서술형)',
+        ' ° 모범 답안 및 채점 요소 분석',
+        ' ° 활용 가이드 (수업 적용 사례)',
+        '',
+        '* 본 자료는 경기도교육청 발간 자료를 기반으로 구성되었으며, 수업 내·외 활동에 자유롭게 활용 가능합니다.'],
+      ref_book: ['- 자료명: {title}',
+        '- 수록 내용',
+        ' ° 학습으로의 평가 살펴보기',
+        '  - 학습으로의 평가의 특성',
+        '  - 학습의 개념',
+        '  - 학력과 기본학력',
+        '  - 성장이 있는 교실, 학습으로의 평가',
+        '  - 경기도 평가 정책의 변화',
+        ' ° 학습으로의 평가 실천하기',
+        '  - 학업성적관리위원회 운영',
+        '  - 평가계획 수립',
+        '  - 평가 운영',
+        '  - 학생 맞춤형 피드백',
+        ' ° 2024 경기도 초등학교 학업성적관리 시행지침'],
+      guide: ['- 자료명: {title}',
+        '- 수록 내용',
+        ' ° 학교급별 평가 운영 절차',
+        ' ° 학업성적관리 시행지침',
+        ' ° 평가 결과 활용 및 학생부 기재 유의사항',
+        ' ° 부록: 자주 묻는 질문(FAQ)']
+    };
+    return detailLines[kind].join('\n');
+  };
+
+  let resources = [
+    {id:12, title:'2025 경기 논술형 평가 도구 2차 영어',     fileName:'2025_경기_논술형_2차_영어.pdf',   fileSize:'3.4MB', date:'26.01.15', visible:true,  body: RESOURCE_BODY_TPL('eval_kit').replace('{title}','2025 경기 논술형 평가 도구 2차 영어')},
+    {id:11, title:'2025 경기 논술형 평가 도구 2차 수학',     fileName:'2025_경기_논술형_2차_수학.pdf',   fileSize:'2.9MB', date:'26.01.15', visible:true,  body: RESOURCE_BODY_TPL('eval_kit').replace('{title}','2025 경기 논술형 평가 도구 2차 수학')},
+    {id:10, title:'2025 경기 논술형 평가 도구 2차 사회',     fileName:'2025_경기_논술형_2차_사회.pdf',   fileSize:'4.1MB', date:'26.01.15', visible:true,  body: RESOURCE_BODY_TPL('eval_kit').replace('{title}','2025 경기 논술형 평가 도구 2차 사회')},
+    {id: 9, title:'2025 경기 논술형 평가 도구 2차 과학',     fileName:'2025_경기_논술형_2차_과학.pdf',   fileSize:'3.7MB', date:'26.01.15', visible:true,  body: RESOURCE_BODY_TPL('eval_kit').replace('{title}','2025 경기 논술형 평가 도구 2차 과학')},
+    {id: 8, title:'경기교육 AI 서·논술형 평가시스템 이해자료', fileName:'경기교육_AI_서논술형_이해자료.pdf', fileSize:'5.2MB', date:'25.09.24', visible:true,  body: RESOURCE_BODY_TPL('ref_book').replace('{title}','경기교육 AI 서·논술형 평가시스템 이해자료')},
+    {id: 7, title:'경기 논술형 평가 이해자료집',             fileName:'경기_논술형_평가_이해자료집.pdf', fileSize:'6.8MB', date:'25.09.24', visible:true,  body: RESOURCE_BODY_TPL('ref_book').replace('{title}','경기 논술형 평가 이해자료집')},
+    {id: 6, title:'2025 중등 교과별 논술형 평가 문항(영어)', fileName:'2025_중등_교과별_논술형_영어.pdf', fileSize:'2.4MB', date:'25.04.26', visible:true,  body: RESOURCE_BODY_TPL('eval_kit').replace('{title}','2025 중등 교과별 논술형 평가 문항(영어)')},
+    {id: 5, title:'2025 중등 논술형 평가 길라잡이',         fileName:'2025_중등_논술형_길라잡이.pdf',  fileSize:'1.8MB', date:'25.04.26', visible:true,  body: RESOURCE_BODY_TPL('guide').replace('{title}','2025 중등 논술형 평가 길라잡이')},
+    {id: 4, title:'2025 학습으로의 평가 이해하기',           fileName:'2025_학습으로의_평가_이해하기.pdf', fileSize:'2.2MB', date:'25.04.26', visible:true,  body: RESOURCE_BODY_TPL('ref_book').replace('{title}','2025 초등 학습으로의 평가 이해하기')},
+    {id: 3, title:'2025 중등 교과별 논술형 평가 문항(사회)', fileName:'2025_중등_교과별_논술형_사회.pdf', fileSize:'2.6MB', date:'25.04.26', visible:true,  body: RESOURCE_BODY_TPL('eval_kit').replace('{title}','2025 중등 교과별 논술형 평가 문항(사회)')},
+    {id: 2, title:'2024 경기도 초등학교 학업성적관리 시행지침', fileName:'2024_경기도_초등_학업성적관리_시행지침.pdf', fileSize:'1.2MB', date:'25.03.10', visible:true,  body: RESOURCE_BODY_TPL('guide').replace('{title}','2024 경기도 초등학교 학업성적관리 시행지침')},
+    {id: 1, title:'2024 경기도 중등학교 학업성적관리 시행지침', fileName:'2024_경기도_중등_학업성적관리_시행지침.pdf', fileSize:'1.3MB', date:'25.03.10', visible:false, body: RESOURCE_BODY_TPL('guide').replace('{title}','2024 경기도 중등학교 학업성적관리 시행지침')},
+  ];
+  let nextResourceId = 13;
+  let rFiltered = resources.slice();
+  let rPage = 1;
+  const R_PER_PAGE = 10;
+
+  function renderResources(){
+    const start = (rPage-1) * R_PER_PAGE;
+    const slice = rFiltered.slice(start, start+R_PER_PAGE);
+    const body = $('#resourceBody');
+    if (slice.length === 0){
+      body.innerHTML = `<tr><td colspan="5" style="padding:48px;color:var(--gray-700)">조건에 맞는 자료가 없습니다.</td></tr>`;
+    } else {
+      body.innerHTML = slice.map(r=>`
+        <tr>
+          <td>${r.id}</td>
+          <td style="text-align:left;padding-left:18px;font-weight:700">${r.title}</td>
+          <td>${r.date}</td>
+          <td>
+            <span class="vis-pill ${r.visible?'on':'off'}">${r.visible?'노출':'숨김'}</span>
+          </td>
+          <td style="white-space:nowrap">
+            <div class="row-actions">
+              <button class="icon-btn edit" data-r-act="edit" data-r-id="${r.id}">
+                <i data-lucide="pencil"></i> 수정
+              </button>
+              <button class="icon-btn preview" data-r-act="preview" data-r-id="${r.id}">
+                <i data-lucide="eye"></i> 미리보기
+              </button>
+              <button class="icon-btn del" data-r-act="del" data-r-id="${r.id}">
+                <i data-lucide="trash-2"></i> 삭제
+              </button>
+            </div>
+          </td>
+        </tr>`).join('');
+    }
+    $('#rTotalLbl').textContent = `총 ${rFiltered.length}개`;
+    renderRPager();
+    lucide.createIcons();
+  }
+  function renderRPager(){
+    const totalPages = Math.max(1, Math.ceil(rFiltered.length / R_PER_PAGE));
+    const cur = rPage;
+    let start = Math.max(1, cur-2);
+    let end = Math.min(totalPages, start+4);
+    start = Math.max(1, end-4);
+    let html = `<button class="page-btn nav" data-r-page="prev" ${cur===1?'disabled':''}><i data-lucide="chevron-left" style="width:16px;height:16px"></i></button>`;
+    for (let p=start; p<=end; p++){
+      html += `<button class="page-btn ${p===cur?'active':''}" data-r-page="${p}">${p}</button>`;
+    }
+    html += `<button class="page-btn nav" data-r-page="next" ${cur===totalPages?'disabled':''}><i data-lucide="chevron-right" style="width:16px;height:16px"></i></button>`;
+    $('#resourcePager').innerHTML = html;
+  }
+  function applyResourceFilter(){
+    const field = $('#rFilterField').value;
+    const q = $('#rFilterText').value.trim().toLowerCase();
+    rFiltered = !q ? resources.slice() : resources.filter(r => String(r[field]).toLowerCase().includes(q));
+    rPage = 1;
+    renderResources();
+  }
+  $('#btnResourceSearch').addEventListener('click', applyResourceFilter);
+  $('#rFilterText').addEventListener('keydown', e=>{ if (e.key==='Enter') applyResourceFilter(); });
+
+  // 액션 + 페이지네이션 (delegated)
+  document.addEventListener('click', (e)=>{
+    const ab = e.target.closest('.icon-btn[data-r-act]');
+    if (ab){
+      const id = parseInt(ab.dataset.rId, 10);
+      const r = resources.find(x=>x.id===id);
+      if (!r) return;
+      if (ab.dataset.rAct === 'edit') openResourceModal(r);
+      else if (ab.dataset.rAct === 'del') openResourceDelete(r);
+      else if (ab.dataset.rAct === 'preview') window.open(`./resource_front_v1.html?id=${r.id}`, '_blank');
+      e.stopPropagation();
+      return;
+    }
+    const pb = e.target.closest('#resourcePager .page-btn');
+    if (pb && !pb.disabled){
+      const totalPages = Math.max(1, Math.ceil(rFiltered.length / R_PER_PAGE));
+      if (pb.dataset.rPage === 'prev') rPage = Math.max(1, rPage-1);
+      else if (pb.dataset.rPage === 'next') rPage = Math.min(totalPages, rPage+1);
+      else rPage = parseInt(pb.dataset.rPage, 10);
+      renderResources();
+    }
+  });
+
+  // Form
+  let editingResourceId = null;
+  let pendingFile = null; // {name, size}
+  function fmtSize(bytes){
+    if (bytes < 1024) return bytes + 'B';
+    if (bytes < 1024*1024) return (bytes/1024).toFixed(1) + 'KB';
+    return (bytes/1024/1024).toFixed(1) + 'MB';
+  }
+  function openResourceModal(r){
+    editingResourceId = r ? r.id : null;
+    $('#rFormTitle').textContent = r ? '자료 수정' : '자료 등록';
+    $('#rTitle').value = r ? r.title : '';
+    $('#rBody').value  = r ? r.body : '';
+    $('#rVisible').checked = r ? r.visible : true;
+    if (r){
+      pendingFile = {name:r.fileName, size:r.fileSize};
+      $('#rFileChip').classList.remove('hidden');
+      $('#rFileName').textContent = r.fileName;
+      $('#rFileSize').textContent = '(' + r.fileSize + ')';
+    } else {
+      pendingFile = null;
+      $('#rFileChip').classList.add('hidden');
+    }
+    openOverlay('resource-form');
+    lucide.createIcons();
+  }
+  $('#btnResourceCreate').addEventListener('click', ()=> openResourceModal(null));
+
+  // Dropzone interactions
+  $('#rDropzone').addEventListener('click', ()=> $('#rFile').click());
+  $('#rFile').addEventListener('change', (e)=>{
+    const f = e.target.files[0];
+    if (!f) return;
+    pendingFile = {name:f.name, size: fmtSize(f.size)};
+    $('#rFileChip').classList.remove('hidden');
+    $('#rFileName').textContent = f.name;
+    $('#rFileSize').textContent = '(' + fmtSize(f.size) + ')';
+    lucide.createIcons();
+  });
+  $('#rFileRemove').addEventListener('click', (e)=>{
+    e.stopPropagation();
+    pendingFile = null;
+    $('#rFile').value = '';
+    $('#rFileChip').classList.add('hidden');
+  });
+
+  $('#btnResourceSave').addEventListener('click', ()=>{
+    const title = $('#rTitle').value.trim();
+    if (!title){ showToast('제목을 입력해주세요.', 'error'); return; }
+    const today = new Date();
+    const yy = String(today.getFullYear()).slice(-2);
+    const mm = String(today.getMonth()+1).padStart(2,'0');
+    const dd = String(today.getDate()).padStart(2,'0');
+    if (editingResourceId){
+      const r = resources.find(x=>x.id===editingResourceId);
+      if (r){
+        r.title = title;
+        r.body  = $('#rBody').value;
+        r.visible = $('#rVisible').checked;
+        if (pendingFile){
+          r.fileName = pendingFile.name;
+          r.fileSize = pendingFile.size;
+        }
+      }
+      showToast('자료가 수정되었습니다.');
+    } else {
+      resources.unshift({
+        id: nextResourceId++,
+        title,
+        fileName: pendingFile ? pendingFile.name : '첨부파일없음.pdf',
+        fileSize: pendingFile ? pendingFile.size : '0KB',
+        date: `${yy}.${mm}.${dd}`,
+        visible: $('#rVisible').checked,
+        body: $('#rBody').value
+      });
+      // 정렬: 최신 id 우선 (id desc)
+      resources.sort((a,b)=>b.id - a.id);
+      showToast('자료가 등록되었습니다.');
+    }
+    editingResourceId = null;
+    pendingFile = null;
+    closeOverlay('resource-form');
+    applyResourceFilter();
+  });
+
+  // Delete
+  let deletingResourceId = null;
+  function openResourceDelete(r){
+    deletingResourceId = r.id;
+    $('#rDeleteTitle').textContent = `[${r.title}] 자료를 삭제하시겠습니까?`;
+    openOverlay('resource-delete');
+  }
+  $('#btnResourceDeleteConfirm').addEventListener('click', ()=>{
+    resources = resources.filter(x => x.id !== deletingResourceId);
+    deletingResourceId = null;
+    closeOverlay('resource-delete');
+    showToast('자료가 삭제되었습니다.');
+    applyResourceFilter();
+  });
+
+  renderResources();
+
+  /* ====== Toast ====== */
+  let toastTimer = null;
+  function showToast(msg, type='success'){
+    const el = $('#toast');
+    el.textContent = msg;
+    el.className = 'toast' + (type==='error' ? ' error' : '');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(()=> el.classList.add('hidden'), 2400);
+  }
+
+  // 초기 렌더
+  renderTeachers();
+
+  lucide.createIcons();
+</script>
+</body>
+</html>

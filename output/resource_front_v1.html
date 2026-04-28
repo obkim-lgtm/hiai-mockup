@@ -1,0 +1,304 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=1440">
+<title>평가 자료실 — 하이러닝 AI 서·논술형 평가 서비스</title>
+<link rel="icon" href="../screens/favicon_src.png" type="image/png">
+<link rel="stylesheet" href="https://cdn.rawgit.com/moonspam/NanumSquareRound/master/nanumsquareround.min.css">
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<style>
+  :root{
+    --purple-50:#F7F4FF; --purple-200:#E3E4F8; --purple-600:#b28ffd; --purple-800:#7E44FB; --purple-950:#341761;
+    --gray-50:#F8F8F8; --gray-100:#F0F0F0; --gray-200:#E6E6E6; --gray-300:#D9D9D9; --gray-700:#808080; --gray-800:#494949;
+    --shadow-card:0 4px 36px rgba(95,102,178,0.16);
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;font-family:'NanumSquareRound',-apple-system,sans-serif;background:#EDF1FC;color:#000}
+  a{color:inherit;text-decoration:none}
+  button{font-family:inherit;cursor:pointer}
+
+  /* ===== GNB ===== */
+  .gnb{height:98px;background:#fff;border-bottom:1px solid var(--gray-300);display:flex;align-items:center;padding:0 48px;gap:48px;position:sticky;top:0;z-index:50}
+  .gnb-logo{display:flex;align-items:center;gap:10px;flex-shrink:0}
+  .gnb-logo img.icon{width:42px;height:42px;object-fit:contain}
+  .gnb-logo .text{display:flex;flex-direction:column;line-height:1.2}
+  .gnb-logo .text .top{font-size:14px;color:#000;font-weight:800}
+  .gnb-logo .text .bottom{font-size:13px;color:var(--gray-800);font-weight:700}
+  .gnb-menu{display:flex;align-items:center;gap:48px;flex:1}
+  .gnb-menu a{font-size:17px;font-weight:800;color:var(--gray-800);padding:8px 4px}
+  .gnb-menu a.active{color:var(--purple-800)}
+  .gnb-user{display:flex;align-items:center;gap:10px;color:var(--purple-800);font-weight:800;font-size:16px}
+  .gnb-user .avatar{width:36px;height:36px;border-radius:50%;background:var(--purple-50);display:flex;align-items:center;justify-content:center}
+  .gnb-user .avatar .lucide{color:var(--purple-800);width:20px;height:20px}
+
+  /* ===== Title bar (보라 그라디언트) ===== */
+  .titlebar{height:96px;background:linear-gradient(90deg,#7E44FB 0%,#b28ffd 100%);display:flex;align-items:center;padding:0 56px;color:#fff;gap:18px}
+  .titlebar .crumb{font-size:22px;font-weight:800;color:#fff}
+  .titlebar .sep{width:1px;height:28px;background:rgba(255,255,255,.45)}
+  .titlebar .current{font-size:22px;font-weight:800;color:#fff}
+
+  /* ===== Container ===== */
+  .container{max-width:1280px;margin:0 auto;padding:32px 24px 80px}
+  .panel{background:#fff;border-radius:20px;box-shadow:var(--shadow-card);padding:36px 36px 28px}
+  .panel h2.title{font-size:22px;font-weight:800;color:#000;margin:0 0 8px}
+  .panel .total-lbl{font-size:14px;color:var(--gray-700);margin-bottom:18px}
+
+  /* ===== Table ===== */
+  table.lst{width:100%;border-collapse:separate;border-spacing:0;font-size:15px}
+  table.lst thead th{background:var(--gray-50);color:var(--gray-800);font-weight:800;padding:14px 16px;text-align:center}
+  table.lst thead th:first-child{border-top-left-radius:8px;border-bottom-left-radius:8px}
+  table.lst thead th:last-child{border-top-right-radius:8px;border-bottom-right-radius:8px}
+  table.lst tbody td{padding:18px 16px;text-align:center;border-bottom:1px solid var(--gray-200);color:#000;font-weight:400}
+  table.lst tbody tr{cursor:pointer}
+  table.lst tbody tr:hover td{background:#FAFBFF}
+  table.lst td.title-cell{text-align:left;font-weight:600;color:#000}
+
+  /* ===== Pagination ===== */
+  .pagination{display:flex;justify-content:center;align-items:center;gap:6px;margin:28px 0 4px}
+  .pg-btn{min-width:34px;height:34px;padding:0 10px;border-radius:8px;border:none;background:transparent;color:var(--gray-800);font-weight:700;font-size:14px;cursor:pointer}
+  .pg-btn:hover{background:var(--gray-50)}
+  .pg-btn.active{background:var(--purple-800);color:#fff}
+  .pg-btn[disabled]{color:var(--gray-300);cursor:not-allowed}
+
+  /* ===== Detail ===== */
+  .back-link{display:inline-flex;align-items:center;gap:6px;color:var(--gray-800);font-weight:700;font-size:14px;background:transparent;border:none;padding:0;margin-bottom:18px;cursor:pointer}
+  .back-link:hover{color:var(--purple-800)}
+  .detail-title{font-size:22px;font-weight:800;color:#000;margin:0 0 24px}
+  .doc-card{border:1px solid var(--gray-200);border-radius:12px;overflow:hidden}
+  .doc-head{display:flex;justify-content:space-between;align-items:center;background:var(--gray-50);padding:18px 22px;border-bottom:1px solid var(--gray-200)}
+  .doc-head .doc-title{font-size:17px;font-weight:800;color:#000}
+  .doc-head .doc-date{font-size:13px;color:var(--gray-700);font-weight:700}
+  .doc-file{padding:16px 22px;border-bottom:1px solid var(--gray-200)}
+  .doc-file a{display:inline-flex;align-items:center;gap:8px;color:var(--purple-800);font-weight:700;font-size:15px}
+  .doc-body{padding:24px 22px 32px;font-size:15px;line-height:1.85;color:#000;white-space:pre-wrap}
+  .doc-nav{display:flex;justify-content:space-between;align-items:center;margin-top:18px;padding:14px 6px}
+  .doc-nav button{background:transparent;border:none;display:inline-flex;align-items:center;gap:10px;color:var(--gray-800);font-weight:700;font-size:14px}
+  .doc-nav button:hover{color:var(--purple-800)}
+  .doc-nav .nav-title{color:#000;margin-left:8px;font-weight:700;max-width:380px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .doc-nav button[disabled]{color:var(--gray-300);cursor:not-allowed}
+
+  .hidden{display:none !important}
+</style>
+</head>
+<body>
+
+<header class="gnb">
+  <div class="gnb-logo">
+    <img class="icon" src="../screens/logo_icon.png" alt="하이러닝 AI">
+    <div class="text">
+      <div class="top">하이러닝 AI</div>
+      <div class="bottom">서·논술형 평가 서비스</div>
+    </div>
+  </div>
+  <nav class="gnb-menu">
+    <a href="#">나의 평가</a>
+    <a href="#" class="active">평가 자료실</a>
+    <a href="#">고객센터</a>
+  </nav>
+  <div class="gnb-user">
+    <div class="avatar"><i data-lucide="bot"></i></div>
+    <span>goe_h098@goe.go.k* 님</span>
+  </div>
+</header>
+
+<div class="titlebar">
+  <span class="crumb">평가계획</span>
+  <span class="sep"></span>
+  <span class="current">평가 참고 자료</span>
+</div>
+
+<div class="container">
+
+  <!-- ===== List view ===== -->
+  <div class="panel" id="view-list">
+    <h2 class="title">평가 참고 자료</h2>
+    <div class="total-lbl" id="totalLbl">총 0개</div>
+
+    <table class="lst">
+      <thead>
+        <tr>
+          <th style="width:10%">번호</th>
+          <th>제목</th>
+          <th style="width:18%">작성일</th>
+        </tr>
+      </thead>
+      <tbody id="listBody"></tbody>
+    </table>
+
+    <div class="pagination" id="pager"></div>
+  </div>
+
+  <!-- ===== Detail view ===== -->
+  <div class="panel hidden" id="view-detail">
+    <button class="back-link" id="backBtn">
+      <i data-lucide="chevron-left" style="width:16px;height:16px"></i> 이전으로
+    </button>
+    <h2 class="detail-title">자료 상세 보기</h2>
+
+    <div class="doc-card">
+      <div class="doc-head">
+        <div class="doc-title" id="dTitle">—</div>
+        <div class="doc-date">작성일 : <span id="dDate">—</span></div>
+      </div>
+      <div class="doc-file">
+        <a href="#" id="dFile">
+          <i data-lucide="download" style="width:16px;height:16px"></i>
+          <span id="dFileName">—</span>
+        </a>
+      </div>
+      <div class="doc-body" id="dBody">—</div>
+    </div>
+
+    <div class="doc-nav">
+      <button id="prevBtn">
+        <i data-lucide="arrow-left" style="width:16px;height:16px"></i>
+        <span>이전글</span>
+        <span class="nav-title" id="prevTitle">—</span>
+      </button>
+      <button id="nextBtn">
+        <span class="nav-title" id="nextTitle">—</span>
+        <span>다음글</span>
+        <i data-lucide="arrow-right" style="width:16px;height:16px"></i>
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+  /* ===== Data (백오피스와 동일한 12건) ===== */
+  const RESOURCE_BODY_TPL = (kind, title)=>{
+    const m = {
+      eval_kit: ['- 자료명: ' + title,
+        '- 수록 내용',
+        ' ° 출제 의도 및 채점 기준 안내',
+        ' ° 학년·교과별 예시 문항 (선택형 / 서술형)',
+        ' ° 모범 답안 및 채점 요소 분석',
+        ' ° 활용 가이드 (수업 적용 사례)',
+        '',
+        '* 본 자료는 경기도교육청 발간 자료를 기반으로 구성되었으며, 수업 내·외 활동에 자유롭게 활용 가능합니다.'],
+      ref_book: ['- 자료명: ' + title,
+        '- 수록 내용',
+        ' ° 학습으로의 평가 살펴보기',
+        '  - 학습으로의 평가의 특성',
+        '  - 학습의 개념',
+        '  - 학력과 기본학력',
+        '  - 성장이 있는 교실, 학습으로의 평가',
+        '  - 경기도 평가 정책의 변화',
+        ' ° 학습으로의 평가 실천하기',
+        '  - 학업성적관리위원회 운영',
+        '  - 평가계획 수립',
+        '  - 평가 운영',
+        '  - 학생 맞춤형 피드백',
+        ' ° 2024 경기도 초등학교 학업성적관리 시행지침'],
+      guide: ['- 자료명: ' + title,
+        '- 수록 내용',
+        ' ° 학교급별 평가 운영 절차',
+        ' ° 학업성적관리 시행지침',
+        ' ° 평가 결과 활용 및 학생부 기재 유의사항',
+        ' ° 부록: 자주 묻는 질문(FAQ)']
+    };
+    return m[kind].join('\n');
+  };
+
+  // 노출(visible:true)만 사용자 화면에 보임 — 백오피스 1번은 visible:false라 여기서는 제외
+  const resources = [
+    {id:12, title:'2025 경기 논술형 평가 도구 2차 영어',     fileName:'2025_경기_논술형_2차_영어.pdf',   date:'26.01.15', body: RESOURCE_BODY_TPL('eval_kit','2025 경기 논술형 평가 도구 2차 영어')},
+    {id:11, title:'2025 경기 논술형 평가 도구 2차 수학',     fileName:'2025_경기_논술형_2차_수학.pdf',   date:'26.01.15', body: RESOURCE_BODY_TPL('eval_kit','2025 경기 논술형 평가 도구 2차 수학')},
+    {id:10, title:'2025 경기 논술형 평가 도구 2차 사회',     fileName:'2025_경기_논술형_2차_사회.pdf',   date:'26.01.15', body: RESOURCE_BODY_TPL('eval_kit','2025 경기 논술형 평가 도구 2차 사회')},
+    {id: 9, title:'2025 경기 논술형 평가 도구 2차 과학',     fileName:'2025_경기_논술형_2차_과학.pdf',   date:'26.01.15', body: RESOURCE_BODY_TPL('eval_kit','2025 경기 논술형 평가 도구 2차 과학')},
+    {id: 8, title:'경기교육 AI 서·논술형 평가시스템 이해자료', fileName:'경기교육_AI_서논술형_이해자료.pdf', date:'25.09.24', body: RESOURCE_BODY_TPL('ref_book','경기교육 AI 서·논술형 평가시스템 이해자료')},
+    {id: 7, title:'경기 논술형 평가 이해자료집',             fileName:'경기_논술형_평가_이해자료집.pdf', date:'25.09.24', body: RESOURCE_BODY_TPL('ref_book','경기 논술형 평가 이해자료집')},
+    {id: 6, title:'2025 중등 교과별 논술형 평가 문항(영어)', fileName:'2025_중등_교과별_논술형_영어.pdf', date:'25.04.26', body: RESOURCE_BODY_TPL('eval_kit','2025 중등 교과별 논술형 평가 문항(영어)')},
+    {id: 5, title:'2025 중등 논술형 평가 길라잡이',         fileName:'2025_중등_논술형_길라잡이.pdf',  date:'25.04.26', body: RESOURCE_BODY_TPL('guide','2025 중등 논술형 평가 길라잡이')},
+    {id: 4, title:'2025 학습으로의 평가 이해하기',           fileName:'2025_학습으로의_평가_이해하기.pdf', date:'25.04.26', body: RESOURCE_BODY_TPL('ref_book','2025 초등 학습으로의 평가 이해하기')},
+    {id: 3, title:'2025 중등 교과별 논술형 평가 문항(사회)', fileName:'2025_중등_교과별_논술형_사회.pdf', date:'25.04.26', body: RESOURCE_BODY_TPL('eval_kit','2025 중등 교과별 논술형 평가 문항(사회)')},
+    {id: 2, title:'2024 경기도 초등학교 학업성적관리 시행지침', fileName:'2024_경기도_초등_학업성적관리_시행지침.pdf', date:'25.03.10', body: RESOURCE_BODY_TPL('guide','2024 경기도 초등학교 학업성적관리 시행지침')},
+  ];
+
+  const PER = 10;
+  let page = 1;
+
+  const $ = s => document.querySelector(s);
+  const $$ = s => [...document.querySelectorAll(s)];
+
+  function showList(){
+    $('#view-list').classList.remove('hidden');
+    $('#view-detail').classList.add('hidden');
+    history.replaceState(null, '', './resource_front_v1.html');
+    window.scrollTo({top:0,behavior:'instant'});
+  }
+
+  function showDetail(id){
+    const idx = resources.findIndex(r=>r.id===id);
+    if (idx < 0) return;
+    const r = resources[idx];
+    $('#dTitle').textContent = r.title;
+    $('#dDate').textContent = r.date;
+    $('#dFileName').textContent = r.fileName;
+    $('#dBody').textContent = r.body;
+    // 이전/다음
+    const prev = resources[idx+1]; // 더 오래된 자료
+    const next = resources[idx-1]; // 더 최근 자료
+    const pBtn = $('#prevBtn'); const nBtn = $('#nextBtn');
+    if (prev){ pBtn.disabled=false; pBtn.dataset.id=prev.id; $('#prevTitle').textContent = prev.title; }
+    else { pBtn.disabled=true; $('#prevTitle').textContent = '—'; }
+    if (next){ nBtn.disabled=false; nBtn.dataset.id=next.id; $('#nextTitle').textContent = next.title; }
+    else { nBtn.disabled=true; $('#nextTitle').textContent = '—'; }
+
+    $('#view-list').classList.add('hidden');
+    $('#view-detail').classList.remove('hidden');
+    history.replaceState(null, '', `./resource_front_v1.html?id=${r.id}`);
+    window.scrollTo({top:0,behavior:'instant'});
+    lucide.createIcons();
+  }
+
+  function renderList(){
+    const start = (page-1)*PER;
+    const slice = resources.slice(start, start+PER);
+    $('#listBody').innerHTML = slice.map(r=>`
+      <tr data-id="${r.id}">
+        <td>${r.id}</td>
+        <td class="title-cell">${r.title}</td>
+        <td>${r.date}</td>
+      </tr>`).join('');
+    $('#totalLbl').textContent = `총 ${resources.length}개`;
+
+    const totalPages = Math.max(1, Math.ceil(resources.length/PER));
+    let html = `<button class="pg-btn" data-pg="prev" ${page===1?'disabled':''}><i data-lucide="chevron-left" style="width:16px;height:16px"></i></button>`;
+    for (let p=1; p<=totalPages; p++){
+      html += `<button class="pg-btn ${p===page?'active':''}" data-pg="${p}">${p}</button>`;
+    }
+    html += `<button class="pg-btn" data-pg="next" ${page===totalPages?'disabled':''}><i data-lucide="chevron-right" style="width:16px;height:16px"></i></button>`;
+    $('#pager').innerHTML = html;
+    lucide.createIcons();
+  }
+
+  // Delegated clicks
+  document.addEventListener('click', (e)=>{
+    const tr = e.target.closest('#listBody tr[data-id]');
+    if (tr){ showDetail(parseInt(tr.dataset.id,10)); return; }
+    const pg = e.target.closest('#pager .pg-btn');
+    if (pg && !pg.disabled){
+      const totalPages = Math.max(1, Math.ceil(resources.length/PER));
+      if (pg.dataset.pg==='prev') page = Math.max(1, page-1);
+      else if (pg.dataset.pg==='next') page = Math.min(totalPages, page+1);
+      else page = parseInt(pg.dataset.pg, 10);
+      renderList();
+    }
+  });
+  $('#backBtn').addEventListener('click', showList);
+  $('#prevBtn').addEventListener('click', e=>{ if(!e.currentTarget.disabled) showDetail(parseInt(e.currentTarget.dataset.id,10)); });
+  $('#nextBtn').addEventListener('click', e=>{ if(!e.currentTarget.disabled) showDetail(parseInt(e.currentTarget.dataset.id,10)); });
+
+  // Init: 쿼리 파라미터로 직접 상세 진입 가능
+  renderList();
+  const q = new URLSearchParams(location.search);
+  const idParam = q.get('id');
+  if (idParam) showDetail(parseInt(idParam, 10));
+
+  lucide.createIcons();
+</script>
+</body>
+</html>
