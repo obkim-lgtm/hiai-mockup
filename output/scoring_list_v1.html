@@ -872,11 +872,12 @@
         { id:'10102', name:'이준호', st:'확인 필요', stCls:'b-check', ai:'성공',          score:'10'   },
         { id:'10103', name:'박지민', st:'완료',      stCls:'b-done',  ai:'성공',          score:'12'   },
         { id:'10104', name:'최유진', st:'완료',      stCls:'b-done',  ai:'성공',          score:'15'   },
-        { id:'10105', name:'정현우', st:'미채점',    stCls:'b-todo',  ai:'성공',          score:'(13)' },
+        { id:'10105', name:'정현우', st:'완료',      stCls:'b-done',  ai:'성공',          score:'35',   link:'scoring_student_v2.html' },
         { id:'10106', name:'한지우', st:'미채점',    stCls:'b-todo',  ai:'성공',          score:'(11)' },
         { id:'10107', name:'조민재', st:'미채점',    stCls:'b-todo',  ai:'성공',          score:'(12)' },
         { id:'10108', name:'윤하은', st:'확인 필요', stCls:'b-check', ai:'네트워크 오류', score:'(13)' },
-        { id:'10109', name:'임도윤', st:'완료',      stCls:'b-done',  ai:'성공',          score:'14'   }
+        { id:'10109', name:'임도윤', st:'완료',      stCls:'b-done',  ai:'성공',          score:'14'   },
+        { id:'40205', name:'김초등', st:'완료',      stCls:'b-done',  ai:'성공',          score:'45',   link:'scoring_student_v3.html' }
       ]
     },
     2: {
@@ -940,8 +941,9 @@
           + ' <button class="btn-primary" style="height:28px;font-size:12px;padding:0 10px;margin-left:6px;display:inline-flex;align-items:center;gap:4px;">'
           + '<i data-lucide="rotate-cw" style="width:12px;height:12px;"></i>재실행</button>'
         : '<span style="color:#00AF3D;font-weight:700;font-size:14px;">' + s.ai + '</span>';
-      // 선생님 채점 — 학생 채점 상세 링크
-      var teacherCell = '<span onclick="goToStudentDetail(\'' + s.id + '\',\'' + s.name + '\')" '
+      // 선생님 채점 — 학생 채점 상세 링크 (학생별 시안 link 분기)
+      var lnk = s.link || 'scoring_student_v1.html';
+      var teacherCell = '<span onclick="goToStudentDetail(\'' + s.id + '\',\'' + s.name + '\',\'' + lnk + '\')" '
         + 'style="color:#7E44FB;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:3px;font-size:14px;">'
         + '학생 채점 상세 <i data-lucide="chevron-right" style="width:13px;height:13px;"></i></span>';
 
@@ -958,8 +960,9 @@
     lucide.createIcons();
   }
 
-  function goToStudentDetail(studentId, studentName) {
-    location.href = 'scoring_student_v1.html?id=' + studentId + '&name=' + encodeURIComponent(studentName) + '&eval=' + currentEvalPlan + '&classNum=' + currentClassB + '&from=scoring_list_v1.html';
+  function goToStudentDetail(studentId, studentName, link) {
+    var page = link || 'scoring_student_v1.html';
+    location.href = page + '?id=' + studentId + '&name=' + encodeURIComponent(studentName) + '&eval=' + currentEvalPlan + '&classNum=' + currentClassB + '&from=scoring_list_v1.html';
   }
 
   // ── OCR 먼저 진행 모달 (B안 1-3반 / 1-4반) ──
