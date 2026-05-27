@@ -1,0 +1,1475 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" href="../screens/favicon_src.png" type="image/png">
+  <title>평가 홈 v7 · 세션 만료 안내</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+  <style>
+    @import url('https://cdn.rawgit.com/moonspam/NanumSquareRound/master/nanumsquareround.min.css');
+    * { font-family: 'NanumSquareRound', -apple-system, sans-serif; box-sizing: border-box; }
+    body { margin: 0; background: #EDF1FC; }
+
+    /* Step bar */
+    .step-done  { background:#F7F4FF; border:1px solid #B28FFD; color:#7E44FB; border-radius:9999px; height:32px; display:inline-flex; align-items:center; justify-content:center; padding:0 16px; font-size:13px; font-weight:700; white-space:nowrap; flex-shrink:0; }
+    .step-now   { background:#7E44FB; border:1px solid #7E44FB; color:white; border-radius:9999px; height:32px; display:inline-flex; align-items:center; justify-content:center; padding:0 16px; font-size:13px; font-weight:700; white-space:nowrap; flex-shrink:0; }
+    .step-todo  { background:#F0F0F0; border:1px solid #CCCCCC; color:#808080; border-radius:9999px; height:32px; display:inline-flex; align-items:center; justify-content:center; padding:0 16px; font-size:13px; font-weight:700; white-space:nowrap; flex-shrink:0; }
+    .step-line-done { flex:1; height:1px; background:#B28FFD; min-width:12px; }
+    .step-line-todo { flex:1; height:1px; background:#CCCCCC; min-width:12px; }
+
+    /* Status badges */
+    .badge-ing   { background:#F1F9F3; color:#00AF3D; border-radius:100px; padding:3px 10px; font-size:12px; font-weight:700; white-space:nowrap; }
+    .badge-done  { background:#E0E0E0; color:#222222; border-radius:100px; padding:3px 10px; font-size:12px; font-weight:700; white-space:nowrap; }
+    .badge-draft { background:#FFEFEF; color:#DB3E51; border-radius:100px; padding:3px 10px; font-size:12px; font-weight:700; white-space:nowrap; }
+
+    /* Buttons */
+    .btn-primary   { background:#7E44FB; color:white; border:none; border-radius:8px; height:36px; padding:0 16px; font-size:14px; font-weight:700; cursor:pointer; font-family:inherit; display:inline-flex; align-items:center; gap:6px; white-space:nowrap; }
+    .btn-secondary { background:white; color:#7E44FB; border:1.5px solid #7E44FB; border-radius:8px; height:36px; padding:0 16px; font-size:14px; font-weight:700; cursor:pointer; font-family:inherit; display:inline-flex; align-items:center; gap:6px; white-space:nowrap; }
+    .btn-outline   { background:white; color:#494949; border:1px solid #D9D9D9; border-radius:8px; height:36px; padding:0 16px; font-size:14px; font-weight:700; cursor:pointer; font-family:inherit; display:inline-flex; align-items:center; gap:6px; white-space:nowrap; }
+    .btn-danger-outline { background:white; color:#DB3E51; border:1.5px solid #DB3E51; border-radius:8px; height:36px; padding:0 16px; font-size:14px; font-weight:700; cursor:pointer; font-family:inherit; display:inline-flex; align-items:center; gap:6px; white-space:nowrap; }
+    .btn-warn-outline  { background:white; color:#FF8C4C; border:1.5px solid #FF8C4C; border-radius:8px; height:36px; padding:0 16px; font-size:14px; font-weight:700; cursor:pointer; font-family:inherit; display:inline-flex; align-items:center; gap:6px; white-space:nowrap; }
+    .btn-ghost { background:transparent; color:#7E44FB; border:none; padding:0; font-size:14px; font-weight:700; cursor:pointer; font-family:inherit; display:inline-flex; align-items:center; gap:4px; white-space:nowrap; }
+    .btn-ghost:hover { text-decoration:underline; }
+
+    /* Tab */
+    .tab-active   { flex:1; height:60px; background:white; border-radius:20px 20px 0 0; display:flex; align-items:center; justify-content:center; cursor:pointer; }
+    .tab-inactive { flex:1; height:60px; background:#CBD6F4; border-radius:20px 20px 0 0; display:flex; align-items:center; justify-content:center; cursor:pointer; }
+
+    /* Todo chips */
+    .chip-red    { background:#FFEFEF; color:#DB3E51; border-radius:6px; padding:3px 10px; font-size:13px; font-weight:700; display:inline-flex; align-items:center; gap:4px; }
+    .chip-orange { background:#FFEDD5; color:#FF8C4C; border-radius:6px; padding:3px 10px; font-size:13px; font-weight:700; display:inline-flex; align-items:center; gap:4px; }
+    .chip-green  { background:#F1F9F3; color:#00AF3D; border-radius:6px; padding:3px 10px; font-size:13px; font-weight:700; display:inline-flex; align-items:center; gap:4px; }
+
+    /* Action card */
+    .action-card {
+      background: white;
+      border-radius: 14px;
+      padding: 20px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      border: 1px solid #E6E6E6;
+    }
+    .action-card.red-accent  { border-left: 5px solid #DB3E51; }
+    .action-card.orange-accent { border-left: 5px solid #FF8C4C; }
+
+    /* Eval card */
+    .eval-card {
+      background: white;
+      border-radius: 14px;
+      border: 1px solid #E6E6E6;
+      overflow: hidden;
+    }
+    .eval-card:hover { box-shadow: 0 4px 20px rgba(95,102,178,0.12); }
+    .eval-card-body  { padding: 22px 24px; }
+    .eval-card-footer { padding: 14px 24px; background: #F8F8F8; border-top: 1px solid #F0F0F0; display:flex; align-items:center; justify-content:space-between; }
+    .fb-bar { padding: 14px 24px; background:#FFFBF5; border-top:1px solid #FCE9CC; display:flex; align-items:center; justify-content:space-between; gap:16px; }
+    .fb-bar.done { background:#F8F8F8; border-top-color:#F0F0F0; }
+    .fb-bar-label { font-size:13px; font-weight:700; color:#B8651A; display:flex; align-items:center; gap:6px; }
+    .fb-bar.done .fb-bar-label { color:#808080; font-weight:400; }
+    .fb-summary-banner { background:linear-gradient(to right,#FFFBF5,#FFF8EE); border:1px solid #FCE9CC; border-radius:10px; padding:12px 18px; display:flex; align-items:center; justify-content:space-between; margin-bottom:4px; }
+    .fb-emoji-card { flex:1; height:72px; border-radius:12px; border:1.5px solid #E6E6E6; background:white; cursor:pointer; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; font-family:inherit; transition:border-color .15s,background .15s; }
+    .fb-emoji-card:hover { border-color:#B28FFD; background:#FAF7FF; }
+    .fb-emoji-card.selected { border-color:#7E44FB; background:#F7F4FF; }
+    .fb-type-row { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:11px 0; border-bottom:1px solid #F0F0F0; }
+    .fb-type-row:last-child { border-bottom:none; }
+    .fb-type-name { font-size:14px; font-weight:700; color:#222631; }
+    .fb-type-desc { font-size:12px; color:#808080; margin-top:2px; }
+    .fb-stars { display:flex; gap:2px; flex-shrink:0; }
+    .fb-star { background:none; border:none; cursor:pointer; font-size:22px; color:#D9D9D9; padding:0 1px; line-height:1; transition:color .1s; }
+    .fb-star.on { color:#FFBF00; }
+    .fb-star.hv { color:#FFD966; }
+  /* Modal */
+  .modal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.4); z-index:1000; align-items:center; justify-content:center; }
+  .modal-overlay.open { display:flex; }
+  .modal-box { background:white; border-radius:24px; box-shadow:0 4px 12px rgba(95,102,178,0.16); width:520px; max-width:90vw; overflow:hidden; }
+  .field-label { font-size:16px; font-weight:700; color:#333; margin-bottom:6px; display:flex; align-items:center; gap:6px; }
+  .field-label .lock-badge { font-size:11px; font-weight:700; color:#B3B3B3; background:#F0F0F0; border-radius:4px; padding:1px 6px; }
+  .field-input { width:100%; height:40px; border:1px solid #D9D9D9; border-radius:8px; padding:0 12px; font-size:16px; font-family:inherit; color:#333; background:white; }
+  .field-input:focus { outline:none; border-color:#7E44FB; }
+  .field-input.disabled { background:#F8F8F8; border-color:#E6E6E6; color:#B3B3B3; cursor:not-allowed; }
+  .field-select { width:100%; height:40px; border:1px solid #D9D9D9; border-radius:8px; padding:0 12px; font-size:16px; font-family:inherit; color:#333; background:white; appearance:none; cursor:pointer; background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23808080' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E"); background-repeat:no-repeat; background-position:right 10px center; }
+  .field-select.disabled { background-color:#F8F8F8; border-color:#E6E6E6; color:#B3B3B3; cursor:not-allowed; pointer-events:none; }
+  .radio-group { display:flex; gap:24px; }
+  .radio-item { display:flex; align-items:center; gap:8px; font-size:16px; color:#333; cursor:pointer; }
+  .radio-item.disabled { color:#B3B3B3; cursor:not-allowed; }
+  .radio-item input[type=radio] { accent-color:#7E44FB; width:18px; height:18px; }
+  .radio-item.disabled input[type=radio] { accent-color:#B3B3B3; cursor:not-allowed; }
+
+  /* Toast */
+  .toast {
+    position:fixed; bottom:80px; left:50%; transform:translateX(-50%) translateY(12px);
+    font-size:16px; font-weight:700; font-family:inherit;
+    padding:16px 24px 16px 16px; border-radius:8px; z-index:9999;
+    width:384px; max-width:90vw;
+    display:flex; align-items:center; gap:12px;
+    opacity:0; transition:opacity 0.2s ease, transform 0.2s ease;
+    pointer-events:none;
+    box-shadow:0 0 1px #494949, 0 8px 32px rgba(95,102,178,0.16);
+    line-height:1.55;
+  }
+  .toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+  .toast.toast-success { background:#00AF3D; color:white; }
+  .toast.toast-error   { background:#DB3E51; color:#F8F8F8; }
+
+  /* ───── 세션 만료 모달 ───── */
+  .session-modal { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.4); z-index:1500; align-items:center; justify-content:center; }
+  .session-modal.open { display:flex; }
+  .session-modal-box { background:#fff; border-radius:24px; box-shadow:0 4px 24px rgba(95,102,178,0.18); width:480px; max-width:92vw; overflow:hidden; }
+  .reason-chip { display:inline-flex; align-items:center; gap:6px; height:26px; padding:0 10px; background:#FFEDD5; color:#C2520B; border-radius:100px; font-size:12px; font-weight:700; }
+  .reason-chip.absolute-type { background:#F2F5FF; color:#2862CC; }
+  .countdown-box { background:#FFEDD5; color:#C2520B; border-radius:12px; padding:14px 16px; display:flex; align-items:center; justify-content:space-between; font-weight:700; }
+  .countdown-box.absolute-type { background:#F2F5FF; color:#2862CC; }
+  .countdown-box .label { font-size:13px; }
+  .countdown-box .time { font-size:22px; font-variant-numeric:tabular-nums; letter-spacing:0.5px; }
+  .save-info-box { background:#F8F8F8; border-radius:10px; padding:14px 16px; font-size:13px; color:#494949; line-height:1.55; }
+  .save-info-box .info-title { font-weight:700; color:#333; margin-bottom:4px; display:flex; align-items:center; gap:6px; }
+
+  /* ───── 자동 로그아웃 전체 화면 ───── */
+  .logout-screen { display:none; position:fixed; inset:0; background:#fff; z-index:2000; flex-direction:column; align-items:center; justify-content:center; padding:24px; animation:logoutFade .2s ease; }
+  .logout-screen.open { display:flex; }
+  @keyframes logoutFade { from { opacity:0; } to { opacity:1; } }
+  .logout-icon-wrap { width:88px; height:88px; border-radius:50%; background:#F7F4FF; display:flex; align-items:center; justify-content:center; margin-bottom:24px; }
+
+  /* ───── 데모 컨트롤 (드래그) ───── */
+  .demo-toggle { position:fixed; right:24px; bottom:24px; background:#1F1F1F; color:#fff; border-radius:14px; padding:14px 16px; z-index:3000; cursor:move; box-shadow:0 8px 24px rgba(0,0,0,0.24); min-width:230px; user-select:none; }
+  .demo-toggle .demo-title { font-size:11px; letter-spacing:0.5px; color:#B3B3B3; margin-bottom:8px; display:flex; align-items:center; gap:6px; }
+  .demo-toggle .demo-btn { display:block; width:100%; background:transparent; color:#fff; border:1px solid #444; border-radius:8px; padding:8px 10px; font-size:13px; font-weight:700; font-family:inherit; cursor:pointer; margin-bottom:6px; text-align:left; }
+  .demo-toggle .demo-btn:last-child { margin-bottom:0; }
+  .demo-toggle .demo-btn:hover { background:#2A2A2A; }
+  .demo-toggle .demo-btn.active { background:#7E44FB; border-color:#7E44FB; }
+  </style>
+</head>
+<body>
+
+<!-- ===== GNB ===== -->
+<div style="background:white; height:98px; border-bottom:1px solid #D9D9D9; display:flex; align-items:center; justify-content:center; padding:0 36px;">
+  <div style="display:flex; align-items:center; justify-content:space-between; width:100%; max-width:1200px; padding:0 36px;">
+    <div style="display:flex; align-items:center; gap:8px; flex-shrink:0;">
+      <div style="width:58px; height:42px; overflow:hidden; position:relative; flex-shrink:0;">
+        <img src="../screens/logo_icon.png"
+             style="position:absolute; left:50%; transform:translateX(-50%); height:100%; width:auto; object-fit:cover;" alt="HiAI 로고">
+      </div>
+      <div style="position:relative; width:150px; height:41px; flex-shrink:0;">
+        <img src="../screens/logo_text_top.svg"
+             style="position:absolute; top:0; left:0; width:79.842px; height:16.284px;" alt="하이러닝 AI">
+        <img src="../screens/logo_text_bottom.svg"
+             style="position:absolute; top:24.08px; left:0.31px; width:149.692px; height:16.422px;" alt="서논술형 평가 서비스">
+      </div>
+    </div>
+    <nav style="display:flex; gap:52px; align-items:center;">
+      <span style="font-size:20px; font-weight:800; color:#7E44FB; cursor:pointer;">나의 평가</span>
+      <span style="font-size:20px; font-weight:700; color:#000; cursor:pointer;">평가 자료실</span>
+      <span style="font-size:20px; font-weight:700; color:#000; cursor:pointer;">고객센터</span>
+    </nav>
+    <div style="display:flex; align-items:center; gap:12px; flex-shrink:0;">
+      <div style="width:36px;height:36px;border-radius:50%;background:#F7F4FF;display:inline-flex;align-items:center;justify-content:center;"><i data-lucide="user" style="width:20px;height:20px;color:#7E44FB;"></i></div>
+      <span style="font-size:20px; font-weight:700; color:#000;">김동* 님</span>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 타이틀 바 ===== -->
+<div style="background:linear-gradient(to right, #6562f5 4%, #9b68f3 97.86%); height:86px; display:flex; align-items:center; justify-content:center; padding:0 36px;">
+  <div style="width:100%; max-width:1200px; padding:0 36px;">
+    <span style="font-size:28px; font-weight:800; color:white; line-height:1.35;">1학년 국어</span>
+  </div>
+</div>
+
+<!-- ===== 본문 ===== -->
+<div style="display:flex; flex-direction:column; align-items:center; padding:40px 36px; min-height:760px;">
+  <div style="width:100%; max-width:1200px; padding:0 36px;">
+
+    <!-- 탭 -->
+    <div style="display:flex; gap:12px;">
+      <div class="tab-active"><span style="font-size:20px; font-weight:800; color:#341761;">평가 홈</span></div>
+      <div class="tab-inactive"><span style="font-size:20px; font-weight:700; color:#000;">평가 대상</span></div>
+      <div class="tab-inactive" onclick="location.href='evaluation_design_v3_260403.html'" style="cursor:pointer;"><span style="font-size:20px; font-weight:700; color:#000;">평가 설계</span></div>
+      <div class="tab-inactive" onclick="location.href='task_ocr_review_v1.html'" style="cursor:pointer;"><span style="font-size:20px; font-weight:700; color:#000;">과제물 관리</span></div>
+      <div class="tab-inactive" onclick="location.href='scoring_list_v1.html'" style="cursor:pointer;"><span style="font-size:20px; font-weight:700; color:#000;">AI 채점</span></div>
+      <div class="tab-inactive" onclick="location.href='class_report_v1.html'" style="cursor:pointer;"><span style="font-size:20px; font-weight:700; color:#000;">평가 리포트</span></div>
+    </div>
+
+    <!-- 패널 전체 -->
+    <div style="background:white; border-radius:0 0 24px 24px; padding:28px 24px; box-shadow:0 4px 36px 0 rgba(95,102,178,0.16); display:flex; flex-direction:column; gap:28px;">
+
+      <!-- ====== 상단: 수업 정보 + 평가 대상 ====== -->
+      <div style="display:flex; gap:16px; align-items:stretch;">
+
+        <!-- 수업 정보 카드 -->
+        <div style="flex:1; background:#F8F8F8; border-radius:16px; padding:24px; display:flex; flex-direction:column; gap:20px;">
+          <div style="display:flex; align-items:center; justify-content:space-between;">
+            <span style="font-size:20px; font-weight:700; color:#333;">수업 정보</span>
+            <button class="btn-outline" style="height:32px; font-size:13px; padding:0 12px;" onclick="document.getElementById('editClassModal').classList.add('open')">
+              <i data-lucide="pencil" style="width:13px; height:13px;"></i>
+              수업 수정
+            </button>
+          </div>
+          <!-- key-value rows -->
+          <div style="display:flex; flex-direction:column; gap:12px;">
+            <div style="display:flex; align-items:center; gap:12px;">
+              <i data-lucide="book-open" style="width:16px; height:16px; color:#808080; flex-shrink:0;"></i>
+              <span style="font-size:14px; color:#808080; width:40px; flex-shrink:0;">과목</span>
+              <span style="background:#F7F4FF; border:1px solid #E3E4F8; border-radius:6px; padding:3px 10px; font-size:14px; color:#7E44FB; font-weight:700;">국어</span>
+            </div>
+            <div style="display:flex; align-items:center; gap:12px;">
+              <i data-lucide="graduation-cap" style="width:16px; height:16px; color:#808080; flex-shrink:0;"></i>
+              <span style="font-size:14px; color:#808080; width:40px; flex-shrink:0;">학년</span>
+              <span style="font-size:14px; font-weight:700; color:#333;">1학년</span>
+            </div>
+            <div style="display:flex; align-items:center; gap:12px;">
+              <i data-lucide="calendar" style="width:16px; height:16px; color:#808080; flex-shrink:0;"></i>
+              <span style="font-size:14px; color:#808080; width:40px; flex-shrink:0;">학기</span>
+              <span style="font-size:14px; font-weight:700; color:#333;">26학년도 1학기</span>
+            </div>
+            <div style="height:1px; background:#E6E6E6; margin:0 0;"></div>
+            <div style="display:flex; align-items:center; gap:12px;">
+              <i data-lucide="layout-grid" style="width:16px; height:16px; color:#808080; flex-shrink:0;"></i>
+              <span style="font-size:14px; color:#808080; width:40px; flex-shrink:0;">수업반</span>
+              <span style="background:#F2F5FF; border:1px solid #E3EAFF; border-radius:6px; padding:3px 10px; font-size:14px; font-weight:700; color:#5890FF;">이동수업반</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 평가 대상 카드 — 데이터 있는 뷰 -->
+        <div id="target-filled" style="width:280px; flex-shrink:0; background:#F8F8F8; border-radius:16px; padding:24px; display:flex; flex-direction:column; justify-content:space-between; gap:20px;">
+          <div style="display:flex; flex-direction:column; gap:16px;">
+            <span style="font-size:20px; font-weight:700; color:#333;">평가 대상</span>
+            <div style="display:flex; flex-direction:column; gap:8px;">
+              <div style="display:flex; align-items:center; justify-content:space-between;">
+                <span style="font-size:14px; color:#808080;">총 학생</span>
+                <span style="font-size:20px; font-weight:800; color:#7E44FB;">87명</span>
+              </div>
+              <div style="height:1px; background:#E6E6E6;"></div>
+              <div style="display:flex; align-items:center; justify-content:space-between;">
+                <span style="font-size:14px; color:#808080;">등록 학급</span>
+                <span style="font-size:20px; font-weight:800; color:#7E44FB;">3개</span>
+              </div>
+            </div>
+          </div>
+          <button class="btn-secondary" style="width:100%; justify-content:center;" onclick="showNavNotice()">
+            <i data-lucide="users" style="width:16px; height:16px;"></i>
+            평가 대상 관리
+          </button>
+        </div>
+
+        <!-- 평가 대상 카드 — 빈 화면 뷰 -->
+        <div id="target-empty" style="display:none; width:280px; flex-shrink:0; background:#F8F8F8; border-radius:16px; padding:24px; display:none; flex-direction:column; justify-content:space-between; gap:20px;">
+          <div style="display:flex; flex-direction:column; gap:16px;">
+            <span style="font-size:20px; font-weight:700; color:#333;">평가 대상</span>
+            <div style="display:flex; flex-direction:column; gap:8px;">
+              <div style="display:flex; align-items:center; justify-content:space-between;">
+                <span style="font-size:14px; color:#808080;">총 학생</span>
+                <span style="font-size:20px; font-weight:800; color:#B3B3B3;">0명</span>
+              </div>
+              <div style="height:1px; background:#E6E6E6;"></div>
+              <div style="display:flex; align-items:center; justify-content:space-between;">
+                <span style="font-size:14px; color:#808080;">등록 학급</span>
+                <span style="font-size:20px; font-weight:800; color:#B3B3B3;">0개</span>
+              </div>
+            </div>
+          </div>
+          <button class="btn-secondary" style="width:100%; justify-content:center;" onclick="showNavNotice()">
+            <i data-lucide="users" style="width:16px; height:16px;"></i>
+            평가 대상 관리
+          </button>
+        </div>
+
+      </div>
+
+      <!-- ====== 평가 목록 ====== -->
+      <div>
+        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:16px;">
+          <div style="display:flex; align-items:baseline; gap:8px;">
+            <span style="font-size:20px; font-weight:700; color:#333;">평가 현황</span>
+            <span style="font-size:13px; color:#B3B3B3; font-weight:400;">최근 수정 순</span>
+          </div>
+          <div style="position:relative;" id="new-eval-btn-wrap">
+            <button class="btn-primary" onclick="toggleNewEvalDropdown(event)">
+              <i data-lucide="plus" style="width:16px; height:16px;"></i>
+              새 평가 만들기
+            </button>
+            <div id="new-eval-dropdown" style="display:none; position:absolute; right:0; top:48px; background:white; border:1px solid #D9D9D9; border-radius:8px; box-shadow:0 0 1px rgba(73,73,73,1),0 8px 32px rgba(95,102,178,0.16); min-width:200px; z-index:50; padding:4px;">
+              <button onclick="toggleNewEvalDropdown(event); openTypeModal()"
+                style="display:flex; width:100%; height:38px; align-items:center; padding:0 12px; background:none; border:none; border-radius:4px; font-size:14px; font-weight:700; color:#494949; cursor:pointer; font-family:inherit; text-align:left; white-space:nowrap;"
+                onmouseover="this.style.background='#F7F4FF'" onmouseout="this.style.background='none'">새로 만들기</button>
+              <button onclick="toggleNewEvalDropdown(event); openCopyModal()"
+                style="display:flex; width:100%; height:38px; align-items:center; padding:0 12px; background:none; border:none; border-radius:4px; font-size:14px; font-weight:700; color:#494949; cursor:pointer; font-family:inherit; text-align:left; white-space:nowrap;"
+                onmouseover="this.style.background='#F7F4FF'" onmouseout="this.style.background='none'">복사해서 만들기</button>
+              <button onclick="toggleNewEvalDropdown(event); openLibraryModal()"
+                style="display:flex; width:100%; height:38px; align-items:center; padding:0 12px; background:none; border:none; border-radius:4px; font-size:14px; font-weight:700; color:#494949; cursor:pointer; font-family:inherit; text-align:left; white-space:nowrap;"
+                onmouseover="this.style.background='#F7F4FF'" onmouseout="this.style.background='none'">평가 자료실에서 가져오기</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 빈 화면 empty state -->
+        <div id="evals-empty" style="display:none; flex-direction:column; align-items:center; justify-content:center; padding:72px 24px; gap:20px; background:#FAFAFA; border-radius:16px; border:1.5px dashed #E0D9FF;">
+          <div style="width:72px; height:72px; background:#F0EBFF; border-radius:50%; display:flex; align-items:center; justify-content:center;">
+            <i data-lucide="clipboard-list" style="width:34px; height:34px; color:#B28FFD;"></i>
+          </div>
+          <div style="text-align:center; display:flex; flex-direction:column; gap:8px;">
+            <p style="margin:0; font-size:18px; font-weight:700; color:#333;">아직 만들어진 평가가 없어요</p>
+            <p style="margin:0; font-size:14px; color:#808080; line-height:1.6;">새 평가를 만들어 학생들의 서·논술형 답변을<br>AI로 채점해 보세요</p>
+          </div>
+          <div style="position:relative;">
+            <button class="btn-primary" style="height:36px; padding:0 16px; font-size:15px;" onclick="toggleEmptyDropdown(event)">
+              <i data-lucide="plus" style="width:17px; height:17px;"></i>
+              새 평가 만들기
+            </button>
+            <div id="empty-eval-dropdown" style="display:none; position:absolute; left:50%; transform:translateX(-50%); top:52px; background:white; border:1px solid #D9D9D9; border-radius:8px; box-shadow:0 0 1px rgba(73,73,73,1),0 8px 32px rgba(95,102,178,0.16); min-width:200px; z-index:50; padding:4px;">
+              <button onclick="toggleEmptyDropdown(event); openTypeModal()"
+                style="display:flex; width:100%; height:38px; align-items:center; padding:0 12px; background:none; border:none; border-radius:4px; font-size:14px; font-weight:700; color:#494949; cursor:pointer; font-family:inherit; text-align:left; white-space:nowrap;"
+                onmouseover="this.style.background='#F7F4FF'" onmouseout="this.style.background='none'">새로 만들기</button>
+              <button onclick="toggleEmptyDropdown(event); openCopyModal()"
+                style="display:flex; width:100%; height:38px; align-items:center; padding:0 12px; background:none; border:none; border-radius:4px; font-size:14px; font-weight:700; color:#494949; cursor:pointer; font-family:inherit; text-align:left; white-space:nowrap;"
+                onmouseover="this.style.background='#F7F4FF'" onmouseout="this.style.background='none'">복사해서 만들기</button>
+              <button onclick="toggleEmptyDropdown(event); openLibraryModal()"
+                style="display:flex; width:100%; height:38px; align-items:center; padding:0 12px; background:none; border:none; border-radius:4px; font-size:14px; font-weight:700; color:#494949; cursor:pointer; font-family:inherit; text-align:left; white-space:nowrap;"
+                onmouseover="this.style.background='#F7F4FF'" onmouseout="this.style.background='none'">평가 자료실에서 가져오기</button>
+            </div>
+          </div>
+        </div>
+
+        <div id="evals-filled" style="display:flex; flex-direction:column; gap:10px;">
+
+          <!-- 채점 만족도 요약 배너 -->
+          <div class="fb-summary-banner">
+            <div style="display:flex; align-items:center; gap:10px;">
+              <i data-lucide="message-square-heart" style="width:18px; height:18px; color:#FF8C4C;"></i>
+              <span style="font-size:14px; font-weight:700; color:#333;">완료된 평가 <span style="color:#FF8C4C;">2건 중 1건</span>에 채점 만족도 의견을 남기셨어요</span>
+              <span style="font-size:12px; color:#808080;">선생님 의견은 다음 채점 품질 개선에 반영됩니다</span>
+            </div>
+            <span style="font-size:12px; color:#B8651A; font-weight:700;">🙌 감사합니다</span>
+          </div>
+
+          <!-- ── 1위: 채점 진행 중 (오늘 수정) ── -->
+          <div class="eval-card">
+            <div class="eval-card-body">
+              <div style="display:flex; flex-direction:column; gap:16px;">
+                <div style="display:flex; align-items:center; justify-content:space-between;">
+                  <div style="display:flex; align-items:center; gap:8px;">
+                    <span class="badge-ing">진행 중</span>
+                    <span style="font-size:16px; font-weight:700; color:#222;">1학기 국어 서술형 평가 1회</span>
+                  </div>
+                  <span style="font-size:12px; color:#B3B3B3;">오늘 수정</span>
+                </div>
+                <div style="display:flex; align-items:center; gap:0; max-width:600px;">
+                  <div class="step-done">평가 설계</div>
+                  <div class="step-line-done"></div>
+                  <div class="step-done">과제물 제출</div>
+                  <div class="step-line-done"></div>
+                  <div class="step-now">채점 진행</div>
+                  <div class="step-line-todo"></div>
+                  <div class="step-todo">평가 리포트</div>
+                </div>
+              </div>
+            </div>
+            <div class="eval-card-footer">
+              <div style="display:flex; align-items:center; gap:16px;">
+                <span class="chip-red"><i data-lucide="edit-3" style="width:13px;height:13px;"></i> 미채점 28건</span>
+                <span class="chip-green"><i data-lucide="check-circle" style="width:13px;height:13px;"></i> 채점 완료 54건</span>
+                <div style="display:flex; align-items:center; gap:8px;">
+                  <div style="width:120px; height:5px; background:#F0F0F0; border-radius:9999px; overflow:hidden;">
+                    <div style="width:65.8%; height:100%; background:#B28FFD; border-radius:9999px;"></div>
+                  </div>
+                  <span style="font-size:13px; color:#808080; font-weight:700;">54/82건</span>
+                </div>
+              </div>
+              <button class="btn-ghost">채점 이어하기 <i data-lucide="arrow-right" style="width:14px;height:14px;"></i></button>
+            </div>
+          </div>
+
+          <!-- ── 2위: 과제물 제출 중 (3일 전 수정) ── -->
+          <div class="eval-card">
+            <div class="eval-card-body">
+              <div style="display:flex; flex-direction:column; gap:16px;">
+                <div style="display:flex; align-items:center; justify-content:space-between;">
+                  <div style="display:flex; align-items:center; gap:8px;">
+                    <span class="badge-ing">진행 중</span>
+                    <span style="font-size:16px; font-weight:700; color:#222;">2학기 국어 논술 평가</span>
+                  </div>
+                  <span style="font-size:12px; color:#B3B3B3;">3일 전 수정</span>
+                </div>
+                <div style="display:flex; align-items:center; gap:0; max-width:600px;">
+                  <div class="step-done">평가 설계</div>
+                  <div class="step-line-done"></div>
+                  <div class="step-now">과제물 제출</div>
+                  <div class="step-line-todo"></div>
+                  <div class="step-todo">채점 진행</div>
+                  <div class="step-line-todo"></div>
+                  <div class="step-todo">평가 리포트</div>
+                </div>
+              </div>
+            </div>
+            <div class="eval-card-footer">
+              <div style="display:flex; align-items:center; gap:16px;">
+                <span class="chip-red"><i data-lucide="alert-circle" style="width:13px;height:13px;"></i> 미제출 5명</span>
+                <span class="chip-green"><i data-lucide="check-circle" style="width:13px;height:13px;"></i> 제출 완료 77명</span>
+                <div style="display:flex; align-items:center; gap:8px;">
+                  <div style="width:120px; height:5px; background:#F0F0F0; border-radius:9999px; overflow:hidden;">
+                    <div style="width:93.9%; height:100%; background:#B28FFD; border-radius:9999px;"></div>
+                  </div>
+                  <span style="font-size:13px; color:#808080; font-weight:700;">77/82명</span>
+                </div>
+              </div>
+              <button class="btn-ghost">제출 현황 보기 <i data-lucide="arrow-right" style="width:14px;height:14px;"></i></button>
+            </div>
+          </div>
+
+          <!-- ── 3위: 임시저장 (5일 전 수정) ── -->
+          <div class="eval-card">
+            <div class="eval-card-body">
+              <div style="display:flex; flex-direction:column; gap:16px;">
+                <div style="display:flex; align-items:center; justify-content:space-between;">
+                  <div style="display:flex; align-items:center; gap:8px;">
+                    <span class="badge-draft">임시저장</span>
+                    <span style="font-size:16px; font-weight:700; color:#222;">1학기 국어 서술형 평가 3회</span>
+                  </div>
+                  <span style="font-size:12px; color:#B3B3B3;">5일 전 수정</span>
+                </div>
+                <div style="display:flex; align-items:center; gap:0; max-width:600px;">
+                  <div class="step-now" style="position:relative;">
+                    평가 설계
+                    <span style="position:absolute; top:-6px; right:-6px; width:10px; height:10px; background:#DB3E51; border-radius:50%; border:2px solid white;"></span>
+                  </div>
+                  <div class="step-line-todo"></div>
+                  <div class="step-todo">과제물 제출</div>
+                  <div class="step-line-todo"></div>
+                  <div class="step-todo">채점 진행</div>
+                  <div class="step-line-todo"></div>
+                  <div class="step-todo">평가 리포트</div>
+                </div>
+              </div>
+            </div>
+            <div class="eval-card-footer">
+              <span style="font-size:13px; color:#808080;">평가 설계를 완료해야 다음 단계로 진행할 수 있어요.</span>
+              <button class="btn-ghost">평가 설계 완료하기 <i data-lucide="arrow-right" style="width:14px;height:14px;"></i></button>
+            </div>
+          </div>
+
+          <!-- ── 4위: 완료 (2주 전 수정) ── -->
+          <div class="eval-card" style="opacity:0.75;">
+            <div class="eval-card-body">
+              <div style="display:flex; flex-direction:column; gap:16px;">
+                <div style="display:flex; align-items:center; justify-content:space-between;">
+                  <div style="display:flex; align-items:center; gap:8px;">
+                    <span class="badge-done">완료</span>
+                    <span style="font-size:16px; font-weight:700; color:#494949;">1학기 국어 서술형 평가 2회</span>
+                  </div>
+                  <span style="font-size:12px; color:#B3B3B3;">2주 전 수정</span>
+                </div>
+                <div style="display:flex; align-items:center; gap:0; max-width:600px;">
+                  <div class="step-done">평가 설계</div>
+                  <div class="step-line-done"></div>
+                  <div class="step-done">과제물 제출</div>
+                  <div class="step-line-done"></div>
+                  <div class="step-done">채점 진행</div>
+                  <div class="step-line-done"></div>
+                  <div class="step-done">평가 리포트</div>
+                </div>
+              </div>
+            </div>
+            <div class="fb-bar">
+              <div class="fb-bar-label">
+                <i data-lucide="sparkles" style="width:14px; height:14px;"></i>
+                AI 채점 만족도 의견을 들려주세요
+              </div>
+              <div style="display:flex; align-items:center; gap:16px;">
+                <button class="btn-ghost" onclick="openFeedbackModal()"><i data-lucide="message-square-text" style="width:14px;height:14px;"></i> 의견 남기기</button>
+                <div style="width:1px; height:14px; background:#D9D9D9;"></div>
+                <button class="btn-ghost">평가 리포트 보기 <i data-lucide="arrow-right" style="width:14px;height:14px;"></i></button>
+              </div>
+            </div>
+          </div>
+
+          <!-- ── 5위: 완료 (1달 전 수정) ── -->
+          <div class="eval-card" style="opacity:0.75;">
+            <div class="eval-card-body">
+              <div style="display:flex; flex-direction:column; gap:16px;">
+                <div style="display:flex; align-items:center; justify-content:space-between;">
+                  <div style="display:flex; align-items:center; gap:8px;">
+                    <span class="badge-done">완료</span>
+                    <span style="font-size:16px; font-weight:700; color:#494949;">1학기 국어 수행평가</span>
+                  </div>
+                  <span style="font-size:12px; color:#B3B3B3;">1달 전 수정</span>
+                </div>
+                <div style="display:flex; align-items:center; gap:0; max-width:600px;">
+                  <div class="step-done">평가 설계</div>
+                  <div class="step-line-done"></div>
+                  <div class="step-done">과제물 제출</div>
+                  <div class="step-line-done"></div>
+                  <div class="step-done">채점 진행</div>
+                  <div class="step-line-done"></div>
+                  <div class="step-done">평가 리포트</div>
+                </div>
+              </div>
+            </div>
+            <div class="fb-bar done">
+              <div style="display:flex; align-items:center; gap:10px;">
+                <i data-lucide="check-circle-2" style="width:16px; height:16px; color:#00AF3D;"></i>
+                <span class="fb-bar-label">의견 주셔서 감사합니다</span>
+                <span style="font-size:18px;">😀</span>
+                <span style="font-size:12px; color:#B3B3B3;">· 채점 기준이 안 맞음</span>
+              </div>
+              <button class="btn-ghost">평가 리포트 보기 <i data-lucide="arrow-right" style="width:14px;height:14px;"></i></button>
+            </div>
+          </div>
+
+          <!-- ── 더 보기 버튼 ── -->
+          <div id="load-more-wrap" style="display:flex; justify-content:center; padding:4px 0;">
+            <button onclick="loadMore()" style="height:36px; padding:0 16px; font-size:14px; font-weight:700; font-family:inherit; border:none; background:transparent; color:#808080; cursor:pointer; display:flex; align-items:center; gap:5px;"
+              onmouseover="this.style.color='#7E44FB';"
+              onmouseout="this.style.color='#808080';">
+              <i data-lucide="chevron-down" style="width:15px; height:15px;"></i>
+              더 보기
+            </button>
+          </div>
+
+          <!-- ── 추가 5개 (더 보기 클릭 시 노출) ── -->
+          <div id="extra-evals" style="display:none; flex-direction:column; gap:10px;">
+            <div class="eval-card" style="opacity:0.75;">
+              <div class="eval-card-body">
+                <div style="display:flex; flex-direction:column; gap:16px;">
+                  <div style="display:flex; align-items:center; justify-content:space-between;">
+                    <div style="display:flex; align-items:center; gap:8px;">
+                      <span class="badge-done">완료</span>
+                      <span style="font-size:16px; font-weight:700; color:#494949;">2학기 국어 독서 논술 평가</span>
+                    </div>
+                    <span style="font-size:12px; color:#B3B3B3;">2달 전 수정</span>
+                  </div>
+                  <div style="display:flex; align-items:center; gap:0; max-width:600px;">
+                    <div class="step-done">평가 설계</div><div class="step-line-done"></div>
+                    <div class="step-done">과제물 제출</div><div class="step-line-done"></div>
+                    <div class="step-done">채점 진행</div><div class="step-line-done"></div>
+                    <div class="step-done">평가 리포트</div>
+                  </div>
+                </div>
+              </div>
+              <div class="eval-card-footer">
+                <span style="font-size:13px; color:#494949;">채점 및 리포트 완료</span>
+                <button class="btn-ghost">평가 리포트 보기 <i data-lucide="arrow-right" style="width:14px;height:14px;"></i></button>
+              </div>
+            </div>
+            <div class="eval-card" style="opacity:0.75;">
+              <div class="eval-card-body">
+                <div style="display:flex; flex-direction:column; gap:16px;">
+                  <div style="display:flex; align-items:center; justify-content:space-between;">
+                    <div style="display:flex; align-items:center; gap:8px;">
+                      <span class="badge-done">완료</span>
+                      <span style="font-size:16px; font-weight:700; color:#494949;">1학기 국어 어휘·문법 평가</span>
+                    </div>
+                    <span style="font-size:12px; color:#B3B3B3;">3달 전 수정</span>
+                  </div>
+                  <div style="display:flex; align-items:center; gap:0; max-width:600px;">
+                    <div class="step-done">평가 설계</div><div class="step-line-done"></div>
+                    <div class="step-done">과제물 제출</div><div class="step-line-done"></div>
+                    <div class="step-done">채점 진행</div><div class="step-line-done"></div>
+                    <div class="step-done">평가 리포트</div>
+                  </div>
+                </div>
+              </div>
+              <div class="eval-card-footer">
+                <span style="font-size:13px; color:#494949;">채점 및 리포트 완료</span>
+                <button class="btn-ghost">평가 리포트 보기 <i data-lucide="arrow-right" style="width:14px;height:14px;"></i></button>
+              </div>
+            </div>
+          </div>
+
+        </div><!-- /evals-filled -->
+      </div>
+
+    </div>
+    <!-- /패널 전체 -->
+
+  </div>
+</div>
+
+<!-- ===== 평가 방식 선택 모달 ===== -->
+<div id="modal-type" style="display:none;position:fixed;inset:0;z-index:200;background:rgba(0,0,0,0.45);align-items:center;justify-content:center;padding:24px 0;" onclick="closeTypeModal(event)">
+  <div style="background:white;border-radius:16px;width:672px;max-height:calc(100vh - 48px);display:flex;flex-direction:column;box-shadow:0px 4px 12px rgba(95,102,178,0.16);position:relative;" onclick="event.stopPropagation()">
+
+    <!-- X 닫기 버튼 -->
+    <button onclick="closeTypeModal()" style="position:absolute;top:11px;right:11px;width:36px;height:36px;border:none;background:transparent;cursor:pointer;border-radius:8px;display:flex;align-items:center;justify-content:center;color:#808080;padding:0;z-index:10;" onmouseover="this.style.background='#F0F0F0'" onmouseout="this.style.background='transparent'">
+      <i data-lucide="x" style="width:20px;height:20px;"></i>
+    </button>
+
+    <!-- 고정 헤더 -->
+    <div style="padding:24px 24px 16px;flex-shrink:0;border-bottom:1px solid #F0F0F0;">
+      <h3 style="font-size:18px;font-weight:800;color:#000;margin:0 0 4px;padding-right:28px;">평가 방식을 선택해 주세요</h3>
+      <p style="font-size:14px;color:#494949;margin:0 0 14px;font-weight:400;">채점 정확도를 높이고 싶다면 <span style="color:#7E44FB;font-weight:700;cursor:pointer;">정교한 평가</span>를 권장합니다.</p>
+      <div style="background:#F2ECFF;border-radius:10px;padding:12px 16px;display:flex;gap:10px;align-items:flex-start;">
+        <span style="font-size:16px;flex-shrink:0;">💡</span>
+        <div>
+          <p style="margin:0 0 2px;font-size:14px;font-weight:800;color:#341761;">정교한 평가를 선택하면, AI가 각 문항에 맞는 채점기준을 골라 적용합니다.</p>
+          <p style="margin:0;font-size:14px;font-weight:400;color:#494949;">채점 결과가 더 일관되고 신뢰할 수 있어요.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 카드 영역 -->
+    <div style="padding:16px 24px 0;overflow-y:auto;flex:1;">
+      <div style="display:flex;gap:14px;padding-bottom:4px;">
+
+        <!-- 간편한 평가 -->
+        <div id="card-simple" onclick="selectType('simple')"
+          style="flex:1;border:2px solid #D9D9D9;border-radius:12px;padding:20px;cursor:pointer;transition:border-color .15s;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;min-height:24px;">
+            <div style="display:inline-flex;align-items:center;background:#F0F0F0;color:#808080;font-size:12px;font-weight:800;border-radius:100px;padding:2px 10px;">기존</div>
+            <div id="check-simple" style="display:none;width:24px;height:24px;background:#7E44FB;border-radius:50%;align-items:center;justify-content:center;">
+              <i data-lucide="check" style="width:14px;height:14px;color:white;stroke-width:3;"></i>
+            </div>
+          </div>
+          <div style="font-size:16px;font-weight:800;color:#000;margin-bottom:2px;">간편한 평가</div>
+          <div style="font-size:12px;color:#808080;font-weight:400;margin-bottom:8px;">1단계 · 빠른 시작</div>
+          <div style="font-size:14px;color:#494949;font-weight:400;line-height:1.55;margin-bottom:14px;">성취기준과 채점기준만 입력하면 바로 AI 채점을 시작합니다.</div>
+          <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:14px;">
+            <div style="display:flex;align-items:center;gap:8px;font-size:14px;color:#808080;font-weight:400;">
+              <span id="step-simple-1" style="width:20px;height:20px;border-radius:50%;background:#E6E6E6;color:#808080;font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;">1</span>성취기준 및 채점기준 입력
+            </div>
+          </div>
+          <div style="font-size:12px;color:#808080;font-weight:400;margin-bottom:6px;">이런 평가에 적합해요</div>
+          <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px;">
+            <span id="tag-s1" style="background:#F7F4FF;color:#7E44FB;font-size:12px;font-weight:700;border-radius:100px;padding:2px 10px;">문항 1개 글쓰기 평가</span>
+            <span id="tag-s2" style="background:#F7F4FF;color:#7E44FB;font-size:12px;font-weight:700;border-radius:100px;padding:2px 10px;">주제 작문·자유 서술</span>
+          </div>
+          <div style="font-size:12px;color:#808080;font-weight:400;display:flex;align-items:center;gap:4px;">
+            <i data-lucide="info" style="width:12px;height:12px;color:#B3B3B3;"></i> 활동지 없이 채점기준 전체 적용
+          </div>
+        </div>
+
+        <!-- 정교한 평가 -->
+        <div id="card-precise" onclick="selectType('precise')"
+          style="flex:1;border:2px solid #D9D9D9;border-radius:12px;padding:20px;cursor:pointer;transition:border-color .15s;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+            <div style="display:inline-flex;align-items:center;background:#5890FF;color:white;font-size:12px;font-weight:800;border-radius:100px;padding:2px 10px;">추천</div>
+            <div id="check-precise" style="display:none;width:24px;height:24px;background:#5890FF;border-radius:50%;align-items:center;justify-content:center;">
+              <i data-lucide="check" style="width:14px;height:14px;color:white;stroke-width:3;"></i>
+            </div>
+          </div>
+          <div style="font-size:16px;font-weight:800;color:#000;margin-bottom:2px;">정교한 평가</div>
+          <div style="font-size:12px;color:#808080;font-weight:400;margin-bottom:8px;">4단계 · 문항별 정밀 채점</div>
+          <div style="font-size:14px;color:#494949;font-weight:400;line-height:1.55;margin-bottom:14px;">활동지를 연결해 AI가 문항마다 해당 채점기준을 정확하게 적용합니다.</div>
+          <div id="steps-precise" style="display:flex;flex-direction:column;gap:6px;margin-bottom:14px;">
+            <div style="display:flex;align-items:center;gap:8px;font-size:14px;color:#808080;font-weight:400;"><span style="width:20px;height:20px;border-radius:50%;background:#E6E6E6;color:#808080;font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;">1</span>성취기준 및 채점기준 입력</div>
+            <div style="display:flex;align-items:center;gap:8px;font-size:14px;color:#808080;font-weight:400;"><span style="width:20px;height:20px;border-radius:50%;background:#E6E6E6;color:#808080;font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;">2</span>빈 활동지 업로드</div>
+            <div style="display:flex;align-items:center;gap:8px;font-size:14px;color:#808080;font-weight:400;"><span style="width:20px;height:20px;border-radius:50%;background:#E6E6E6;color:#808080;font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;">3</span>문항-채점기준 연결</div>
+            <div style="display:flex;align-items:center;gap:8px;font-size:14px;color:#808080;font-weight:400;"><span style="width:20px;height:20px;border-radius:50%;background:#E6E6E6;color:#808080;font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;">4</span>모범답안 입력</div>
+          </div>
+          <div style="font-size:12px;color:#808080;font-weight:400;margin-bottom:6px;">이런 평가에 적합해요</div>
+          <div style="display:flex;flex-wrap:wrap;gap:6px;">
+            <span id="tag-p1" style="background:#F2F5FF;color:#5890FF;font-size:12px;font-weight:700;border-radius:100px;padding:2px 10px;">정답형 문항</span>
+            <span id="tag-p2" style="background:#F2F5FF;color:#5890FF;font-size:12px;font-weight:700;border-radius:100px;padding:2px 10px;">복수 문항 평가</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- 푸터 -->
+    <div style="padding:16px 24px;flex-shrink:0;display:flex;justify-content:flex-end;gap:10px;border-top:1px solid #F0F0F0;">
+      <button onclick="closeTypeModal()" style="height:36px;padding:0 16px;border:1px solid #D9D9D9;background:white;border-radius:8px;font-size:14px;font-weight:700;color:#494949;cursor:pointer;font-family:inherit;">취소</button>
+      <button id="btn-type-confirm" onclick="confirmType()"
+        style="height:36px;padding:0 16px;border:none;background:#B3B3B3;border-radius:8px;font-size:14px;font-weight:700;color:white;cursor:not-allowed;font-family:inherit;transition:background .15s;">방식을 선택해 주세요</button>
+    </div>
+
+  </div>
+</div>
+
+<!-- ===== 수업 수정 모달 ===== -->
+<div id="editClassModal" class="modal-overlay" onclick="if(event.target===this)this.classList.remove('open')">
+  <div class="modal-box">
+
+    <!-- 헤더 -->
+    <div style="position:relative; padding:24px 24px 16px 24px;">
+      <span style="font-size:18px; font-weight:700; color:#222631;">수업 수정</span>
+      <button onclick="document.getElementById('editClassModal').classList.remove('open')"
+        style="position:absolute; top:11px; right:11px; width:36px; height:36px; border:none; background:transparent; border-radius:6px; cursor:pointer; display:flex; align-items:center; justify-content:center; color:#808080;"
+        onmouseover="this.style.background='#F0F0F0'" onmouseout="this.style.background='transparent'">
+        <i data-lucide="x" style="width:20px; height:20px;"></i>
+      </button>
+    </div>
+
+    <!-- 바디 -->
+    <div style="padding:0 24px 24px 24px; display:flex; flex-direction:column; gap:20px;">
+
+      <!-- 학기 + 학년 (row) -->
+      <div style="display:flex; gap:12px;">
+        <!-- 학기: 수정 가능 -->
+        <div style="flex:1;">
+          <div class="field-label">학기</div>
+          <select class="field-select">
+            <option selected>26학년도 1학기</option>
+            <option>26학년도 2학기</option>
+            <option>27학년도 1학기</option>
+            <option>27학년도 2학기</option>
+          </select>
+        </div>
+        <!-- 학년: 수정 불가 -->
+        <div style="flex:1;">
+          <div class="field-label">학년 <span class="lock-badge">수정 불가</span></div>
+          <select class="field-select disabled" disabled>
+            <option>1학년</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- 과목명: 수정 불가 -->
+      <div>
+        <div class="field-label">과목명 <span class="lock-badge">수정 불가</span></div>
+        <div class="radio-group" style="margin-bottom:8px;">
+          <label class="radio-item disabled">
+            <input type="radio" name="curriculum_edit" checked disabled> 2015 개정 교육과정
+          </label>
+          <label class="radio-item disabled">
+            <input type="radio" name="curriculum_edit" disabled> 2022 개정 교육과정
+          </label>
+        </div>
+        <select class="field-select disabled" disabled>
+          <option>국어</option>
+        </select>
+      </div>
+
+      <!-- 수업명: 수정 가능 -->
+      <div>
+        <div class="field-label">수업명</div>
+        <input class="field-input" type="text" value="1학년 국어">
+      </div>
+
+      <!-- 반 편성: 수정 불가 -->
+      <div>
+        <div class="field-label">반 편성 <span class="lock-badge">수정 불가</span></div>
+        <div class="radio-group">
+          <label class="radio-item disabled">
+            <input type="radio" name="class_type_edit" disabled> 학적 기준반
+          </label>
+          <label class="radio-item disabled">
+            <input type="radio" name="class_type_edit" checked disabled> 이동수업반
+          </label>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- 푸터 -->
+    <div style="padding:8px 24px 16px 24px; display:flex; justify-content:flex-end; gap:12px;">
+      <button style="height:40px; padding:0 16px; font-size:16px; font-weight:700; font-family:inherit; border:1px solid #B28FFD; background:transparent; color:#7E44FB; border-radius:8px; cursor:pointer;"
+        onclick="document.getElementById('editClassModal').classList.remove('open')">취소</button>
+      <button class="btn-primary" style="height:40px; font-size:16px;"
+        onclick="document.getElementById('editClassModal').classList.remove('open'); showToast('success', '수업 정보가 수정되었습니다.')">저장</button>
+    </div>
+
+  </div>
+</div>
+
+<!-- ===== 복사해서 만들기 모달 ===== -->
+<div id="modal-copy" style="display:none; position:fixed; inset:0; z-index:1000; background:rgba(0,0,0,0.4); align-items:center; justify-content:center; padding:24px 0;" onclick="closeCopyModal(event)">
+  <div style="background:white; border-radius:24px; box-shadow:0 4px 12px rgba(95,102,178,0.16); width:800px; max-width:95vw; max-height:calc(100vh - 48px); display:flex; flex-direction:column; position:relative;" onclick="event.stopPropagation()">
+
+    <!-- 헤더 -->
+    <div style="padding:24px 24px 16px; flex-shrink:0; border-bottom:1px solid #F0F0F0; position:relative;">
+      <span style="font-size:18px; font-weight:700; color:#222631;">복사해서 만들기</span>
+      <button onclick="closeCopyModal()" style="position:absolute; top:11px; right:11px; width:36px; height:36px; border:none; background:transparent; border-radius:6px; cursor:pointer; display:flex; align-items:center; justify-content:center; color:#808080;"
+        onmouseover="this.style.background='#F0F0F0'" onmouseout="this.style.background='transparent'">
+        <i data-lucide="x" style="width:20px; height:20px;"></i>
+      </button>
+    </div>
+
+    <!-- 바디 -->
+    <div style="padding:20px 24px 24px; overflow-y:auto; flex:1; display:flex; flex-direction:column; gap:14px;">
+      <!-- 검색 -->
+      <div style="position:relative;">
+        <i data-lucide="search" style="position:absolute; left:12px; top:50%; transform:translateY(-50%); width:16px; height:16px; color:#B3B3B3;"></i>
+        <input type="text" placeholder="평가명으로 검색" style="width:100%; height:40px; border:1px solid #D9D9D9; border-radius:8px; padding:0 12px 0 38px; font-size:14px; font-family:inherit; color:#333; background:white; outline:none;" onfocus="this.style.borderColor='#7E44FB'" onblur="this.style.borderColor='#D9D9D9'">
+      </div>
+      <!-- 안내 문구 -->
+      <p style="margin:0; font-size:13px; color:#808080;">복사할 평가를 선택하면 동일한 설계 내용을 복사해 새 평가가 생성됩니다.</p>
+      <!-- 테이블 -->
+      <div style="border:1px solid #E6E6E6; border-radius:12px; overflow:hidden;">
+        <table style="width:100%; border-collapse:collapse;">
+          <thead>
+            <tr style="background:#F8F8F8; border-bottom:1px solid #E6E6E6;">
+              <th style="width:40px; padding:10px 12px; text-align:center;"><input type="radio" name="copy-select" disabled style="accent-color:#7E44FB;"></th>
+              <th style="padding:10px 12px; text-align:left; font-size:13px; font-weight:700; color:#808080; white-space:nowrap;">선생님</th>
+              <th style="padding:10px 12px; text-align:left; font-size:13px; font-weight:700; color:#808080; white-space:nowrap;">교육과정</th>
+              <th style="padding:10px 12px; text-align:left; font-size:13px; font-weight:700; color:#808080; white-space:nowrap;">과목</th>
+              <th style="padding:10px 12px; text-align:left; font-size:13px; font-weight:700; color:#808080; white-space:nowrap;">평가방식</th>
+              <th style="padding:10px 12px; text-align:left; font-size:13px; font-weight:700; color:#808080;">평가명</th>
+              <th style="padding:10px 12px; text-align:left; font-size:13px; font-weight:700; color:#808080; white-space:nowrap;">최근 수정일</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr style="border-bottom:1px solid #F0F0F0; cursor:pointer;" onmouseover="this.style.background='#FAF8FF'" onmouseout="this.style.background='white'" onclick="this.querySelector('input').checked=true">
+              <td style="padding:12px; text-align:center;"><input type="radio" name="copy-select" value="1" style="accent-color:#7E44FB;"></td>
+              <td style="padding:12px; font-size:14px; color:#333; white-space:nowrap;">김*민</td>
+              <td style="padding:12px; font-size:14px; color:#333; white-space:nowrap;">2022 개정</td>
+              <td style="padding:12px; font-size:14px; color:#333; white-space:nowrap;">국어</td>
+              <td style="padding:12px;">
+                <span style="background:#F7F4FF; color:#7E44FB; font-size:12px; font-weight:700; border-radius:100px; padding:3px 10px; white-space:nowrap;">간편한 평가</span>
+              </td>
+              <td style="padding:12px; font-size:14px; color:#333;">1학기 국어 서술형 평가 1회</td>
+              <td style="padding:12px; font-size:14px; color:#808080; white-space:nowrap;">2025.03.15</td>
+            </tr>
+            <tr style="cursor:pointer;" onmouseover="this.style.background='#FAF8FF'" onmouseout="this.style.background='white'" onclick="this.querySelector('input').checked=true">
+              <td style="padding:12px; text-align:center;"><input type="radio" name="copy-select" value="2" style="accent-color:#7E44FB;"></td>
+              <td style="padding:12px; font-size:14px; color:#333; white-space:nowrap;">박*희</td>
+              <td style="padding:12px; font-size:14px; color:#333; white-space:nowrap;">2015 개정</td>
+              <td style="padding:12px; font-size:14px; color:#333; white-space:nowrap;">국어</td>
+              <td style="padding:12px;">
+                <span style="background:#F7F4FF; color:#7E44FB; font-size:12px; font-weight:700; border-radius:100px; padding:3px 10px; white-space:nowrap;">간편한 평가</span>
+              </td>
+              <td style="padding:12px; font-size:14px; color:#333;">2학기 국어 논술 평가</td>
+              <td style="padding:12px; font-size:14px; color:#808080; white-space:nowrap;">2025.02.28</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- 푸터 -->
+    <div style="padding:8px 24px 16px; display:flex; justify-content:flex-end; gap:12px; border-top:1px solid #F0F0F0; flex-shrink:0;">
+      <button onclick="closeCopyModal()" style="height:36px; padding:0 16px; font-size:14px; font-weight:700; font-family:inherit; border:1px solid #B28FFD; background:transparent; color:#7E44FB; border-radius:8px; cursor:pointer;">취소</button>
+      <button class="btn-primary" style="height:40px;" onclick="closeCopyModal()">복사 생성</button>
+    </div>
+
+  </div>
+</div>
+
+<!-- ===== 평가 자료실에서 가져오기 모달 ===== -->
+<div id="modal-library" style="display:none; position:fixed; inset:0; z-index:1000; background:rgba(0,0,0,0.4); align-items:center; justify-content:center; padding:24px 0;" onclick="closeLibraryModal(event)">
+  <div style="background:white; border-radius:24px; box-shadow:0 4px 12px rgba(95,102,178,0.16); width:800px; max-width:95vw; max-height:calc(100vh - 48px); display:flex; flex-direction:column; position:relative;" onclick="event.stopPropagation()">
+
+    <!-- 헤더 -->
+    <div style="padding:24px 24px 16px; flex-shrink:0; border-bottom:1px solid #F0F0F0; position:relative;">
+      <span style="font-size:18px; font-weight:700; color:#222631;">평가 자료실에서 가져오기</span>
+      <button onclick="closeLibraryModal()" style="position:absolute; top:11px; right:11px; width:36px; height:36px; border:none; background:transparent; border-radius:6px; cursor:pointer; display:flex; align-items:center; justify-content:center; color:#808080;"
+        onmouseover="this.style.background='#F0F0F0'" onmouseout="this.style.background='transparent'">
+        <i data-lucide="x" style="width:20px; height:20px;"></i>
+      </button>
+    </div>
+
+    <!-- 바디 -->
+    <div style="padding:20px 24px 24px; overflow-y:auto; flex:1; display:flex; flex-direction:column; gap:14px;">
+      <!-- 검색 -->
+      <div style="position:relative;">
+        <i data-lucide="search" style="position:absolute; left:12px; top:50%; transform:translateY(-50%); width:16px; height:16px; color:#B3B3B3;"></i>
+        <input type="text" placeholder="설계명으로 검색" style="width:100%; height:40px; border:1px solid #D9D9D9; border-radius:8px; padding:0 12px 0 38px; font-size:14px; font-family:inherit; color:#333; background:white; outline:none;" onfocus="this.style.borderColor='#7E44FB'" onblur="this.style.borderColor='#D9D9D9'">
+      </div>
+      <!-- 안내 문구 -->
+      <p style="margin:0; font-size:13px; color:#808080;">평가 자료실의 설계를 불러와 현재 수업의 평가로 적용합니다.</p>
+      <!-- 테이블 -->
+      <div style="border:1px solid #E6E6E6; border-radius:12px; overflow:hidden;">
+        <table style="width:100%; border-collapse:collapse;">
+          <thead>
+            <tr style="background:#F8F8F8; border-bottom:1px solid #E6E6E6;">
+              <th style="width:40px; padding:10px 12px; text-align:center;"><input type="radio" name="lib-select" disabled style="accent-color:#7E44FB;"></th>
+              <th style="padding:10px 12px; text-align:left; font-size:13px; font-weight:700; color:#808080; white-space:nowrap;">선생님</th>
+              <th style="padding:10px 12px; text-align:left; font-size:13px; font-weight:700; color:#808080;">설계명</th>
+              <th style="padding:10px 12px; text-align:left; font-size:13px; font-weight:700; color:#808080; white-space:nowrap;">평가방식</th>
+              <th style="padding:10px 12px; text-align:left; font-size:13px; font-weight:700; color:#808080; white-space:nowrap;">최근 수정일</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr style="border-bottom:1px solid #F0F0F0; cursor:pointer;" onmouseover="this.style.background='#FAF8FF'" onmouseout="this.style.background='white'" onclick="this.querySelector('input').checked=true">
+              <td style="padding:12px; text-align:center;"><input type="radio" name="lib-select" value="1" style="accent-color:#7E44FB;"></td>
+              <td style="padding:12px; font-size:14px; color:#333; white-space:nowrap;">김*민</td>
+              <td style="padding:12px; font-size:14px; color:#333;">1학기 국어 서술형 평가 설계</td>
+              <td style="padding:12px;">
+                <span style="background:#F7F4FF; color:#7E44FB; font-size:12px; font-weight:700; border-radius:100px; padding:3px 10px; white-space:nowrap;">간편한 평가</span>
+              </td>
+              <td style="padding:12px; font-size:14px; color:#808080; white-space:nowrap;">2025.03.15</td>
+            </tr>
+            <tr style="border-bottom:1px solid #F0F0F0; cursor:pointer;" onmouseover="this.style.background='#FAF8FF'" onmouseout="this.style.background='white'" onclick="this.querySelector('input').checked=true">
+              <td style="padding:12px; text-align:center;"><input type="radio" name="lib-select" value="2" style="accent-color:#7E44FB;"></td>
+              <td style="padding:12px; font-size:14px; color:#333; white-space:nowrap;">박*희</td>
+              <td style="padding:12px; font-size:14px; color:#333;">2학기 국어 논술 평가 설계</td>
+              <td style="padding:12px;">
+                <span style="background:#F7F4FF; color:#7E44FB; font-size:12px; font-weight:700; border-radius:100px; padding:3px 10px; white-space:nowrap;">간편한 평가</span>
+              </td>
+              <td style="padding:12px; font-size:14px; color:#808080; white-space:nowrap;">2025.02.28</td>
+            </tr>
+            <tr style="border-bottom:1px solid #F0F0F0; cursor:pointer;" onmouseover="this.style.background='#FAF8FF'" onmouseout="this.style.background='white'" onclick="this.querySelector('input').checked=true">
+              <td style="padding:12px; text-align:center;"><input type="radio" name="lib-select" value="3" style="accent-color:#7E44FB;"></td>
+              <td style="padding:12px; font-size:14px; color:#333; white-space:nowrap;">이*수</td>
+              <td style="padding:12px; font-size:14px; color:#333;">1학기 국어 서술형 평가 A형</td>
+              <td style="padding:12px;">
+                <span style="background:#F7F4FF; color:#7E44FB; font-size:12px; font-weight:700; border-radius:100px; padding:3px 10px; white-space:nowrap;">간편한 평가</span>
+              </td>
+              <td style="padding:12px; font-size:14px; color:#808080; white-space:nowrap;">2025.02.10</td>
+            </tr>
+            <tr style="border-bottom:1px solid #F0F0F0; cursor:pointer;" onmouseover="this.style.background='#FAF8FF'" onmouseout="this.style.background='white'" onclick="this.querySelector('input').checked=true">
+              <td style="padding:12px; text-align:center;"><input type="radio" name="lib-select" value="4" style="accent-color:#7E44FB;"></td>
+              <td style="padding:12px; font-size:14px; color:#333; white-space:nowrap;">최*진</td>
+              <td style="padding:12px; font-size:14px; color:#333;">국어 독서 논술 평가</td>
+              <td style="padding:12px;">
+                <span style="background:#F2F5FF; color:#5890FF; font-size:12px; font-weight:700; border-radius:100px; padding:3px 10px; white-space:nowrap;">정교한 평가</span>
+              </td>
+              <td style="padding:12px; font-size:14px; color:#808080; white-space:nowrap;">2025.01.25</td>
+            </tr>
+            <tr style="cursor:pointer;" onmouseover="this.style.background='#FAF8FF'" onmouseout="this.style.background='white'" onclick="this.querySelector('input').checked=true">
+              <td style="padding:12px; text-align:center;"><input type="radio" name="lib-select" value="5" style="accent-color:#7E44FB;"></td>
+              <td style="padding:12px; font-size:14px; color:#333; white-space:nowrap;">김*민</td>
+              <td style="padding:12px; font-size:14px; color:#333;">2학기 국어 서술형 중간 평가</td>
+              <td style="padding:12px;">
+                <span style="background:#F7F4FF; color:#7E44FB; font-size:12px; font-weight:700; border-radius:100px; padding:3px 10px; white-space:nowrap;">간편한 평가</span>
+              </td>
+              <td style="padding:12px; font-size:14px; color:#808080; white-space:nowrap;">2024.12.05</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- 푸터 -->
+    <div style="padding:8px 24px 16px; display:flex; justify-content:flex-end; gap:12px; border-top:1px solid #F0F0F0; flex-shrink:0;">
+      <button onclick="closeLibraryModal()" style="height:36px; padding:0 16px; font-size:14px; font-weight:700; font-family:inherit; border:1px solid #B28FFD; background:transparent; color:#7E44FB; border-radius:8px; cursor:pointer;">취소</button>
+      <button class="btn-primary" style="height:40px;" onclick="closeLibraryModal()">적용</button>
+    </div>
+
+  </div>
+</div>
+
+<!-- ===== 평가 대상 관리 안내 모달 ===== -->
+<div id="nav-notice" style="display:none; position:fixed; inset:0; z-index:1000; background:rgba(0,0,0,0.4); align-items:center; justify-content:center;" onclick="if(event.target===this)closeNavNotice()">
+  <div style="background:white; border-radius:24px; box-shadow:0 4px 12px rgba(95,102,178,0.16); width:400px; max-width:90vw; overflow:hidden;">
+    <div style="padding:24px 24px 16px; position:relative;">
+      <span style="font-size:18px; font-weight:700; color:#222631;">화면 이동 안내</span>
+      <button onclick="closeNavNotice()" style="position:absolute; top:11px; right:11px; width:36px; height:36px; border:none; background:transparent; border-radius:6px; cursor:pointer; display:flex; align-items:center; justify-content:center; color:#808080;"
+        onmouseover="this.style.background='#F0F0F0'" onmouseout="this.style.background='transparent'">
+        <i data-lucide="x" style="width:20px; height:20px;"></i>
+      </button>
+    </div>
+    <div style="padding:0 24px 24px; display:flex; flex-direction:column; gap:12px;">
+      <div style="display:flex; align-items:flex-start; gap:12px; background:#F7F4FF; border-radius:12px; padding:16px;">
+        <i data-lucide="info" style="width:18px; height:18px; color:#7E44FB; flex-shrink:0; margin-top:1px;"></i>
+        <p style="margin:0; font-size:14px; color:#494949; line-height:1.6;"><strong style="color:#7E44FB;">평가 대상</strong> 탭 화면으로 이동합니다.<br>해당 탭에서 학급과 학생을 등록·관리할 수 있습니다.</p>
+      </div>
+    </div>
+    <div style="padding:8px 24px 16px; display:flex; justify-content:flex-end;">
+      <button class="btn-primary" style="height:40px;" onclick="closeNavNotice()">확인</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 토스트 ===== -->
+<div id="toast" class="toast toast-success">
+  <i id="toast-icon" data-lucide="circle-check-big" style="width:20px; height:20px; color:white; flex-shrink:0;"></i>
+  <span id="toast-msg">수업 정보가 수정되었습니다.</span>
+</div>
+
+<script>
+  lucide.createIcons();
+
+  function toggleNewEvalDropdown(e) {
+    e.stopPropagation();
+    const d = document.getElementById('new-eval-dropdown');
+    d.style.display = d.style.display === 'none' ? 'block' : 'none';
+  }
+  document.addEventListener('click', () => {
+    document.getElementById('new-eval-dropdown').style.display = 'none';
+  });
+
+  /* ── 평가 방식 선택 모달 ── */
+  let selectedType = null;
+
+  function openTypeModal() {
+    selectedType = null;
+    resetCard('precise');
+    resetCard('simple');
+    var btn = document.getElementById('btn-type-confirm');
+    btn.textContent = '방식을 선택해 주세요';
+    btn.style.background = '#B3B3B3';
+    btn.style.cursor = 'not-allowed';
+    document.getElementById('modal-type').style.display = 'flex';
+    lucide.createIcons();
+  }
+
+  function closeTypeModal(e) {
+    if (!e || e.target === document.getElementById('modal-type')) {
+      document.getElementById('modal-type').style.display = 'none';
+    }
+  }
+
+  function resetCard(type) {
+    var card = document.getElementById('card-' + type);
+    var check = document.getElementById('check-' + type);
+    card.style.borderColor = '#D9D9D9';
+    card.style.background = 'white';
+    check.style.display = 'none';
+    if (type === 'precise') {
+      var steps = document.querySelectorAll('#steps-precise > div > span');
+      steps.forEach(function(s){ s.style.background='#E6E6E6'; s.style.color='#808080'; });
+      var stepsText = document.querySelectorAll('#steps-precise > div');
+      stepsText.forEach(function(d){ d.style.color='#808080'; });
+      ['tag-p1','tag-p2'].forEach(function(id){
+        var t = document.getElementById(id);
+        t.style.background='#F2F5FF'; t.style.color='#5890FF';
+      });
+    }
+    if (type === 'simple') {
+      var s1 = document.getElementById('step-simple-1');
+      s1.style.background='#E6E6E6'; s1.style.color='#808080';
+      s1.parentElement.style.color='#808080';
+      ['tag-s1','tag-s2'].forEach(function(id){
+        var t = document.getElementById(id);
+        t.style.background='#F7F4FF'; t.style.color='#7E44FB';
+      });
+    }
+  }
+
+  function selectType(type) {
+    selectedType = type;
+    resetCard('precise');
+    resetCard('simple');
+    var card = document.getElementById('card-' + type);
+    var check = document.getElementById('check-' + type);
+    check.style.display = 'flex';
+    if (type === 'precise') {
+      card.style.borderColor = '#5890FF';
+      card.style.background = '#F0F5FF';
+      var steps = document.querySelectorAll('#steps-precise > div > span');
+      steps.forEach(function(s){ s.style.background='#5890FF'; s.style.color='white'; });
+      var stepsText = document.querySelectorAll('#steps-precise > div');
+      stepsText.forEach(function(d){ d.style.color='#333'; });
+      ['tag-p1','tag-p2'].forEach(function(id){
+        var t = document.getElementById(id);
+        t.style.background='#EBF2FF'; t.style.color='#5890FF';
+      });
+    }
+    if (type === 'simple') {
+      card.style.borderColor = '#7E44FB';
+      card.style.background = '#FAF8FF';
+      var s1 = document.getElementById('step-simple-1');
+      s1.style.background='#7E44FB'; s1.style.color='white';
+      s1.parentElement.style.color='#333';
+      ['tag-s1','tag-s2'].forEach(function(id){
+        var t = document.getElementById(id);
+        t.style.background='#EDE7FF'; t.style.color='#7E44FB';
+      });
+    }
+    var label = type === 'precise' ? '정교한 평가로 시작하기 →' : '간편한 평가로 시작하기 →';
+    var btn = document.getElementById('btn-type-confirm');
+    btn.textContent = label;
+    btn.style.background = type === 'precise' ? '#5890FF' : '#7E44FB';
+    btn.style.cursor = 'pointer';
+    lucide.createIcons();
+  }
+
+  function confirmType() {
+    if (!selectedType) return;
+    document.getElementById('modal-type').style.display = 'none';
+    location.href = 'evaluation_design_v3_260403.html?screen=' + (selectedType === 'precise' ? 'detail' : 'simple');
+  }
+
+  /* ── 평가 대상 관리 안내 ── */
+  function showNavNotice() {
+    document.getElementById('nav-notice').style.display = 'flex';
+  }
+  function closeNavNotice() {
+    document.getElementById('nav-notice').style.display = 'none';
+  }
+
+  /* ── 빈 화면 드롭다운 ── */
+  function toggleEmptyDropdown(e) {
+    e.stopPropagation();
+    var d = document.getElementById('empty-eval-dropdown');
+    d.style.display = d.style.display === 'none' ? 'block' : 'none';
+  }
+  document.addEventListener('click', function() {
+    var d = document.getElementById('empty-eval-dropdown');
+    if (d) d.style.display = 'none';
+  });
+
+  /* ── 더 보기 ── */
+  function loadMore() {
+    document.getElementById('extra-evals').style.display = 'flex';
+    document.getElementById('load-more-wrap').style.display = 'none';
+    lucide.createIcons();
+  }
+
+  /* ── 토스트 ── */
+  var toastTimer;
+  function showToast(type, msg) {
+    var t = document.getElementById('toast');
+    var icon = document.getElementById('toast-icon');
+    var msgEl = document.getElementById('toast-msg');
+    type = type || 'success';
+    msg = msg || (type === 'success' ? '저장되었습니다.' : '오류가 발생했습니다.');
+    t.className = 'toast toast-' + type;
+    icon.setAttribute('data-lucide', type === 'success' ? 'circle-check-big' : 'circle-alert');
+    msgEl.textContent = msg;
+    lucide.createIcons();
+    clearTimeout(toastTimer);
+    t.classList.add('show');
+    toastTimer = setTimeout(function(){ t.classList.remove('show'); }, 2500);
+  }
+
+  /* ── 뷰 토글 ── */
+  function setView(mode) {
+    var isFilled = mode === 'filled';
+
+    // 평가 대상 카드
+    document.getElementById('target-filled').style.display = isFilled ? 'flex' : 'none';
+    var te = document.getElementById('target-empty');
+    te.style.display = isFilled ? 'none' : 'flex';
+
+    // 평가 현황
+    document.getElementById('evals-filled').style.display = isFilled ? 'flex' : 'none';
+    document.getElementById('evals-empty').style.display = isFilled ? 'none' : 'flex';
+
+    // 토글 버튼 스타일
+    document.getElementById('btn-view-filled').style.background = isFilled ? '#7E44FB' : 'white';
+    document.getElementById('btn-view-filled').style.color = isFilled ? 'white' : '#494949';
+    document.getElementById('btn-view-filled').style.border = isFilled ? 'none' : '1px solid #D9D9D9';
+    document.getElementById('btn-view-empty').style.background = isFilled ? 'white' : '#7E44FB';
+    document.getElementById('btn-view-empty').style.color = isFilled ? '#494949' : 'white';
+    document.getElementById('btn-view-empty').style.border = isFilled ? '1px solid #D9D9D9' : 'none';
+
+    lucide.createIcons();
+  }
+
+  /* ── 복사해서 만들기 모달 ── */
+  function openCopyModal() {
+    document.getElementById('modal-copy').style.display = 'flex';
+    lucide.createIcons();
+  }
+  function closeCopyModal(e) {
+    if (!e || e.target === document.getElementById('modal-copy')) {
+      document.getElementById('modal-copy').style.display = 'none';
+    }
+  }
+
+  /* ── 평가 자료실에서 가져오기 모달 ── */
+  function openLibraryModal() {
+    document.getElementById('modal-library').style.display = 'flex';
+    lucide.createIcons();
+  }
+  function closeLibraryModal(e) {
+    if (!e || e.target === document.getElementById('modal-library')) {
+      document.getElementById('modal-library').style.display = 'none';
+    }
+  }
+
+  /* ── 채점 만족도 피드백 모달 ── */
+  function openFeedbackModal() {
+    document.getElementById('modal-feedback').classList.add('open');
+    lucide.createIcons();
+  }
+  function closeFeedbackModal(e) {
+    if (!e || e.target === document.getElementById('modal-feedback')) {
+      document.getElementById('modal-feedback').classList.remove('open');
+    }
+  }
+  function selectFbEmoji(el) {
+    document.querySelectorAll('#modal-feedback .fb-emoji-card').forEach(b => b.classList.remove('selected'));
+    el.classList.add('selected');
+  }
+  function setFbStar(btn, val) {
+    btn.closest('.fb-stars').querySelectorAll('.fb-star').forEach((s, i) => {
+      s.classList.toggle('on', i < val); s.classList.remove('hv');
+    });
+  }
+  function hoverFbStar(btn, val) {
+    btn.closest('.fb-stars').querySelectorAll('.fb-star').forEach((s, i) => {
+      s.classList.toggle('hv', i < val && !s.classList.contains('on'));
+    });
+  }
+  function leaveFbStars(el) {
+    el.querySelectorAll('.fb-star').forEach(s => s.classList.remove('hv'));
+  }
+  function submitFeedback() {
+    document.getElementById('modal-feedback').classList.remove('open');
+    showToast('success', '의견이 전송되었습니다. 감사합니다!');
+  }
+</script>
+
+<!-- ===== 채점 만족도 피드백 모달 ===== -->
+<div id="modal-feedback" class="modal-overlay" onclick="closeFeedbackModal(event)">
+  <div class="modal-box" style="width:560px;">
+    <div style="padding:24px 24px 16px; position:relative;">
+      <div style="font-size:18px; font-weight:800; color:#222631;">AI 채점 만족도 의견</div>
+      <div style="font-size:13px; color:#808080; margin-top:6px;">1학기 국어 서술형 평가 2회 · 의견은 채점 품질 개선에 반영됩니다</div>
+      <button onclick="document.getElementById('modal-feedback').classList.remove('open')" style="position:absolute;top:11px;right:11px;width:36px;height:36px;border-radius:6px;background:transparent;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;">
+        <i data-lucide="x" style="width:18px; height:18px; color:#808080;"></i>
+      </button>
+    </div>
+    <div style="padding:0 24px 24px; display:flex; flex-direction:column; gap:20px;">
+      <div>
+        <div class="field-label">전반적인 만족도</div>
+        <div style="display:flex; gap:10px; margin-top:8px;">
+          <button class="fb-emoji-card" onclick="selectFbEmoji(this)">
+            <span style="font-size:28px;">😀</span><span style="font-size:12px; font-weight:700; color:#494949;">만족</span>
+          </button>
+          <button class="fb-emoji-card" onclick="selectFbEmoji(this)">
+            <span style="font-size:28px;">😐</span><span style="font-size:12px; font-weight:700; color:#494949;">보통</span>
+          </button>
+          <button class="fb-emoji-card" onclick="selectFbEmoji(this)">
+            <span style="font-size:28px;">😞</span><span style="font-size:12px; font-weight:700; color:#494949;">불만</span>
+          </button>
+        </div>
+      </div>
+      <div>
+        <div class="field-label">문항 유형별 만족도 <span style="font-size:12px; color:#B3B3B3; font-weight:400;">(선택)</span></div>
+        <div style="margin-top:8px; background:#FAFAFA; border:1px solid #EFEFEF; border-radius:12px; padding:4px 16px;">
+          <div class="fb-type-row">
+            <div><div class="fb-type-name">논술형</div><div class="fb-type-desc">자유 서술 기반의 긴 분량 답안</div></div>
+            <div class="fb-stars" onmouseleave="leaveFbStars(this)">
+              <button type="button" class="fb-star" onclick="setFbStar(this,1)" onmouseover="hoverFbStar(this,1)">★</button>
+              <button type="button" class="fb-star" onclick="setFbStar(this,2)" onmouseover="hoverFbStar(this,2)">★</button>
+              <button type="button" class="fb-star" onclick="setFbStar(this,3)" onmouseover="hoverFbStar(this,3)">★</button>
+              <button type="button" class="fb-star" onclick="setFbStar(this,4)" onmouseover="hoverFbStar(this,4)">★</button>
+              <button type="button" class="fb-star" onclick="setFbStar(this,5)" onmouseover="hoverFbStar(this,5)">★</button>
+            </div>
+          </div>
+          <div class="fb-type-row">
+            <div><div class="fb-type-name">서술형</div><div class="fb-type-desc">특정 내용 설명·기술 중심의 중간 분량</div></div>
+            <div class="fb-stars" onmouseleave="leaveFbStars(this)">
+              <button type="button" class="fb-star" onclick="setFbStar(this,1)" onmouseover="hoverFbStar(this,1)">★</button>
+              <button type="button" class="fb-star" onclick="setFbStar(this,2)" onmouseover="hoverFbStar(this,2)">★</button>
+              <button type="button" class="fb-star" onclick="setFbStar(this,3)" onmouseover="hoverFbStar(this,3)">★</button>
+              <button type="button" class="fb-star" onclick="setFbStar(this,4)" onmouseover="hoverFbStar(this,4)">★</button>
+              <button type="button" class="fb-star" onclick="setFbStar(this,5)" onmouseover="hoverFbStar(this,5)">★</button>
+            </div>
+          </div>
+          <div class="fb-type-row">
+            <div><div class="fb-type-name">단답/목록형</div><div class="fb-type-desc">단어 또는 단문 수준의 짧은 답안</div></div>
+            <div class="fb-stars" onmouseleave="leaveFbStars(this)">
+              <button type="button" class="fb-star" onclick="setFbStar(this,1)" onmouseover="hoverFbStar(this,1)">★</button>
+              <button type="button" class="fb-star" onclick="setFbStar(this,2)" onmouseover="hoverFbStar(this,2)">★</button>
+              <button type="button" class="fb-star" onclick="setFbStar(this,3)" onmouseover="hoverFbStar(this,3)">★</button>
+              <button type="button" class="fb-star" onclick="setFbStar(this,4)" onmouseover="hoverFbStar(this,4)">★</button>
+              <button type="button" class="fb-star" onclick="setFbStar(this,5)" onmouseover="hoverFbStar(this,5)">★</button>
+            </div>
+          </div>
+          <div class="fb-type-row">
+            <div><div class="fb-type-name">보고서형</div><div class="fb-type-desc">구조화된 양식 기반 (제목·본문·결론 등)</div></div>
+            <div class="fb-stars" onmouseleave="leaveFbStars(this)">
+              <button type="button" class="fb-star" onclick="setFbStar(this,1)" onmouseover="hoverFbStar(this,1)">★</button>
+              <button type="button" class="fb-star" onclick="setFbStar(this,2)" onmouseover="hoverFbStar(this,2)">★</button>
+              <button type="button" class="fb-star" onclick="setFbStar(this,3)" onmouseover="hoverFbStar(this,3)">★</button>
+              <button type="button" class="fb-star" onclick="setFbStar(this,4)" onmouseover="hoverFbStar(this,4)">★</button>
+              <button type="button" class="fb-star" onclick="setFbStar(this,5)" onmouseover="hoverFbStar(this,5)">★</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="field-label">아쉬운 점이 있다면 <span style="font-size:12px; color:#B3B3B3; font-weight:400;">(선택)</span></div>
+        <select class="field-select" style="margin-top:8px;">
+          <option value="">선택해 주세요</option>
+          <option>채점 기준이 안 맞음</option>
+          <option>점수가 너무 후함</option>
+          <option>점수가 너무 짬</option>
+          <option>근거 설명이 부족함</option>
+          <option>기타</option>
+        </select>
+      </div>
+      <div>
+        <div class="field-label">자세한 의견 <span style="font-size:12px; color:#B3B3B3; font-weight:400;">(선택)</span></div>
+        <textarea placeholder="채점 결과에 대해 더 알려주실 의견이 있다면 자유롭게 적어주세요." style="margin-top:8px; width:100%; min-height:120px; border:1px solid #D9D9D9; border-radius:8px; padding:12px; font-size:15px; font-family:inherit; color:#333; resize:vertical; line-height:1.55;"></textarea>
+      </div>
+    </div>
+    <div style="padding:8px 24px 16px; display:flex; justify-content:flex-end; align-items:center; border-top:1px solid #F0F0F0;">
+      <div style="display:flex; gap:12px;">
+        <button class="btn-secondary" style="height:40px;" onclick="document.getElementById('modal-feedback').classList.remove('open')">취소</button>
+        <button class="btn-primary" style="height:40px;" onclick="submitFeedback()">의견 보내기</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 세션 만료 30분 전 안내 모달 ===== -->
+<div id="modal-session-warning" class="session-modal" onclick="if(event.target===this)dismissWarning()">
+  <div class="session-modal-box">
+    <!-- 헤더 -->
+    <div style="padding:24px 24px 16px; position:relative;">
+      <div style="display:flex; align-items:center; gap:10px;">
+        <div style="width:36px; height:36px; border-radius:50%; background:#FFEDD5; display:inline-flex; align-items:center; justify-content:center; flex-shrink:0;">
+          <i data-lucide="shield-alert" style="width:20px; height:20px; color:#FF8C4C;"></i>
+        </div>
+        <h3 style="font-size:18px; font-weight:800; color:#222631; margin:0;">곧 자동 로그아웃됩니다</h3>
+      </div>
+      <button onclick="dismissWarning()" style="position:absolute; top:11px; right:11px; width:36px; height:36px; border-radius:6px; background:transparent; border:none; cursor:pointer; display:inline-flex; align-items:center; justify-content:center; line-height:1;">
+        <i data-lucide="x" style="width:18px; height:18px; color:#808080;"></i>
+      </button>
+    </div>
+    <!-- 바디 -->
+    <div style="padding:0 24px 24px; display:flex; flex-direction:column; gap:14px;">
+      <div>
+        <span id="reason-chip" class="reason-chip">
+          <span id="reason-chip-icon" style="display:inline-flex;"><i data-lucide="moon" style="width:14px; height:14px;"></i></span>
+          <span id="reason-chip-text">장시간 활동이 없음</span>
+        </span>
+      </div>
+      <p id="warning-message" style="font-size:16px; color:#333; margin:0; line-height:1.55;">
+        보안을 위해 30분 동안 활동이 없으면 자동으로 로그아웃됩니다.<br>
+        계속 사용하시려면 <b>‘계속 사용’</b>을 눌러 주세요.
+      </p>
+      <div id="countdown-box" class="countdown-box">
+        <span class="label">남은 시간</span>
+        <span class="time" id="countdown-time">30:00</span>
+      </div>
+      <div class="save-info-box">
+        <div class="info-title">
+          <i data-lucide="info" style="width:14px; height:14px; color:#7E44FB;"></i>
+          로그아웃 시 저장 안내
+        </div>
+        <div style="padding-left:20px;">
+          • 작성 중인 <b>평가 설계는 자동으로 임시저장</b>됩니다.<br>
+          • 채점·과제물·관찰 기록 등 그 외 화면의 입력은 저장되지 않습니다.
+        </div>
+      </div>
+    </div>
+    <!-- 푸터 -->
+    <div style="padding:8px 24px 16px; display:flex; justify-content:flex-end; gap:12px;">
+      <button class="btn-outline" style="height:40px;" onclick="logoutNow()">로그아웃</button>
+      <button class="btn-primary" style="height:40px;" onclick="extendSession()">계속 사용</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 자동 로그아웃 전체 화면 ===== -->
+<div id="logout-screen" class="logout-screen">
+  <div class="logout-icon-wrap">
+    <i data-lucide="shield-check" style="width:44px; height:44px; color:#7E44FB;"></i>
+  </div>
+  <h1 style="font-size:28px; font-weight:800; color:#222631; margin:0 0 12px; text-align:center;">자동 로그아웃되었습니다</h1>
+  <p id="logout-reason" style="font-size:16px; color:#494949; margin:0 0 24px; text-align:center; line-height:1.55;">
+    장시간 활동이 없어 보안을 위해 로그아웃되었습니다.
+  </p>
+  <div style="background:#F8F8F8; border-radius:12px; padding:18px 22px; max-width:480px; width:100%; margin-bottom:28px;">
+    <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
+      <i data-lucide="save" style="width:18px; height:18px; color:#00AF3D;"></i>
+      <b style="font-size:14px; color:#333;">작성 중이던 내용은 다음과 같이 저장되었습니다</b>
+    </div>
+    <ul style="margin:0; padding-left:22px; font-size:14px; color:#494949; line-height:1.7;">
+      <li>평가 설계 — <b style="color:#00AF3D;">임시저장 완료</b></li>
+      <li>채점·과제물·관찰 기록 등 — <span style="color:#808080;">저장되지 않음</span></li>
+    </ul>
+  </div>
+  <button class="btn-primary" style="height:48px; padding:0 28px; font-size:16px;" onclick="goToLogin()">
+    <i data-lucide="log-in" style="width:18px; height:18px;"></i> 다시 로그인
+  </button>
+  <p style="font-size:13px; color:#808080; margin:16px 0 0;">
+    로그인하면 임시저장된 평가 설계는 그대로 이어서 작성할 수 있습니다.
+  </p>
+</div>
+
+<!-- ===== 데모 컨트롤 (드래그 가능) ===== -->
+<div id="demo-toggle" class="demo-toggle">
+  <div class="demo-title">
+    <i data-lucide="grip-horizontal" style="width:12px; height:12px;"></i>
+    MOCKUP — 세션 상태
+  </div>
+  <button class="demo-btn active" data-state="normal" onclick="setSessionState('normal')">① 정상</button>
+  <button class="demo-btn" data-state="idle" onclick="setSessionState('idle')">② 유휴 30분 전 안내</button>
+  <button class="demo-btn" data-state="absolute" onclick="setSessionState('absolute')">③ 절대 30분 전 안내</button>
+  <button class="demo-btn" data-state="logged-out-idle" onclick="setSessionState('logged-out-idle')">④ 자동 로그아웃 (유휴)</button>
+  <button class="demo-btn" data-state="logged-out-absolute" onclick="setSessionState('logged-out-absolute')">⑤ 자동 로그아웃 (절대)</button>
+</div>
+
+<script>
+  /* ── 세션 상태 전환 ── */
+  let sessionCountdownTimer = null;
+  function setSessionState(state) {
+    document.querySelectorAll('.demo-toggle .demo-btn').forEach(b => b.classList.toggle('active', b.dataset.state === state));
+    const modal = document.getElementById('modal-session-warning');
+    const logoutScreen = document.getElementById('logout-screen');
+    const chip = document.getElementById('reason-chip');
+    const chipText = document.getElementById('reason-chip-text');
+    const iconWrap = document.getElementById('reason-chip-icon');
+    const msg = document.getElementById('warning-message');
+    const countdownBox = document.getElementById('countdown-box');
+    const logoutReason = document.getElementById('logout-reason');
+
+    modal.classList.remove('open');
+    logoutScreen.classList.remove('open');
+    if (sessionCountdownTimer) { clearInterval(sessionCountdownTimer); sessionCountdownTimer = null; }
+
+    if (state === 'idle') {
+      chip.classList.remove('absolute-type');
+      countdownBox.classList.remove('absolute-type');
+      iconWrap.innerHTML = '<i data-lucide="moon" style="width:14px; height:14px;"></i>';
+      chipText.textContent = '장시간 활동이 없음';
+      msg.innerHTML = '보안을 위해 30분 동안 활동이 없으면 자동으로 로그아웃됩니다.<br>계속 사용하시려면 <b>‘계속 사용’</b>을 눌러 주세요.';
+      modal.classList.add('open');
+      startSessionCountdown(30 * 60);
+    } else if (state === 'absolute') {
+      chip.classList.add('absolute-type');
+      countdownBox.classList.add('absolute-type');
+      iconWrap.innerHTML = '<i data-lucide="clock" style="width:14px; height:14px;"></i>';
+      chipText.textContent = '로그인 후 8시간 경과 임박';
+      msg.innerHTML = '보안을 위해 로그인 후 8시간이 지나면 자동으로 로그아웃됩니다.<br>지금 로그인 후 <b>7시간 30분</b>이 경과했어요.';
+      modal.classList.add('open');
+      startSessionCountdown(30 * 60);
+    } else if (state === 'logged-out-idle') {
+      logoutReason.textContent = '장시간 활동이 없어 보안을 위해 로그아웃되었습니다.';
+      logoutScreen.classList.add('open');
+    } else if (state === 'logged-out-absolute') {
+      logoutReason.textContent = '로그인 후 8시간이 지나 보안을 위해 로그아웃되었습니다.';
+      logoutScreen.classList.add('open');
+    }
+    lucide.createIcons();
+  }
+
+  function startSessionCountdown(seconds) {
+    const el = document.getElementById('countdown-time');
+    let remaining = seconds;
+    const render = () => {
+      const m = String(Math.floor(remaining / 60)).padStart(2, '0');
+      const s = String(remaining % 60).padStart(2, '0');
+      el.textContent = `${m}:${s}`;
+    };
+    render();
+    sessionCountdownTimer = setInterval(() => {
+      remaining--;
+      if (remaining < 0) {
+        clearInterval(sessionCountdownTimer);
+        const isAbs = document.getElementById('countdown-box').classList.contains('absolute-type');
+        setSessionState(isAbs ? 'logged-out-absolute' : 'logged-out-idle');
+        return;
+      }
+      render();
+    }, 1000);
+  }
+
+  function dismissWarning() {
+    if (sessionCountdownTimer) { clearInterval(sessionCountdownTimer); sessionCountdownTimer = null; }
+    setSessionState('normal');
+  }
+  function extendSession() { dismissWarning(); }
+  function logoutNow() {
+    const isAbs = document.getElementById('countdown-box').classList.contains('absolute-type');
+    setSessionState(isAbs ? 'logged-out-absolute' : 'logged-out-idle');
+  }
+  function goToLogin() { window.location.href = 'https://hi.goe.go.kr/'; }
+
+  /* ── 데모 토글 드래그 ── */
+  (function makeDemoToggleDraggable() {
+    const el = document.getElementById('demo-toggle');
+    let dragging = false, sx = 0, sy = 0, ox = 0, oy = 0;
+    el.addEventListener('mousedown', (e) => {
+      if (e.target.tagName === 'BUTTON') return;
+      dragging = true;
+      const rect = el.getBoundingClientRect();
+      sx = e.clientX; sy = e.clientY;
+      ox = rect.left; oy = rect.top;
+      el.style.right = 'auto'; el.style.bottom = 'auto';
+      e.preventDefault();
+    });
+    document.addEventListener('mousemove', (e) => {
+      if (!dragging) return;
+      el.style.left = (ox + e.clientX - sx) + 'px';
+      el.style.top = (oy + e.clientY - sy) + 'px';
+    });
+    document.addEventListener('mouseup', () => dragging = false);
+  })();
+
+  lucide.createIcons();
+</script>
+
+</body>
+</html>
