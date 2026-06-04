@@ -873,9 +873,6 @@ select.field-input{appearance:none;-webkit-appearance:none;background-image:url(
           </button>
         </div>
         <div class="teacher-fb-save-right">
-          <button class="btn-preview-student" onclick="openPreviewModal()">
-            <i data-lucide="eye" style="width:16px;height:16px"></i>미리보기
-          </button>
           <button class="btn-save-next" onclick="saveAndNext()">
             <i data-lucide="check" style="width:16px;height:16px"></i>저장 후 다음
           </button>
@@ -1179,46 +1176,7 @@ select.field-input{appearance:none;-webkit-appearance:none;background-image:url(
   </div>
 </aside>
 
-<!-- 미리보기 전용 모달 (개별 채점용 — 공개 액션 없음) -->
-<div class="modal-overlay" id="previewModal" onclick="if(event.target===this)closePreviewModal()">
-  <div class="modal preview-modal">
-    <div class="modal-hd">
-      <span class="modal-title" id="previewModalTitle">학생 화면 미리보기</span>
-      <button class="modal-close" onclick="closePreviewModal()"><i data-lucide="x" style="width:18px;height:18px"></i></button>
-    </div>
-    <div class="preview-body">
-      <!-- 좌측: 표시 항목 체크 -->
-      <div class="preview-settings">
-        <span class="modal-section-lbl">표시 항목</span>
-        <div class="preview-opt-list share-opt-list">
-          <label class="checkbox-row checked" data-key="score" onclick="togglePreviewOpt(this)"><span class="checkbox-box"><i data-lucide="check" style="width:12px;height:12px"></i></span><span class="checkbox-text">점수</span></label>
-          <label class="checkbox-row checked" data-key="standards" onclick="togglePreviewOpt(this)"><span class="checkbox-box"><i data-lucide="check" style="width:12px;height:12px"></i></span><span class="checkbox-text">성취기준</span></label>
-          <label class="checkbox-row checked" data-key="inst_ground" onclick="togglePreviewOpt(this)"><span class="checkbox-box"><i data-lucide="check" style="width:12px;height:12px"></i></span><span class="checkbox-text">문항별 채점근거</span></label>
-          <label class="checkbox-row checked" data-key="inst_feedback" onclick="togglePreviewOpt(this)"><span class="checkbox-box"><i data-lucide="check" style="width:12px;height:12px"></i></span><span class="checkbox-text">문항별 피드백</span></label>
-          <label class="checkbox-row checked" data-key="rubric" onclick="togglePreviewOpt(this)"><span class="checkbox-box"><i data-lucide="check" style="width:12px;height:12px"></i></span><span class="checkbox-text">채점기준표</span></label>
-          <label class="checkbox-row checked" data-key="elem_ground" onclick="togglePreviewOpt(this)"><span class="checkbox-box"><i data-lucide="check" style="width:12px;height:12px"></i></span><span class="checkbox-text">채점요소별 채점근거 (과제물 AI)</span></label>
-          <label class="checkbox-row checked" data-key="elem_feedback_analysis" onclick="togglePreviewOpt(this)"><span class="checkbox-box"><i data-lucide="check" style="width:12px;height:12px"></i></span><span class="checkbox-text">채점요소별 피드백 (과제물 AI)</span></label>
-          <label class="checkbox-row checked" data-key="elem_feedback_rubric" onclick="togglePreviewOpt(this)"><span class="checkbox-box"><i data-lucide="check" style="width:12px;height:12px"></i></span><span class="checkbox-text">채점요소별 피드백 (루브릭 AI)</span></label>
-          <label class="checkbox-row checked" data-key="teacher" onclick="togglePreviewOpt(this)"><span class="checkbox-box"><i data-lucide="check" style="width:12px;height:12px"></i></span><span class="checkbox-text">선생님 한마디</span></label>
-        </div>
-      </div>
-      <!-- 우측: 미리보기 -->
-      <div class="preview-preview-wrap">
-        <div class="share-preview-lbl"><i data-lucide="eye" style="width:18px;height:18px"></i>학생 화면 미리보기<span class="lbl-sub">· 학급 채점 현황의 [학생에게 결과 공개하기] 버튼을 눌러 학생에게 전달할 수 있어요.</span><button class="lbl-action" onclick="window.open('scoring_detail_v1.html','_blank')" title="새 탭으로 열기 — 작업 중인 채점 내용이 유지돼요">학급 채점 현황으로 이동<i data-lucide="external-link" style="width:13px;height:13px"></i></button></div>
-        <div class="share-preview-frame report-ph" id="previewFrame">
-          <i data-lucide="file-text" style="width:40px;height:40px"></i>
-          <div class="report-ph-title">학생 리포트 디자인하여 재구성 예정</div>
-          <div class="report-ph-sub">학생에게 보여질 리포트 화면은 별도 디자인 후 이 자리에 들어갈 예정이에요.</div>
-        </div>
-      </div>
-    </div>
-    <div class="modal-ft" style="justify-content:flex-end">
-      <div class="modal-actions">
-        <button class="btn-modal-cancel" onclick="closePreviewModal()">닫기</button>
-      </div>
-    </div>
-  </div>
-</div>
+<!-- 학생 화면 미리보기 모달 제거됨 (결과는 출력으로만 전달) -->
 
 <!-- 토스트 -->
 <div class="toast" id="toast">
@@ -2154,7 +2112,6 @@ document.addEventListener('keydown',function(e){
   if(document.getElementById('instructionEditModal').classList.contains('show')) closeInstructionEditModal();
   else if(document.getElementById('revertConfirmModal').classList.contains('show')) closeRevertConfirm();
   else if(document.getElementById('rerunConfirmModal').classList.contains('show')) closeRerunConfirm();
-  else if(document.getElementById('previewModal').classList.contains('show')) closePreviewModal();
   else if(document.getElementById('shareModal').classList.contains('show')) closeShareModal();
   else if(document.getElementById('pdfModal').classList.contains('show')) closePdfModal();
   else if(document.getElementById('methodModal').classList.contains('show')) closeMethodModal();
