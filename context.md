@@ -616,10 +616,15 @@
 | SCORINGS-001 | AI채점 (학급 목록) | ● | MM23uA7pDEmFeMKGeFVJpB | `54:4151` |
 | SCORINGS-002 | AI채점_학급채점결과상세 | ○ | MM23uA7pDEmFeMKGeFVJpB | `54:4151` |
 | SCORINGS-003 | AI채점_학생채점결과상세 | ● | MM23uA7pDEmFeMKGeFVJpB | `49:1674` |
+| SCORINGS-ELEM-001 | AI채점_유초등 개별 채점 (7월 타깃) | ● 목업 | CLIPO 리스킨 | — |
 
 **직접 접근 URL:**
 - AI채점 목록: `https://www.figma.com/design/MM23uA7pDEmFeMKGeFVJpB/2026-HIAI--Design-?node-id=54-4151`
 - 학생채점결과상세: `https://www.figma.com/design/MM23uA7pDEmFeMKGeFVJpB/2026-HIAI--Design-?node-id=49-1674`
+
+**목업 파일:**
+- 유초등 개별 채점: `output/scoring_student_elementary_v1.html` (CLIPO `scoring_elementary_v2_260511` 리스킨, 7월 타깃)
+- 학급 채점 현황(연결): `output/scoring_detail_v1.html` — `유초등` 행에서 위 화면으로 진입
 
 #### 평가 리포트 (REPORTS)
 
@@ -695,3 +700,14 @@
 - 260414: 과제물 관리(TASKS) 스크린 인덱스 추가 — 7개 화면 (목록, 학급 제출 상세, 파일 팝업, 일괄업로드 4단계). Figma `344b7XVs8E9KaFBhgAEhtW` 페이지 `v1.2 - 전체화면`.
 - 260415: 평가 리포트(REPORTS) 목록 목업 신규 작성 (`report_list_v1.html`). Figma `344b7XVs8E9KaFBhgAEhtW` `2087:52878` 기준. 과제별 평균 점수 테이블 + 학생별 리포트 테이블. 리포트 상세 링크 → `student_report_v1.html`. 전 파일 "평가 리포트" 탭 연결 완료.
 - 260423: 재채점 유도 정책 (Stale 알림) 기획 정리 — 평가 단위 `needsRescoring` 단일 플래그, 자동 실행 없음, 교사 확정값 항상 보존, 배너 2종 + 최소 다이얼로그로 UI 구성.
+- 260604: **유초등(유아·초등) 개별 채점 화면** 신규 — `output/scoring_student_elementary_v1.html`. **7월 타깃.**
+  - 출처: CLIPO 초등 채점 `clipo_mockup/output/scoring_elementary_v2_260511.html`를 **구조·기능 유지하고 HIAI 디자인 토큰으로 리스킨** (블루#365eef→보라#7E44FB, Pretendard GOV→나눔스퀘어라운드, GNB/로고/파비콘 교체).
+  - 학생: `10103 유초등` (CLIPO `김피드백`에서 변경). 평가 콘텐츠는 "우리 고장" 사회(4학년).
+  - 색상 체계: **과제물 분석 AI = 보라 / 루브릭 기반 AI = 연하늘(#2b7fd4)** 로 모델 구분. 문항별 피드백 카드는 파스텔 도달칩(민트/버터/피치), 채점요소별 피드백 = **연보라(#f7f4ff/#6b30d9)**. 문항번호도 수준태그처럼 파스텔 알약.
+  - 레이아웃: 도달/점수 칩 우측 정렬, 버튼(AI 초안 되돌리기→문항 수정) 좌측 정렬. 문항 수정 모달의 문항제목 textarea 높이 반응형(auto-grow).
+  - HIAI 미적용 제거: **AI 크레딧 표기 전부 제거**(모든 팝업), **채점 모델 v3.2 설명 카드 제거**, 도장(AI 점수 일괄 확정) 버튼·로고 워드마크 제거.
+  - 학생 리포트(미리보기/PDF출력/학생공개 iframe) → **"학생 리포트 디자인하여 재구성 예정"** 플레이스홀더 (실제 화면 별도 디자인 예정).
+  - 연결: `output/scoring_detail_v1.html`(학급 채점 현황) 학생목록을 개별 상세 드롭다운과 동일한 **6개 케이스**(유초등=확인필요 / 미제출 / 채점전 / 채점실패 / 이전채점 / 히스토리)로 통일. 각 행 → `scoring_student_elementary_v1.html?id=&name=<케이스>` 로 연결돼 케이스별 상태 UI 진입. scoring_detail 출력 항목 설정도 미리보기 9개 항목으로 맞춤.
+  - **버그픽스**: 개별 상세의 `BASE_FILE`이 CLIPO 파일명(`scoring_elementary_v2_260511.html`)이라 드롭다운 학생 클릭 시 404 → `scoring_student_elementary_v1.html`로 수정. 6개 케이스 모두 정상 렌더 확인(미제출=뷰어 빈상태, 채점전=총점 미정, 채점실패, 이전채점, 히스토리=AI 채점 로그 드로어). 케이스 분기는 `studentName` 기준.
+  - 미해결/추후: scoring_detail 출력 오버레이의 `PRINT_STUDENTS`(21명짜리 중등 셀렉터)는 아직 구버전 — 출력 종이가 플레이스홀더라 영향 적지만 정리 대상. 출력 종이 헤더(미래사회·중등)도 유초등 맥락 정리 필요.
+  - scoring_detail **출력 종이(print paper)도 "학생 리포트 디자인하여 재구성 예정" 플레이스홀더로 교체** — 출력 리포트는 학생 미리보기와 동일한 리포트 디자인으로 재구성될 예정이라, 기존 4섹션(성취기준/채점기준/채점결과/선생님피드백)은 숨김(`display:none`) 보존. (헤더/메타는 아직 중등 미래사회 콘텐츠 — 추후 정리 대상)
