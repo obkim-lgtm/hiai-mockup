@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>채점 - 유초등 | HIAI</title>
+<title>채점 - 초등학생 | HIAI</title>
 <link rel="icon" type="image/png" href="../screens/favicon_src.png">
 <link rel="stylesheet" href="https://cdn.rawgit.com/moonspam/NanumSquareRound/master/nanumsquareround.min.css">
 <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
@@ -647,7 +647,7 @@ select.field-input{appearance:none;-webkit-appearance:none;background-image:url(
       <div class="tb-student-area">
         <div style="position:relative">
           <div class="student-select" onclick="toggleDropdown(event)">
-            <span id="selectedStudent">10101 유초등<span class="st-status-need">(확인 필요)</span></span>
+            <span id="selectedStudent">10101 초등학생<span class="st-status-need">(확인 필요)</span></span>
             <i data-lucide="chevron-down" style="width:18px;height:18px;color:#6d7381;flex-shrink:0"></i>
           </div>
           <div class="student-dropdown" id="studentDropdownList"></div>
@@ -873,6 +873,9 @@ select.field-input{appearance:none;-webkit-appearance:none;background-image:url(
           </button>
         </div>
         <div class="teacher-fb-save-right">
+          <button class="btn-preview-student" onclick="openPreviewModal()">
+            <i data-lucide="eye" style="width:16px;height:16px"></i>미리보기
+          </button>
           <button class="btn-save-next" onclick="saveAndNext()">
             <i data-lucide="check" style="width:16px;height:16px"></i>저장 후 다음
           </button>
@@ -1176,7 +1179,51 @@ select.field-input{appearance:none;-webkit-appearance:none;background-image:url(
   </div>
 </aside>
 
-<!-- 학생 화면 미리보기 모달 제거됨 (결과는 출력으로만 전달) -->
+<!-- 학생 화면 미리보기 모달 (개별 채점 — 표시 항목 토글 + 리포트 플레이스홀더) -->
+<div class="modal-overlay" id="previewModal" onclick="if(event.target===this)closePreviewModal()">
+  <div class="modal share-modal">
+    <div class="modal-hd">
+      <span class="modal-title" id="previewModalTitle">리포트 미리보기</span>
+      <button class="modal-close" onclick="closePreviewModal()"><i data-lucide="x" style="width:18px;height:18px"></i></button>
+    </div>
+
+    <div class="share-body">
+      <!-- 좌측: 표시 항목 -->
+      <div class="share-settings preview-settings">
+        <div class="field">
+          <span class="modal-section-lbl">표시 항목</span>
+          <div class="preview-opt-list share-opt-list">
+            <label class="checkbox-row checked" data-key="score" onclick="togglePreviewOpt(this)"><span class="checkbox-box"><i data-lucide="check" style="width:12px;height:12px"></i></span><span class="checkbox-text">점수</span></label>
+            <label class="checkbox-row checked" data-key="standards" onclick="togglePreviewOpt(this)"><span class="checkbox-box"><i data-lucide="check" style="width:12px;height:12px"></i></span><span class="checkbox-text">성취기준</span></label>
+            <label class="checkbox-row checked" data-key="inst_ground" onclick="togglePreviewOpt(this)"><span class="checkbox-box"><i data-lucide="check" style="width:12px;height:12px"></i></span><span class="checkbox-text">문항별 채점근거</span></label>
+            <label class="checkbox-row checked" data-key="inst_feedback" onclick="togglePreviewOpt(this)"><span class="checkbox-box"><i data-lucide="check" style="width:12px;height:12px"></i></span><span class="checkbox-text">문항별 피드백</span></label>
+            <label class="checkbox-row checked" data-key="rubric" onclick="togglePreviewOpt(this)"><span class="checkbox-box"><i data-lucide="check" style="width:12px;height:12px"></i></span><span class="checkbox-text">채점기준표</span></label>
+            <label class="checkbox-row checked" data-key="elem_ground" onclick="togglePreviewOpt(this)"><span class="checkbox-box"><i data-lucide="check" style="width:12px;height:12px"></i></span><span class="checkbox-text">채점요소별 채점근거 (과제물 AI)</span></label>
+            <label class="checkbox-row checked" data-key="elem_feedback_analysis" onclick="togglePreviewOpt(this)"><span class="checkbox-box"><i data-lucide="check" style="width:12px;height:12px"></i></span><span class="checkbox-text">채점요소별 피드백 (과제물 AI)</span></label>
+            <label class="checkbox-row checked" data-key="elem_feedback_rubric" onclick="togglePreviewOpt(this)"><span class="checkbox-box"><i data-lucide="check" style="width:12px;height:12px"></i></span><span class="checkbox-text">채점요소별 피드백 (루브릭 AI)</span></label>
+            <label class="checkbox-row checked" data-key="teacher" onclick="togglePreviewOpt(this)"><span class="checkbox-box"><i data-lucide="check" style="width:12px;height:12px"></i></span><span class="checkbox-text">선생님 한마디</span></label>
+          </div>
+        </div>
+      </div>
+
+      <!-- 우측: 학생 화면 미리보기 (리포트 재구성 예정 플레이스홀더) -->
+      <div class="share-preview">
+        <div class="share-preview-lbl"><i data-lucide="eye" style="width:18px;height:18px"></i>리포트 미리보기<span class="lbl-sub">· 학급 채점 현황의 [학생에게 결과 공개하기] 버튼을 눌러 학생에게 전달할 수 있어요.</span><button class="lbl-action" onclick="window.open('scoring_detail_v1.html','_blank')" title="새 탭으로 열기 — 작업 중인 채점 내용이 유지돼요">학급 채점 현황으로 이동<i data-lucide="external-link" style="width:13px;height:13px"></i></button></div>
+        <div class="share-preview-frame report-ph" id="previewFrame">
+          <i data-lucide="file-text" style="width:40px;height:40px"></i>
+          <div class="report-ph-title">학생 리포트 디자인하여 재구성 예정</div>
+          <div class="report-ph-sub">학생에게 보여질 리포트 화면은 별도 디자인 후 이 자리에 들어갈 예정이에요.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-ft" style="justify-content:flex-end">
+      <div class="modal-actions">
+        <button class="btn-modal-cancel" onclick="closePreviewModal()">닫기</button>
+      </div>
+    </div>
+  </div>
+</div>
 
 <!-- 토스트 -->
 <div class="toast" id="toast">
@@ -1188,14 +1235,14 @@ select.field-input{appearance:none;-webkit-appearance:none;background-image:url(
 // ══════ URL 파라미터 ══════
 var urlParams = new URLSearchParams(location.search);
 var studentId = urlParams.get('id') || '40201';
-var studentName = urlParams.get('name') || '유초등';
+var studentName = urlParams.get('name') || '초등학생';
 var evalPlan = urlParams.get('eval') || 'A';
 var classNum = urlParams.get('classNum') || '1';
 var fromUrl = urlParams.get('from') || '';
 
 // ══════ 학생 리스트 ══════
 var STUDENT_LIST = [
-  {id:'40201', name:'유초등', status:'확인 필요', statusCls:'need'},
+  {id:'40201', name:'초등학생', status:'확인 필요', statusCls:'need'},
   {id:'40202', name:'미제출', status:'미제출', statusCls:'progress'},
   {id:'40203', name:'채점전', status:'AI 채점 전', statusCls:'none'},
   {id:'40204', name:'채점실패', status:'AI 채점 실패', statusCls:'need'},
@@ -1757,7 +1804,7 @@ function saveAndNext(){ showToast('success','저장됐어요.'); }
 function openPreviewModal(){
   var s = (typeof _curStudent !== 'undefined') ? _curStudent : null;
   if(s){
-    document.getElementById('previewModalTitle').textContent = s.name + ' 학생 화면 미리보기';
+    document.getElementById('previewModalTitle').textContent = s.name + ' 리포트 미리보기';
   }
   // 학생 리포트 미리보기는 별도 디자인 재구성 예정 — 실제 화면 로드 대신 플레이스홀더 표시
   // 미제출 학생: 표시 항목 체크박스 중 답안·문항별 자동 OFF + 비활성
@@ -2755,8 +2802,8 @@ if(_isNotSubmitted){
   renderInstructionCards();
   renderElementCards();
   autoSelectAiScores(); // 채점 완료 학생: AI 추천 점수를 selected 처리
-  // 유초등(10101) 학생: AI 초안 자동 채움 (선생님 종합 피드백 데모)
-  if(_curStudent && _curStudent.name === '유초등'){
+  // 초등학생(10101) 학생: AI 초안 자동 채움 (선생님 종합 피드백 데모)
+  if(_curStudent && _curStudent.name === '초등학생'){
     fillTeacherFeedbackDraft();
   } else {
     updateTfRevertVis();
