@@ -156,6 +156,19 @@
 </head>
 <body>
 
+<!-- ===== 세션 만료 상단 안내 띠 ===== -->
+<div id="session-banner" class="session-banner">
+  <i data-lucide="shield-alert" class="banner-icon"></i>
+  <span>
+    보안을 위해 마지막 활동 후 120분이 지나면 자동 로그아웃됩니다.
+    남은 시간 <span class="banner-time" id="banner-time">30</span>분.
+  </span>
+  <button class="banner-extend" onclick="extendSession()">
+    <i data-lucide="refresh-cw" style="width:12px; height:12px;"></i>
+    연장하기
+  </button>
+</div>
+
 <!-- ===== GNB ===== -->
 <div style="background:white; height:98px; border-bottom:1px solid #D9D9D9; display:flex; align-items:center; justify-content:center; padding:0 36px;">
   <div style="display:flex; align-items:center; justify-content:space-between; width:100%; max-width:1200px; padding:0 36px;">
@@ -1292,19 +1305,6 @@
   </div>
 </div>
 
-<!-- ===== 세션 만료 상단 안내 띠 ===== -->
-<div id="session-banner" class="session-banner">
-  <i data-lucide="shield-alert" class="banner-icon"></i>
-  <span>
-    보안을 위해 마지막 활동 후 120분이 지나면 자동 로그아웃됩니다.
-    남은 시간 <span class="banner-time" id="banner-time">30</span>분.
-  </span>
-  <button class="banner-extend" onclick="extendSession()">
-    <i data-lucide="refresh-cw" style="width:12px; height:12px;"></i>
-    연장하기
-  </button>
-</div>
-
 <!-- ===== 자동 로그아웃 전체 화면 ===== -->
 <div id="logout-screen" class="logout-screen">
   <div class="logout-icon-wrap">
@@ -1379,6 +1379,7 @@
   function extendSession() {
     if (sessionTickTimer) { clearInterval(sessionTickTimer); sessionTickTimer = null; }
     setSessionState('normal');
+    showToast('success', '접속 시간이 연장되었습니다.');
   }
   function goToLogin() { window.location.href = 'https://hi.goe.go.kr/'; }
 
