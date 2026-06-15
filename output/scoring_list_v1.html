@@ -376,7 +376,13 @@
           </div>
           <div>
             <div style="font-size:20px;font-weight:800;color:#222;margin-bottom:6px;">OCR 인식 완료</div>
-            <div style="font-size:14px;color:#494949;line-height:1.6;">제출 학생 9명 중 6명은 정상 인식됐고, 3명은 확인이 필요해요.</div>
+            <div style="font-size:14px;color:#494949;line-height:1.6;">제출 학생 9명의 OCR 인식이 끝났어요.</div>
+          </div>
+          <!-- 요약 칩 -->
+          <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center;">
+            <span style="background:#F1F9F3;border:1px solid #B8E8C8;color:#00AF3D;border-radius:100px;padding:4px 14px;font-size:13px;font-weight:800;">6명 정상 인식</span>
+            <span style="background:#FFF4E8;border:1px solid #FFD6B0;color:#FF8C4C;border-radius:100px;padding:4px 14px;font-size:13px;font-weight:800;">2명 확인 필요</span>
+            <span style="background:#F2F2F2;border:1px solid #DADADA;color:#808080;border-radius:100px;padding:4px 14px;font-size:13px;font-weight:800;">1명 인식 실패</span>
           </div>
         </div>
       </div>
@@ -393,7 +399,7 @@
               OCR 결과 확인 <i data-lucide="external-link" style="width:13px;height:13px;"></i>
             </a>
           </div>
-          <div style="padding:10px 16px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #FFD6B0;">
+          <div style="padding:10px 16px;display:flex;align-items:center;justify-content:space-between;">
             <div style="display:flex;align-items:center;gap:8px;">
               <i data-lucide="triangle-alert" style="width:14px;height:14px;color:#FF8C4C;flex-shrink:0;"></i>
               <span style="font-size:15px;font-weight:700;color:#333;">10304 박서준</span>
@@ -403,15 +409,18 @@
               OCR 결과 확인 <i data-lucide="external-link" style="width:13px;height:13px;"></i>
             </a>
           </div>
+        </div>
+        <!-- 인식 실패 (재시도) — 확인 필요와 분리 -->
+        <div style="border:1px solid #DADADA;border-radius:12px;overflow:hidden;background:#F7F7F7;margin-top:10px;">
           <div style="padding:10px 16px;display:flex;align-items:center;justify-content:space-between;">
             <div style="display:flex;align-items:center;gap:8px;">
-              <i data-lucide="triangle-alert" style="width:14px;height:14px;color:#FF8C4C;flex-shrink:0;"></i>
+              <i data-lucide="circle-x" style="width:14px;height:14px;color:#808080;flex-shrink:0;"></i>
               <span style="font-size:15px;font-weight:700;color:#333;">10307 한다솜</span>
-              <span style="font-size:12px;font-weight:700;background:#FFEDD5;color:#FF8C4C;border-radius:100px;padding:2px 8px;">1개 문항</span>
+              <span style="font-size:12px;font-weight:700;background:#ECECEC;color:#808080;border-radius:100px;padding:2px 8px;">인식 실패</span>
             </div>
-            <a href="task_ocr_review_v1.html#ocr=10307" target="_blank" style="font-size:14px;font-weight:700;color:#7E44FB;display:flex;align-items:center;gap:4px;text-decoration:none;">
-              OCR 결과 확인 <i data-lucide="external-link" style="width:13px;height:13px;"></i>
-            </a>
+            <button onclick="retryOcrResult(this)" style="font-size:14px;font-weight:700;color:#7E44FB;background:none;border:none;cursor:pointer;display:flex;align-items:center;gap:4px;font-family:inherit;padding:2px 6px;border-radius:4px;" onmouseover="this.style.background='#F0EAFF'" onmouseout="this.style.background='none'">
+              <i data-lucide="rotate-cw" style="width:13px;height:13px;"></i>다시 시도
+            </button>
           </div>
         </div>
       </div>
@@ -509,7 +518,7 @@
           <div style="padding:10px 16px; display:flex; align-items:center; gap:10px; opacity:0.5;">
             <div class="chk" style="cursor:not-allowed;"></div>
             <span style="font-size:14px; color:#333; flex:1;">10103 일일삼</span>
-            <span style="font-size:13px; color:#808080;">과제 미제출</span>
+            <span style="font-size:13px; color:#808080;">OCR 인식 실패</span>
           </div>
         </div>
       </div>
@@ -573,7 +582,7 @@
           <div style="padding:10px 16px; display:flex; align-items:center; gap:10px; opacity:0.5;">
             <div class="chk" style="cursor:not-allowed;"></div>
             <span style="font-size:14px; color:#333; flex:1;">10103 김하삼</span>
-            <span style="font-size:13px; color:#808080;">과제 미제출</span>
+            <span style="font-size:13px; color:#808080;">OCR 인식 실패</span>
           </div>
         </div>
       </div>
@@ -892,6 +901,28 @@
   }
 
   // Modal open/close
+  // OCR 진행 결과(stage3)에서 인식 실패 학생 다시 시도 — 재시도 액션
+  function retryOcrResult(btn) {
+    btn.disabled = true;
+    btn.style.cursor = 'default';
+    btn.style.color = '#808080';
+    btn.onmouseover = null; btn.onmouseout = null; btn.style.background = 'none';
+    btn.innerHTML = '<i data-lucide="loader" style="width:13px;height:13px;" class="spin"></i>다시 진행 중';
+    lucide.createIcons();
+    showToast('loading', 'OCR 인식을 다시 진행하고 있습니다...');
+    setTimeout(function() {
+      // 네트워크 오류 등으로 또 실패 — 다시 시도 가능 상태로 복원
+      btn.disabled = false;
+      btn.style.cursor = 'pointer';
+      btn.style.color = '#7E44FB';
+      btn.onmouseover = function() { this.style.background = '#F0EAFF'; };
+      btn.onmouseout = function() { this.style.background = 'none'; };
+      btn.innerHTML = '<i data-lucide="rotate-cw" style="width:13px;height:13px;"></i>다시 시도';
+      lucide.createIcons();
+      showToast('error', 'OCR 인식에 다시 실패했어요. 잠시 후 다시 시도해 주세요.');
+    }, 1800);
+  }
+
   function openRunModal() { document.getElementById('runModal').classList.add('open'); lucide.createIcons(); }
   function closeRunModal() { document.getElementById('runModal').classList.remove('open'); }
   function openRerunModal() { document.getElementById('rerunModal').classList.add('open'); lucide.createIcons(); }

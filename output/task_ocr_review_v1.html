@@ -389,7 +389,7 @@
               <th style="width:90px;">이름</th>
               <th>최근 제출 일시</th>
               <th style="width:80px; text-align:center; white-space:nowrap;">파일 수</th>
-              <th style="width:160px; text-align:center;">OCR 결과</th>
+              <th style="width:210px; text-align:center;">OCR 결과</th>
               <th style="width:150px; text-align:center; white-space:nowrap;">과제 제출 관리</th>
             </tr>
           </thead>
@@ -985,7 +985,7 @@ const STUDENTS = [
   { id:'10101', name:'김서윤', status:'제출', date:'07/21 14:31 선생님 업로드', files:1, ocrStatus:'confirmed', needsReview:false, pages:[3,4] },
   { id:'10102', name:'이준호', status:'제출', date:'07/21 14:31 선생님 업로드', files:1, ocrStatus:'unconfirmed', needsReview:true, pages:[5,6] },
   { id:'10103', name:'박지민', status:'제출', date:'07/21 14:31 선생님 업로드', files:1, ocrStatus:'unconfirmed', needsReview:true, pages:[7,8] },
-  { id:'10104', name:'최유진', status:'제출', date:'07/21 14:31 선생님 업로드', files:1, ocrStatus:'confirmed', needsReview:false, pages:[9,10] },
+  { id:'10104', name:'최유진', status:'제출', date:'07/21 14:31 선생님 업로드', files:1, ocrStatus:'failed', needsReview:false, pages:[9,10] },
   { id:'10105', name:'정현우', status:'제출', date:'07/21 14:31 선생님 업로드', files:1, ocrStatus:'pending', needsReview:false, pages:[11,12] },
   { id:'10106', name:'한지우', status:'미제출', date:'-', files:0, ocrStatus:null, pages:[] },
   { id:'10107', name:'조민재', status:'미제출', date:'-', files:0, ocrStatus:null, pages:[] },
@@ -1154,9 +1154,63 @@ function buildFormPageHTML(page) {
 // 구형 SCAN_PAGES (페이지 번호 → 폴백용)
 const SCAN_PAGES = {};
 
-var ocrStudents = STUDENTS.filter(function(s){ return s.status === '제출' && s.ocrStatus !== null && s.ocrStatus !== 'processing' && s.ocrStatus !== 'pending'; });
+var ocrStudents = STUDENTS.filter(function(s){ return s.status === '제출' && s.ocrStatus !== null && s.ocrStatus !== 'processing' && s.ocrStatus !== 'pending' && s.ocrStatus !== 'failed'; });
 var currentStudentIdx = 0;
 var currentPageIdx = 0;
+
+// ── OCR 인식 실패 → 다시 시도 (네트워크 오류 등, 재실행) ──
+function retryOcr(id) {
+  var s = STUDENTS_B1.filter(function(x){ return x.id === id; })[0]
+       || STUDENTS_B2.filter(function(x){ return x.id === id; })[0]
+       || STUDENTS.filter(function(x){ return x.id === id; })[0];
+  if (!s) return;
+  s.ocrStatus = 'processing';
+  if ('ocrStatusAfter' in s) s.ocrStatusAfter = 'processing';
+  renderTable();
+  showToast('OCR을 다시 진행합니다.', 'success');
+  var done = function() {
+    s.ocrStatus = 'confirmed';
+    s.needsReview = false;
+    if ('ocrStatusAfter' in s) s.ocrStatusAfter = 'confirmed';
+    renderTable();
+    lucide.createIcons();
+    showToast('OCR 인식이 완료되었습니다.', 'success');
+  };
+  // 상단 진행 배너에 progress bar 표시 (업로드 후 OCR과 동일 UX)
+  var banner = document.getElementById('list-b-ocr-pending-banner');
+  if (!banner) { setTimeout(done, 2000); return; }
+  banner.style.background = '#F2F5FF';
+  banner.style.borderColor = '#B8C9FF';
+  banner.innerHTML =
+    '<div style="display:flex;align-items:center;gap:12px;flex:1;">' +
+      '<i data-lucide="loader" style="width:16px;height:16px;color:#5890FF;flex-shrink:0;" class="spin"></i>' +
+      '<div style="display:flex;flex-direction:column;gap:6px;flex:1;min-width:0;">' +
+        '<div style="display:flex;align-items:center;justify-content:space-between;gap:12px;">' +
+          '<span style="font-size:14px;color:#5890FF;font-weight:800;">' + s.name + ' 학생 OCR 인식을 다시 진행 중입니다.</span>' +
+          '<span id="ocr-progress-pct" style="font-size:13px;color:#5890FF;font-weight:700;flex-shrink:0;">0%</span>' +
+        '</div>' +
+        '<div class="ocr-progress-bg"><div id="ocr-progress-fill" class="ocr-progress-fill"></div></div>' +
+      '</div>' +
+    '</div>';
+  banner.style.display = 'flex';
+  lucide.createIcons();
+  var fill = document.getElementById('ocr-progress-fill');
+  var pct = document.getElementById('ocr-progress-pct');
+  var p = 0;
+  var progTimer = setInterval(function() {
+    p += 6 + Math.random() * 9;
+    if (p >= 100) {
+      p = 100;
+      clearInterval(progTimer);
+      if (fill) fill.style.width = '100%';
+      if (pct) pct.textContent = '100%';
+      setTimeout(function() { banner.style.display = 'none'; done(); }, 350);
+    } else {
+      if (fill) fill.style.width = p + '%';
+      if (pct) pct.textContent = Math.round(p) + '%';
+    }
+  }, 200);
+}
 
 // ── 학급 제출 상세 테이블 렌더 ──
 function renderTable() {
@@ -1175,6 +1229,8 @@ function renderTable() {
     if (!allAbsent && effectiveStatus === '제출') {
       if (s.ocrStatus === 'pending') {
         ocrCell = '<span style="display:inline-flex;align-items:center;gap:4px;color:#FF8C4C;font-weight:700;font-size:13px;"><i data-lucide="clock" style="width:14px;height:14px;"></i>미진행</span>';
+      } else if (s.ocrStatus === 'failed') {
+        ocrCell = '<span style="display:inline-flex;align-items:center;justify-content:center;gap:8px;"><span style="display:inline-flex;align-items:center;gap:4px;color:#808080;font-weight:700;font-size:13px;white-space:nowrap;"><i data-lucide="circle-x" style="width:14px;height:14px;flex-shrink:0;"></i>인식 실패</span><button onclick="retryOcr(\'' + s.id + '\')" style="display:inline-flex;align-items:center;gap:3px;background:none;border:none;cursor:pointer;color:#7E44FB;font-family:inherit;font-size:12px;font-weight:700;padding:2px 6px;border-radius:4px;white-space:nowrap;" onmouseover="this.style.background=\'#F7F4FF\'" onmouseout="this.style.background=\'none\'"><i data-lucide="rotate-cw" style="width:12px;height:12px;"></i>다시 시도</button></span>';
       } else if (s.ocrStatus === 'processing') {
         ocrCell = '<span style="display:inline-flex;align-items:center;gap:4px;color:#5890FF;font-weight:700;font-size:13px;"><i data-lucide="loader" style="width:14px;height:14px;" class="spin"></i>진행 중</span>';
       } else if (s.needsReview) {
@@ -1216,7 +1272,7 @@ const STUDENTS_B1 = [
   { id:'10101', name:'김서윤', date:'04/18 09:12 선생님 업로드', files:1, ocrStatus:'confirmed', needsReview:false },
   { id:'10102', name:'이준호', date:'04/18 09:12 선생님 업로드', files:1, ocrStatus:'unconfirmed', needsReview:true },
   { id:'10103', name:'박지민', date:'04/18 09:12 선생님 업로드', files:1, ocrStatus:'confirmed', needsReview:false },
-  { id:'10104', name:'최유진', date:'04/18 09:12 선생님 업로드', files:1, ocrStatus:'confirmed', needsReview:false },
+  { id:'10104', name:'최유진', date:'04/18 09:12 선생님 업로드', files:1, ocrStatus:'failed', needsReview:false },
   { id:'10105', name:'정현우', date:'04/18 09:12 선생님 업로드', files:1, ocrStatus:'unconfirmed', needsReview:false },
   { id:'10106', name:'한지우', date:'04/18 09:12 선생님 업로드', files:1, ocrStatus:'confirmed', needsReview:false },
   { id:'10107', name:'조민재', date:'04/18 09:12 선생님 업로드', files:1, ocrStatus:'confirmed', needsReview:false },
@@ -2348,7 +2404,7 @@ function renderTableB() {
   var isUploaded = isB1 || isB2;
 
   // B2도 항상 OCR 결과 컬럼 표시 (상태만 다름)
-  var theadRow = '<tr><th style="width:90px;text-align:center;">상태</th><th style="width:80px;">학번</th><th style="width:90px;">이름</th><th>업로드 일시</th><th style="width:80px;text-align:center;white-space:nowrap;">파일 수</th><th style="width:160px;text-align:center;">OCR 결과</th><th style="width:150px;text-align:center;white-space:nowrap;">과제 제출 관리</th></tr>';
+  var theadRow = '<tr><th style="width:90px;text-align:center;">상태</th><th style="width:80px;">학번</th><th style="width:90px;">이름</th><th>업로드 일시</th><th style="width:80px;text-align:center;white-space:nowrap;">파일 수</th><th style="width:210px;text-align:center;">OCR 결과</th><th style="width:150px;text-align:center;white-space:nowrap;">과제 제출 관리</th></tr>';
   if (thead) thead.innerHTML = theadRow;
 
   var students = isB1 ? STUDENTS_B1 : (isB2 ? STUDENTS_B2 : []);
@@ -2402,7 +2458,11 @@ function renderTableB() {
       if (isB1) {
         // OCR 결과 컬럼 — 모든 상태 클릭 시 OCR 결과 화면으로 이동
         var ocrCell = '-';
-        if (s.needsReview) {
+        if (s.ocrStatus === 'failed') {
+          ocrCell = '<span style="display:inline-flex;align-items:center;justify-content:center;gap:8px;"><span style="display:inline-flex;align-items:center;gap:4px;color:#808080;font-weight:700;font-size:13px;white-space:nowrap;"><i data-lucide="circle-x" style="width:14px;height:14px;flex-shrink:0;"></i>인식 실패</span><button onclick="retryOcr(\'' + s.id + '\')" style="display:inline-flex;align-items:center;gap:3px;background:none;border:none;cursor:pointer;color:#7E44FB;font-family:inherit;font-size:12px;font-weight:700;padding:2px 6px;border-radius:4px;white-space:nowrap;" onmouseover="this.style.background=\'#F7F4FF\'" onmouseout="this.style.background=\'none\'"><i data-lucide="rotate-cw" style="width:12px;height:12px;"></i>다시 시도</button></span>';
+        } else if (s.ocrStatus === 'processing') {
+          ocrCell = '<span style="display:inline-flex;align-items:center;gap:4px;color:#5890FF;font-weight:700;font-size:13px;"><i data-lucide="loader" style="width:14px;height:14px;" class="spin"></i>진행 중</span>';
+        } else if (s.needsReview) {
           ocrCell = '<span style="display:inline-flex;align-items:center;gap:4px;color:#DB3E51;font-weight:700;font-size:13px;cursor:pointer;white-space:nowrap;" onclick="goToOCR_B(' + i + ')"><i data-lucide="triangle-alert" style="width:14px;height:14px;flex-shrink:0;"></i>확인 필요<i data-lucide="chevron-right" style="width:13px;height:13px;opacity:0.5;"></i></span>';
         } else {
           ocrCell = '<span style="display:inline-flex;align-items:center;gap:4px;color:#00AF3D;font-weight:700;font-size:13px;cursor:pointer;" onclick="goToOCR_B(' + i + ')"><i data-lucide="circle-check" style="width:14px;height:14px;"></i>완료<i data-lucide="chevron-right" style="width:13px;height:13px;opacity:0.5;"></i></span>';
