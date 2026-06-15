@@ -111,6 +111,9 @@
     .rubric-ocr-body:hover{ background:#FDFCFF; }
     .section-editing{ border-color:#7E44FB !important; box-shadow:0 0 0 2px rgba(126,68,251,.12); }
     .section-editing .rubric-ocr-header{ background:#F7F4FF; }
+    .formula-insert-btn{ display:none; }
+    .section-editing .formula-insert-btn{ display:inline-flex; }
+    .section-editing .rubric-suspect-chip{ display:none; }
     .editing-badge{ font-size:11px; font-weight:800; color:#7E44FB; background:#EDE6FF; border-radius:100px; padding:2px 8px; }
     .saved-badge{ font-size:11px; font-weight:800; color:#00AF3D; display:inline-flex; align-items:center; gap:3px; transition:opacity .4s; }
 
@@ -607,7 +610,6 @@
             <div id="nav-dropdown-list"></div>
           </div>
         </div>
-        <span id="nav-confirm-count" style="font-size:16px;color:#333;white-space:nowrap;"></span>
       </div>
 
       <!-- 우측: 이전/다음 학생 + 저장 버튼 -->
@@ -1719,7 +1721,7 @@ function renderOcrBText(student) {
     }
 
     var chipHtml = hasUncertain
-      ? '<span class="rubric-suspect-chip"><i data-lucide="triangle-alert" style="width:11px;height:11px;"></i>확인 필요<i data-lucide="chevron-right" style="width:13px;height:13px;opacity:0.5;"></i></span>'
+      ? '<span class="rubric-suspect-chip"><i data-lucide="triangle-alert" style="width:11px;height:11px;"></i>확인 필요</span>'
       : '';
 
     html += '<div class="rubric-ocr-section">';
@@ -1869,8 +1871,10 @@ function saveQuestionEditModal() {
 
 // ── 수식 입력기 ──
 var _formulaTargetId = null;
+var _formulaOpen = false; // 수식 모달 열림 — OCR 결과 편집 textarea의 blur 저장 보류용
 function openFormulaInput(taId) {
   _formulaTargetId = taId;
+  _formulaOpen = true;
   var inp = document.getElementById('formula-input');
   if (inp) inp.value = '';
   document.getElementById('formulaModal').style.display = 'flex';
@@ -1883,6 +1887,10 @@ function fSym(sym) {
 }
 function closeFormulaModal() {
   document.getElementById('formulaModal').style.display = 'none';
+  _formulaOpen = false;
+  // 편집 중이던 textarea로 포커스 복귀 (편집 모드 유지)
+  var ta = _formulaTargetId ? document.getElementById(_formulaTargetId) : null;
+  if (ta && ta.style.display !== 'none') ta.focus();
 }
 function applyFormula() {
   var ta = document.getElementById(_formulaTargetId);
@@ -1890,7 +1898,7 @@ function applyFormula() {
   if (ta && fm) {
     var sep = (ta.value && !/\s$/.test(ta.value)) ? ' ' : '';
     ta.value += sep + '$' + fm + '$';
-    ta.focus();
+    if (ta.style.display !== 'none') { ta.style.height = 'auto'; ta.style.height = ta.scrollHeight + 'px'; }
   }
   closeFormulaModal();
 }
@@ -1949,7 +1957,6 @@ function renderOCRView() {
     }
   });
   document.getElementById('nav-dropdown-list').innerHTML = listHtml;
-  document.getElementById('nav-confirm-count').textContent = reviewCount > 0 ? ('확인 필요 ' + reviewCount + '건') : '모두 확인됨';
 
   // 버튼 상태
   document.getElementById('btn-prev').disabled = currentStudentIdx === 0;
@@ -1985,7 +1992,7 @@ function renderOCRText(student) {
     groups.forEach(function(group, gi) {
       var hasUncertainty = !!group.uncertainty;
       var chipHtml = hasUncertainty
-        ? '<span class="rubric-suspect-chip"><i data-lucide="triangle-alert" style="width:11px;height:11px;"></i>확인 필요<i data-lucide="chevron-right" style="width:13px;height:13px;opacity:0.5;"></i></span>'
+        ? '<span class="rubric-suspect-chip"><i data-lucide="triangle-alert" style="width:11px;height:11px;"></i>확인 필요</span>'
         : '';
       var bodyText = group.text || (group.spans ? group.spans.map(function(s){ return s.text; }).join(' ') : '');
 
@@ -1994,6 +2001,7 @@ function renderOCRText(student) {
       html += '<span class="badge badge-purple" style="font-size:12px;padding:3px 10px;">' + group.label + '</span>';
       html += '<span class="rubric-ocr-desc">' + group.desc + '</span>';
       html += chipHtml;
+      html += '<button class="formula-insert-btn" onmousedown="event.preventDefault()" onclick="openFormulaInput(\'group-ta-' + gi + '\')" title="수식 입력" style="align-items:center;justify-content:center;line-height:1;gap:3px;height:24px;padding:0 8px;background:white;border:1px solid #D9D9D9;border-radius:6px;color:#494949;font-family:inherit;font-size:11px;font-weight:700;cursor:pointer;flex-shrink:0;"><i data-lucide="sigma" style="width:11px;height:11px;"></i>수식</button>';
       html += '<button onclick="editSection(this,' + gi + ')" title="편집" style="background:none;border:none;cursor:pointer;color:#B3B3B3;padding:2px 4px;flex-shrink:0;display:flex;align-items:center;" onmouseover="this.style.color=\'#7E44FB\'" onmouseout="this.style.color=\'#B3B3B3\'">';
       html += '<i data-lucide="pencil" style="width:13px;height:13px;"></i></button>';
       html += '</div>';
@@ -2178,20 +2186,12 @@ function openSectionEdit(gi) {
   var section = ta.closest('.rubric-ocr-section');
   section.classList.add('section-editing');
 
-  // 편집 중 뱃지 삽입
-  var btn = section.querySelector('button[onclick^="editSection"]');
-  if (btn && !document.getElementById('editing-badge-' + gi)) {
-    var badge = document.createElement('span');
-    badge.className = 'editing-badge';
-    badge.id = 'editing-badge-' + gi;
-    badge.textContent = '편집 중';
-    btn.parentElement.insertBefore(badge, btn);
-  }
   _editingSection = gi;
   ta.focus();
 }
 
 function saveSection(ta, gi) {
+  if (_formulaOpen) return; // 수식 입력 중에는 저장 보류 (편집 모드 유지)
   if (ta.style.display === 'none') return; // blur 중복 방지
   _editingSection = null;
   var body = document.getElementById('group-body-' + gi);
@@ -2201,19 +2201,6 @@ function saveSection(ta, gi) {
   ta.style.display = 'none';
   var section = ta.closest('.rubric-ocr-section');
   if (section) section.classList.remove('section-editing');
-
-  // 편집 중 뱃지 제거
-  var editBadge = document.getElementById('editing-badge-' + gi);
-  if (editBadge) editBadge.remove();
-
-  // "저장됨 ✓" 피드백
-  var btn = section ? section.querySelector('button[onclick^="editSection"]') : null;
-  var saved = document.createElement('span');
-  saved.className = 'saved-badge';
-  saved.innerHTML = '✓ 저장됨';
-  if (btn) btn.parentElement.insertBefore(saved, btn);
-  setTimeout(function(){ saved.style.opacity='0'; }, 1200);
-  setTimeout(function(){ if (saved.parentNode) saved.remove(); }, 1700);
 
   // 문항 저장 시 항상 저장 토스트 (모든 학생 공통)
   showToast('저장되었습니다.', 'success');
@@ -2250,10 +2237,6 @@ function resolveUncertainty(gi) {
   updateSuspectCount();
   var reviewBanner = document.getElementById('ocr-review-banner');
   if (reviewBanner) reviewBanner.style.display = still ? 'flex' : 'none';
-  // 상단 '확인 필요 N건' 카운트 즉시 갱신
-  var rc = ocrStudents.filter(function(s){ return s.needsReview; }).length;
-  var cntEl = document.getElementById('nav-confirm-count');
-  if (cntEl) cntEl.textContent = rc > 0 ? ('확인 필요 ' + rc + '건') : '모두 확인됨';
 }
 
 function updateSuspectCount() {
