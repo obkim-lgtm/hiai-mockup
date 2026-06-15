@@ -716,11 +716,6 @@
     // OCR 텍스트 렌더
     var container = document.getElementById('left-ocr-content');
     var html = '';
-    // 책 타이틀 헤더
-    html += '<div style="display:flex;align-items:center;gap:8px;padding-bottom:20px;border-bottom:1px solid #F0F0F0;margin-bottom:4px;">';
-    html += '<i data-lucide="book-open" style="width:18px;height:18px;color:#7E44FB;flex-shrink:0;"></i>';
-    html += '<div><div style="font-size:15px;font-weight:800;color:#333;">독후 활동 보고서 <span style="font-weight:400;color:#808080;">사라진 스푼 — 샘 킨 지음</span></div></div>';
-    html += '</div>';
     data.questions.forEach(function(q, qi) {
       var hasUncertain = q.spans.some(function(sp){ return sp.uncertain; });
       var fullText = q.spans.map(function(sp){ return sp.text; }).join('');
