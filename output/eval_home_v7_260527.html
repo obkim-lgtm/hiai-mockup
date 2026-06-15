@@ -115,18 +115,29 @@
   .toast.toast-success { background:#00AF3D; color:white; }
   .toast.toast-error   { background:#DB3E51; color:#F8F8F8; }
 
-  /* ───── 세션 만료 모달 ───── */
-  .session-modal { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.4); z-index:1500; align-items:center; justify-content:center; }
-  .session-modal.open { display:flex; }
-  .session-modal-box { background:#fff; border-radius:24px; box-shadow:0 4px 24px rgba(95,102,178,0.18); width:480px; max-width:92vw; overflow:hidden; }
-  .reason-chip { display:inline-flex; align-items:center; gap:6px; height:26px; padding:0 10px; background:#FFEDD5; color:#C2520B; border-radius:100px; font-size:12px; font-weight:700; }
-  .reason-chip.absolute-type { background:#F2F5FF; color:#2862CC; }
-  .countdown-box { background:#FFEDD5; color:#C2520B; border-radius:12px; padding:14px 16px; display:flex; align-items:center; justify-content:space-between; font-weight:700; }
-  .countdown-box.absolute-type { background:#F2F5FF; color:#2862CC; }
-  .countdown-box .label { font-size:13px; }
-  .countdown-box .time { font-size:22px; font-variant-numeric:tabular-nums; letter-spacing:0.5px; }
-  .save-info-box { background:#F8F8F8; border-radius:10px; padding:14px 16px; font-size:13px; color:#494949; line-height:1.55; }
-  .save-info-box .info-title { font-weight:700; color:#333; margin-bottom:4px; display:flex; align-items:center; gap:6px; }
+  /* ───── 세션 만료 상단 안내 띠 (은행 스타일) ───── */
+  .session-banner {
+    display:none;
+    position:sticky; top:0; left:0; right:0; z-index:1500;
+    background:#FFF8E1; color:#8C5A00;
+    border-bottom:1px solid #F5E0A0;
+    padding:10px 24px;
+    align-items:center; justify-content:center; gap:14px;
+    font-size:13px; font-weight:700; line-height:1;
+  }
+  .session-banner.open { display:flex; }
+  .session-banner.urgent { background:#FFEDD5; color:#C2520B; border-bottom-color:#FFCFAE; }
+  .session-banner .banner-icon { width:16px; height:16px; flex-shrink:0; }
+  .session-banner .banner-time { font-variant-numeric:tabular-nums; }
+  .session-banner .banner-extend {
+    display:inline-flex; align-items:center; justify-content:center; line-height:1;
+    background:#fff; color:#8C5A00; border:1px solid #E5C36D;
+    border-radius:6px; height:28px; padding:0 12px;
+    font-size:12px; font-weight:700; font-family:inherit; cursor:pointer; gap:4px;
+  }
+  .session-banner.urgent .banner-extend { color:#C2520B; border-color:#F5B98A; }
+  .session-banner .banner-extend:hover { background:#FFF1C8; }
+  .session-banner.urgent .banner-extend:hover { background:#FFE0BF; }
 
   /* ───── 자동 로그아웃 전체 화면 ───── */
   .logout-screen { display:none; position:fixed; inset:0; background:#fff; z-index:2000; flex-direction:column; align-items:center; justify-content:center; padding:24px; animation:logoutFade .2s ease; }
@@ -1281,54 +1292,17 @@
   </div>
 </div>
 
-<!-- ===== 세션 만료 30분 전 안내 모달 ===== -->
-<div id="modal-session-warning" class="session-modal" onclick="if(event.target===this)dismissWarning()">
-  <div class="session-modal-box">
-    <!-- 헤더 -->
-    <div style="padding:24px 24px 16px; position:relative;">
-      <div style="display:flex; align-items:center; gap:10px;">
-        <div style="width:36px; height:36px; border-radius:50%; background:#FFEDD5; display:inline-flex; align-items:center; justify-content:center; flex-shrink:0;">
-          <i data-lucide="shield-alert" style="width:20px; height:20px; color:#FF8C4C;"></i>
-        </div>
-        <h3 style="font-size:18px; font-weight:800; color:#222631; margin:0;">곧 자동 로그아웃됩니다</h3>
-      </div>
-      <button onclick="dismissWarning()" style="position:absolute; top:11px; right:11px; width:36px; height:36px; border-radius:6px; background:transparent; border:none; cursor:pointer; display:inline-flex; align-items:center; justify-content:center; line-height:1;">
-        <i data-lucide="x" style="width:18px; height:18px; color:#808080;"></i>
-      </button>
-    </div>
-    <!-- 바디 -->
-    <div style="padding:0 24px 24px; display:flex; flex-direction:column; gap:14px;">
-      <div>
-        <span id="reason-chip" class="reason-chip">
-          <span id="reason-chip-icon" style="display:inline-flex;"><i data-lucide="moon" style="width:14px; height:14px;"></i></span>
-          <span id="reason-chip-text">장시간 활동이 없음</span>
-        </span>
-      </div>
-      <p id="warning-message" style="font-size:16px; color:#333; margin:0; line-height:1.55;">
-        보안을 위해 30분 동안 활동이 없으면 자동으로 로그아웃됩니다.<br>
-        계속 사용하시려면 <b>‘계속 사용’</b>을 눌러 주세요.
-      </p>
-      <div id="countdown-box" class="countdown-box">
-        <span class="label">남은 시간</span>
-        <span class="time" id="countdown-time">30:00</span>
-      </div>
-      <div class="save-info-box">
-        <div class="info-title">
-          <i data-lucide="info" style="width:14px; height:14px; color:#7E44FB;"></i>
-          로그아웃 시 저장 안내
-        </div>
-        <div style="padding-left:20px;">
-          • 작성 중인 <b>평가 설계는 자동으로 임시저장</b>됩니다.<br>
-          • 채점·과제물·관찰 기록 등 그 외 화면의 입력은 저장되지 않습니다.
-        </div>
-      </div>
-    </div>
-    <!-- 푸터 -->
-    <div style="padding:8px 24px 16px; display:flex; justify-content:flex-end; gap:12px;">
-      <button class="btn-outline" style="height:40px;" onclick="logoutNow()">로그아웃</button>
-      <button class="btn-primary" style="height:40px;" onclick="extendSession()">계속 사용</button>
-    </div>
-  </div>
+<!-- ===== 세션 만료 상단 안내 띠 ===== -->
+<div id="session-banner" class="session-banner">
+  <i data-lucide="shield-alert" class="banner-icon"></i>
+  <span>
+    보안을 위해 마지막 활동 후 120분이 지나면 자동 로그아웃됩니다.
+    남은 시간 <span class="banner-time" id="banner-time">30</span>분.
+  </span>
+  <button class="banner-extend" onclick="extendSession()">
+    <i data-lucide="refresh-cw" style="width:12px; height:12px;"></i>
+    연장하기
+  </button>
 </div>
 
 <!-- ===== 자동 로그아웃 전체 화면 ===== -->
@@ -1337,25 +1311,13 @@
     <i data-lucide="shield-check" style="width:44px; height:44px; color:#7E44FB;"></i>
   </div>
   <h1 style="font-size:28px; font-weight:800; color:#222631; margin:0 0 12px; text-align:center;">자동 로그아웃되었습니다</h1>
-  <p id="logout-reason" style="font-size:16px; color:#494949; margin:0 0 24px; text-align:center; line-height:1.55;">
-    장시간 활동이 없어 보안을 위해 로그아웃되었습니다.
+  <p style="font-size:16px; color:#494949; margin:0 0 28px; text-align:center; line-height:1.55;">
+    마지막 활동 후 120분이 지나 보안을 위해 로그아웃되었습니다.<br>
+    다시 로그인해 주세요.
   </p>
-  <div style="background:#F8F8F8; border-radius:12px; padding:18px 22px; max-width:480px; width:100%; margin-bottom:28px;">
-    <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
-      <i data-lucide="save" style="width:18px; height:18px; color:#00AF3D;"></i>
-      <b style="font-size:14px; color:#333;">작성 중이던 내용은 다음과 같이 저장되었습니다</b>
-    </div>
-    <ul style="margin:0; padding-left:22px; font-size:14px; color:#494949; line-height:1.7;">
-      <li>평가 설계 — <b style="color:#00AF3D;">임시저장 완료</b></li>
-      <li>채점·과제물·관찰 기록 등 — <span style="color:#808080;">저장되지 않음</span></li>
-    </ul>
-  </div>
   <button class="btn-primary" style="height:48px; padding:0 28px; font-size:16px;" onclick="goToLogin()">
     <i data-lucide="log-in" style="width:18px; height:18px;"></i> 다시 로그인
   </button>
-  <p style="font-size:13px; color:#808080; margin:16px 0 0;">
-    로그인하면 임시저장된 평가 설계는 그대로 이어서 작성할 수 있습니다.
-  </p>
 </div>
 
 <!-- ===== 데모 컨트롤 (드래그 가능) ===== -->
@@ -1365,85 +1327,58 @@
     MOCKUP — 세션 상태
   </div>
   <button class="demo-btn active" data-state="normal" onclick="setSessionState('normal')">① 정상</button>
-  <button class="demo-btn" data-state="idle" onclick="setSessionState('idle')">② 유휴 30분 전 안내</button>
-  <button class="demo-btn" data-state="absolute" onclick="setSessionState('absolute')">③ 절대 30분 전 안내</button>
-  <button class="demo-btn" data-state="logged-out-idle" onclick="setSessionState('logged-out-idle')">④ 자동 로그아웃 (유휴)</button>
-  <button class="demo-btn" data-state="logged-out-absolute" onclick="setSessionState('logged-out-absolute')">⑤ 자동 로그아웃 (절대)</button>
+  <button class="demo-btn" data-state="warn-30" onclick="setSessionState('warn-30')">② 안내 띠 (30분 남음)</button>
+  <button class="demo-btn" data-state="warn-5" onclick="setSessionState('warn-5')">③ 안내 띠 (5분 남음·강조)</button>
+  <button class="demo-btn" data-state="logged-out" onclick="setSessionState('logged-out')">④ 자동 로그아웃</button>
 </div>
 
 <script>
-  /* ── 세션 상태 전환 ── */
-  let sessionCountdownTimer = null;
+  /* ── 세션 상태 전환 (마지막 활동 후 120분 idle만, 30분 전부터 분단위 상단 띠) ── */
+  let sessionTickTimer = null;
   function setSessionState(state) {
     document.querySelectorAll('.demo-toggle .demo-btn').forEach(b => b.classList.toggle('active', b.dataset.state === state));
-    const modal = document.getElementById('modal-session-warning');
+    const banner = document.getElementById('session-banner');
+    const bannerTime = document.getElementById('banner-time');
     const logoutScreen = document.getElementById('logout-screen');
-    const chip = document.getElementById('reason-chip');
-    const chipText = document.getElementById('reason-chip-text');
-    const iconWrap = document.getElementById('reason-chip-icon');
-    const msg = document.getElementById('warning-message');
-    const countdownBox = document.getElementById('countdown-box');
-    const logoutReason = document.getElementById('logout-reason');
 
-    modal.classList.remove('open');
+    banner.classList.remove('open', 'urgent');
     logoutScreen.classList.remove('open');
-    if (sessionCountdownTimer) { clearInterval(sessionCountdownTimer); sessionCountdownTimer = null; }
+    if (sessionTickTimer) { clearInterval(sessionTickTimer); sessionTickTimer = null; }
 
-    if (state === 'idle') {
-      chip.classList.remove('absolute-type');
-      countdownBox.classList.remove('absolute-type');
-      iconWrap.innerHTML = '<i data-lucide="moon" style="width:14px; height:14px;"></i>';
-      chipText.textContent = '장시간 활동이 없음';
-      msg.innerHTML = '보안을 위해 30분 동안 활동이 없으면 자동으로 로그아웃됩니다.<br>계속 사용하시려면 <b>‘계속 사용’</b>을 눌러 주세요.';
-      modal.classList.add('open');
-      startSessionCountdown(30 * 60);
-    } else if (state === 'absolute') {
-      chip.classList.add('absolute-type');
-      countdownBox.classList.add('absolute-type');
-      iconWrap.innerHTML = '<i data-lucide="clock" style="width:14px; height:14px;"></i>';
-      chipText.textContent = '로그인 후 8시간 경과 임박';
-      msg.innerHTML = '보안을 위해 로그인 후 8시간이 지나면 자동으로 로그아웃됩니다.<br>지금 로그인 후 <b>7시간 30분</b>이 경과했어요.';
-      modal.classList.add('open');
-      startSessionCountdown(30 * 60);
-    } else if (state === 'logged-out-idle') {
-      logoutReason.textContent = '장시간 활동이 없어 보안을 위해 로그아웃되었습니다.';
-      logoutScreen.classList.add('open');
-    } else if (state === 'logged-out-absolute') {
-      logoutReason.textContent = '로그인 후 8시간이 지나 보안을 위해 로그아웃되었습니다.';
+    if (state === 'warn-30') {
+      bannerTime.textContent = '30';
+      banner.classList.add('open');
+      tickFrom(30);
+    } else if (state === 'warn-5') {
+      bannerTime.textContent = '5';
+      banner.classList.add('open', 'urgent');
+      tickFrom(5);
+    } else if (state === 'logged-out') {
       logoutScreen.classList.add('open');
     }
     lucide.createIcons();
   }
 
-  function startSessionCountdown(seconds) {
-    const el = document.getElementById('countdown-time');
-    let remaining = seconds;
-    const render = () => {
-      const m = String(Math.floor(remaining / 60)).padStart(2, '0');
-      const s = String(remaining % 60).padStart(2, '0');
-      el.textContent = `${m}:${s}`;
-    };
-    render();
-    sessionCountdownTimer = setInterval(() => {
-      remaining--;
-      if (remaining < 0) {
-        clearInterval(sessionCountdownTimer);
-        const isAbs = document.getElementById('countdown-box').classList.contains('absolute-type');
-        setSessionState(isAbs ? 'logged-out-absolute' : 'logged-out-idle');
+  /* 데모용: 1초 = 1분 으로 압축해 분 단위 변화를 보여줌 */
+  function tickFrom(minutes) {
+    const banner = document.getElementById('session-banner');
+    const bannerTime = document.getElementById('banner-time');
+    let m = minutes;
+    sessionTickTimer = setInterval(() => {
+      m--;
+      if (m <= 0) {
+        clearInterval(sessionTickTimer);
+        setSessionState('logged-out');
         return;
       }
-      render();
+      bannerTime.textContent = String(m);
+      if (m <= 5) banner.classList.add('urgent');
     }, 1000);
   }
 
-  function dismissWarning() {
-    if (sessionCountdownTimer) { clearInterval(sessionCountdownTimer); sessionCountdownTimer = null; }
+  function extendSession() {
+    if (sessionTickTimer) { clearInterval(sessionTickTimer); sessionTickTimer = null; }
     setSessionState('normal');
-  }
-  function extendSession() { dismissWarning(); }
-  function logoutNow() {
-    const isAbs = document.getElementById('countdown-box').classList.contains('absolute-type');
-    setSessionState(isAbs ? 'logged-out-absolute' : 'logged-out-idle');
   }
   function goToLogin() { window.location.href = 'https://hi.goe.go.kr/'; }
 
