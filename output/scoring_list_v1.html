@@ -141,19 +141,20 @@
       <!-- 헤더 -->
       <div>
         <div style="font-size:24px; font-weight:700; color:#333; margin-bottom:8px;">AI 채점</div>
-        <div style="font-size:16px; font-weight:400; color:#333; line-height:1.55;">AI Assistant와 함께 과제를 채점하고 피드백 기록을 생성할 수 있습니다. AI는 선생님을 보조하는 역할을 하며 채점의 최종 권한은 선생님에게만 있습니다.</div>
+        <div style="font-size:16px; font-weight:400; color:#333; line-height:1.55;">AI Assistant가 과제 채점과 피드백 기록 작성을 도와드립니다. AI가 제안한 결과는 참고용이며, 선생님이 확인하신 뒤 최종 점수로 반영됩니다.</div>
       </div>
 
       <!-- 섹션 -->
       <div style="background:#F8F8F8; border-radius:16px; padding:28px 24px;">
 
-        <!-- 카드: 평가명(최종) (C안) -->
+        <!-- 카드: 주장하는 글 쓰기 (완료 시나리오) -->
         <div style="background:white; border-radius:16px; padding:24px; margin-bottom:20px;">
-          <div style="font-size:20px; font-weight:700; color:#333; margin-bottom:20px;">평가명(최종)</div>
+          <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:20px;">
+            <div style="font-size:20px; font-weight:700; color:#333;">주장하는 글 쓰기</div>
+            <button class="btn-secondary" style="display:inline-flex;align-items:center;justify-content:center;gap:8px;height:36px;padding:0 16px;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;line-height:1;"><i data-lucide="printer" style="width:16px;height:16px;"></i>결과지 출력 · 배부</button>
+          </div>
           <div style="width:100%;">
             <div style="display:flex; background:#F8F8F8; border-radius:10px; height:40px; align-items:center; font-size:16px; font-weight:700; color:#333; text-align:center;">
-              <div style="width:80px; text-align:center;">상태</div>
-              <div style="width:80px; text-align:center;">결과 공개</div>
               <div style="width:80px; text-align:center;">반</div>
               <div style="flex:1; text-align:center;">채점 현황</div>
               <div style="width:120px; text-align:center;">원점수 평균</div>
@@ -162,8 +163,6 @@
             </div>
             <!-- C안 1-1: 채점 완료 -->
             <div style="display:flex; align-items:center; height:58px; border-bottom:1px solid #D9D9D9; font-size:16px; color:#333;">
-              <div style="width:80px; text-align:center;"><span style="background:#F1F9F3; color:#00AF3D; border-radius:100px; padding:3px 10px; font-size:14px; font-weight:700;">완료</span></div>
-              <div style="width:80px; text-align:center;"><span style="background:#F0F0F0; color:#494949; border-radius:100px; padding:3px 10px; font-size:14px; font-weight:700;">비공개</span></div>
               <div style="width:80px; text-align:center; font-weight:700;">1-1</div>
               <div style="flex:1; display:flex; align-items:center; gap:10px; padding:0 16px;"><div class="progress-bar-bg" style="max-width:100px;"><div class="progress-bar-fill" style="width:100%;"></div></div><span style="font-size:14px; color:#333; font-weight:700;">9/9</span></div>
               <div style="width:120px; text-align:center; font-weight:700; color:#333;">12.6</div>
@@ -175,18 +174,14 @@
             </div>
             <!-- C안 1-2: AI 채점 실행 (OCR 미확인 학생 존재) -->
             <div style="display:flex; align-items:center; height:58px; border-bottom:1px solid #D9D9D9; font-size:16px; color:#333;">
-              <div style="width:80px; text-align:center;"><span style="background:#F2F5FF; color:#5890FF; border-radius:100px; padding:3px 10px; font-size:14px; font-weight:700;">진행</span></div>
-              <div style="width:80px; text-align:center;"><span style="background:#F0F0F0; color:#494949; border-radius:100px; padding:3px 10px; font-size:14px; font-weight:700;">비공개</span></div>
               <div style="width:80px; text-align:center; font-weight:700;">1-2</div>
               <div style="flex:1; display:flex; align-items:center; gap:10px; padding:0 16px;"><div class="progress-bar-bg" style="max-width:100px;"><div class="progress-bar-fill" style="width:0%;"></div></div><span style="font-size:14px; color:#808080; font-weight:700;">0/14</span></div>
               <div style="width:120px; text-align:center; color:#808080;">-</div>
-              <div style="width:260px; text-align:center;"><button class="btn-primary" style="height:36px;" onclick="openOcrFewModal()"><i data-lucide="wand-sparkles" style="width:16px; height:16px;"></i>AI 채점 실행</button></div>
+              <div style="width:260px; text-align:center;"><button class="btn-primary" style="height:36px;" onclick="openOcrReviewFew()"><i data-lucide="wand-sparkles" style="width:16px; height:16px;"></i>AI 채점 실행</button></div>
               <div style="width:158px; text-align:center;"><button class="btn-ghost" style="justify-content:center; width:100%; opacity:0.4; cursor:default;" disabled>채점 결과 상세</button></div>
             </div>
             <!-- C안 1-3: AI 채점 실행 -->
             <div style="display:flex; align-items:center; height:58px; font-size:16px; color:#333;">
-              <div style="width:80px; text-align:center;"><span style="background:#F2F5FF; color:#5890FF; border-radius:100px; padding:3px 10px; font-size:14px; font-weight:700;">진행</span></div>
-              <div style="width:80px; text-align:center;"><span style="background:#F0F0F0; color:#494949; border-radius:100px; padding:3px 10px; font-size:14px; font-weight:700;">비공개</span></div>
               <div style="width:80px; text-align:center; font-weight:700;">1-3</div>
               <div style="flex:1; display:flex; align-items:center; gap:10px; padding:0 16px;"><div class="progress-bar-bg" style="max-width:100px;"><div class="progress-bar-fill" style="width:0%;"></div></div><span style="font-size:14px; color:#808080; font-weight:700;">0/14</span></div>
               <div style="width:120px; text-align:center; color:#808080;">-</div>
@@ -199,14 +194,15 @@
         <!-- 카드 -->
         <div style="background:white; border-radius:16px; padding:24px;">
           <!-- 카드 타이틀 -->
-          <div style="font-size:20px; font-weight:700; color:#333; margin-bottom:20px;">미래 사회 예측 시나리오(A안)</div>
+          <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:20px;">
+            <div style="font-size:20px; font-weight:700; color:#333;">독서 감상문 쓰기</div>
+            <button class="btn-secondary" style="display:inline-flex;align-items:center;justify-content:center;gap:8px;height:36px;padding:0 16px;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;line-height:1;"><i data-lucide="printer" style="width:16px;height:16px;"></i>결과지 출력 · 배부</button>
+          </div>
 
           <!-- 테이블 -->
           <div style="width:100%;">
             <!-- Header -->
             <div style="display:flex; background:#F8F8F8; border-radius:10px; height:40px; align-items:center; font-size:16px; font-weight:700; color:#333; text-align:center;">
-              <div style="width:80px; text-align:center;">상태</div>
-              <div style="width:80px; text-align:center;">결과 공개</div>
               <div style="width:80px; text-align:center;">반</div>
               <div style="flex:1; text-align:center;">채점 현황</div>
               <div style="width:120px; text-align:center;">원점수 평균</div>
@@ -216,8 +212,6 @@
 
             <!-- Row 1: 1-1반 (OCR 일부 미확인) -->
             <div style="display:flex; align-items:center; height:58px; border-bottom:1px solid #D9D9D9; font-size:16px; color:#333;">
-              <div style="width:80px; text-align:center;"><span style="background:#F2F5FF; color:#5890FF; border-radius:100px; padding:3px 10px; font-size:14px; font-weight:700;">진행</span></div>
-              <div style="width:80px; text-align:center;"><span style="background:#F0F0F0; color:#494949; border-radius:100px; padding:3px 10px; font-size:14px; font-weight:700;">비공개</span></div>
               <div style="width:80px; text-align:center; font-weight:700;">1-1</div>
               <div style="flex:1; display:flex; align-items:center; gap:10px; padding:0 16px;">
                 <div class="progress-bar-bg" style="max-width:100px;"><div class="progress-bar-fill" style="width:0%;"></div></div>
@@ -225,7 +219,7 @@
               </div>
               <div style="width:120px; text-align:center; color:#808080;">-</div>
               <div style="width:260px; text-align:center;">
-                <button class="btn-primary" style="height:36px;" onclick="openOcrFewModal()">
+                <button class="btn-primary" style="height:36px;" onclick="openOcrReviewFew()">
                   <i data-lucide="wand-sparkles" style="width:16px; height:16px;"></i>AI 채점 실행
                 </button>
               </div>
@@ -234,8 +228,6 @@
 
             <!-- Row 2: 1-2반 (OCR 과반 미확인) -->
             <div style="display:flex; align-items:center; height:58px; border-bottom:1px solid #D9D9D9; font-size:16px; color:#333;">
-              <div style="width:80px; text-align:center;"><span style="background:#F2F5FF; color:#5890FF; border-radius:100px; padding:3px 10px; font-size:14px; font-weight:700;">진행</span></div>
-              <div style="width:80px; text-align:center;"><span style="background:#F0F0F0; color:#494949; border-radius:100px; padding:3px 10px; font-size:14px; font-weight:700;">비공개</span></div>
               <div style="width:80px; text-align:center; font-weight:700;">1-2</div>
               <div style="flex:1; display:flex; align-items:center; gap:10px; padding:0 16px;">
                 <div class="progress-bar-bg" style="max-width:100px;"><div class="progress-bar-fill" style="width:0%;"></div></div>
@@ -243,7 +235,7 @@
               </div>
               <div style="width:120px; text-align:center; color:#808080;">-</div>
               <div style="width:260px; text-align:center;">
-                <button class="btn-primary" style="height:36px;" onclick="openOcrManyModal()">
+                <button class="btn-primary" style="height:36px;" onclick="openOcrReviewMany()">
                   <i data-lucide="wand-sparkles" style="width:16px; height:16px;"></i>AI 채점 실행
                 </button>
               </div>
@@ -252,8 +244,6 @@
 
             <!-- Row 3: 1-3반 (OCR 모두 확인) -->
             <div style="display:flex; align-items:center; height:58px; border-bottom:1px solid #D9D9D9; font-size:16px; color:#333;">
-              <div style="width:80px; text-align:center;"><span style="background:#F2F5FF; color:#5890FF; border-radius:100px; padding:3px 10px; font-size:14px; font-weight:700;">진행</span></div>
-              <div style="width:80px; text-align:center;"><span style="background:#F0F0F0; color:#494949; border-radius:100px; padding:3px 10px; font-size:14px; font-weight:700;">비공개</span></div>
               <div style="width:80px; text-align:center; font-weight:700;">1-3</div>
               <div style="flex:1; display:flex; align-items:center; gap:10px; padding:0 16px;">
                 <div class="progress-bar-bg" style="max-width:100px;"><div class="progress-bar-fill" style="width:0%;"></div></div>
@@ -271,58 +261,6 @@
           </div>
         </div>
 
-        <!-- 카드: 창작 문화 비평(B안) -->
-        <div style="background:white; border-radius:16px; padding:24px; margin-top:20px;">
-          <div style="font-size:20px; font-weight:700; color:#333; margin-bottom:20px;">창작 문화 비평(B안)</div>
-          <div style="width:100%;">
-            <div style="display:flex; background:#F8F8F8; border-radius:10px; height:40px; align-items:center; font-size:16px; font-weight:700; color:#333; text-align:center;">
-              <div style="width:80px; text-align:center;">상태</div>
-              <div style="width:80px; text-align:center;">결과 공개</div>
-              <div style="width:80px; text-align:center;">반</div>
-              <div style="flex:1; text-align:center;">채점 현황</div>
-              <div style="width:120px; text-align:center;">원점수 평균</div>
-              <div style="width:260px; text-align:center;">AI 채점</div>
-              <div style="width:158px; text-align:center;">채점 실시 결과</div>
-            </div>
-            <!-- B안 1-1: 채점 완료 -->
-            <div style="display:flex; align-items:center; height:58px; border-bottom:1px solid #D9D9D9; font-size:16px; color:#333;">
-              <div style="width:80px; text-align:center;"><span style="background:#F1F9F3; color:#00AF3D; border-radius:100px; padding:3px 10px; font-size:14px; font-weight:700;">완료</span></div>
-              <div style="width:80px; text-align:center;"><span style="background:#F0F0F0; color:#494949; border-radius:100px; padding:3px 10px; font-size:14px; font-weight:700;">비공개</span></div>
-              <div style="width:80px; text-align:center; font-weight:700;">1-1</div>
-              <div style="flex:1; display:flex; align-items:center; gap:10px; padding:0 16px;"><div class="progress-bar-bg" style="max-width:100px;"><div class="progress-bar-fill" style="width:100%;"></div></div><span style="font-size:14px; color:#333; font-weight:700;">9/9</span></div>
-              <div style="width:120px; text-align:center; font-weight:700; color:#333;">12.6</div>
-              <div style="width:260px; display:flex; align-items:center; justify-content:center; gap:8px;">
-                <button class="btn-primary" style="height:36px; font-size:14px;" onclick="openRerunModal(1)"><i data-lucide="rotate-cw" style="width:16px; height:16px;"></i>재실행</button>
-                <button class="btn-secondary" style="height:36px; font-size:14px;"><i data-lucide="chart-column-decreasing" style="width:16px; height:16px;"></i>AI 점수 확인</button>
-              </div>
-              <div style="width:158px; text-align:center;"><button class="btn-ghost" style="justify-content:center; width:100%;" onclick="showClassB(1)">채점 결과 상세 <i data-lucide="chevron-right" style="width:14px;height:14px;"></i></button></div>
-            </div>
-            <!-- B안 1-2: 채점 완료 -->
-            <div style="display:flex; align-items:center; height:58px; border-bottom:1px solid #D9D9D9; font-size:16px; color:#333;">
-              <div style="width:80px; text-align:center;"><span style="background:#F1F9F3; color:#00AF3D; border-radius:100px; padding:3px 10px; font-size:14px; font-weight:700;">완료</span></div>
-              <div style="width:80px; text-align:center;"><span style="background:#F0F0F0; color:#494949; border-radius:100px; padding:3px 10px; font-size:14px; font-weight:700;">비공개</span></div>
-              <div style="width:80px; text-align:center; font-weight:700;">1-2</div>
-              <div style="flex:1; display:flex; align-items:center; gap:10px; padding:0 16px;"><div class="progress-bar-bg" style="max-width:100px;"><div class="progress-bar-fill" style="width:100%;"></div></div><span style="font-size:14px; color:#333; font-weight:700;">9/9</span></div>
-              <div style="width:120px; text-align:center; font-weight:700; color:#333;">11.4</div>
-              <div style="width:260px; display:flex; align-items:center; justify-content:center; gap:8px;">
-                <button class="btn-primary" style="height:36px; font-size:14px;" onclick="openRerunModal(2)"><i data-lucide="rotate-cw" style="width:16px; height:16px;"></i>재실행</button>
-                <button class="btn-secondary" style="height:36px; font-size:14px;"><i data-lucide="chart-column-decreasing" style="width:16px; height:16px;"></i>AI 점수 확인</button>
-              </div>
-              <div style="width:158px; text-align:center;"><button class="btn-ghost" style="justify-content:center; width:100%;" onclick="showClassB(2)">채점 결과 상세 <i data-lucide="chevron-right" style="width:14px;height:14px;"></i></button></div>
-            </div>
-            <!-- B안 1-3: AI 채점 실행 -->
-            <div style="display:flex; align-items:center; height:58px; border-bottom:1px solid #D9D9D9; font-size:16px; color:#333;">
-              <div style="width:80px; text-align:center;"><span style="background:#F2F5FF; color:#5890FF; border-radius:100px; padding:3px 10px; font-size:14px; font-weight:700;">진행</span></div>
-              <div style="width:80px; text-align:center;"><span style="background:#F0F0F0; color:#494949; border-radius:100px; padding:3px 10px; font-size:14px; font-weight:700;">비공개</span></div>
-              <div style="width:80px; text-align:center; font-weight:700;">1-3</div>
-              <div style="flex:1; display:flex; align-items:center; gap:10px; padding:0 16px;"><div class="progress-bar-bg" style="max-width:100px;"><div class="progress-bar-fill" style="width:0%;"></div></div><span style="font-size:14px; color:#808080; font-weight:700;">0/14</span></div>
-              <div style="width:120px; text-align:center; color:#808080;">-</div>
-              <div style="width:260px; text-align:center;"><button class="btn-primary" style="height:36px;" onclick="openOcrFirstModal()"><i data-lucide="wand-sparkles" style="width:16px; height:16px;"></i>AI 채점 실행</button></div>
-              <div style="width:158px; text-align:center;"><button class="btn-ghost" style="justify-content:center; width:100%; opacity:0.4; cursor:default;" disabled>채점 결과 상세</button></div>
-            </div>
-          </div>
-        </div>
-
       </div>
 
     </div><!-- /패널 -->
@@ -336,77 +274,25 @@
 
 <!-- ===== OCR 경고 모달 (소수) — 1-1반: 2명 미확인 ===== -->
 <div id="ocrFewModal" class="modal-overlay" onclick="if(event.target===this) closeOcrFewModal()">
-  <div class="modal-box">
+  <div class="modal-box" style="width:512px;">
     <div style="padding:24px 24px 16px; position:relative;">
       <div style="display:flex; align-items:center; gap:10px; padding-right:36px;">
-        <i data-lucide="triangle-alert" style="width:22px; height:22px; color:#FF8C4C; flex-shrink:0;"></i>
-        <span style="font-size:20px; font-weight:700; color:#333;">OCR 미확인 학생이 있습니다</span>
+        <i id="ocrReview-icon" data-lucide="triangle-alert" style="width:22px; height:22px; color:#FF8C4C; flex-shrink:0;"></i>
+        <span id="ocrReview-title" style="font-size:20px; font-weight:700; color:#333;">OCR 미확인 학생이 있습니다</span>
       </div>
       <button onclick="closeOcrFewModal()" style="position:absolute; top:11px; right:11px; width:36px; height:36px; background:none; border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; border-radius:6px;" onmouseover="this.style.background='#F0F0F0'" onmouseout="this.style.background='none'">
         <i data-lucide="x" style="width:20px; height:20px; color:#808080;"></i>
       </button>
     </div>
-    <div style="padding:0 24px 24px; display:flex; flex-direction:column; gap:16px;">
-      <p style="font-size:14px; color:#494949; line-height:1.55; margin:0;">아래 학생의 OCR 결과가 아직 확인되지 않았습니다. 인식 불확실 구간이 있어 채점 정확도에 영향을 줄 수 있습니다.</p>
-      <div style="border:1px solid #FFD6B0; border-radius:8px; overflow:hidden; background:#FFFAF5;">
-        <div style="padding:10px 16px; display:flex; align-items:center; justify-content:space-between; border-bottom:1px solid #FFD6B0;">
-          <div style="display:flex; align-items:center; gap:8px;">
-            <i data-lucide="triangle-alert" style="width:14px; height:14px; color:#FF8C4C;"></i>
-            <span style="font-size:15px; font-weight:700; color:#333;">10102 이준호</span>
-            <span style="font-size:12px; font-weight:700; background:#FFEDD5; color:#FF8C4C; border-radius:100px; padding:2px 8px;">2개 문항</span>
-          </div>
-          <a href="task_ocr_review_v1.html#ocr=10102" target="_blank" style="font-size:14px; font-weight:700; color:#7E44FB; display:flex; align-items:center; gap:4px; text-decoration:none;">
-            OCR 결과 확인 <i data-lucide="external-link" style="width:13px; height:13px;"></i>
-          </a>
-        </div>
-        <div style="padding:10px 16px; display:flex; align-items:center; justify-content:space-between;">
-          <div style="display:flex; align-items:center; gap:8px;">
-            <i data-lucide="triangle-alert" style="width:14px; height:14px; color:#FF8C4C;"></i>
-            <span style="font-size:15px; font-weight:700; color:#333;">10103 박지민</span>
-            <span style="font-size:12px; font-weight:700; background:#FFEDD5; color:#FF8C4C; border-radius:100px; padding:2px 8px;">1개 문항</span>
-          </div>
-          <a href="task_ocr_review_v1.html#ocr=10103" target="_blank" style="font-size:14px; font-weight:700; color:#7E44FB; display:flex; align-items:center; gap:4px; text-decoration:none;">
-            OCR 결과 확인 <i data-lucide="external-link" style="width:13px; height:13px;"></i>
-          </a>
-        </div>
-      </div>
+    <div style="padding:0 24px 24px; display:flex; flex-direction:column; gap:14px;">
+      <p id="ocrReview-summary" style="font-size:14px; color:#494949; line-height:1.55; margin:0;"></p>
+      <div id="ocrReview-list" style="border:1px solid #FFD6B0; border-radius:8px; overflow:hidden; background:#FFFAF5; max-height:220px; overflow-y:auto;"></div>
     </div>
     <div style="padding:8px 24px 24px; display:flex; justify-content:flex-end; gap:12px;">
       <button onclick="location.href='task_ocr_review_v1.html#list'" style="background:white; color:#7E44FB; border:1.5px solid #B28FFD; border-radius:8px; height:40px; padding:0 20px; font-size:16px; font-weight:700; cursor:pointer; font-family:inherit; display:inline-flex; align-items:center; gap:6px;">
         과제물 확인하러 가기
       </button>
       <button onclick="proceedToRunModal('ocrFewModal')" style="background:#7E44FB; color:white; border:none; border-radius:8px; height:40px; padding:0 20px; font-size:16px; font-weight:700; cursor:pointer; font-family:inherit;">이대로 채점 진행하기</button>
-    </div>
-  </div>
-</div>
-
-<!-- ===== OCR 경고 모달 (다수) — 1-2반: 8/14명 미확인 ===== -->
-<div id="ocrManyModal" class="modal-overlay" onclick="if(event.target===this) closeOcrManyModal()">
-  <div class="modal-box">
-    <div style="padding:24px 24px 16px; position:relative;">
-      <div style="display:flex; align-items:center; gap:10px; padding-right:36px;">
-        <i data-lucide="triangle-alert" style="width:22px; height:22px; color:#DB3E51; flex-shrink:0;"></i>
-        <span style="font-size:20px; font-weight:700; color:#333;">다수 학생의 OCR 결과가 확인되지 않았습니다</span>
-      </div>
-      <button onclick="closeOcrManyModal()" style="position:absolute; top:11px; right:11px; width:36px; height:36px; background:none; border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; border-radius:6px;" onmouseover="this.style.background='#F0F0F0'" onmouseout="this.style.background='none'">
-        <i data-lucide="x" style="width:20px; height:20px; color:#808080;"></i>
-      </button>
-    </div>
-    <div style="padding:0 24px 24px; display:flex; flex-direction:column; gap:16px;">
-      <div style="background:#FFF5F5; border:1px solid #FFBCBC; border-radius:8px; padding:14px 16px; display:flex; align-items:flex-start; gap:10px;">
-        <i data-lucide="info" style="width:16px; height:16px; color:#DB3E51; flex-shrink:0; margin-top:2px;"></i>
-        <div style="font-size:14px; color:#494949; line-height:1.65;">
-          <strong style="color:#DB3E51;">1-2반 학생 14명 중 8명</strong>의 OCR 결과가 확인되지 않았습니다.<br>
-          활동지의 특정 문항 구성으로 인해 손글씨 인식률이 낮을 수 있습니다.<br>
-          채점 전 OCR 결과를 일괄 검토하는 것을 권장합니다.
-        </div>
-      </div>
-    </div>
-    <div style="padding:8px 24px 24px; display:flex; justify-content:flex-end; gap:12px;">
-      <button onclick="location.href='task_ocr_review_v1.html#list'" style="background:white; color:#7E44FB; border:1.5px solid #B28FFD; border-radius:8px; height:40px; padding:0 20px; font-size:16px; font-weight:700; cursor:pointer; font-family:inherit;">
-        과제물 확인하러 가기
-      </button>
-      <button onclick="proceedToRunModal('ocrManyModal')" style="background:#7E44FB; color:white; border:none; border-radius:8px; height:40px; padding:0 20px; font-size:16px; font-weight:700; cursor:pointer; font-family:inherit;">이대로 채점 진행하기</button>
     </div>
   </div>
 </div>
@@ -427,8 +313,8 @@
             <i data-lucide="scan-text" style="width:32px;height:32px;color:#7E44FB;"></i>
           </div>
           <div>
-            <div style="font-size:20px;font-weight:800;color:#222;margin-bottom:8px;">AI 채점 전 OCR 분석이 필요해요</div>
-            <div style="font-size:14px;color:#494949;line-height:1.65;">1-3반 학생들의 제출물이 아직 OCR 처리되지 않았습니다.<br>손글씨 인식 결과를 확인하고 채점해야 정확한 결과를 얻을 수 있어요.</div>
+            <div style="font-size:20px;font-weight:800;color:#222;margin-bottom:8px;">AI 채점 전 OCR 인식이 필요해요</div>
+            <div style="font-size:14px;color:#494949;line-height:1.65;">1-3반 제출물이 아직 OCR 인식 전이에요.<br>AI가 답안을 인식해야 채점할 수 있어요.</div>
           </div>
         </div>
       </div>
@@ -437,15 +323,15 @@
         <div style="background:#F7F4FF;border:1px solid #E0D2FF;border-radius:12px;padding:16px 20px;display:flex;gap:14px;align-items:flex-start;">
           <i data-lucide="info" style="width:18px;height:18px;color:#7E44FB;flex-shrink:0;margin-top:2px;"></i>
           <div style="font-size:14px;color:#341761;line-height:1.65;">
-            <strong>OCR 분석을 먼저 진행합니다.</strong><br>
-            분석 완료 후 확인이 필요한 항목을 검토하거나, 별도 확인 없이 바로 AI 채점을 실행할 수 있어요.
+            <strong>먼저 OCR 인식을 진행합니다.</strong><br>
+            인식 후 확인이 필요한 항목을 검토하거나, 확인 없이 바로 AI 채점을 실행할 수 있어요.
           </div>
         </div>
       </div>
       <div style="padding:0 28px 28px;display:flex;justify-content:flex-end;gap:12px;">
         <button onclick="closeOcrFirstModal()" style="background:#F0F0F0;color:#494949;border:none;border-radius:8px;height:40px;padding:0 20px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;">취소</button>
         <button onclick="startOcrAnalysis()" style="background:#7E44FB;color:white;border:none;border-radius:8px;height:40px;padding:0 20px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;display:inline-flex;align-items:center;gap:8px;">
-          <i data-lucide="scan-text" style="width:16px;height:16px;"></i>OCR 분석 시작하기
+          <i data-lucide="scan-text" style="width:16px;height:16px;"></i>OCR 인식 시작하기
         </button>
       </div>
     </div>
@@ -458,7 +344,7 @@
           <i data-lucide="loader-circle" style="width:36px;height:36px;color:#7E44FB;" class="animate-spin"></i>
         </div>
         <div>
-          <div style="font-size:20px;font-weight:800;color:#222;margin-bottom:8px;">OCR 분석 중...</div>
+          <div style="font-size:20px;font-weight:800;color:#222;margin-bottom:8px;">OCR 인식 중...</div>
           <div id="ocrf-prog-text" style="font-size:14px;color:#808080;font-weight:700;">9명 중 0명 처리 완료</div>
         </div>
         <!-- 프로그레스 바 -->
@@ -473,6 +359,8 @@
         </div>
         <!-- 현재 처리 학생 -->
         <div id="ocrf-current-stu" style="font-size:13px;color:#7E44FB;font-weight:700;min-height:20px;"></div>
+        <!-- 소요 시간 안내 -->
+        <div style="font-size:13px;color:#808080;line-height:1.6;text-align:center;">학생당 최대 1분 정도 소요돼요.<br>이 창을 닫아도 인식은 계속 진행됩니다.</div>
       </div>
     </div>
 
@@ -487,14 +375,8 @@
             <i data-lucide="circle-check-big" style="width:32px;height:32px;color:#7E44FB;"></i>
           </div>
           <div>
-            <div style="font-size:20px;font-weight:800;color:#222;margin-bottom:6px;">OCR 분석 완료</div>
-            <div style="font-size:14px;color:#494949;">확인이 필요한 항목이 발견됐습니다</div>
-          </div>
-          <!-- 요약 칩 -->
-          <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center;">
-            <span style="background:#FFF8F3;border:1px solid #FFD6B0;color:#E07000;border-radius:100px;padding:4px 14px;font-size:13px;font-weight:800;">3명 확인 필요</span>
-            <span style="background:#FFF8F3;border:1px solid #FFD6B0;color:#E07000;border-radius:100px;padding:4px 14px;font-size:13px;font-weight:800;">5개 문항</span>
-            <span style="background:#F1F9F3;border:1px solid #B8E8C8;color:#00AF3D;border-radius:100px;padding:4px 14px;font-size:13px;font-weight:800;">6명 정상</span>
+            <div style="font-size:20px;font-weight:800;color:#222;margin-bottom:6px;">OCR 인식 완료</div>
+            <div style="font-size:14px;color:#494949;line-height:1.6;">제출 학생 9명 중 6명은 정상 인식됐고, 3명은 확인이 필요해요.</div>
           </div>
         </div>
       </div>
@@ -555,7 +437,7 @@
             <i data-lucide="circle-check-big" style="width:32px;height:32px;color:#7E44FB;"></i>
           </div>
           <div>
-            <div style="font-size:20px;font-weight:800;color:#222;margin-bottom:6px;">OCR 분석 완료</div>
+            <div style="font-size:20px;font-weight:800;color:#222;margin-bottom:6px;">OCR 인식 완료</div>
             <div style="font-size:14px;color:#494949;">모든 학생의 제출물이 정상 인식됐어요</div>
           </div>
           <!-- 요약 칩 -->
@@ -590,7 +472,7 @@
 
 <!-- ===== AI 채점 실행 모달 ===== -->
 <div id="runModal" class="modal-overlay" onclick="if(event.target===this) closeRunModal()">
-  <div class="modal-box">
+  <div class="modal-box" style="width:512px;">
     <!-- Header -->
     <div style="padding:24px 24px 16px 24px;">
       <div style="font-size:20px; font-weight:700; color:#333;">AI 채점 실행</div>
@@ -598,8 +480,8 @@
     <!-- Body -->
     <div style="padding:0 24px 24px 24px; display:flex; flex-direction:column; gap:20px;">
       <div style="font-size:14px; color:#333; line-height:1.55;">
-        AI 채점을 실행합니다. 채점 대상 학생을 선택하고 채점 수준을 설정한 뒤 실행 버튼을 눌러주세요.<br>
-        과제를 제출하지 않은 학생은 선택할 수 없습니다.
+        채점할 학생과 AI 점수 수준을 선택해 주세요.<br>
+        AI 결과는 참고용이며, 선생님이 확인하신 뒤 최종 반영됩니다.
       </div>
 
       <!-- 채점 대상 -->
@@ -634,20 +516,13 @@
 
       <!-- 채점 수준 -->
       <div>
-        <div style="font-size:16px; font-weight:700; color:#333; margin-bottom:10px;">AI 채점 수준</div>
-        <div style="display:flex; flex-direction:column; gap:10px;" id="runLevelGroup">
-          <div class="radio-card selected" onclick="selectRunLevel(this)">
-            <div class="radio-dot"></div>
-            <span style="font-size:14px; font-weight:700; color:#333;">기본 설정으로 채점</span>
-          </div>
-          <div class="radio-card" onclick="selectRunLevel(this)">
-            <div class="radio-dot"></div>
-            <span style="font-size:14px; font-weight:700; color:#333;">비교적 관대하게 채점</span>
-          </div>
-          <div class="radio-card" onclick="selectRunLevel(this)">
-            <div class="radio-dot"></div>
-            <span style="font-size:14px; font-weight:700; color:#333;">비교적 엄격하게 채점</span>
-          </div>
+        <div style="font-size:16px; font-weight:700; color:#333; margin-bottom:6px;">AI 점수 수준</div>
+        <p style="font-size:14px; color:#494949; margin:0 0 20px; line-height:1.5;">AI가 매길 점수를 조절합니다. 점수에 맞춰 피드백 내용도 함께 바뀝니다.</p>
+        <input type="range" min="0" max="2" step="1" value="1" oninput="updateScoreLabel(this,'run')" style="width:100%; accent-color:#7E44FB; cursor:pointer;">
+        <div style="display:flex; justify-content:space-between; margin-top:8px; font-size:13px; font-weight:700;">
+          <span id="run-lbl-0" style="color:#808080;">더 낮은 점수</span>
+          <span id="run-lbl-1" style="color:#7E44FB;">기본 점수</span>
+          <span id="run-lbl-2" style="color:#808080;">더 높은 점수</span>
         </div>
       </div>
     </div>
@@ -661,7 +536,7 @@
 
 <!-- ===== AI 채점 재실행 모달 ===== -->
 <div id="rerunModal" class="modal-overlay" onclick="if(event.target===this) closeRerunModal()">
-  <div class="modal-box">
+  <div class="modal-box" style="width:512px;">
     <!-- Header -->
     <div style="padding:24px 24px 16px 24px;">
       <div style="font-size:20px; font-weight:700; color:#333;">AI 채점 재실행</div>
@@ -669,9 +544,8 @@
     <!-- Body -->
     <div style="padding:0 24px 24px 24px; display:flex; flex-direction:column; gap:20px;">
       <div style="font-size:14px; color:#333; line-height:1.55;">
-        AI Assistant 자동 채점을 진행할 학생과 AI 채점 수준을 선택해 주세요.<br>
-        AI 채점 결과를 기반으로 채점 수준을 조정하여 해당 학생에 대한 AI Assistant 자동 채점을 재실행합니다.<br>
-        AI는 선생님을 보조하는 역할을 하며 채점의 최종 권한은 선생님에게만 있습니다.
+        채점할 학생과 AI 점수 수준을 선택해 주세요.<br>
+        AI 결과는 참고용이며, 선생님이 확인하신 뒤 최종 반영됩니다.
       </div>
 
       <!-- 채점 대상 -->
@@ -706,20 +580,13 @@
 
       <!-- 채점 수준 -->
       <div>
-        <div style="font-size:16px; font-weight:700; color:#333; margin-bottom:10px;">AI 채점 수준</div>
-        <div style="display:flex; flex-direction:column; gap:10px;" id="rerunLevelGroup">
-          <div class="radio-card selected" onclick="selectRerunLevel(this)">
-            <div class="radio-dot"></div>
-            <span style="font-size:14px; font-weight:700; color:#333;">이전과 동일하게 채점</span>
-          </div>
-          <div class="radio-card" onclick="selectRerunLevel(this)">
-            <div class="radio-dot"></div>
-            <span style="font-size:14px; font-weight:700; color:#333;">이전보다 관대하게 채점</span>
-          </div>
-          <div class="radio-card" onclick="selectRerunLevel(this)">
-            <div class="radio-dot"></div>
-            <span style="font-size:14px; font-weight:700; color:#333;">이전보다 엄격하게 채점</span>
-          </div>
+        <div style="font-size:16px; font-weight:700; color:#333; margin-bottom:6px;">AI 점수 수준</div>
+        <p style="font-size:14px; color:#494949; margin:0 0 20px; line-height:1.5;">각 학생의 직전 AI 채점 결과를 기준으로 점수를 조절합니다. 점수에 맞춰 피드백 내용도 함께 바뀝니다.</p>
+        <input type="range" min="0" max="2" step="1" value="1" oninput="updateScoreLabel(this,'rerun')" style="width:100%; accent-color:#7E44FB; cursor:pointer;">
+        <div style="display:flex; justify-content:space-between; margin-top:8px; font-size:13px; font-weight:700;">
+          <span id="rerun-lbl-0" style="color:#808080;">직전보다 낮은 점수</span>
+          <span id="rerun-lbl-1" style="color:#7E44FB;">직전과 비슷</span>
+          <span id="rerun-lbl-2" style="color:#808080;">직전보다 높은 점수</span>
         </div>
       </div>
     </div>
@@ -764,7 +631,7 @@
       <i data-lucide="arrow-left" style="width:28px; height:28px; color:white; cursor:pointer; flex-shrink:0;" onclick="showScreen('screen-list')"></i>
       <span style="font-size:28px; font-weight:800; color:white; line-height:1.35;">1학년 국어</span>
       <div style="width:1px; height:24px; background:rgba(255,255,255,.5); margin:0 4px;"></div>
-      <span id="class-b-subtitle" style="font-size:20px; font-weight:700; color:rgba(255,255,255,.85);">창작 문화 비평(B안) — 채점 결과</span>
+      <span id="class-b-subtitle" style="font-size:20px; font-weight:700; color:rgba(255,255,255,.85);">주장하는 글 쓰기 — 채점 결과</span>
     </div>
   </div>
 
@@ -815,8 +682,8 @@
           <div style="display:flex;align-items:center;justify-content:space-between;padding:20px 24px;border-bottom:1px solid #F0F0F0;background:#F8F8F8;">
             <h3 style="margin:0;font-size:18px;font-weight:800;color:#222;">채점 진행 결과</h3>
             <div style="display:flex;align-items:center;gap:8px;">
-              <button class="btn-primary" style="display:inline-flex;align-items:center;gap:6px;height:36px;padding:0 16px;border-radius:8px;font-size:16px;font-weight:700;cursor:pointer;font-family:inherit;">
-                <i data-lucide="wand-2" style="width:16px;height:16px;"></i>AI 채점 실행
+              <button class="btn-primary" onclick="openRerunModal()" style="display:inline-flex;align-items:center;gap:6px;height:36px;padding:0 16px;border-radius:8px;font-size:16px;font-weight:700;cursor:pointer;font-family:inherit;">
+                <i data-lucide="wand-2" style="width:16px;height:16px;"></i>AI 채점 재실행
               </button>
               <button onclick="location.href='scoring_dashboard_v1.html'" style="display:inline-flex;align-items:center;gap:6px;height:36px;padding:0 16px;background:white;border:1px solid #B28FFD;color:#7E44FB;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;" onmouseover="this.style.background='#F7F4FF'" onmouseout="this.style.background='white'">
                 <i data-lucide="bar-chart-3" style="width:16px;height:16px;"></i>채점 결과 대시보드
@@ -865,8 +732,8 @@
   // ── B안 학생 데이터 ──
   var CLASS_B_DATA = {
     1: {
-      title: '창작 문화 비평(B안) — 1-1반',
-      subtitle: '창작 문화 비평(B안) — 1-1반 채점 결과',
+      title: '주장하는 글 쓰기 — 1-1반',
+      subtitle: '주장하는 글 쓰기 — 1-1반 채점 결과',
       students: [
         { id:'10101', name:'김서윤', st:'진행 중',   stCls:'b-doing', ai:'성공',          score:'-'    },
         { id:'10102', name:'이준호', st:'확인 필요', stCls:'b-check', ai:'성공',          score:'10'   },
@@ -881,8 +748,8 @@
       ]
     },
     2: {
-      title: '창작 문화 비평(B안) — 1-2반',
-      subtitle: '창작 문화 비평(B안) — 1-2반 채점 결과',
+      title: '주장하는 글 쓰기 — 1-2반',
+      subtitle: '주장하는 글 쓰기 — 1-2반 채점 결과',
       students: [
         { id:'10201', name:'강민준', st:'완료',      stCls:'b-done',  ai:'성공',          score:'14'   },
         { id:'10202', name:'오서영', st:'완료',      stCls:'b-done',  ai:'성공',          score:'12'   },
@@ -925,7 +792,7 @@
     showClassB(classNum);
     currentEvalPlan = 'C';
     var subtitleEl = document.getElementById('class-b-subtitle');
-    if (subtitleEl) subtitleEl.textContent = '평가명(최종) — 1-' + classNum + '반 채점 결과';
+    if (subtitleEl) subtitleEl.textContent = '주장하는 글 쓰기 — 1-' + classNum + '반 채점 결과';
   }
 
   function renderClassBTable(students) {
@@ -1029,10 +896,41 @@
   function closeRunModal() { document.getElementById('runModal').classList.remove('open'); }
   function openRerunModal() { document.getElementById('rerunModal').classList.add('open'); lucide.createIcons(); }
   function closeRerunModal() { document.getElementById('rerunModal').classList.remove('open'); }
-  function openOcrFewModal() { document.getElementById('ocrFewModal').classList.add('open'); lucide.createIcons(); }
+  // OCR 미확인 안내 — 소수/다수 통합 (미확인 수 + 임계 경고 동적)
+  function openOcrReview(total, students) {
+    var m = students.length;
+    document.getElementById('ocrReview-summary').innerHTML =
+      '제출 학생 ' + total + '명 중 <strong>' + m + '명</strong>의 OCR 결과가 아직 확인되지 않았습니다. 인식 불확실 구간이 있어 채점 정확도에 영향을 줄 수 있습니다.';
+    var listHtml = students.map(function(s, i) {
+      return '<div style="padding:10px 16px; display:flex; align-items:center; justify-content:space-between;' + (i > 0 ? ' border-top:1px solid #FFD6B0;' : '') + '">'
+        + '<div style="display:flex; align-items:center; gap:8px;">'
+        + '<i data-lucide="triangle-alert" style="width:14px; height:14px; color:#FF8C4C; flex-shrink:0;"></i>'
+        + '<span style="font-size:15px; font-weight:700; color:#333;">' + s.id + ' ' + s.name + '</span>'
+        + '<span style="font-size:12px; font-weight:700; background:#FFEDD5; color:#FF8C4C; border-radius:100px; padding:2px 8px; white-space:nowrap;">' + s.q + '개 문항</span>'
+        + '</div>'
+        + '<a href="task_ocr_review_v1.html#ocr=' + s.id + '" target="_blank" style="font-size:14px; font-weight:700; color:#7E44FB; display:flex; align-items:center; gap:4px; text-decoration:none; white-space:nowrap;">OCR 결과 확인 <i data-lucide="external-link" style="width:13px; height:13px;"></i></a>'
+        + '</div>';
+    }).join('');
+    document.getElementById('ocrReview-list').innerHTML = listHtml;
+    document.getElementById('ocrFewModal').classList.add('open');
+    lucide.createIcons();
+  }
   function closeOcrFewModal() { document.getElementById('ocrFewModal').classList.remove('open'); }
-  function openOcrManyModal() { document.getElementById('ocrManyModal').classList.add('open'); lucide.createIcons(); }
-  function closeOcrManyModal() { document.getElementById('ocrManyModal').classList.remove('open'); }
+  // 데모 시나리오 — 소수(2명)/다수(8명)
+  function openOcrReviewFew() {
+    openOcrReview(9, [
+      { id: '10102', name: '이준호', q: 2 },
+      { id: '10103', name: '박지민', q: 1 }
+    ]);
+  }
+  function openOcrReviewMany() {
+    openOcrReview(14, [
+      { id: '10201', name: '강민준', q: 2 }, { id: '10202', name: '오서영', q: 1 },
+      { id: '10203', name: '배찬혁', q: 3 }, { id: '10204', name: '류지아', q: 2 },
+      { id: '10205', name: '신동현', q: 1 }, { id: '10206', name: '황예은', q: 2 },
+      { id: '10207', name: '문태양', q: 1 }, { id: '10208', name: '전수빈', q: 2 }
+    ]);
+  }
   function proceedToRunModal(fromModalId) {
     document.getElementById(fromModalId).classList.remove('open');
     openRunModal();
@@ -1046,6 +944,14 @@
   function selectRerunLevel(el) {
     document.querySelectorAll('#rerunLevelGroup .radio-card').forEach(c => c.classList.remove('selected'));
     el.classList.add('selected');
+  }
+  // AI 점수 수준 슬라이더 — 선택된 단계 라벨 강조
+  function updateScoreLabel(el, prefix) {
+    var v = parseInt(el.value, 10);
+    for (var i = 0; i < 3; i++) {
+      var lbl = document.getElementById(prefix + '-lbl-' + i);
+      if (lbl) lbl.style.color = (i === v) ? '#7E44FB' : '#808080';
+    }
   }
 
   // Checkbox toggle
