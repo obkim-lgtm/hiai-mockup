@@ -725,18 +725,14 @@
             <div id="ocr-b-dropdown-list"></div>
           </div>
         </div>
-        <span id="ocr-b-confirm-count" style="font-size:15px;color:#494949;white-space:nowrap;"></span>
       </div>
-      <!-- 우측: 이전/다음 + 확인완료 -->
+      <!-- 우측: 이전/다음 학생 -->
       <div style="display:flex;align-items:center;gap:16px;">
         <div style="display:flex;align-items:center;gap:0;">
           <button id="ocr-b-btn-prev" onclick="navStudentB(-1)" style="background:none;border:none;font-size:16px;font-weight:700;color:#494949;cursor:pointer;padding:0 12px;">&lt; 이전 학생</button>
           <div style="width:1px;height:20px;background:#D9D9D9;"></div>
           <button id="ocr-b-btn-next" onclick="navStudentB(1)" style="background:none;border:none;font-size:16px;font-weight:700;color:#494949;cursor:pointer;padding:0 12px;">다음 학생 &gt;</button>
         </div>
-        <button id="ocr-b-btn-confirm" onclick="confirmOCR_B()" style="height:40px;background:#7E44FB;color:white;border:none;border-radius:8px;padding:0 20px;font-size:15px;font-weight:800;font-family:inherit;cursor:pointer;display:inline-flex;align-items:center;gap:8px;">
-          <i data-lucide="check" style="width:16px;height:16px;"></i>확인완료
-        </button>
       </div>
     </div>
   </div>
@@ -1678,10 +1674,6 @@ function renderOCRView_B() {
     listEl.innerHTML = ddHtml;
     lucide.createIcons();
   }
-
-  // 확인 현황
-  var confirmedCount = students.filter(function(s){ return s.ocrStatus === 'confirmed'; }).length;
-  document.getElementById('ocr-b-confirm-count').textContent = '확인완료 ' + confirmedCount + ' / ' + students.length;
 
   // 이전/다음 버튼
   var btnPrev = document.getElementById('ocr-b-btn-prev');
