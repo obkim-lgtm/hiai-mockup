@@ -348,27 +348,20 @@
         </div>
         <p id="list-eval-desc" style="font-size:16px; color:#494949; margin:0 0 20px;">[독서 감상문 쓰기] 과제 업로드 후, 학생별 OCR 인식 결과를 확인하고 직접 수정할 수 있습니다.</p>
 
-        <!-- A안: OCR 확인 필요 배너 -->
-        <div id="list-ocr-banner" style="display:flex; align-items:flex-start; gap:10px; padding:10px 16px; background:#FFF5F5; border:1px solid #FFBCBC; border-radius:8px; margin-bottom:20px;">
-          <i data-lucide="triangle-alert" style="width:15px; height:15px; color:#DB3E51; flex-shrink:0; margin-top:2px;"></i>
-          <div style="display:flex; flex-direction:column; gap:4px;">
-            <span style="font-size:14px; color:#DB3E51; font-weight:800;">OCR 결과 확인이 필요한 학생입니다. AI가 잘못 읽은 부분이 있을 수 있습니다.</span>
-            <span style="font-size:14px; color:#DB3E51;">10102 이준호 &nbsp;·&nbsp; 10103 박지민</span>
+        <!-- A안: OCR 처리 필요 통합 배너 (미진행 + 확인 필요 합산) -->
+        <div id="list-a-summary-banner" style="display:none; align-items:center; justify-content:space-between; gap:12px; padding:12px 16px; background:#FFF8EC; border:1px solid #FFD580; border-radius:8px; margin-bottom:20px;">
+          <div style="display:flex; align-items:center; gap:10px; min-width:0;">
+            <i data-lucide="circle-alert" style="width:16px; height:16px; color:#E07000; flex-shrink:0;"></i>
+            <span id="list-a-summary-text" style="font-size:14px; color:#E07000; font-weight:700;"></span>
           </div>
-        </div>
-
-        <!-- A안: OCR 미진행 배너 -->
-        <div id="list-a-ocr-pending-banner" style="display:none; align-items:center; justify-content:space-between; gap:10px; padding:12px 16px; background:#FFF8EC; border:1px solid #FFD580; border-radius:8px; margin-bottom:20px;">
-          <div style="display:flex; align-items:flex-start; gap:10px;">
-            <i data-lucide="clock" style="width:16px; height:16px; color:#E07000; flex-shrink:0; margin-top:2px;"></i>
-            <div style="display:flex; flex-direction:column; gap:4px;">
-              <span style="font-size:14px; color:#E07000; font-weight:800;">OCR 인식이 필요한 학생입니다. 인식하면 AI 채점을 시작할 수 있습니다.</span>
-              <span id="list-a-ocr-pending-names" style="font-size:14px; color:#E07000;"></span>
-            </div>
+          <div style="display:flex; gap:8px; flex-shrink:0;">
+            <button id="list-a-summary-ocr-btn" onclick="startOcrPendingA()" style="height:32px;background:#E07000;color:white;border:none;border-radius:6px;padding:0 14px;font-size:13px;font-weight:700;font-family:inherit;cursor:pointer;white-space:nowrap;display:inline-flex;align-items:center;justify-content:center;line-height:1;vertical-align:middle;gap:6px;">
+              <i data-lucide="scan-text" style="width:14px;height:14px;"></i>지금 OCR 진행
+            </button>
+            <button id="list-a-summary-review-btn" onclick="goToFirstReviewA()" style="height:32px;background:white;color:#E07000;border:1px solid #FFD580;border-radius:6px;padding:0 14px;font-size:13px;font-weight:700;font-family:inherit;cursor:pointer;white-space:nowrap;display:inline-flex;align-items:center;justify-content:center;line-height:1;vertical-align:middle;gap:6px;">
+              <i data-lucide="search" style="width:14px;height:14px;"></i>확인 필요 학생 보기
+            </button>
           </div>
-          <button onclick="startOcrPendingA()" style="flex-shrink:0;height:32px;background:#E07000;color:white;border:none;border-radius:6px;padding:0 14px;font-size:13px;font-weight:700;font-family:inherit;cursor:pointer;white-space:nowrap;display:inline-flex;align-items:center;gap:6px;">
-            <i data-lucide="scan-text" style="width:14px;height:14px;"></i>지금 OCR 진행
-          </button>
         </div>
 
         <!-- B안 1반: OCR 확인 필요 배너 -->
@@ -802,7 +795,7 @@
           <i data-lucide="scan-text" style="width:16px;height:16px;color:#7E44FB;"></i>
           <span style="font-size:16px;font-weight:800;color:#222;">OCR 인식 결과</span>
         </div>
-        <div style="padding:10px 14px;background:#F7F4FF;border-radius:8px;display:flex;gap:8px;align-items:flex-start;margin-bottom:16px;">
+        <div id="ocr-b-edit-guide" style="padding:10px 14px;background:#F7F4FF;border-radius:8px;display:flex;gap:8px;align-items:flex-start;margin-bottom:16px;">
           <i data-lucide="pencil-line" style="width:14px;height:14px;color:#7E44FB;flex-shrink:0;margin-top:2px;"></i>
           <span style="font-size:13px;color:#494949;line-height:1.6;flex:1;"><strong>인식된 텍스트가 원본과 맞는지 확인해 주세요.</strong> 확인이 필요한 문항은 아래 AI 메모를 참고해 원본과 대조 후 수정하세요.</span>
         </div>
@@ -1178,6 +1171,13 @@ function startOcrPendingA() {
   if (pending.length) retryOcr(pending[0].id);
 }
 
+// 통합 배너 "확인 필요 학생 보기" — 첫 확인 필요 학생 OCR 결과로 이동
+function goToFirstReviewA() {
+  for (var i = 0; i < STUDENTS.length; i++) {
+    if (STUDENTS[i].status === '제출' && STUDENTS[i].needsReview) { goToOCR(i); return; }
+  }
+}
+
 // ── OCR 인식 실패 → 다시 시도 (네트워크 오류 등, 재실행) ──
 function retryOcr(id) {
   // 현재 화면이 쓰는 데이터 배열에서 찾기 (같은 학번이 여러 배열에 있어 혼동 방지)
@@ -1294,7 +1294,7 @@ function renderTable() {
 const STUDENTS_B1 = [
   { id:'10101', name:'김서윤', date:'04/18 09:12 선생님 업로드', files:1, ocrStatus:'confirmed', needsReview:false },
   { id:'10102', name:'이준호', date:'04/18 09:12 선생님 업로드', files:1, ocrStatus:'unconfirmed', needsReview:true },
-  { id:'10103', name:'박지민', date:'04/18 09:12 선생님 업로드', files:1, ocrStatus:'confirmed', needsReview:false },
+  { id:'10103', name:'박지민', date:'04/18 09:12 선생님 업로드', files:1, ocrStatus:'unconfirmed', needsReview:true },
   { id:'10104', name:'최유진', date:'04/18 09:12 선생님 업로드', files:1, ocrStatus:'failed', needsReview:false },
   { id:'10105', name:'정현우', date:'04/18 09:12 선생님 업로드', files:1, ocrStatus:'unconfirmed', needsReview:false },
   { id:'10106', name:'한지우', date:'04/18 09:12 선생님 업로드', files:1, ocrStatus:'confirmed', needsReview:false },
@@ -1358,11 +1358,11 @@ const OCR_DATA_B = {
       { text:'방사성 원소가 암 치료 등 의학 분야에서 어떻게 활용되는지 더 알고 싶다. 또한 앞으로 새롭게 발견되거나 합성될 원소가 있다면 그것이 인류의 삶에 어떤 영향을 줄지도 궁금하다.' }
     ]}
   ]},
-  '10103': { needsReview: false, rubricScores: [null, null, null, null, null], questions: [
-    { label:'문항 1', desc:'이 책의 핵심 내용을 간략히 요약하시오.', spans:[{ text:'원소 주기율표의 각 원소와 그 발견 역사를 흥미로운 이야기 형식으로 소개한 책이다.' }]},
-    { label:'문항 2', desc:'책에서 인상 깊었던 과학자 또는 원소의 발견 이야기를 소개하시오.', spans:[{ text:'노벨 형제와 다이너마이트 발명 이야기가 인상 깊었다. 노벨의 발명이 후에 노벨 평화상으로 이어진 역사가 흥미로웠다.' }]},
-    { label:'문항 3', desc:'책에서 다룬 원소 중 하나를 선택해 우리 삶과의 연관성을 설명하시오.', spans:[{ text:'탄소는 우리 생활 전반에 걸쳐 사용된다. 연필의 흑연부터 다이아몬드, 현재는 탄소나노튜브까지 다양한 형태로 활용된다.' }]},
-    { label:'문항 4', desc:'과학 발전에서 국가 간 경쟁이 미친 영향을 서술하시오.', spans:[{ text:'과학 경쟁은 기술 발전을 가속화하지만 윤리적 문제를 수반하기도 한다. 핵 개발이 대표적인 예이다.' }]},
+  '10103': { needsReview: true, rubricScores: [null, null, null, null, null], questions: [
+    { label:'문항 1', desc:'이 책의 핵심 내용을 간략히 요약하시오.', uncertain:true, spans:[{ text:'원소 주기율표의 각 원소와 그 발견 역사를 흥미로운 이야기 형식으로 소개한 책이다.' }]},
+    { label:'문항 2', desc:'책에서 인상 깊었던 과학자 또는 원소의 발견 이야기를 소개하시오.', uncertain:true, spans:[{ text:'노벨 형제와 다이너마이트 발명 이야기가 인상 깊었다. 노벨의 발명이 후에 노벨 평화상으로 이어진 역사가 흥미로웠다.' }]},
+    { label:'문항 3', desc:'책에서 다룬 원소 중 하나를 선택해 우리 삶과의 연관성을 설명하시오.', uncertain:true, spans:[{ text:'탄소는 우리 생활 전반에 걸쳐 사용된다. 연필의 흑연부터 다이아몬드, 현재는 탄소나노튜브까지 다양한 형태로 활용된다.' }]},
+    { label:'문항 4', desc:'과학 발전에서 국가 간 경쟁이 미친 영향을 서술하시오.', uncertain:true, spans:[{ text:'과학 경쟁은 기술 발전을 가속화하지만 윤리적 문제를 수반하기도 한다. 핵 개발이 대표적인 예이다.' }]},
     { label:'문항 5', desc:'이 책을 읽고 더 알고 싶어진 점을 쓰시오.', spans:[{ text:'아직 채워지지 않은 원소들이 발견될 가능성과, 그 원소들의 특성이 어떨지 궁금하다.' }]}
   ]},
   '10104': { needsReview: false, rubricScores: [4, 4, 3, 2, 2], questions: [
@@ -1531,19 +1531,16 @@ function showListForClass(classNum, evalType) {
   if (titleEl) titleEl.textContent = '1-' + classNum + '반 과제 제출 상세';
 
   // 배너 · 버튼 상태
-  var bannerA = document.getElementById('list-ocr-banner');
+  var sumBanner = document.getElementById('list-a-summary-banner');
   var bannerB1 = document.getElementById('list-b1-ocr-banner');
   var bannerB2 = document.getElementById('list-b-ocr-pending-banner');
   var ocrBtn = document.getElementById('btn-ocr-confirm');
   var ocrWrap = document.getElementById('btn-ocr-confirm-wrap');
 
-  var bannerAPending = document.getElementById('list-a-ocr-pending-banner');
-
   // 모두 숨기고 조건별로 켜기
-  if (bannerA) bannerA.style.display = 'none';
+  if (sumBanner) sumBanner.style.display = 'none';
   if (bannerB1) bannerB1.style.display = 'none';
   if (bannerB2) bannerB2.style.display = 'none';
-  if (bannerAPending) bannerAPending.style.display = 'none';
 
   if (currentEvalType === 'B') {
     // C안은 반 번호와 상태 매핑이 다름
@@ -1582,13 +1579,21 @@ function showListForClass(classNum, evalType) {
   } else {
     // A안
     if (classNum === 1) {
-      if (bannerA) bannerA.style.display = 'flex';
-      // 미진행 학생 있으면 주황 배너도 표시
+      // 처리 필요(미진행 + 확인 필요) 통합 배너
       var pendingA = STUDENTS.filter(function(s){ return s.status === '제출' && s.ocrStatus === 'pending'; });
-      if (bannerAPending && pendingA.length > 0) {
-        var paNames = document.getElementById('list-a-ocr-pending-names');
-        if (paNames) paNames.innerHTML = pendingA.map(function(s){ return s.id + ' ' + s.name; }).join(' &nbsp;·&nbsp; ');
-        bannerAPending.style.display = 'flex';
+      var reviewA = STUDENTS.filter(function(s){ return s.status === '제출' && s.needsReview; });
+      var totalA = pendingA.length + reviewA.length;
+      if (sumBanner && totalA > 0) {
+        var partsA = [];
+        if (pendingA.length) partsA.push('OCR 미진행 ' + pendingA.length);
+        if (reviewA.length) partsA.push('확인 필요 ' + reviewA.length);
+        var sumText = document.getElementById('list-a-summary-text');
+        if (sumText) sumText.innerHTML = '처리 필요 <strong>' + totalA + '건</strong> · ' + partsA.join(' · ');
+        var ocrBtnS = document.getElementById('list-a-summary-ocr-btn');
+        var reviewBtnS = document.getElementById('list-a-summary-review-btn');
+        if (ocrBtnS) ocrBtnS.style.display = pendingA.length ? 'inline-flex' : 'none';
+        if (reviewBtnS) reviewBtnS.style.display = reviewA.length ? 'inline-flex' : 'none';
+        sumBanner.style.display = 'flex';
       }
       if (ocrBtn) { ocrBtn.disabled = false; ocrBtn.style.opacity = '1'; ocrBtn.style.cursor = 'pointer'; ocrBtn.style.pointerEvents = ''; }
       if (ocrWrap) { ocrWrap.removeAttribute('title'); ocrWrap.style.cursor = ''; }
@@ -1684,12 +1689,23 @@ function renderOCRView_B() {
   if (btnPrev) { btnPrev.disabled = currentOcrBStudentIdx === 0; btnPrev.style.opacity = currentOcrBStudentIdx === 0 ? '0.4' : '1'; }
   if (btnNext) { btnNext.disabled = currentOcrBStudentIdx === students.length - 1; btnNext.style.opacity = currentOcrBStudentIdx === students.length - 1 ? '0.4' : '1'; }
 
-  // 경고 배너
+  // 경고 배너 — 확인 필요 비율(≥70%)이면 직접 채점 안내로 문구 분기
   var banner = document.getElementById('ocr-b-review-banner');
   var split = document.getElementById('ocr-b-split');
   if (student.needsReview) {
+    var _bd = OCR_DATA_B[student.id];
+    var _uq = _bd ? _bd.questions.filter(function(q){ return q.uncertain || (q.spans && q.spans.some(function(s){ return s.uncertain; })); }).length : 0;
+    var _tot = _bd ? _bd.questions.length : 0;
+    if (_tot > 0 && _uq / _tot >= 0.7) {
+      banner.innerHTML = '<i data-lucide="triangle-alert" style="width:16px;height:16px;color:#DB3E51;flex-shrink:0;"></i>'
+        + '<span style="font-size:14px;color:#494949;font-weight:700;"><strong style="color:#DB3E51;">OCR 인식 정확도 낮음</strong> — 인식 결과를 신뢰하기 어려워 표시하지 않았어요. 왼쪽 원본을 보고 직접 채점해 주세요.</span>';
+    } else {
+      banner.innerHTML = '<i data-lucide="triangle-alert" style="width:16px;height:16px;color:#DB3E51;flex-shrink:0;"></i>'
+        + '<span style="font-size:14px;color:#494949;font-weight:700;"><strong style="color:#DB3E51;">OCR 결과 확인 필요</strong> — <strong id="ocr-b-suspect-count" style="color:#DB3E51;">' + _uq + '개</strong> 문항에서 인식 불확실 구간이 감지되었습니다. 해당 문항 아래 AI 메모를 확인하고 원본과 대조해 주세요.</span>';
+    }
     banner.style.display = 'flex';
     if (split) split.style.height = 'calc(100vh - 68px - 42px)';
+    lucide.createIcons();
   } else {
     banner.style.display = 'none';
     if (split) split.style.height = 'calc(100vh - 68px)';
@@ -1759,6 +1775,11 @@ function switchOcrBTab(tabName) {
   lucide.createIcons();
 }
 
+// 인식 정확도 낮은 과제 — OCR 다시 인식 (결과 화면 안내 박스에서)
+function retryOcrB(id) {
+  showToast('OCR을 다시 진행합니다. 잠시 후 결과를 확인해 주세요.', 'success');
+}
+
 function renderOcrBText(student) {
   var panel = document.getElementById('ocr-b-text-panel');
   if (!panel) return;
@@ -1780,16 +1801,24 @@ function renderOcrBText(student) {
   if (countEl) countEl.textContent = uncertainCount;
   if (suspectEl) suspectEl.textContent = uncertainCount + '개';
 
+  // 확인 필요 비율이 임계치(기본 70%, 조정 가능) 이상이면 OCR 내용을 표시하지 않고 안내로 대체
+  var guide = document.getElementById('ocr-b-edit-guide');
+  var LOW_ACC_THRESHOLD = 0.7;
+  if (data.questions.length > 0 && uncertainCount / data.questions.length >= LOW_ACC_THRESHOLD) {
+    if (guide) guide.style.display = 'none';
+    panel.innerHTML =
+      '<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:64px 32px;min-height:420px;">'
+        + '<div style="width:72px;height:72px;border-radius:20px;background:#FFF4E8;display:flex;align-items:center;justify-content:center;margin-bottom:20px;"><i data-lucide="clipboard-pen" style="width:34px;height:34px;color:#FF8C4C;"></i></div>'
+        + '<div style="font-size:18px;font-weight:800;color:#222;margin-bottom:10px;">왼쪽 원본을 보고 직접 채점해 주세요</div>'
+        + '<div style="font-size:14px;color:#494949;line-height:1.7;max-width:440px;margin-bottom:24px;">확인이 필요한 문항이 많아(전체 ' + data.questions.length + '개 중 <strong style="color:#FF8C4C;">' + uncertainCount + '개</strong>) OCR 인식 정확도가 낮아요. 다시 인식해도 결과가 나아지지 않을 수 있으니, 왼쪽 원본 답안을 보고 직접 채점해 주세요.</div>'
+        + '<button onclick="retryOcrB(\'' + student.id + '\')" style="height:42px;padding:0 18px;background:white;color:#7E44FB;border:1.5px solid #B28FFD;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;display:inline-flex;align-items:center;justify-content:center;gap:6px;"><i data-lucide="rotate-cw" style="width:15px;height:15px;"></i>OCR 다시 인식</button>'
+      + '</div>';
+    lucide.createIcons();
+    return;
+  }
+  if (guide) guide.style.display = 'flex';
+
   var html = '';
-  // 책 제목 헤더
-  html += '<div style="margin-bottom:24px;padding-bottom:16px;border-bottom:1px solid #EBEBEB;">';
-  html += '<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">';
-  html += '<i data-lucide="book-open" style="width:15px;height:15px;color:#7E44FB;"></i>';
-  html += '<span style="font-size:13px;font-weight:700;color:#7E44FB;">독후 활동 보고서</span>';
-  html += '<span style="font-size:12px;color:#808080;margin-left:4px;">사라진 스푼 — 샘 킨 지음</span>';
-  html += '</div>';
-  html += '<div style="font-size:13px;color:#808080;">학생: ' + student.name + ' (' + student.id + ')</div>';
-  html += '</div>';
 
   data.questions.forEach(function(q, qi) {
     var hasUncertain = q.uncertain || (q.spans && q.spans.some(function(s){ return s.uncertain; }));
