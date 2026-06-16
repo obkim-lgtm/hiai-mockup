@@ -2323,9 +2323,47 @@ function saveSection(ta, gi) {
   // 문항 저장 시 항상 저장 토스트 (모든 학생 공통)
   showToast('저장되었습니다.', 'success');
 
-  // 문항을 확인·수정해 저장하면 해당 문항의 '확인 필요'(낮은 신뢰도) 해소 (A안 OCR 화면)
+  // 문항을 확인·수정해 저장하면 해당 문항의 '확인 필요'(낮은 신뢰도) 해소
   var ocrScreen = document.getElementById('screen-ocr');
+  var ocrScreenB = document.getElementById('screen-ocr-b');
   if (ocrScreen && ocrScreen.classList.contains('active')) resolveUncertainty(gi);
+  else if (ocrScreenB && ocrScreenB.classList.contains('active')) resolveUncertaintyB(gi);
+}
+
+// B안(screen-ocr-b) 문항 확인/수정 저장 → 불확실 해소, 모두 해소되면 needsReview=false
+function resolveUncertaintyB(gi) {
+  var student = STUDENTS_B1[currentOcrBStudentIdx];
+  if (!student) return;
+  var data = OCR_DATA_B[student.id];
+  if (!data || !data.questions || !data.questions[gi]) return;
+  // 해당 문항 불확실 해소
+  data.questions[gi].uncertain = false;
+  if (data.questions[gi].spans) data.questions[gi].spans.forEach(function(s){ s.uncertain = false; });
+  // 화면에서 노트·확인필요 칩 제거
+  var bodyEl = document.getElementById('group-body-' + gi);
+  var section = bodyEl ? bodyEl.closest('.rubric-ocr-section') : null;
+  if (section) {
+    var note = section.querySelector('.ocr-uncertainty-note');
+    if (note) note.remove();
+    var chip = section.querySelector('.rubric-suspect-chip');
+    if (chip) chip.remove();
+  }
+  // 남은 불확실 문항 확인
+  var still = data.questions.some(function(q){ return q.uncertain || (q.spans && q.spans.some(function(s){ return s.uncertain; })); });
+  if (!still) student.needsReview = false; // 목록에도 반영(완료)
+  // 빨간 배너 갱신
+  var banner = document.getElementById('ocr-b-review-banner');
+  if (banner) {
+    if (!still) {
+      banner.style.display = 'none';
+      var split = document.getElementById('ocr-b-split');
+      if (split) split.style.height = 'calc(100vh - 68px)';
+    } else {
+      var uq = data.questions.filter(function(q){ return q.uncertain || (q.spans && q.spans.some(function(s){ return s.uncertain; })); }).length;
+      var cntEl = document.getElementById('ocr-b-suspect-count');
+      if (cntEl) cntEl.textContent = uq + '개';
+    }
+  }
 }
 
 // 문항 확인/수정 저장 → 해당 문항 불확실 해소, 모두 해소되면 needsReview=false (목록에서 '완료')
