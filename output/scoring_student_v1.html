@@ -715,7 +715,7 @@
     }
     // C안(평가명 최종)은 확인 필요 표시 모두 숨김 + OCR 결과 확인 새탭 링크 노출
     var _sdEvalInit = (new URLSearchParams(location.search)).get('eval');
-    var isReadOnlyInit = (_sdEvalInit === 'C');
+    var isReadOnlyInit = true; // 채점 화면 전사 = 항상 읽기 전용(수정은 'OCR 결과 수정' 버튼 → 과제물 관리)
     if (isReadOnlyInit) {
       var ocrLink = document.getElementById('left-ocr-review-link');
       if (ocrLink) {
@@ -758,40 +758,14 @@
       html += '<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap;">';
       html += '<span class="ocr-b-q-label">' + q.label + '</span>';
       html += '<span class="ocr-b-q-desc">' + q.desc + '</span>';
-      // C안(평가명 최종)은 읽기 전용 — 클릭 편집/textarea 비활성, 확인 필요 표시 모두 숨김
-      var _sdEval = (new URLSearchParams(location.search)).get('eval');
-      var isReadOnly = (_sdEval === 'C');
-      if (hasUncertain && !isReadOnly) {
+      // 확인 필요(불확실) 문항 칩 — 읽기 전용이어도 표시(채점 신뢰도 참고)
+      if (hasUncertain) {
         html += '<span id="left-unc-chip-' + qi + '" style="display:inline-flex;align-items:center;gap:4px;background:#FFF4CC;border:1px solid #E07000;border-radius:100px;padding:2px 8px;font-size:11px;font-weight:800;color:#E07000;margin-left:auto;">'
               + '<i data-lucide="triangle-alert" style="width:11px;height:11px;"></i>인식 불확실</span>';
       }
       html += '</div>';
-      if (hasUncertain) {
-        if (isReadOnly) {
-          html += '<div id="left-ocr-body-' + qi + '" class="ocr-b-q-text">'
-                + fullText + '</div>';
-        } else {
-          html += '<div id="left-ocr-body-' + qi + '" class="ocr-b-q-text ocr-b-editable" onclick="leftOcrEdit(' + qi + ')" '
-                + 'style="background:#FFFBEB;border:1px solid #FFD966;border-radius:8px;padding:14px 16px;">'
-                + fullText + '</div>';
-          html += '<textarea id="left-ocr-ta-' + qi + '" onblur="leftOcrSave(' + qi + ')" '
-                + 'style="display:none;width:100%;background:#FFFBEB;border:2px solid #E07000;border-radius:8px;padding:14px 16px;'
-                + 'font-family:inherit;font-size:16px;line-height:1.85;color:#333;outline:none;resize:none;overflow:hidden;box-sizing:border-box;" rows="3">'
-                + fullText + '</textarea>';
-        }
-      } else {
-        if (isReadOnly) {
-          html += '<div id="left-ocr-body-' + qi + '" class="ocr-b-q-text">'
-                + fullText + '</div>';
-        } else {
-          html += '<div id="left-ocr-body-' + qi + '" class="ocr-b-q-text ocr-b-editable" onclick="leftOcrEdit(' + qi + ')">'
-                + fullText + '</div>';
-          html += '<textarea id="left-ocr-ta-' + qi + '" onblur="leftOcrSave(' + qi + ')" '
-                + 'style="display:none;width:100%;background:white;border:2px solid #7E44FB;border-radius:8px;padding:14px 16px;'
-                + 'font-family:inherit;font-size:16px;line-height:1.85;color:#333;outline:none;resize:none;overflow:hidden;box-sizing:border-box;" rows="3">'
-                + fullText + '</textarea>';
-        }
-      }
+      // 본문 — 읽기 전용. OCR 수정은 상단 'OCR 결과 수정' 버튼으로 과제물 관리에서만.
+      html += '<div id="left-ocr-body-' + qi + '" class="ocr-b-q-text">' + fullText + '</div>';
       // AI 인식 불확실 메모 (불확실 문항만, 기존 본문/편집 아래에 추가)
       if (hasUncertain) {
         var _hints = q.spans.filter(function(sp){ return sp.uncertain && sp.hint; }).map(function(sp){ return sp.hint; });
