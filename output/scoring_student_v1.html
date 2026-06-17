@@ -670,13 +670,15 @@
       { label:'문항 4', desc:'과학 발전에서 국가 간 경쟁이 미친 영향을 서술하시오.', spans:[{text:'과학 경쟁이 항상 나쁜 것은 아니다. 서로 다른 국가의 과학자들이 경쟁하면서도 논문과 학술대회를 통해 지식을 공유했기에 과학이 빠르게 발전할 수 있었다.'}]},
       { label:'문항 5', desc:'이 책을 읽고 더 알고 싶어진 점을 쓰시오.', spans:[{text:'주기율표에 아직 빈자리가 남아 있는지, 그리고 이론적으로 존재할 수 있는 가장 무거운 원소의 한계는 무엇인지 더 공부해보고 싶다.'}]}
     ]},
-    '10103': { needsReview: false, questions: [
-      { label:'문항 1', desc:'이 책의 핵심 내용을 간략히 요약하시오.', spans:[{text:'원소 발견의 역사를 통해 인류가 물질 세계를 어떻게 이해해 왔는지를 보여주는 책이다. 과학자들의 경쟁과 협력, 실수와 성공이 어우러진 흥미로운 이야기다.'}]},
-      { label:'문항 2', desc:'책에서 인상 깊었던 과학자 또는 원소의 발견 이야기를 소개하시오.', spans:[{text:'드미트리 멘델레예프가 꿈에서 주기율표의 완성된 모습을 보고 깨어나 그것을 기록했다는 일화가 인상 깊었다. 직관과 논리가 결합된 위대한 발견이었다.'}]},
-      { label:'문항 3', desc:'책에서 다룬 원소 중 하나를 선택해 우리 삶과의 연관성을 설명하시오.', spans:[{text:'실리콘은 반도체의 핵심 원소로, 현대 디지털 문명 전체를 지탱하는 소재다. 컴퓨터와 스마트폰이 없는 일상은 상상하기 어렵다.'}]},
-      { label:'문항 4', desc:'과학 발전에서 국가 간 경쟁이 미친 영향을 서술하시오.', spans:[{text:'2차 세계대전 당시 핵무기 개발 경쟁은 원자물리학의 급격한 발전을 이끌었다. 과학의 군사적 활용이라는 윤리 문제도 함께 제기했다.'}]},
+    '10103': { needsReview: true, questions: [
+      { label:'문항 1', desc:'이 책의 핵심 내용을 간략히 요약하시오.', spans:[{text:'원소 발견의 역사를 통해 인류가 물질 세계를 어떻게 이해해 왔는지를 보여주는 책이다. 과학자들의 경쟁과 협력, 실수와 성공이 어우러진 흥미로운 이야기다.', uncertain:true, hint:'필기 전반이 흐릿해 판독 어려움 — 원본 확인 필요'}]},
+      { label:'문항 2', desc:'책에서 인상 깊었던 과학자 또는 원소의 발견 이야기를 소개하시오.', spans:[{text:'드미트리 멘델레예프가 꿈에서 주기율표의 완성된 모습을 보고 깨어나 그것을 기록했다는 일화가 인상 깊었다. 직관과 논리가 결합된 위대한 발견이었다.', uncertain:true, hint:'필기 흐릿 — 원본 확인 필요'}]},
+      { label:'문항 3', desc:'책에서 다룬 원소 중 하나를 선택해 우리 삶과의 연관성을 설명하시오.', spans:[{text:'실리콘은 반도체의 핵심 원소로, 현대 디지털 문명 전체를 지탱하는 소재다. 컴퓨터와 스마트폰이 없는 일상은 상상하기 어렵다.', uncertain:true, hint:'필기 흐릿 — 원본 확인 필요'}]},
+      { label:'문항 4', desc:'과학 발전에서 국가 간 경쟁이 미친 영향을 서술하시오.', spans:[{text:'2차 세계대전 당시 핵무기 개발 경쟁은 원자물리학의 급격한 발전을 이끌었다. 과학의 군사적 활용이라는 윤리 문제도 함께 제기했다.', uncertain:true, hint:'필기 흐릿 — 원본 확인 필요'}]},
       { label:'문항 5', desc:'이 책을 읽고 더 알고 싶어진 점을 쓰시오.', spans:[{text:'미래에 새로운 원소가 더 발견될 수 있는지, 그리고 현재 주기율표 118번 이후의 원소들은 어떤 성질을 가질지 궁금하다.'}]}
     ]},
+    '10105': { ocrCase: 'pending' },  // OCR 미진행
+    '10106': { ocrCase: 'failed' },   // OCR 인식 실패
     'default': { needsReview: false, questions: [
       { label:'문항 1', desc:'이 책의 핵심 내용을 간략히 요약하시오.', spans:[{text:'원소 주기율표에 얽힌 과학자들의 이야기를 통해 원소들이 발견된 역사를 흥미롭게 풀어낸 책이다. 각 원소는 독특한 성질을 가지고 있으며 그 발견 과정에는 경쟁과 헌신의 역사가 담겨 있다.'}]},
       { label:'문항 2', desc:'책에서 인상 깊었던 과학자 또는 원소의 발견 이야기를 소개하시오.', spans:[{text:'헨리 모즐리의 이야기가 슬프면서도 인상 깊었다. 원자번호 개념을 확립한 천재 과학자였지만 1차 세계대전에 참전해 27세의 나이로 전사했다.'}]},
@@ -688,8 +690,29 @@
 
   // ── B안 좌측 패널 초기화 ──
   function initLeftPanelB(studentId) {
-    // B안 데모: 모든 학생에게 이준호(10102) OCR 결과(불확실 구간 포함) 동일 적용
-    var data = OCR_DATA_B['10102'];
+    // 학생별 OCR 케이스 적용 (정상/확인 필요/정확도 낮음/인식 실패/미진행). 데이터 없으면 default(정상 인식).
+    var data = OCR_DATA_B[studentId] || OCR_DATA_B['default'];
+    // 인식 실패 / OCR 미진행 — 인식 결과가 없어 전사 대신 안내만 표시
+    if (data.ocrCase === 'failed' || data.ocrCase === 'pending') {
+      var _cont = document.getElementById('left-ocr-content');
+      if (_cont) {
+        if (data.ocrCase === 'failed') {
+          _cont.innerHTML = '<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:48px 24px;min-height:300px;">'
+            + '<div style="width:64px;height:64px;border-radius:18px;background:#F2F2F2;display:flex;align-items:center;justify-content:center;margin-bottom:16px;"><i data-lucide="circle-x" style="width:30px;height:30px;color:#808080;"></i></div>'
+            + '<div style="font-size:16px;font-weight:800;color:#222;margin-bottom:8px;">OCR 인식에 실패했어요</div>'
+            + '<div style="font-size:13px;color:#494949;line-height:1.7;max-width:380px;">네트워크 오류 등으로 답안을 인식하지 못했어요. 다시 시도하거나 <strong>원본 제출물</strong> 탭을 보고 직접 채점해 주세요.</div>'
+            + '</div>';
+        } else {
+          _cont.innerHTML = '<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:48px 24px;min-height:300px;">'
+            + '<div style="width:64px;height:64px;border-radius:18px;background:#FFF4E8;display:flex;align-items:center;justify-content:center;margin-bottom:16px;"><i data-lucide="clock" style="width:30px;height:30px;color:#FF8C4C;"></i></div>'
+            + '<div style="font-size:16px;font-weight:800;color:#222;margin-bottom:8px;">아직 OCR 인식 전이에요</div>'
+            + '<div style="font-size:13px;color:#494949;line-height:1.7;max-width:380px;">AI 채점을 실행하면 답안을 인식해 결과가 표시됩니다.</div>'
+            + '</div>';
+        }
+        lucide.createIcons();
+      }
+      return;
+    }
     // C안(평가명 최종)은 확인 필요 표시 모두 숨김 + OCR 결과 확인 새탭 링크 노출
     var _sdEvalInit = (new URLSearchParams(location.search)).get('eval');
     var isReadOnlyInit = (_sdEvalInit === 'C');
@@ -716,6 +739,18 @@
     // OCR 텍스트 렌더
     var container = document.getElementById('left-ocr-content');
     var html = '';
+    // 인식 정확도 낮음(확인 필요 문항 ≥70%, 가변) — 결과 숨기고 직접 채점 안내
+    var _total = data.questions.length;
+    var _unc = data.questions.filter(function(q){ return q.spans.some(function(s){ return s.uncertain; }); }).length;
+    if (_total > 0 && _unc / _total >= 0.7) {
+      container.innerHTML = '<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:48px 24px;min-height:300px;">'
+        + '<div style="width:64px;height:64px;border-radius:18px;background:#FFF4E8;display:flex;align-items:center;justify-content:center;margin-bottom:16px;"><i data-lucide="clipboard-pen" style="width:30px;height:30px;color:#FF8C4C;"></i></div>'
+        + '<div style="font-size:16px;font-weight:800;color:#222;margin-bottom:8px;">인식 정확도가 낮아 결과를 표시하지 않았어요</div>'
+        + '<div style="font-size:13px;color:#494949;line-height:1.7;max-width:380px;">확인이 필요한 문항이 많아(전체 ' + _total + '개 중 <strong style="color:#FF8C4C;">' + _unc + '개</strong>) 인식 결과를 신뢰하기 어려워요. <strong>원본 제출물</strong> 탭을 보고 직접 채점해 주세요.</div>'
+        + '</div>';
+      lucide.createIcons();
+      return;
+    }
     data.questions.forEach(function(q, qi) {
       var hasUncertain = q.spans.some(function(sp){ return sp.uncertain; });
       var fullText = q.spans.map(function(sp){ return sp.text; }).join('');
@@ -728,7 +763,7 @@
       var isReadOnly = (_sdEval === 'C');
       if (hasUncertain && !isReadOnly) {
         html += '<span id="left-unc-chip-' + qi + '" style="display:inline-flex;align-items:center;gap:4px;background:#FFF4CC;border:1px solid #E07000;border-radius:100px;padding:2px 8px;font-size:11px;font-weight:800;color:#E07000;margin-left:auto;">'
-              + '<i data-lucide="triangle-alert" style="width:11px;height:11px;"></i>확인 필요</span>';
+              + '<i data-lucide="triangle-alert" style="width:11px;height:11px;"></i>인식 불확실</span>';
       }
       html += '</div>';
       if (hasUncertain) {
@@ -755,6 +790,16 @@
                 + 'style="display:none;width:100%;background:white;border:2px solid #7E44FB;border-radius:8px;padding:14px 16px;'
                 + 'font-family:inherit;font-size:16px;line-height:1.85;color:#333;outline:none;resize:none;overflow:hidden;box-sizing:border-box;" rows="3">'
                 + fullText + '</textarea>';
+        }
+      }
+      // AI 인식 불확실 메모 (불확실 문항만, 기존 본문/편집 아래에 추가)
+      if (hasUncertain) {
+        var _hints = q.spans.filter(function(sp){ return sp.uncertain && sp.hint; }).map(function(sp){ return sp.hint; });
+        if (_hints.length) {
+          html += '<div style="margin-top:8px;background:#FFF5F5;border:1px solid #FFBCBC;border-radius:8px;padding:10px 14px;">'
+                + '<div style="font-size:12px;font-weight:800;color:#DB3E51;display:flex;align-items:center;gap:4px;margin-bottom:4px;"><i data-lucide="triangle-alert" style="width:12px;height:12px;"></i>AI 인식 불확실</div>'
+                + '<div style="font-size:13px;color:#494949;line-height:1.65;">' + _hints.join(' · ') + '</div>'
+                + '</div>';
         }
       }
       html += '</div>';
@@ -882,7 +927,7 @@
         if (mc) mc.style.height = 'calc(100vh - 68px)';
       }, 1400);
     };
-    if (evalType === 'B' || evalType === 'C') {
+    if (true) { // 항상 전사 텍스트+원본 제출물 탭(B안)만 표시. 이전 A안(원본 이미지 뷰어)은 코드 보존하되 미표시 — 필요 시 이 조건만 되돌리면 복원됨.
       // 좌측: B안 OCR 뷰어 표시 (C안은 읽기 전용)
       document.getElementById('left-panel-a').style.display = 'none';
       var lb = document.getElementById('left-panel-b');
@@ -957,6 +1002,12 @@
       l.style.display=l.style.display==='none'?'block':'none';
     });
     document.addEventListener('click',function(){document.getElementById('studentDropdownList').style.display='none';});
+    // 헤더 학생명·상태를 STUDENT_LIST(id) 기준으로 정렬 (잘못된 ?name 파라미터 무시)
+    var _cur = STUDENT_LIST.filter(function(s){ return s.id === CURRENT_STUDENT_ID; })[0];
+    if (_cur) {
+      var _hd = document.querySelector('#studentDropdownBtn span');
+      if (_hd) _hd.innerHTML = _cur.id + ' ' + _cur.name + ' <span style="color:' + _cur.statusCls + ';font-weight:700;">(' + _cur.status + ')</span>';
+    }
   })();
 
   // 채점 상태 라디오
@@ -1044,7 +1095,7 @@
     var html = '';
     OCR_QUESTIONS.forEach(function(q, gi) {
       var hasUnc = !!q.uncertainty;
-      var chip = hasUnc ? '<span class="rubric-suspect-chip"><i data-lucide="triangle-alert" style="width:11px;height:11px;"></i>확인 필요</span>' : '';
+      var chip = hasUnc ? '<span class="rubric-suspect-chip"><i data-lucide="triangle-alert" style="width:11px;height:11px;"></i>인식 불확실</span>' : '';
       html += '<div class="rubric-ocr-section">';
       html += '<div class="rubric-ocr-header">';
       html += '<span class="badge-purple">' + q.label + '</span>';
