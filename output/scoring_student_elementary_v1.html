@@ -2813,5 +2813,54 @@ updateShareBtnState();
 updatePreviewBtnState();
 lucide.createIcons();
 </script>
+
+<!-- ===== 까망이 목업 화면 선택기 (AI 채점) ===== -->
+<style>
+  #mockpick{ position:fixed; right:24px; bottom:24px; z-index:3000; background:#1F2233; border-radius:14px; padding:8px; box-shadow:0 10px 30px rgba(0,0,0,.35); width:max-content; max-width:380px; cursor:move; user-select:none; font-family:'NanumSquareRound',-apple-system,sans-serif; }
+  #mockpick .mp-head{ font-size:11px; font-weight:800; color:#8A8FB0; letter-spacing:.04em; display:flex; align-items:center; justify-content:space-between; gap:16px; padding:6px 8px; cursor:pointer; }
+  #mockpick .mp-body{ display:flex; flex-direction:column; gap:6px; margin-top:6px; }
+  #mockpick .mp-cap{ font-size:10px; font-weight:800; color:#6B6F8C; letter-spacing:.05em; padding:7px 8px 2px; }
+  #mockpick .mp-btn{ width:100%; text-align:left; white-space:nowrap; padding:9px 12px; border-radius:9px; border:1px solid #3A3F58; background:#2A2E44; color:#C9CCE0; font-size:13px; font-weight:700; font-family:inherit; cursor:pointer; line-height:1.35; }
+  #mockpick .mp-btn:hover{ background:#33384f; }
+  #mockpick .mp-btn.on{ background:#7E44FB; color:#fff; border-color:#7E44FB; }
+  #mockpick .mp-sub{ font-size:11px; font-weight:600; color:#8A8FB0; margin-left:8px; }
+  #mockpick .mp-btn.on .mp-sub{ color:#E6DBFF; }
+</style>
+<div id="mockpick">
+  <div class="mp-head" onclick="mpToggle()">
+    <span style="display:inline-flex;align-items:center;gap:6px;"><i data-lucide="layout-grid" style="width:13px;height:13px;"></i>MOCKUP · AI 채점</span>
+    <i id="mp-caret" data-lucide="chevron-down" style="width:14px;height:14px;"></i>
+  </div>
+  <div id="mp-body" class="mp-body">
+    <div class="mp-cap">화면</div>
+    <button class="mp-btn" data-f="scoring_list_v1.html" onclick="mpNav('scoring_list_v1.html')">채점 목록</button>
+    <button class="mp-btn" data-f="scoring_student_v1.html" onclick="mpNav('scoring_student_v1.html')">학생 채점 상세 <span class="mp-sub">중고등</span></button>
+    <button class="mp-btn" data-f="scoring_student_elementary_v1.html" onclick="mpNav('scoring_student_elementary_v1.html')">유초등 개별 채점</button>
+    <div class="mp-cap">AI 채점 실행 모달 · OCR 상태별</div>
+    <button class="mp-btn" onclick="mpRun('ok')">OCR 완료 <span class="mp-sub">채점 가능·불가 표</span></button>
+    <button class="mp-btn" onclick="mpRun('few')">OCR 일부 미확인</button>
+    <button class="mp-btn" onclick="mpRun('first')">OCR 인식 전</button>
+  </div>
+</div>
+<script>
+  function mpToggle(){ var b=document.getElementById('mp-body'); var c=document.getElementById('mp-caret'); var open=b.style.display!=='none'; b.style.display=open?'none':'flex'; if(c)c.style.transform=open?'rotate(180deg)':''; }
+  function mpNav(url){ if(location.pathname.split('/').pop()!==url) location.href=url; }
+  function mpRun(k){
+    if (typeof openRunModal==='function'){
+      if(k==='ok') openRunModal();
+      else if(k==='few') openOcrReviewFew();
+      else if(k==='first') openOcrFirstModal();
+    } else { location.href='scoring_list_v1.html?run='+k; }
+  }
+  (function(){
+    var cur=location.pathname.split('/').pop();
+    document.querySelectorAll('#mockpick .mp-btn[data-f]').forEach(function(b){ b.classList.toggle('on', b.dataset.f===cur); });
+    var el=document.getElementById('mockpick'); var dx=0,dy=0,drag=false;
+    el.addEventListener('mousedown',function(e){ if(e.target.closest('button'))return; drag=true; var r=el.getBoundingClientRect(); dx=e.clientX-r.left; dy=e.clientY-r.top; el.style.right='auto'; el.style.bottom='auto'; el.style.left=r.left+'px'; el.style.top=r.top+'px'; e.preventDefault(); });
+    document.addEventListener('mousemove',function(e){ if(!drag)return; el.style.left=(e.clientX-dx)+'px'; el.style.top=(e.clientY-dy)+'px'; });
+    document.addEventListener('mouseup',function(){ drag=false; });
+    if(window.lucide) lucide.createIcons();
+  })();
+</script>
 </body>
 </html>
