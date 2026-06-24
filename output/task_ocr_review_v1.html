@@ -2912,7 +2912,7 @@ function mpToggle() {
   b.style.display = open ? 'none' : 'flex';
   if (c) c.style.transform = open ? 'rotate(180deg)' : '';
 }
-(function(){
+function mpInitDrag(){
   var el = document.getElementById('mockpick'); if(!el) return;
   var dx=0, dy=0, drag=false;
   el.addEventListener('mousedown', function(e){
@@ -2924,7 +2924,10 @@ function mpToggle() {
   });
   document.addEventListener('mousemove', function(e){ if(!drag) return; el.style.left=(e.clientX-dx)+'px'; el.style.top=(e.clientY-dy)+'px'; });
   document.addEventListener('mouseup', function(){ drag=false; });
-})();
+}
+// #mockpick 마크업이 이 스크립트 아래에 있으므로 DOM 준비 후 바인딩
+if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', mpInitDrag);
+else mpInitDrag();
 </script>
 
 <!-- ===== 까망이 목업 화면 선택기 (드래그 가능 · 실제 화면 아님) ===== -->
