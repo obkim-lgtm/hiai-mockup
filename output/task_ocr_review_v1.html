@@ -95,6 +95,7 @@
     #mockpick{ position:fixed; right:24px; bottom:24px; z-index:3000; background:#1F2233; border-radius:14px; padding:8px; box-shadow:0 10px 30px rgba(0,0,0,.35); width:max-content; max-width:360px; cursor:move; user-select:none; }
     #mockpick .mp-head{ font-size:11px; font-weight:800; color:#8A8FB0; letter-spacing:.04em; display:flex; align-items:center; justify-content:space-between; gap:16px; padding:6px 8px; cursor:pointer; }
     #mockpick .mp-body{ display:flex; flex-direction:column; gap:6px; margin-top:6px; }
+    #mockpick .mp-cap{ font-size:10px; font-weight:800; color:#6B6F8C; letter-spacing:.05em; padding:7px 8px 2px; }
     #mockpick .mp-btn{ width:100%; text-align:left; white-space:nowrap; padding:9px 12px; border-radius:9px; border:1px solid #3A3F58; background:#2A2E44; color:#C9CCE0; font-size:13px; font-weight:700; font-family:inherit; cursor:pointer; line-height:1.35; }
     #mockpick .mp-btn:hover{ background:#33384f; }
     #mockpick .mp-btn.on{ background:#7E44FB; color:#fff; border-color:#7E44FB; }
@@ -809,10 +810,6 @@
             </button>
           </div>
         </div>
-        <!-- 불확실 칩 (우측 끝) -->
-        <span id="ocr-b-uncertain-badge" style="display:none;margin-left:auto;background:#FFF4CC;color:#E07000;font-size:12px;font-weight:700;padding:3px 10px;border-radius:100px;border:1px solid #FFD580;align-items:center;gap:4px;">
-          <i data-lucide="triangle-alert" style="width:11px;height:11px;"></i><span id="ocr-b-uncertain-count">0</span>개 문항 확인 필요
-        </span>
       </div>
       <!-- 스캔 이미지 본문 -->
       <div id="ocr-b-scan-viewport" style="flex:1;overflow:auto;padding:24px;display:flex;flex-direction:column;gap:20px;align-items:center;">
@@ -1701,7 +1698,7 @@ function renderOCRView_B() {
   if (gnb) gnb.style.display = 'none';
 
   // 학생 이름 갱신
-  document.getElementById('ocr-b-student-name').textContent = student.name + ' (' + student.id + ')';
+  document.getElementById('ocr-b-student-name').textContent = student.id + ' ' + student.name;
 
   // 드롭다운 목록
   var listEl = document.getElementById('ocr-b-dropdown-list');
@@ -1709,15 +1706,33 @@ function renderOCRView_B() {
     var ddHtml = '';
     students.forEach(function(s, i) {
       var isCurrent = i === currentOcrBStudentIdx;
-      var statusIcon = s.ocrStatus === 'confirmed'
-        ? '<i data-lucide="circle-check" style="width:13px;height:13px;color:#00AF3D;flex-shrink:0;"></i>'
-        : (s.needsReview
-          ? '<i data-lucide="triangle-alert" style="width:13px;height:13px;color:#DB3E51;flex-shrink:0;"></i>'
-          : '<i data-lucide="circle" style="width:13px;height:13px;color:#808080;flex-shrink:0;"></i>');
+      var _caseLabel, statusIcon;
+      if (s.ocrStatus === 'failed') {
+        _caseLabel = '인식 실패';
+        statusIcon = '<i data-lucide="circle-x" style="width:13px;height:13px;color:#DB3E51;flex-shrink:0;"></i>';
+      } else if (s.ocrStatus === 'confirmed') {
+        _caseLabel = '정상 인식';
+        statusIcon = '<i data-lucide="circle-check" style="width:13px;height:13px;color:#00AF3D;flex-shrink:0;"></i>';
+      } else if (s.needsReview) {
+        var _d = OCR_DATA_B[s.id];
+        var _u = _d ? _d.questions.filter(function(q){ return q.uncertain || (q.spans && q.spans.some(function(x){ return x.uncertain; })); }).length : 0;
+        var _t = _d ? _d.questions.length : 0;
+        if (_t > 0 && _u / _t >= 0.7) {
+          _caseLabel = '정확도 낮음';
+          statusIcon = '<i data-lucide="triangle-alert" style="width:13px;height:13px;color:#DB3E51;flex-shrink:0;"></i>';
+        } else {
+          _caseLabel = '확인 필요';
+          statusIcon = '<i data-lucide="triangle-alert" style="width:13px;height:13px;color:#FF8C4C;flex-shrink:0;"></i>';
+        }
+      } else {
+        _caseLabel = '미확인';
+        statusIcon = '<i data-lucide="circle" style="width:13px;height:13px;color:#B3B3B3;flex-shrink:0;"></i>';
+      }
+      var _caseColor = ({'정상 인식':'#00AF3D','확인 필요':'#FF8C4C','정확도 낮음':'#DB3E51','인식 실패':'#DB3E51','미확인':'#808080'})[_caseLabel] || '#808080';
       ddHtml += '<div onclick="jumpToOcrBStudent(' + i + ')" style="padding:10px 16px;cursor:pointer;display:flex;align-items:center;gap:10px;background:' + (isCurrent ? '#F7F4FF' : 'transparent') + ';font-weight:' + (isCurrent ? '800' : '400') + ';" onmouseover="this.style.background=\'#F8F8F8\'" onmouseout="this.style.background=\'' + (isCurrent ? '#F7F4FF' : 'transparent') + '\'">';
       ddHtml += statusIcon;
-      ddHtml += '<span style="font-size:15px;color:#333;">' + s.name + '</span>';
-      ddHtml += '<span style="font-size:13px;color:#808080;margin-left:auto;">' + s.id + '</span>';
+      ddHtml += '<span style="font-size:15px;color:#333;"><span style="color:#808080;font-weight:400;">' + s.id + '</span> ' + s.name + '</span>';
+      ddHtml += '<span style="font-size:13px;font-weight:700;color:' + _caseColor + ';margin-left:auto;flex-shrink:0;">' + _caseLabel + '</span>';
       ddHtml += '</div>';
     });
     listEl.innerHTML = ddHtml;
@@ -1733,7 +1748,13 @@ function renderOCRView_B() {
   // 경고 배너 — 확인 필요 비율(≥70%)이면 직접 채점 안내로 문구 분기
   var banner = document.getElementById('ocr-b-review-banner');
   var split = document.getElementById('ocr-b-split');
-  if (student.needsReview) {
+  if (student.ocrStatus === 'failed') {
+    banner.innerHTML = '<i data-lucide="circle-x" style="width:16px;height:16px;color:#DB3E51;flex-shrink:0;"></i>'
+      + '<span style="font-size:14px;color:#494949;font-weight:700;"><strong style="color:#DB3E51;">OCR 인식 실패</strong> — 글씨가 흐리거나 스캔 상태가 좋지 않아 답안을 읽지 못했어요. 더 선명한 파일로 다시 올리거나 직접 채점해 주세요.</span>';
+    banner.style.display = 'flex';
+    if (split) split.style.height = 'calc(100vh - 68px - 42px)';
+    lucide.createIcons();
+  } else if (student.needsReview) {
     var _bd = OCR_DATA_B[student.id];
     var _uq = _bd ? _bd.questions.filter(function(q){ return q.uncertain || (q.spans && q.spans.some(function(s){ return s.uncertain; })); }).length : 0;
     var _tot = _bd ? _bd.questions.length : 0;
@@ -1812,6 +1833,17 @@ function retryOcrB(id) {
 function renderOcrBText(student) {
   var panel = document.getElementById('ocr-b-text-panel');
   if (!panel) return;
+  if (student.ocrStatus === 'failed') {
+    var gF = document.getElementById('ocr-b-edit-guide'); if (gF) gF.style.display = 'none';
+    panel.innerHTML = '<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:64px 32px;min-height:420px;">'
+      + '<div style="width:72px;height:72px;border-radius:20px;background:#FFEFEF;display:flex;align-items:center;justify-content:center;margin-bottom:20px;"><i data-lucide="file-x" style="width:34px;height:34px;color:#DB3E51;"></i></div>'
+      + '<div style="font-size:18px;font-weight:800;color:#222;margin-bottom:10px;">답안을 인식하지 못했어요</div>'
+      + '<div style="font-size:14px;color:#494949;line-height:1.7;max-width:440px;margin-bottom:24px;">글씨가 흐리거나 스캔 상태가 좋지 않아 답안을 읽지 못했어요. 더 선명하게 스캔해 다시 올리거나, 과제물 원본을 보고 직접 채점해 주세요.</div>'
+      + '<button onclick="openReuploadOcrB(\'' + student.id + '\',\'' + student.name + '\')" style="height:42px;padding:0 18px;background:#7E44FB;color:white;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;display:inline-flex;align-items:center;justify-content:center;gap:6px;"><i data-lucide="upload" style="width:15px;height:15px;"></i>파일 다시 올리기</button>'
+      + '</div>';
+    lucide.createIcons();
+    return;
+  }
   var data = OCR_DATA_B[student.id];
   if (!data) {
     panel.innerHTML = '<div style="padding:40px;text-align:center;color:#B3B3B3;"><i data-lucide="alert-circle" style="width:24px;height:24px;margin-bottom:8px;"></i><br>OCR 데이터가 없습니다.</div>';
@@ -1840,9 +1872,8 @@ function renderOcrBText(student) {
     panel.innerHTML =
       '<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:64px 32px;min-height:420px;">'
         + '<div style="width:72px;height:72px;border-radius:20px;background:#FFF4E8;display:flex;align-items:center;justify-content:center;margin-bottom:20px;"><i data-lucide="clipboard-pen" style="width:34px;height:34px;color:#FF8C4C;"></i></div>'
-        + '<div style="font-size:18px;font-weight:800;color:#222;margin-bottom:10px;">왼쪽 원본을 보고 직접 채점해 주세요</div>'
-        + '<div style="font-size:14px;color:#494949;line-height:1.7;max-width:440px;margin-bottom:24px;">확인이 필요한 문항이 많아(전체 ' + data.questions.length + '개 중 <strong style="color:#FF8C4C;">' + uncertainCount + '개</strong>) OCR 인식 정확도가 낮아요. 인식 결과로는 AI 채점이 어려우니, 왼쪽 원본 답안을 보고 직접 채점해 주세요.</div>'
-        + '<button onclick="retryOcrB(\'' + student.id + '\')" style="height:42px;padding:0 18px;background:white;color:#7E44FB;border:1.5px solid #B28FFD;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;display:inline-flex;align-items:center;justify-content:center;gap:6px;"><i data-lucide="rotate-cw" style="width:15px;height:15px;"></i>OCR 다시 인식</button>'
+        + '<div style="font-size:18px;font-weight:800;color:#222;margin-bottom:10px;">과제물 원본을 보고 직접 채점해 주세요</div>'
+        + '<div style="font-size:14px;color:#494949;line-height:1.7;max-width:440px;">확인이 필요한 문항이 많아(전체 ' + data.questions.length + '개 중 <strong style="color:#FF8C4C;">' + uncertainCount + '개</strong>) OCR 인식 정확도가 낮아요. 인식 결과로는 AI 채점이 어려우니, 과제물 원본을 보고 직접 채점해 주세요.</div>'
       + '</div>';
     lucide.createIcons();
     return;
@@ -2759,9 +2790,16 @@ function closeOcrStartModal() {
   }
 }
 
+// OCR 확인 화면(인식 실패)에서 '파일 다시 올리기' → 재업로드 후 OCR 성공 상태로 전환
+var ocrBReuploadId = null;
+function openReuploadOcrB(id, name) {
+  openStudentUploadModal(id, name);
+  ocrBReuploadId = id; // openStudentUploadModal이 null로 초기화하므로 그 뒤에 설정
+}
 function openStudentUploadModal(studentId, studentName) {
   // 업로드 컨텍스트 저장 — OCR 진행 시 해당 학생만 갱신
   pendingUploadStudentId = studentId;
+  ocrBReuploadId = null;
   // 타이틀: "{학생명} 학생 파일 추가/제거"
   document.getElementById('student-upload-title').textContent = studentName + ' 학생 파일 추가/제거';
   // 초기 상태: 칩 숨김, 업로드 버튼 활성, 저장 비활성
@@ -2825,8 +2863,21 @@ function submitStudentUpload() {
   lucide.createIcons();
   setTimeout(function() {
     processing.style.display = 'none';
-    // 개별 업로드 완료 → 일괄 업로드와 동일한 OCR 진행 여부 팝업 재사용
     document.getElementById('studentUploadModal').style.display = 'none';
+    // OCR 확인 화면(인식 실패)에서 재업로드한 경우 → 해당 학생 OCR 성공 상태로 전환 후 화면 갱신
+    if (ocrBReuploadId) {
+      var rid = ocrBReuploadId; ocrBReuploadId = null;
+      var sIdx = STUDENTS_B1.findIndex(function(s){ return s.id === rid; });
+      if (sIdx !== -1) {
+        STUDENTS_B1[sIdx].ocrStatus = 'unconfirmed';
+        STUDENTS_B1[sIdx].needsReview = false;
+        currentOcrBStudentIdx = sIdx;
+      }
+      renderOCRView_B();
+      if (typeof showToast === 'function') showToast('새 파일로 OCR 인식을 완료했어요.', 'success');
+      return;
+    }
+    // 개별 업로드 완료 → 일괄 업로드와 동일한 OCR 진행 여부 팝업 재사용
     renderTable();
     showOcrAskB();
   }, 1500);
@@ -2900,7 +2951,10 @@ function mpGo(which) {
   else if (which === 'list') { goToList(); }
   else if (which === 'bulk') { resetUpload(); showScreen('screen-upload'); }
   else if (which === 'indiv'){ goToList(); openStudentUploadModal('10102','이준호'); }
-  else if (which === 'ocr')  { goToOCR_B(0); }
+  else if (which === 'ocrOk')  { goToOCR_B(0); }  // 정상 인식 완료 (10101)
+  else if (which === 'ocrFew') { goToOCR_B(1); }  // 확인 필요 일부 (10102)
+  else if (which === 'ocrLow') { goToOCR_B(2); }  // 정확도 낮음 → 직접 채점 (10103)
+  else if (which === 'ocrFail'){ var _fi=STUDENTS_B1.findIndex(function(s){return s.id==='10104';}); if(_fi!==-1){ STUDENTS_B1[_fi].ocrStatus='failed'; STUDENTS_B1[_fi].needsReview=false; } goToOCR_B(_fi!==-1?_fi:3); }  // 인식 실패 (10104) — 시연 위해 매번 실패로 리셋
   // 현재 표시 버튼 강조
   document.querySelectorAll('.mp-btn').forEach(function(b){ b.classList.toggle('on', b.dataset.k === which); });
   lucide.createIcons();
@@ -2941,7 +2995,11 @@ else mpInitDrag();
     <button class="mp-btn" data-k="list"  onclick="mpGo('list')">학급 제출 상세 <span class="mp-sub">제출·미제출·OCR 상태</span></button>
     <button class="mp-btn" data-k="bulk"  onclick="mpGo('bulk')">일괄 업로드 <span class="mp-sub">비식별화 안내</span></button>
     <button class="mp-btn" data-k="indiv" onclick="mpGo('indiv')">개별 파일 업로드 <span class="mp-sub">비식별화 안내</span></button>
-    <button class="mp-btn" data-k="ocr"   onclick="mpGo('ocr')">OCR 확인·수정</button>
+    <div class="mp-cap">OCR 확인·수정 · 케이스별</div>
+    <button class="mp-btn" data-k="ocrOk"  onclick="mpGo('ocrOk')">정상 인식 완료 <span class="mp-sub">확인할 것 없음</span></button>
+    <button class="mp-btn" data-k="ocrFew" onclick="mpGo('ocrFew')">확인 필요 <span class="mp-sub">일부 문항 불확실</span></button>
+    <button class="mp-btn" data-k="ocrLow" onclick="mpGo('ocrLow')">정확도 낮음 <span class="mp-sub">직접 채점 안내</span></button>
+    <button class="mp-btn" data-k="ocrFail" onclick="mpGo('ocrFail')">인식 실패 <span class="mp-sub">결과 없음 · 다시 인식</span></button>
   </div>
 </div>
 </body>

@@ -1110,6 +1110,8 @@
   function mpNav(url){ if(location.pathname.split('/').pop()!==url) location.href=url; }
   function mpRun(k){
     if (typeof openRunModal==='function'){
+      document.querySelectorAll('.modal-overlay').forEach(function(m){ m.classList.remove('open'); });
+      if (typeof closeOcrFirstModal==='function') closeOcrFirstModal();
       if(k==='ok') openRunModal();
       else if(k==='few') openOcrReviewFew();
       else if(k==='first') openOcrFirstModal();
