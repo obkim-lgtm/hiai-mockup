@@ -1031,15 +1031,15 @@
 <script>
 // ── 데이터 ──
 const STUDENTS = [
-  { id:'10101', name:'김서윤', status:'제출', date:'07/21 14:31 선생님 업로드', files:1, ocrStatus:'confirmed', needsReview:false, pages:[3,4] },
-  { id:'10102', name:'이준호', status:'제출', date:'07/21 14:31 선생님 업로드', files:1, ocrStatus:'unconfirmed', needsReview:true, pages:[5,6] },
-  { id:'10103', name:'박지민', status:'제출', date:'07/21 14:31 선생님 업로드', files:1, ocrStatus:'unconfirmed', needsReview:true, pages:[7,8] },
-  { id:'10104', name:'최유진', status:'제출', date:'07/21 14:31 선생님 업로드', files:1, ocrStatus:'failed', needsReview:false, pages:[9,10] },
-  { id:'10105', name:'정현우', status:'제출', date:'07/21 14:31 선생님 업로드', files:1, ocrStatus:'pending', needsReview:false, pages:[11,12] },
+  { id:'10101', name:'김서윤', status:'제출', date:'26/07/21 14:31', files:1, ocrStatus:'confirmed', needsReview:false, pages:[3,4] },
+  { id:'10102', name:'이준호', status:'제출', date:'26/07/21 14:31', files:1, ocrStatus:'unconfirmed', needsReview:true, pages:[5,6] },
+  { id:'10103', name:'박지민', status:'제출', date:'26/07/21 14:31', files:1, ocrStatus:'unconfirmed', needsReview:true, pages:[7,8] },
+  { id:'10104', name:'최유진', status:'제출', date:'26/07/21 14:31', files:1, ocrStatus:'failed', needsReview:false, pages:[9,10] },
+  { id:'10105', name:'정현우', status:'제출', date:'26/07/21 14:31', files:1, ocrStatus:'pending', needsReview:false, pages:[11,12] },
   { id:'10106', name:'한지우', status:'미제출', date:'-', files:0, ocrStatus:null, pages:[] },
   { id:'10107', name:'조민재', status:'미제출', date:'-', files:0, ocrStatus:null, pages:[] },
   { id:'10108', name:'윤하은', status:'미제출', date:'-', files:0, ocrStatus:null, pages:[] },
-  { id:'10109', name:'임도윤', status:'제출', date:'07/21 14:31 선생님 업로드', files:1, ocrStatus:'unconfirmed', needsReview:false, pages:[13,14] }
+  { id:'10109', name:'임도윤', status:'제출', date:'26/07/21 14:31', files:1, ocrStatus:'unconfirmed', needsReview:false, pages:[13,14] }
 ];
 
 // OCR 텍스트 데이터 (학생별)
@@ -1334,27 +1334,27 @@ function renderTable() {
 
 // ── B안 학생 데이터 ──
 const STUDENTS_B1 = [
-  { id:'10101', name:'김서윤', date:'04/18 09:12 선생님 업로드', files:1, ocrStatus:'confirmed', needsReview:false },
-  { id:'10102', name:'이준호', date:'04/18 09:12 선생님 업로드', files:1, ocrStatus:'unconfirmed', needsReview:true },
-  { id:'10103', name:'박지민', date:'04/18 09:12 선생님 업로드', files:1, ocrStatus:'unconfirmed', needsReview:true },
-  { id:'10104', name:'최유진', date:'04/18 09:12 선생님 업로드', files:1, ocrStatus:'failed', needsReview:false },
-  { id:'10105', name:'정현우', date:'04/18 09:12 선생님 업로드', files:1, ocrStatus:'unconfirmed', needsReview:false },
-  { id:'10106', name:'한지우', date:'04/18 09:12 선생님 업로드', files:1, ocrStatus:'confirmed', needsReview:false },
-  { id:'10107', name:'조민재', date:'04/18 09:12 선생님 업로드', files:1, ocrStatus:'confirmed', needsReview:false },
-  { id:'10108', name:'윤하은', date:'04/18 09:12 선생님 업로드', files:1, ocrStatus:'confirmed', needsReview:false },
-  { id:'10109', name:'임도윤', date:'04/18 09:12 선생님 업로드', files:1, ocrStatus:'confirmed', needsReview:false },
-  { id:'10110', name:'서지호', date:'04/18 09:12 선생님 업로드', files:1, ocrStatus:'unconfirmed', needsReview:false }
+  { id:'10101', name:'김서윤', date:'26/04/18 09:12', files:1, ocrStatus:'confirmed', needsReview:false },
+  { id:'10102', name:'이준호', date:'26/04/18 09:12', files:1, ocrStatus:'unconfirmed', needsReview:true },
+  { id:'10103', name:'박지민', date:'26/04/18 09:12', files:1, ocrStatus:'unconfirmed', needsReview:true },
+  { id:'10104', name:'최유진', date:'26/04/18 09:12', files:1, ocrStatus:'failed', needsReview:false },
+  { id:'10105', name:'정현우', date:'26/04/18 09:12', files:1, ocrStatus:'unconfirmed', needsReview:false },
+  { id:'10106', name:'한지우', date:'26/04/18 09:12', files:1, ocrStatus:'confirmed', needsReview:false },
+  { id:'10107', name:'조민재', date:'26/04/18 09:12', files:1, ocrStatus:'confirmed', needsReview:false },
+  { id:'10108', name:'윤하은', date:'26/04/18 09:12', files:1, ocrStatus:'confirmed', needsReview:false },
+  { id:'10109', name:'임도윤', date:'26/04/18 09:12', files:1, ocrStatus:'confirmed', needsReview:false },
+  { id:'10110', name:'서지호', date:'26/04/18 09:12', files:1, ocrStatus:'unconfirmed', needsReview:false }
 ];
 const STUDENTS_B2 = [
-  { id:'10201', name:'강민준', date:'04/19 10:33 선생님 업로드', files:1, ocrStatusAfter:'confirmed',   needsReview:false },
-  { id:'10202', name:'오서영', date:'04/19 10:33 선생님 업로드', files:1, ocrStatusAfter:'confirmed',   needsReview:false },
-  { id:'10203', name:'배찬혁', date:'04/19 10:33 선생님 업로드', files:1, ocrStatusAfter:'unconfirmed', needsReview:true  },
-  { id:'10204', name:'류지아', date:'04/19 10:33 선생님 업로드', files:1, ocrStatusAfter:'processing',  needsReview:false },
-  { id:'10205', name:'신동현', date:'04/19 10:33 선생님 업로드', files:1, ocrStatusAfter:'confirmed',   needsReview:false },
-  { id:'10206', name:'황예은', date:'04/19 10:33 선생님 업로드', files:1, ocrStatusAfter:'processing',  needsReview:false },
-  { id:'10207', name:'문태양', date:'04/19 10:33 선생님 업로드', files:1, ocrStatusAfter:'unconfirmed', needsReview:false },
-  { id:'10208', name:'전수빈', date:'04/19 10:33 선생님 업로드', files:1, ocrStatusAfter:'processing',  needsReview:false },
-  { id:'10209', name:'고은찬', date:'04/19 10:33 선생님 업로드', files:1, ocrStatusAfter:'confirmed',   needsReview:false }
+  { id:'10201', name:'강민준', date:'26/04/19 10:33', files:1, ocrStatusAfter:'confirmed',   needsReview:false },
+  { id:'10202', name:'오서영', date:'26/04/19 10:33', files:1, ocrStatusAfter:'confirmed',   needsReview:false },
+  { id:'10203', name:'배찬혁', date:'26/04/19 10:33', files:1, ocrStatusAfter:'unconfirmed', needsReview:true  },
+  { id:'10204', name:'류지아', date:'26/04/19 10:33', files:1, ocrStatusAfter:'processing',  needsReview:false },
+  { id:'10205', name:'신동현', date:'26/04/19 10:33', files:1, ocrStatusAfter:'confirmed',   needsReview:false },
+  { id:'10206', name:'황예은', date:'26/04/19 10:33', files:1, ocrStatusAfter:'processing',  needsReview:false },
+  { id:'10207', name:'문태양', date:'26/04/19 10:33', files:1, ocrStatusAfter:'unconfirmed', needsReview:false },
+  { id:'10208', name:'전수빈', date:'26/04/19 10:33', files:1, ocrStatusAfter:'processing',  needsReview:false },
+  { id:'10209', name:'고은찬', date:'26/04/19 10:33', files:1, ocrStatusAfter:'confirmed',   needsReview:false }
 ];
 
 // ── B안 OCR 전사 텍스트 데이터 (독후 활동 보고서 — 사라진 스푼) ──
@@ -2621,7 +2621,7 @@ function renderTableB() {
         } else {
           ocrCell = '<span style="display:inline-flex;align-items:center;gap:4px;color:#FF8C4C;font-weight:700;font-size:13px;"><i data-lucide="clock" style="width:14px;height:14px;"></i>미진행</span>';
         }
-        dateCell = '<td>04/24 선생님 업로드</td>';
+        dateCell = '<td>26/04/24 14:31</td>';
         filesCell = '<td style="text-align:center;">1</td>';
       } else {
         statusCell = '<span class="badge badge-red">미제출</span>';
