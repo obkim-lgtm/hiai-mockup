@@ -252,8 +252,8 @@
         <i data-lucide="triangle-alert" style="width:11px;height:11px;"></i>
         <span id="left-uncertain-count"></span>개 불확실 구간
       </span>
-      <a id="left-ocr-review-link" href="#" target="_blank" rel="noopener" style="display:none;margin-left:auto;background:white;border:1px solid #B28FFD;border-radius:8px;height:32px;padding:0 12px;font-size:13px;font-weight:700;color:#7E44FB;cursor:pointer;align-items:center;gap:6px;text-decoration:none;" onmouseover="this.style.background='#F7F4FF'" onmouseout="this.style.background='white'">
-        <i data-lucide="scan-text" style="width:14px;height:14px;"></i>OCR 결과 수정<i data-lucide="external-link" style="width:12px;height:12px;"></i>
+      <a id="left-ocr-review-link" href="#" onclick="return goEditOcr(event)" style="display:none;margin-left:auto;background:white;border:1px solid #B28FFD;border-radius:8px;height:32px;padding:0 12px;font-size:13px;font-weight:700;color:#7E44FB;cursor:pointer;align-items:center;gap:6px;text-decoration:none;" onmouseover="this.style.background='#F7F4FF'" onmouseout="this.style.background='white'">
+        <i data-lucide="scan-text" style="width:14px;height:14px;"></i>OCR 결과 수정
       </a>
     </div>
     <!-- 전사 텍스트 패널 -->
@@ -769,6 +769,7 @@
       var ocrLink = document.getElementById('left-ocr-review-link');
       if (ocrLink) {
         ocrLink.href = 'task_ocr_review_v1.html#ocr-b=' + studentId;
+        _ocrEditUrl = 'task_ocr_review_v1.html#ocr-b=' + studentId;
         ocrLink.style.display = 'inline-flex';
       }
     }
@@ -1029,7 +1030,21 @@
   })();
 
   // 채점 상태 라디오
+  // OCR 결과 수정 이동 — 미저장 변경 가드
+  var _isDirty = false;
+  var _ocrEditUrl = 'task_ocr_review_v1.html';
+  function goEditOcr(e){
+    if(e) e.preventDefault();
+    if(_isDirty){ var m=document.getElementById('leaveGuardModal'); if(m){ m.style.display='flex'; if(window.lucide) lucide.createIcons(); } }
+    else { location.href=_ocrEditUrl; }
+    return false;
+  }
+  function leaveSaveAndGo(){ _isDirty=false; location.href=_ocrEditUrl; }
+  function leaveWithoutSave(){ _isDirty=false; location.href=_ocrEditUrl; }
+  function closeLeaveGuard(){ var m=document.getElementById('leaveGuardModal'); if(m) m.style.display='none'; }
+
   function selectStatus(el) {
+    _isDirty = true;
     const items = document.querySelectorAll('.radio-item');
     items.forEach(item => {
       item.querySelector('.radio-circle').classList.remove('selected');
@@ -1041,6 +1056,7 @@
   function selectScore(btn, rubricId) {
     // hatched 버튼은 클릭 무시
     if (btn.classList.contains('hatched')) return;
+    _isDirty = true;
 
     const container = btn.closest('[data-rubric]');
     const allBtns = container.querySelectorAll('.score-btn:not(.hatched)');
@@ -1073,6 +1089,7 @@
   function updateCharCount() {
     const textarea = document.getElementById('teacherFeedback');
     const text = textarea.value;
+    _isDirty = true;
     const charLen = text.length;
     const byteLen = new TextEncoder().encode(text).length;
     document.getElementById('charCount').textContent = `${charLen}자 / ${byteLen} byte`;
@@ -1356,5 +1373,18 @@
     if(window.lucide) lucide.createIcons();
   })();
 </script>
+
+<!-- 미저장 변경 이탈 확인 모달 (OCR 결과 수정 이동 시) -->
+<div id="leaveGuardModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:1300;align-items:center;justify-content:center;" onclick="if(event.target===this)closeLeaveGuard()">
+  <div style="background:white;border-radius:24px;box-shadow:0 4px 12px rgba(95,102,178,0.16);width:460px;max-width:92vw;position:relative;" onclick="event.stopPropagation()">
+    <button onclick="closeLeaveGuard()" style="position:absolute;top:11px;right:11px;width:36px;height:36px;background:none;border:none;cursor:pointer;border-radius:6px;display:flex;align-items:center;justify-content:center;" onmouseover="this.style.background='#F8F8F8'" onmouseout="this.style.background='none'"><i data-lucide="x" style="width:18px;height:18px;color:#808080;"></i></button>
+    <div style="padding:24px 24px 8px;"><h3 style="font-size:18px;font-weight:800;color:#222631;margin:0;">저장하지 않은 변경사항이 있어요</h3></div>
+    <div style="padding:0 24px 20px;"><p style="font-size:15px;color:#494949;line-height:1.6;margin:0;">채점 내용을 저장하지 않고 OCR 결과 수정 화면으로 이동하면 변경사항이 사라져요. 저장하고 이동할까요?</p></div>
+    <div style="padding:0 24px 20px;display:flex;justify-content:flex-end;gap:10px;">
+      <button onclick="leaveWithoutSave()" style="height:40px;padding:0 18px;background:white;color:#494949;border:1px solid #D9D9D9;border-radius:8px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;">저장 안 하고 이동</button>
+      <button onclick="leaveSaveAndGo()" style="height:40px;padding:0 18px;background:#7E44FB;color:white;border:none;border-radius:8px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;">저장하고 이동</button>
+    </div>
+  </div>
+</div>
 </body>
 </html>
