@@ -1782,7 +1782,7 @@ function renderOCRView_B() {
   var split = document.getElementById('ocr-b-split');
   if (student.ocrStatus === 'failed') {
     banner.innerHTML = '<i data-lucide="circle-x" style="width:16px;height:16px;color:#DB3E51;flex-shrink:0;"></i>'
-      + '<span style="font-size:14px;color:#494949;font-weight:700;"><strong style="color:#DB3E51;">OCR 인식 실패</strong> — 글씨가 흐리거나 스캔 상태가 좋지 않아 답안을 읽지 못했어요. 더 선명한 파일로 다시 올리거나 직접 채점해 주세요.</span>';
+      + '<span style="font-size:14px;color:#494949;font-weight:700;"><strong style="color:#DB3E51;">OCR 인식 실패</strong> — 답안을 읽지 못했어요. 다시 인식하거나 더 선명한 파일로 올리거나 직접 채점해 주세요.</span>';
     banner.style.display = 'flex';
     if (split) split.style.height = 'calc(100vh - 68px - 42px)';
     lucide.createIcons();
@@ -1862,6 +1862,17 @@ function retryOcrB(id) {
   showToast('OCR을 다시 진행합니다. 잠시 후 결과를 확인해 주세요.', 'success');
 }
 
+// 인식 실패 화면 — '다시 인식하기' (같은 파일 재인식, 데모상 성공으로 전환)
+function reRecognizeOcrB(id) {
+  if (typeof showToast === 'function') showToast('OCR을 다시 인식하고 있어요…', 'success');
+  setTimeout(function() {
+    var i = STUDENTS_B1.findIndex(function(s){ return s.id === id; });
+    if (i !== -1) { STUDENTS_B1[i].ocrStatus = 'unconfirmed'; STUDENTS_B1[i].needsReview = false; currentOcrBStudentIdx = i; }
+    renderOCRView_B();
+    if (typeof showToast === 'function') showToast('OCR 인식을 완료했어요.', 'success');
+  }, 1200);
+}
+
 function renderOcrBText(student) {
   var panel = document.getElementById('ocr-b-text-panel');
   if (!panel) return;
@@ -1870,8 +1881,11 @@ function renderOcrBText(student) {
     panel.innerHTML = '<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:64px 32px;min-height:420px;">'
       + '<div style="width:72px;height:72px;border-radius:20px;background:#FFEFEF;display:flex;align-items:center;justify-content:center;margin-bottom:20px;"><i data-lucide="file-x" style="width:34px;height:34px;color:#DB3E51;"></i></div>'
       + '<div style="font-size:18px;font-weight:800;color:#222;margin-bottom:10px;">답안을 인식하지 못했어요</div>'
-      + '<div style="font-size:14px;color:#494949;line-height:1.7;max-width:440px;margin-bottom:24px;">글씨가 흐리거나 스캔 상태가 좋지 않아 답안을 읽지 못했어요. 더 선명하게 스캔해 다시 올리거나, 과제물 원본을 보고 직접 채점해 주세요.</div>'
+      + '<div style="font-size:14px;color:#494949;line-height:1.7;max-width:440px;margin-bottom:24px;">글씨가 흐리거나 스캔 상태가 좋지 않아 답안을 읽지 못했어요. 다시 인식하거나 더 선명한 파일로 올려 보세요. 과제물 원본을 보고 직접 채점해도 됩니다.</div>'
+      + '<div style="display:flex;gap:10px;justify-content:center;">'
+      + '<button onclick="reRecognizeOcrB(\'' + student.id + '\')" style="height:42px;padding:0 18px;background:white;color:#7E44FB;border:1.5px solid #B28FFD;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;display:inline-flex;align-items:center;justify-content:center;gap:6px;"><i data-lucide="rotate-cw" style="width:15px;height:15px;"></i>다시 인식하기</button>'
       + '<button onclick="openReuploadOcrB(\'' + student.id + '\',\'' + student.name + '\')" style="height:42px;padding:0 18px;background:#7E44FB;color:white;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;display:inline-flex;align-items:center;justify-content:center;gap:6px;"><i data-lucide="upload" style="width:15px;height:15px;"></i>파일 다시 올리기</button>'
+      + '</div>'
       + '</div>';
     lucide.createIcons();
     return;
