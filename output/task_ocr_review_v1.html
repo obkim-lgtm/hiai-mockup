@@ -134,6 +134,15 @@
     .rubric-suspect-chip{ display:inline-flex; align-items:center; gap:4px; background:#FFF0F0; border:1px solid #FFBCBC; border-radius:100px; padding:2px 8px; font-size:12px; font-weight:800; color:#DB3E51; flex-shrink:0; }
     .rubric-ocr-body{ padding:14px 16px; font-size:15px; line-height:1.85; color:#333; cursor:text; position:relative; }
     .rubric-ocr-body:hover{ background:#FDFCFF; }
+    /* OCR 인식 결과 — 종류별 섹션 (문항정보 / 학생답변 / 시각화자료) */
+    .ocr-subsec{ border-top:1px solid #EFEFEF; }
+    .ocr-subsec-head{ display:flex; align-items:center; gap:8px; padding:10px 15px 4px; }
+    .ocr-subsec-title{ font-size:13px; font-weight:800; color:#494949; }
+    .ocr-lock-badge{ display:inline-flex; align-items:center; gap:3px; font-size:11px; font-weight:800; color:#808080; background:#F0F0F0; border-radius:4px; padding:1px 7px; }
+    .ocr-empty-body:empty::before{ content:attr(data-ph); color:#B3B3B3; font-size:14px; }
+    .ocr-visual{ background:#F8F8F8; border:1px solid #EFEFEF; border-radius:8px; margin:0 15px 14px; padding:12px 14px; display:flex; flex-direction:column; gap:8px; }
+    .ocr-visual-layer{ font-size:14px; line-height:1.7; color:#494949; }
+    .ocr-visual-layer b{ color:#333; display:block; margin-bottom:1px; }
     .section-editing{ border-color:#7E44FB !important; box-shadow:0 0 0 2px rgba(126,68,251,.12); }
     .section-editing .rubric-ocr-header{ background:#F7F4FF; }
     .formula-insert-btn{ display:none; }
@@ -1342,7 +1351,8 @@ const STUDENTS_B1 = [
   { id:'10106', name:'한지우', date:'04/18 09:12 선생님 업로드', files:1, ocrStatus:'confirmed', needsReview:false },
   { id:'10107', name:'조민재', date:'04/18 09:12 선생님 업로드', files:1, ocrStatus:'confirmed', needsReview:false },
   { id:'10108', name:'윤하은', date:'04/18 09:12 선생님 업로드', files:1, ocrStatus:'confirmed', needsReview:false },
-  { id:'10109', name:'임도윤', date:'04/18 09:12 선생님 업로드', files:1, ocrStatus:'confirmed', needsReview:false }
+  { id:'10109', name:'임도윤', date:'04/18 09:12 선생님 업로드', files:1, ocrStatus:'confirmed', needsReview:false },
+  { id:'10110', name:'서지호', date:'04/18 09:12 선생님 업로드', files:1, ocrStatus:'unconfirmed', needsReview:false }
 ];
 const STUDENTS_B2 = [
   { id:'10201', name:'강민준', date:'04/19 10:33 선생님 업로드', files:1, ocrStatusAfter:'confirmed',   needsReview:false },
@@ -1509,6 +1519,17 @@ const OCR_DATA_B = {
     ]},
     { label:'문항 5', desc:'이 책을 읽고 더 알고 싶어진 점을 쓰시오.', spans:[
       { text:'주기율표에 아직 빈자리가 남아 있는지, 그리고 이론적으로 존재할 수 있는 가장 무거운 원소의 한계는 무엇인지 더 공부해보고 싶다.' }
+    ]}
+  ]},
+  // 시각화 자료(그래프 답안) 데모 케이스 — 수학
+  '10110': { needsReview: false, rubricScores: [null, null], questions: [
+    { label:'문항 3', desc:'y = −⅓x² + 2x + 2 의 그래프의 개형을 그리시오.', answerEmpty:true,
+      visual:[
+        '<b>Layer 1 (물리적 묘사)</b>x축과 y축이 교차하는 좌표평면 위에 위로 볼록한 포물선이 그려져 있음. 포물선은 제2·3·4사분면을 지남.',
+        '<b>Layer 2 (수학적 해석)</b>y축과의 교점에 2가 표시되어 있고, 꼭짓점으로 보이는 점(제3사분면 위치)에서 각 축으로 수선을 내려 x축에 −⅓, y축에 −9를 표시함.'
+      ], spans:[] },
+    { label:'문항 4', desc:'△ABO의 넓이를 구하시오.', spans:[
+      { text:'9 × ⅓ × ½ = 3/2,   ⅓ × 2 × ½ = 1/3.   3/2 + 1/3 = 9/6 + 2/6 = 11/6 cm²' }
     ]}
   ]}
 };
@@ -1700,6 +1721,10 @@ function renderOCRView_B() {
   // 학생 이름 갱신
   document.getElementById('ocr-b-student-name').textContent = student.id + ' ' + student.name;
 
+  // 좌측 과제물 원본 이미지 — 학생별 (시각화자료 케이스는 그래프 답안지)
+  var scanEl = document.getElementById('ocr-b-scan-image');
+  if (scanEl) scanEl.src = (student.id === '10110') ? '../screens/math_graph_answer.svg' : '../screens/student_submission.png';
+
   // 드롭다운 목록
   var listEl = document.getElementById('ocr-b-dropdown-list');
   if (listEl) {
@@ -1884,48 +1909,57 @@ function renderOcrBText(student) {
 
   data.questions.forEach(function(q, qi) {
     var hasUncertain = q.uncertain || (q.spans && q.spans.some(function(s){ return s.uncertain; }));
-    // 본문 전체 텍스트 (하이라이팅 없이 합치기)
+    // 학생 답변 텍스트 (하이라이팅 없이 합치기)
     var bodyText = '';
-    if (q.spans) {
-      q.spans.forEach(function(span){ bodyText += span.text; });
-    }
+    if (q.spans) { q.spans.forEach(function(span){ bodyText += span.text; }); }
+    var isEmpty = q.answerEmpty || !bodyText.trim();
     // 문항 단위 인식 불확실 메시지 구성
     var noticeText = q.uncertainty;
     if (!noticeText && hasUncertain) {
       var hints = (q.spans || []).filter(function(s){ return s.uncertain && s.hint; }).map(function(s){ return s.hint; });
-      if (hints.length) {
-        noticeText = '이 문항의 답변에서 ' + hints.length + '개 구간의 판독이 불확실합니다. (' + hints.join(' · ') + ') 원본 이미지와 대조 후 수정해 주세요.';
-      } else {
-        noticeText = '이 문항의 답변 일부 글자 판독이 불확실합니다. 원본 이미지와 대조 후 수정해 주세요.';
-      }
+      noticeText = hints.length
+        ? '이 문항의 답변에서 ' + hints.length + '개 구간의 판독이 불확실합니다. (' + hints.join(' · ') + ') 원본 이미지와 대조 후 수정해 주세요.'
+        : '이 문항의 답변 일부 글자 판독이 불확실합니다. 원본 이미지와 대조 후 수정해 주세요.';
     }
-
     var chipHtml = hasUncertain
       ? '<span class="rubric-suspect-chip"><i data-lucide="triangle-alert" style="width:11px;height:11px;"></i>확인 필요</span>'
       : '';
 
     html += '<div class="rubric-ocr-section">';
-    // 문항 헤더
+
+    // ── ① 문항정보 (번호 + 지시문 + 조건) ──
     html += '<div class="rubric-ocr-header">';
     html += '<span class="badge badge-purple" style="background:#F0EAFF;color:#7E44FB;font-size:12px;font-weight:700;padding:3px 10px;border-radius:100px;">' + q.label + '</span>';
     html += '<span class="rubric-ocr-desc">' + q.desc + '</span>';
-    html += chipHtml;
-    html += '<button onclick="editSection(this,' + qi + ')" title="편집" style="background:none;border:none;cursor:pointer;color:#B3B3B3;padding:2px 4px;flex-shrink:0;display:flex;align-items:center;" onmouseover="this.style.color=\'#7E44FB\'" onmouseout="this.style.color=\'#B3B3B3\'">';
-    html += '<i data-lucide="pencil" style="width:13px;height:13px;"></i></button>';
     html += '</div>';
-    // 본문 (클릭 시 편집)
-    html += '<div class="rubric-ocr-body" id="group-body-' + qi + '" onclick="editSectionByBody(this,' + qi + ')">';
-    html += '<span style="color:#333;">' + bodyText + '</span>';
-    html += '</div>';
-    // textarea (편집 모드)
-    html += '<textarea id="group-ta-' + qi + '" onblur="saveSection(this,' + qi + ')" style="display:none;width:100%;border:none;border-top:1px solid #D4BBFF;padding:12px 15px;font-family:inherit;font-size:15px;line-height:1.85;color:#333;outline:none;resize:none;overflow:hidden;box-sizing:border-box;" rows="4">' + bodyText + '</textarea>';
-    // 문항 단위 인식 불확실 노트
-    if (hasUncertain && noticeText) {
-      html += '<div class="ocr-uncertainty-note">';
-      html += '<span class="ocr-uncertainty-label"><i data-lucide="triangle-alert" style="width:12px;height:12px;"></i>AI 인식 불확실</span>';
-      html += '<span class="ocr-uncertainty-text">' + noticeText + '</span>';
-      html += '</div>';
+    if (q.condition && q.condition.length) {
+      html += '<div style="padding:2px 15px 6px;font-size:13px;color:#808080;line-height:1.6;"><span style="font-weight:700;color:#494949;">조건</span> · ' + q.condition.join(' / ') + '</div>';
     }
+
+    // ── ② 학생 답변 (수정 가능) ──
+    html += '<div class="ocr-subsec">';
+    html += '<div class="ocr-subsec-head"><span class="ocr-subsec-title">학생 답변</span>' + chipHtml
+      + '<button onclick="editSection(this,' + qi + ')" title="편집" style="margin-left:auto;background:none;border:none;cursor:pointer;color:#B3B3B3;padding:2px 4px;flex-shrink:0;display:flex;align-items:center;" onmouseover="this.style.color=\'#7E44FB\'" onmouseout="this.style.color=\'#B3B3B3\'"><i data-lucide="pencil" style="width:13px;height:13px;"></i></button></div>';
+    if (isEmpty) {
+      html += '<div class="rubric-ocr-body ocr-subsec-body ocr-empty-body" id="group-body-' + qi + '" data-ph="텍스트 답안 없음 — 시각화 자료를 참고해 채점해 주세요 (필요 시 클릭해 입력)" onclick="editSectionByBody(this,' + qi + ')"></div>';
+    } else {
+      html += '<div class="rubric-ocr-body ocr-subsec-body" id="group-body-' + qi + '" onclick="editSectionByBody(this,' + qi + ')"><span style="color:#333;">' + bodyText + '</span></div>';
+    }
+    html += '<textarea id="group-ta-' + qi + '" onblur="saveSection(this,' + qi + ')" style="display:none;width:100%;border:none;border-top:1px solid #D4BBFF;padding:12px 15px;font-family:inherit;font-size:15px;line-height:1.85;color:#333;outline:none;resize:none;overflow:hidden;box-sizing:border-box;" rows="4">' + (isEmpty ? '' : bodyText) + '</textarea>';
+    if (hasUncertain && noticeText) {
+      html += '<div class="ocr-uncertainty-note"><span class="ocr-uncertainty-label"><i data-lucide="triangle-alert" style="width:12px;height:12px;"></i>AI 인식 불확실</span><span class="ocr-uncertainty-text">' + noticeText + '</span></div>';
+    }
+    html += '</div>';
+
+    // ── ③ 시각화 자료 (수정 불가) ──
+    if (q.visual && q.visual.length) {
+      html += '<div class="ocr-subsec">';
+      html += '<div class="ocr-subsec-head"><span class="ocr-subsec-title">시각화 자료</span><span class="ocr-lock-badge"><i data-lucide="lock" style="width:10px;height:10px;"></i>수정 불가</span></div>';
+      html += '<div class="ocr-visual">';
+      q.visual.forEach(function(layer){ html += '<div class="ocr-visual-layer">' + layer + '</div>'; });
+      html += '</div></div>';
+    }
+
     html += '</div>';
   });
 
@@ -2955,6 +2989,7 @@ function mpGo(which) {
   else if (which === 'ocrFew') { goToOCR_B(1); }  // 확인 필요 일부 (10102)
   else if (which === 'ocrLow') { goToOCR_B(2); }  // 정확도 낮음 → 직접 채점 (10103)
   else if (which === 'ocrFail'){ var _fi=STUDENTS_B1.findIndex(function(s){return s.id==='10104';}); if(_fi!==-1){ STUDENTS_B1[_fi].ocrStatus='failed'; STUDENTS_B1[_fi].needsReview=false; } goToOCR_B(_fi!==-1?_fi:3); }  // 인식 실패 (10104) — 시연 위해 매번 실패로 리셋
+  else if (which === 'ocrVisual'){ var _vi=STUDENTS_B1.findIndex(function(s){return s.id==='10110';}); goToOCR_B(_vi!==-1?_vi:0); }  // 시각화 자료 포함 (10110)
   // 현재 표시 버튼 강조
   document.querySelectorAll('.mp-btn').forEach(function(b){ b.classList.toggle('on', b.dataset.k === which); });
   lucide.createIcons();
@@ -3000,6 +3035,7 @@ else mpInitDrag();
     <button class="mp-btn" data-k="ocrFew" onclick="mpGo('ocrFew')">확인 필요 <span class="mp-sub">일부 문항 불확실</span></button>
     <button class="mp-btn" data-k="ocrLow" onclick="mpGo('ocrLow')">정확도 낮음 <span class="mp-sub">직접 채점 안내</span></button>
     <button class="mp-btn" data-k="ocrFail" onclick="mpGo('ocrFail')">인식 실패 <span class="mp-sub">결과 없음 · 다시 인식</span></button>
+    <button class="mp-btn" data-k="ocrVisual" onclick="mpGo('ocrVisual')">시각화 자료 포함 <span class="mp-sub">그래프 답안 · 수정 불가</span></button>
   </div>
 </div>
 </body>
