@@ -1946,7 +1946,10 @@ function renderOcrBText(student) {
     // ── ② 학생 답변 (수정 가능) ──
     html += '<div class="ocr-subsec">';
     html += '<div class="ocr-subsec-head"><span class="ocr-subsec-title">학생 답변</span>' + chipHtml
-      + '<button onclick="editSection(this,' + qi + ')" title="편집" style="margin-left:auto;background:none;border:none;cursor:pointer;color:#B3B3B3;padding:2px 4px;flex-shrink:0;display:flex;align-items:center;" onmouseover="this.style.color=\'#7E44FB\'" onmouseout="this.style.color=\'#B3B3B3\'"><i data-lucide="pencil" style="width:13px;height:13px;"></i></button></div>';
+      + '<span style="margin-left:auto;display:inline-flex;align-items:center;gap:6px;">'
+      + '<button class="formula-insert-btn" onmousedown="event.preventDefault()" onclick="openFormulaInput(\'group-ta-' + qi + '\')" title="수식 입력" style="align-items:center;justify-content:center;line-height:1;gap:3px;height:24px;padding:0 8px;background:white;border:1px solid #D9D9D9;border-radius:6px;color:#494949;font-family:inherit;font-size:11px;font-weight:700;cursor:pointer;flex-shrink:0;"><i data-lucide="sigma" style="width:11px;height:11px;"></i>수식</button>'
+      + '<button onclick="editSection(this,' + qi + ')" title="편집" style="background:none;border:none;cursor:pointer;color:#B3B3B3;padding:2px 4px;flex-shrink:0;display:flex;align-items:center;" onmouseover="this.style.color=\'#7E44FB\'" onmouseout="this.style.color=\'#B3B3B3\'"><i data-lucide="pencil" style="width:13px;height:13px;"></i></button>'
+      + '</span></div>';
     if (isEmpty) {
       html += '<div class="rubric-ocr-body ocr-subsec-body ocr-empty-body" id="group-body-' + qi + '" data-ph="텍스트 답안 없음 — 시각화 자료를 참고해 채점해 주세요 (필요 시 클릭해 입력)" onclick="editSectionByBody(this,' + qi + ')"></div>';
     } else {
