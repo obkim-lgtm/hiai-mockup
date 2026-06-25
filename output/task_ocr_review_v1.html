@@ -1673,6 +1673,11 @@ function showScreen(id) {
 }
 
 function goToList() {
+  // 1-1반 B1 = OCR 완료 상태 → 'OCR 결과 확인' 버튼 활성 + B OCR 화면으로 연결
+  var ocrBtn = document.getElementById('btn-ocr-confirm');
+  var ocrWrap = document.getElementById('btn-ocr-confirm-wrap');
+  if (ocrBtn) { ocrBtn.disabled = false; ocrBtn.style.opacity = '1'; ocrBtn.style.cursor = 'pointer'; ocrBtn.style.pointerEvents = ''; ocrBtn.onclick = function(){ goToOCR_B(0); }; }
+  if (ocrWrap) { ocrWrap.removeAttribute('title'); ocrWrap.style.cursor = ''; }
   renderTable();
   showScreen('screen-list');
 }
