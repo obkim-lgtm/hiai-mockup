@@ -479,8 +479,8 @@
           <div class="deid-box" id="deid-bulk" style="margin-bottom:16px;">
             <div class="deid-ico"><i data-lucide="shield-check"></i></div>
             <div class="deid-body">
-              <p class="deid-title">개인정보는 가린 뒤 분석해요</p>
-              <p class="deid-desc">업로드하면 과제물 위의 <b>학번·이름 등 개인정보를 자동으로 가린 다음</b> AI가 분석합니다. 원본은 외부로 전송되지 않고 안전하게 관리됩니다.</p>
+              <p class="deid-title">학생 개인정보는 안전하게 보호돼요</p>
+              <p class="deid-desc"><b>학번·이름은 자동으로 가려진 채 AI 채점돼요.</b> 선생님 화면에는 그대로 보여서 채점에는 지장이 없어요.</p>
             </div>
             <button class="deid-dismiss" onclick="dismissDeid()">다시 보지 않기</button>
           </div>
@@ -865,18 +865,8 @@
     <!-- 바디 -->
     <div style="padding:0 24px;display:flex;flex-direction:column;gap:24px;">
       <p style="font-size:16px;font-weight:400;line-height:1.55;color:#333;margin:0;">업로드된 파일을 기준으로 채점이 진행됩니다.</p>
-      <!-- 비식별화 안내 -->
-      <div class="deid-box" id="deid-indiv">
-        <div class="deid-ico"><i data-lucide="shield-check"></i></div>
-        <div class="deid-body">
-          <p class="deid-title">개인정보는 가린 뒤 분석해요</p>
-          <p class="deid-desc">올린 과제물은 <b>학번·이름 등 개인정보를 자동으로 가린 다음</b> AI가 분석합니다.</p>
-        </div>
-        <button class="deid-dismiss" onclick="dismissDeid()">다시 보지 않기</button>
-      </div>
-      <div id="deidmini-indiv" style="display:none;">
-        <span class="deid-mini"><i data-lucide="shield-check"></i>개인정보 비식별화 적용 중<span class="undo" onclick="restoreDeid()">자세히</span></span>
-      </div>
+      <!-- 비식별화 안내 (개별 — 한 줄 요약) -->
+      <div><span class="deid-mini"><i data-lucide="shield-check"></i>학번·이름은 가린 채 채점돼요</span></div>
       <!-- 파일 규격 안내 박스 (purple/subtle) -->
       <div style="background:#F7F4FF;border:1px solid #F2ECFF;border-radius:6px;padding:12px;">
         <ul style="list-style:disc;padding-left:24px;margin:0;font-size:16px;font-weight:400;line-height:1.55;color:#333;">
@@ -2925,7 +2915,7 @@ function submitStudentUpload() {
 var DEID_KEY = 'hiai_deid_hide';
 function applyDeidState() {
   var hidden = localStorage.getItem(DEID_KEY) === '1';
-  ['bulk', 'indiv'].forEach(function(k) {
+  ['bulk'].forEach(function(k) {
     var box = document.getElementById('deid-' + k);
     var mini = document.getElementById('deidmini-' + k);
     if (box) box.style.display = hidden ? 'none' : 'flex';
