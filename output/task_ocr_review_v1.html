@@ -780,6 +780,7 @@
           <div style="width:1px;height:20px;background:#D9D9D9;"></div>
           <button id="ocr-b-btn-next" onclick="navStudentB(1)" style="background:none;border:none;font-size:16px;font-weight:700;color:#494949;cursor:pointer;padding:0 12px;">다음 학생 &gt;</button>
         </div>
+        <button onclick="saveAndNextOcrB()" style="height:40px;padding:0 18px;background:#7E44FB;color:white;border:none;border-radius:8px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;display:inline-flex;align-items:center;justify-content:center;gap:6px;"><i data-lucide="check" style="width:16px;height:16px;"></i>저장 후 다음</button>
       </div>
     </div>
   </div>
@@ -2035,6 +2036,17 @@ function setOcrBScore(studentId, criterionIdx, value) {
   }
   ocrBScoreMap[studentId][criterionIdx] = value;
   renderOcrBRubric(STUDENTS_B1[currentOcrBStudentIdx]);
+}
+
+// 상단 '저장 후 다음' — 열린 편집 커밋 + 저장 안내 + 다음 학생
+function saveAndNextOcrB() {
+  var saved = false;
+  if (typeof _editingSection !== 'undefined' && _editingSection !== null) {
+    var ta = document.getElementById('group-ta-' + _editingSection);
+    if (ta && ta.style.display !== 'none') { saveSection(ta, _editingSection); saved = true; }
+  }
+  if (!saved && typeof showToast === 'function') showToast('저장되었습니다.', 'success');
+  navStudentB(1);
 }
 
 function navStudentB(dir) {
