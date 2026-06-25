@@ -1,0 +1,57 @@
+<svg viewBox="0 0 640 900" xmlns="http://www.w3.org/2000/svg">
+  <style>
+    .q   { font-family:'Malgun Gothic','NanumSquareRound',sans-serif; font-size:16px; fill:#222; font-weight:700; }
+    .qn  { font-family:'Malgun Gothic',sans-serif; font-size:15px; fill:#7E44FB; font-weight:700; }
+    .a   { font-family:'Gaegu','Malgun Gothic',sans-serif; font-size:16px; fill:#3a4a6b; }
+    .hd  { font-family:'Malgun Gothic',sans-serif; }
+    .rule{ stroke:#E3E3E0; stroke-width:1; }
+  </style>
+
+  <rect width="640" height="900" fill="#FCFCFA"/>
+  <rect x="18" y="18" width="604" height="864" fill="none" stroke="#C9C9C6" stroke-width="1.5"/>
+
+  <!-- 헤더 -->
+  <text x="40" y="56" class="hd" font-size="20" font-weight="800" fill="#222">독서 감상문 쓰기 — 《사라진 스푼》</text>
+  <text x="40" y="82" class="hd" font-size="15" fill="#555">1학년 1반 · 10101 김서윤</text>
+  <line x1="40" y1="98" x2="600" y2="98" stroke="#9A9A97" stroke-width="1"/>
+
+  <!-- 문항 1 -->
+  <text x="40" y="132" class="qn">문항 1.</text>
+  <text x="92" y="132" class="q">이 책의 핵심 내용을 간략히 요약하시오.</text>
+  <line x1="40" y1="166" x2="600" y2="166" class="rule"/>
+  <line x1="40" y1="196" x2="600" y2="196" class="rule"/>
+  <text x="46" y="161" class="a">원소 주기율표에 얽힌 과학자들의 이야기로 원소 발견의</text>
+  <text x="46" y="191" class="a">역사를 흥미롭게 풀어낸 책이다.</text>
+
+  <!-- 문항 2 -->
+  <text x="40" y="246" class="qn">문항 2.</text>
+  <text x="92" y="246" class="q">책에서 인상 깊었던 과학자 또는 원소의 발견 이야기를 소개하시오.</text>
+  <line x1="40" y1="280" x2="600" y2="280" class="rule"/>
+  <line x1="40" y1="310" x2="600" y2="310" class="rule"/>
+  <text x="46" y="275" class="a">마리 퀴리가 라듐·폴로늄을 발견하고 방사선 위험을 모른 채</text>
+  <text x="46" y="305" class="a">연구에 헌신한 이야기가 인상 깊었다.</text>
+
+  <!-- 문항 3 -->
+  <text x="40" y="360" class="qn">문항 3.</text>
+  <text x="92" y="360" class="q">책에서 다룬 원소 중 하나를 선택해 우리 삶과의 연관성을 설명하시오.</text>
+  <line x1="40" y1="394" x2="600" y2="394" class="rule"/>
+  <line x1="40" y1="424" x2="600" y2="424" class="rule"/>
+  <text x="46" y="389" class="a">리튬은 스마트폰·전기차 배터리에 쓰이는</text>
+  <text x="46" y="419" class="a">미래 에너지의 핵심 소재다.</text>
+
+  <!-- 문항 4 -->
+  <text x="40" y="474" class="qn">문항 4.</text>
+  <text x="92" y="474" class="q">과학 발전에서 국가 간 경쟁이 미친 영향을 서술하시오.</text>
+  <line x1="40" y1="508" x2="600" y2="508" class="rule"/>
+  <line x1="40" y1="538" x2="600" y2="538" class="rule"/>
+  <text x="46" y="503" class="a">원자폭탄 개발 경쟁은 과학을 빠르게 발전시켰지만</text>
+  <text x="46" y="533" class="a">인류에 위협도 가져왔다.</text>
+
+  <!-- 문항 5 -->
+  <text x="40" y="588" class="qn">문항 5.</text>
+  <text x="92" y="588" class="q">이 책을 읽고 더 알고 싶어진 점을 쓰시오.</text>
+  <line x1="40" y1="622" x2="600" y2="622" class="rule"/>
+  <line x1="40" y1="652" x2="600" y2="652" class="rule"/>
+  <text x="46" y="617" class="a">아직 발견되지 않은 원소와 초중원소의 활용이</text>
+  <text x="46" y="647" class="a">궁금하다.</text>
+</svg>
