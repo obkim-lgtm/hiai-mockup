@@ -1128,6 +1128,42 @@
     if(run && typeof openRunModal==='function'){ setTimeout(function(){ mpRun(run); },350); }
     if(window.lucide) lucide.createIcons();
   })();
+
+  // ── 새로고침 시 보던 화면 유지 (학급 상세 · 열린 모달) ──
+  function saveScoringView(){
+    try{
+      var active=document.querySelector('.screen.active');
+      var om=document.querySelector('.modal-overlay.open');
+      var mk = om ? ({runModal:'ok',ocrFewModal:'few',ocrFirstModal:'first',rerunModal:'rerun'}[om.id]||'') : '';
+      sessionStorage.setItem('hiai_scoring_view', JSON.stringify({
+        screen: active?active.id:'screen-list',
+        classB: (typeof currentClassB!=='undefined')?currentClassB:1,
+        plan: (typeof currentEvalPlan!=='undefined')?currentEvalPlan:'B',
+        modal: mk
+      }));
+    }catch(e){}
+  }
+  function restoreScoringView(){
+    try{
+      if(location.search.indexOf('run=')>=0 || location.search.indexOf('showClass=')>=0) return; // 명시 파라미터 우선
+      var raw=sessionStorage.getItem('hiai_scoring_view'); if(!raw) return;
+      var s=JSON.parse(raw);
+      if(s.screen==='screen-class-b' && typeof showClassB==='function'){
+        if(s.plan==='C' && typeof showClassC==='function') showClassC(s.classB||1); else showClassB(s.classB||1);
+      }
+      if(s.modal){ setTimeout(function(){
+        if(s.modal==='ok'&&typeof openRunModal==='function') openRunModal();
+        else if(s.modal==='few'&&typeof openOcrReviewFew==='function') openOcrReviewFew();
+        else if(s.modal==='first'&&typeof openOcrFirstModal==='function') openOcrFirstModal();
+        else if(s.modal==='rerun'&&typeof openRerunModal==='function') openRerunModal();
+      }, 200); }
+    }catch(e){}
+  }
+  (function(){
+    if(typeof showScreen==='function'){ var _o=showScreen; window.showScreen=function(id){ _o(id); saveScoringView(); }; }
+    document.querySelectorAll('.modal-overlay').forEach(function(m){ new MutationObserver(saveScoringView).observe(m,{attributes:true,attributeFilter:['class']}); });
+    restoreScoringView();
+  })();
 </script>
 
 </body>
