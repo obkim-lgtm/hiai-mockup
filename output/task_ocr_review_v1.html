@@ -858,7 +858,7 @@
 </div>
 
 <!-- 학생 파일 추가/제거 모달 (Figma 2087:50974 · 2087:50992) -->
-<div id="studentUploadModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:1000;align-items:center;justify-content:center;" onclick="if(event.target===this){this.style.display='none';if(typeof mpSyncActive==='function')mpSyncActive();}">
+<div id="studentUploadModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:1000;align-items:center;justify-content:center;" onclick="if(event.target===this){this.style.display='none';_modalStudent=null;if(typeof mpSyncActive==='function')mpSyncActive();if(typeof saveView==='function')saveView();}">
   <div style="background:white;border-radius:24px;box-shadow:0 4px 12px rgba(95,102,178,0.16);width:480px;max-width:90vw;position:relative;" onclick="event.stopPropagation()">
     <!-- 헤더: 타이틀 (H2 20px Bold) -->
     <div style="padding:24px;">
@@ -894,7 +894,7 @@
     </div>
     <!-- 푸터 -->
     <div style="padding:24px;display:flex;justify-content:flex-end;gap:12px;">
-      <button onclick="document.getElementById('studentUploadModal').style.display='none';if(typeof mpSyncActive==='function')mpSyncActive();" style="height:40px;padding:8px 16px;background:#F0F0F0;border:none;border-radius:4px;cursor:pointer;font-family:inherit;font-size:16px;font-weight:700;line-height:1.25;color:#494949;">취소</button>
+      <button onclick="document.getElementById('studentUploadModal').style.display='none';_modalStudent=null;if(typeof mpSyncActive==='function')mpSyncActive();if(typeof saveView==='function')saveView();" style="height:40px;padding:8px 16px;background:#F0F0F0;border:none;border-radius:4px;cursor:pointer;font-family:inherit;font-size:16px;font-weight:700;line-height:1.25;color:#494949;">취소</button>
       <button id="student-upload-save" onclick="submitStudentUpload()" disabled style="height:40px;padding:8px 16px;background:#7E44FB;border:1px solid #7E44FB;border-radius:4px;opacity:0.5;cursor:not-allowed;font-family:inherit;font-size:16px;font-weight:700;line-height:1.25;color:white;">저장</button>
     </div>
     <!-- 저장 중 오버레이 -->
@@ -1670,6 +1670,7 @@ function showScreen(id) {
   window.scrollTo(0,0);
   lucide.createIcons();
   if (typeof mpSyncActive === 'function') mpSyncActive();
+  if (typeof saveView === 'function') saveView();
 }
 
 function goToList() {
@@ -2869,6 +2870,7 @@ function openStudentUploadModal(studentId, studentName) {
   // 업로드 컨텍스트 저장 — OCR 진행 시 해당 학생만 갱신
   pendingUploadStudentId = studentId;
   ocrBReuploadId = null;
+  _modalStudent = { id: studentId, name: studentName };
   // 타이틀: "{학생명} 학생 파일 추가/제거"
   document.getElementById('student-upload-title').textContent = studentName + ' 학생 파일 추가/제거';
   // 초기 상태: 칩 숨김, 업로드 버튼 활성, 저장 비활성
@@ -2878,6 +2880,7 @@ function openStudentUploadModal(studentId, studentName) {
   applyDeidState();
   lucide.createIcons();
   if (typeof mpSyncActive === 'function') mpSyncActive();
+  if (typeof saveView === 'function') saveView();
 }
 
 function resetStudentUploadState() {
@@ -2934,7 +2937,9 @@ function submitStudentUpload() {
   setTimeout(function() {
     processing.style.display = 'none';
     document.getElementById('studentUploadModal').style.display = 'none';
+    _modalStudent = null;
     if (typeof mpSyncActive === 'function') mpSyncActive();
+    if (typeof saveView === 'function') saveView();
     // OCR 확인 화면(인식 실패)에서 재업로드한 경우 → 해당 학생 OCR 성공 상태로 전환 후 화면 갱신
     if (ocrBReuploadId) {
       var rid = ocrBReuploadId; ocrBReuploadId = null;
@@ -3065,7 +3070,34 @@ function mpInitDrag(){
   document.addEventListener('mouseup', function(){ drag=false; });
 }
 // #mockpick 마크업이 이 스크립트 아래에 있으므로 DOM 준비 후 바인딩
-function mpInitAll(){ mpInitDrag(); mpSyncActive(); }
+// 새로고침 시 보던 화면 유지 — 현재 화면/학생/모달을 세션에 저장·복원
+var _modalStudent = null;
+function saveView(){
+  try{
+    var active = document.querySelector('.screen.active');
+    var modal = document.getElementById('studentUploadModal');
+    sessionStorage.setItem('hiai_ocr_view', JSON.stringify({
+      screen: active ? active.id : 'screen-task',
+      ocrb: (typeof currentOcrBStudentIdx === 'number') ? currentOcrBStudentIdx : 0,
+      modal: !!(modal && modal.style.display === 'flex'),
+      ms: _modalStudent
+    }));
+  }catch(e){}
+}
+function restoreView(){
+  try{
+    if (location.hash) return false; // 공유된 #해시 링크는 우선
+    var raw = sessionStorage.getItem('hiai_ocr_view'); if (!raw) return false;
+    var s = JSON.parse(raw);
+    if (s.screen === 'screen-ocr-b') { goToOCR_B(s.ocrb || 0); }
+    else if (s.screen === 'screen-list') { goToList(); }
+    else if (s.screen === 'screen-upload') { resetUpload(); showScreen('screen-upload'); }
+    else { showScreen('screen-task'); }
+    if (s.modal && s.ms && typeof openStudentUploadModal === 'function') { openStudentUploadModal(s.ms.id, s.ms.name); }
+    return true;
+  }catch(e){ return false; }
+}
+function mpInitAll(){ mpInitDrag(); restoreView(); mpSyncActive(); }
 if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', mpInitAll);
 else mpInitAll();
 </script>
