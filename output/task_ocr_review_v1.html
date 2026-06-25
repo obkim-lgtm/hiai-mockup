@@ -1666,7 +1666,7 @@ function showScreen(id) {
   document.querySelectorAll('.screen').forEach(function(s){ s.classList.remove('active'); });
   document.getElementById(id).classList.add('active');
   var gnb = document.getElementById('gnb');
-  if (gnb) gnb.style.display = (id === 'screen-ocr' || id === 'screen-ocr-b') ? 'none' : '';
+  if (gnb) gnb.style.display = (id === 'screen-ocr' || id === 'screen-ocr-b') ? 'none' : 'flex';
   window.scrollTo(0,0);
   lucide.createIcons();
   if (typeof mpSyncActive === 'function') mpSyncActive();
