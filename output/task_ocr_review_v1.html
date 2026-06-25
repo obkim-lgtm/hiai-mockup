@@ -178,7 +178,7 @@
   <div style="display:flex; align-items:center; justify-content:space-between; width:100%; max-width:1200px; padding:0 36px;">
     <div style="display:flex; align-items:center; gap:8px; flex-shrink:0;">
       <div style="width:58px; height:42px; overflow:hidden; position:relative; flex-shrink:0;">
-        <img src="../screens/logo_icon.png" style="position:absolute; left:50%; transform:translateX(-50%); height:100%; width:auto; object-fit:cover;" alt="HiAI 로고">
+        <img src="../screens/logo_icon.png" style="position:absolute; left:50%; transform:translateX(-50%); height:100%; width:auto; object-fit:cover;" alt="HIAI 로고">
       </div>
       <div style="position:relative; width:150px; height:41px; flex-shrink:0;">
         <img src="../screens/logo_text_top.svg" style="position:absolute; top:0; left:0; width:79.842px; height:16.284px;" alt="하이러닝 AI">
@@ -1865,11 +1865,15 @@ function retryOcrB(id) {
 }
 
 // 인식 실패 화면 — '다시 인식하기' (같은 파일 재인식, 데모상 성공으로 전환)
+// OCR이 바뀐 학생 = AI 채점 stale → 채점 화면에서 재채점 유도 (세션 공유)
+function markRescore(id){ try{ var rs=JSON.parse(sessionStorage.getItem('hiai_rescore')||'[]'); if(rs.indexOf(id)<0){ rs.push(id); sessionStorage.setItem('hiai_rescore', JSON.stringify(rs)); } }catch(e){} }
+
 function reRecognizeOcrB(id) {
   if (typeof showToast === 'function') showToast('OCR을 다시 인식하고 있어요…', 'success');
   setTimeout(function() {
     var i = STUDENTS_B1.findIndex(function(s){ return s.id === id; });
     if (i !== -1) { STUDENTS_B1[i].ocrStatus = 'unconfirmed'; STUDENTS_B1[i].needsReview = false; currentOcrBStudentIdx = i; }
+    markRescore(id);
     renderOCRView_B();
     if (typeof showToast === 'function') showToast('OCR 인식을 완료했어요.', 'success');
   }, 1200);
@@ -2469,6 +2473,7 @@ function resolveUncertaintyB(gi) {
   if (!student) return;
   var data = OCR_DATA_B[student.id];
   if (!data || !data.questions || !data.questions[gi]) return;
+  markRescore(student.id); // OCR 수정 저장 → 채점 stale
   // 해당 문항 불확실 해소
   data.questions[gi].uncertain = false;
   if (data.questions[gi].spans) data.questions[gi].spans.forEach(function(s){ s.uncertain = false; });
@@ -2950,6 +2955,7 @@ function submitStudentUpload() {
         STUDENTS_B1[sIdx].needsReview = false;
         currentOcrBStudentIdx = sIdx;
       }
+      markRescore(rid); // 파일 재업로드 → OCR 변경 → 채점 stale
       renderOCRView_B();
       if (typeof showToast === 'function') showToast('새 파일로 OCR 인식을 완료했어요.', 'success');
       return;
