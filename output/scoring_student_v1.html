@@ -1306,8 +1306,11 @@
   <div id="mp-body" class="mp-body">
     <div class="mp-cap">화면</div>
     <button class="mp-btn" data-f="scoring_list_v1.html" onclick="mpNav('scoring_list_v1.html')">채점 목록</button>
-    <button class="mp-btn" data-f="scoring_student_v1.html" onclick="mpNav('scoring_student_v1.html')">학생 채점 상세 <span class="mp-sub">중고등</span></button>
-    <button class="mp-btn" data-f="scoring_student_elementary_v1.html" onclick="mpNav('scoring_student_elementary_v1.html')">학생 채점 상세 <span class="mp-sub">초등</span></button>
+    <div class="mp-cap">학생 채점 상세 · 케이스별</div>
+    <button class="mp-btn" onclick="mpNav('scoring_student_v1.html?id=10101&name=김서윤')">채점 진행 <span class="mp-sub">AI 결과 검토</span></button>
+    <button class="mp-btn" onclick="mpNav('scoring_student_v1.html?id=10105&name=정현우')">OCR 미진행 <span class="mp-sub">채점 불가</span></button>
+    <button class="mp-btn" onclick="mpNav('scoring_student_v1.html?id=10106&name=한가람')">OCR 인식 실패 <span class="mp-sub">채점 불가</span></button>
+    <button class="mp-btn" data-f="scoring_student_elementary_v1.html" onclick="mpNav('scoring_student_elementary_v1.html')">초등 채점 상세</button>
     <div class="mp-cap">AI 채점 실행 모달 · OCR 상태별</div>
     <button class="mp-btn" onclick="mpRun('ok')">OCR 완료 <span class="mp-sub">채점 가능·불가 표</span></button>
     <button class="mp-btn" onclick="mpRun('few')">OCR 일부 미확인</button>
