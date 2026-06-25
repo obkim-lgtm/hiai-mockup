@@ -790,11 +790,6 @@
       html += '<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap;">';
       html += '<span class="ocr-b-q-label">' + q.label + '</span>';
       html += '<span class="ocr-b-q-desc">' + q.desc + '</span>';
-      // 확인 필요(불확실) 문항 칩 — 읽기 전용이어도 표시(채점 신뢰도 참고)
-      if (hasUncertain) {
-        html += '<span id="left-unc-chip-' + qi + '" style="display:inline-flex;align-items:center;gap:4px;background:#FFF4CC;border:1px solid #E07000;border-radius:100px;padding:2px 8px;font-size:11px;font-weight:800;color:#E07000;margin-left:auto;">'
-              + '<i data-lucide="triangle-alert" style="width:11px;height:11px;"></i>인식 불확실</span>';
-      }
       html += '</div>';
       // 본문 — 읽기 전용. OCR 수정은 상단 'OCR 결과 수정' 버튼으로 과제물 관리에서만.
       html += '<div id="left-ocr-body-' + qi + '" class="ocr-b-q-text">' + fullText + '</div>';
