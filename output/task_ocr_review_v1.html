@@ -738,7 +738,8 @@
             <i data-lucide="scan-text" style="width:16px;height:16px;color:#7E44FB;"></i>
             <span style="font-size:16px;font-weight:800;color:#222;">OCR 인식 결과</span>
           </div>
-          <button onclick="openQuestionEditModal()" style="display:inline-flex;align-items:center;justify-content:center;line-height:1;vertical-align:middle;gap:5px;height:30px;padding:0 12px;background:white;border:1px solid #B28FFD;border-radius:6px;color:#7E44FB;font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;" onmouseover="this.style.background='#F7F4FF'" onmouseout="this.style.background='white'"><i data-lucide="pencil" style="width:13px;height:13px;"></i>문항 수정</button>
+          <!-- 문항 수정 버튼 임시 숨김 (문항 축약 표시로 수정 니즈 낮음) · 복원 시 display:none → inline-flex -->
+          <button onclick="openQuestionEditModal()" style="display:none;align-items:center;justify-content:center;line-height:1;vertical-align:middle;gap:5px;height:30px;padding:0 12px;background:white;border:1px solid #B28FFD;border-radius:6px;color:#7E44FB;font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;" onmouseover="this.style.background='#F7F4FF'" onmouseout="this.style.background='white'"><i data-lucide="pencil" style="width:13px;height:13px;"></i>문항 수정</button>
         </div>
         <!-- 안내 배너 -->
       </div>
