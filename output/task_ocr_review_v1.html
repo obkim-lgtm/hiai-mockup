@@ -1813,17 +1813,11 @@ function goToList() {
 }
 
 function goToOCR(studentTableIdx) {
-  // 해당 학생의 ocrStudents 내 인덱스 찾기
+  // A안(구버전) OCR 화면 폐지 — 같은 학생을 B안 OCR 확인·수정(screen-ocr-b)으로 통일 라우팅
   var student = STUDENTS[studentTableIdx];
   if (!student || student.status === '미제출') return;
-
-  // processing 상태면 가장 가까운 확인 가능한 학생으로 이동
-  var idx = ocrStudents.findIndex(function(s){ return s.id === student.id; });
-  if (idx === -1) idx = 0;
-  currentStudentIdx = idx;
-  currentPageIdx = 0;
-  renderOCRView();
-  showScreen('screen-ocr');
+  var bIdx = STUDENTS_B1.findIndex(function(s){ return s.id === student.id; });
+  goToOCR_B(bIdx !== -1 ? bIdx : 0);
 }
 
 function goToOCR_B(b1Idx) {
@@ -3169,15 +3163,10 @@ var ocrBFromUrl = null; // 외부에서 진입 시 돌아갈 URL
     var idx = STUDENTS_B1.findIndex(function(s){ return s.id === sid; });
     goToOCR_B(idx !== -1 ? idx : 0);
   } else if (hash.startsWith('#ocr=')) {
+    // A안(구버전) 해시도 B안 OCR 확인·수정으로 통일 라우팅
     var sid = hash.replace('#ocr=', '');
-    var student = STUDENTS.find(function(s){ return s.id === sid; });
-    if (student && student.status !== '미제출' && student.ocrStatus !== 'processing') {
-      var idx = ocrStudents.findIndex(function(s){ return s.id === sid; });
-      currentStudentIdx = (idx !== -1) ? idx : 0;
-      currentPageIdx = 0;
-      renderOCRView();
-      showScreen('screen-ocr');
-    }
+    var bIdx = STUDENTS_B1.findIndex(function(s){ return s.id === sid; });
+    if (bIdx !== -1) goToOCR_B(bIdx); else goToList();
   } else if (hash === '#list') {
     showScreen('screen-list');
   }
