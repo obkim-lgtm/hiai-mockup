@@ -114,9 +114,8 @@
     .ocr-b-q-label {
       display: inline-flex; align-items: center; background: #F0EAFF; color: #7E44FB;
       border-radius: 100px; padding: 3px 12px; font-size: 13px; font-weight: 800;
-      margin-bottom: 8px;
     }
-    .ocr-b-q-desc { font-size: 13px; color: #808080; font-weight: 700; margin-bottom: 10px; }
+    .ocr-b-q-desc { font-size: 13px; color: #808080; font-weight: 700; }
     .ocr-b-q-text { font-size: 16px; color: #333; line-height: 1.85; }
     .ocr-b-editable { cursor: text; border-radius: 8px; padding: 14px 16px; border: 1px solid transparent; transition: background 0.12s, border-color 0.12s; }
     .ocr-b-editable:hover { background: #F8F8F8 !important; border-color: #D9D9D9 !important; }
@@ -193,6 +192,14 @@
     <strong style="color:#E07000;">답안 인식 내용이 바뀌었어요.</strong> 다시 채점하면 최신 내용이 점수에 반영돼요.
   </span>
   <button onclick="rerunAiScoring()" style="flex-shrink:0;height:32px;padding:0 14px;background:#FF8C4C;color:white;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;display:inline-flex;align-items:center;justify-content:center;gap:5px;" onmouseover="this.style.background='#F07A33'" onmouseout="this.style.background='#FF8C4C'"><i data-lucide="wand-sparkles" style="width:14px;height:14px;"></i>재채점 실행</button>
+</div>
+
+<!-- 직접 채점(AI 제외) 문항 안내 — OCR 단계에서 제외한 문항이 있을 때만 노출 -->
+<div id="student-exclude-banner" style="display:none;align-items:center;gap:10px;padding:10px 20px;background:#F5F5F5;">
+  <i data-lucide="user-pen" style="width:15px;height:15px;color:#808080;flex-shrink:0;"></i>
+  <span style="font-size:13px;color:#494949;font-weight:700;line-height:1.5;flex:1;">
+    <strong style="color:#494949;">직접 채점 문항</strong> <strong id="exclude-banner-q" style="color:#494949;"></strong> — AI 채점에서 제외했어요. 해당 문항 점수는 직접 입력해 주세요.
+  </span>
 </div>
 
 <!-- 메인 컨텐츠 -->
@@ -666,44 +673,44 @@
   // ── B안 OCR 데이터 (독후 활동 보고서 — 사라진 스푼) ──
   var OCR_DATA_B = {
     '10101': { needsReview: false, questions: [
-      { label:'문항 1', desc:'이 책의 핵심 내용을 간략히 요약하시오.', spans:[{text:'원소 주기율표에 얽힌 과학자들의 이야기를 통해 원소들이 발견된 역사를 흥미롭게 풀어낸 책이다. 각 원소는 독특한 성질을 가지고 있으며 그 발견 과정에는 경쟁과 헌신의 역사가 담겨 있다.'}]},
-      { label:'문항 2', desc:'책에서 인상 깊었던 과학자 또는 원소의 발견 이야기를 소개하시오.', spans:[{text:'마리 퀴리가 방사성 원소인 폴로늄과 라듐을 발견하는 이야기가 가장 인상 깊었다. 그녀는 두 개의 노벨상을 수상했지만 방사선에 의한 건강 문제로 고통받았다.'}]},
-      { label:'문항 3', desc:'책에서 다룬 원소 중 하나를 선택해 우리 삶과의 연관성을 설명하시오.', spans:[{text:'리튬은 현재 스마트폰과 전기차 배터리의 핵심 소재로, 일상 속 전자기기 사용과 직결되어 있다. 재생 가능 에너지 저장에도 필수적인 원소다.'}]},
-      { label:'문항 4', desc:'과학 발전에서 국가 간 경쟁이 미친 영향을 서술하시오.', spans:[{text:'냉전 시대 미국과 소련의 우주 경쟁은 새로운 소재와 원소 연구를 촉진시켰다. 경쟁이 없었다면 과학 발전의 속도는 훨씬 더뎠을 것이다.'}]},
-      { label:'문항 5', desc:'이 책을 읽고 더 알고 싶어진 점을 쓰시오.', spans:[{text:'주기율표에서 아직 발견되지 않은 원소가 있는지, 그리고 인공 원소를 실용적으로 활용할 수 있는지 더 알아보고 싶다.'}]}
+      { label:'문항 1', desc:'이 책의 핵심 내용 요약', spans:[{text:'원소 주기율표에 얽힌 과학자들의 이야기를 통해 원소들이 발견된 역사를 흥미롭게 풀어낸 책이다. 각 원소는 독특한 성질을 가지고 있으며 그 발견 과정에는 경쟁과 헌신의 역사가 담겨 있다.'}]},
+      { label:'문항 2', desc:'인상 깊었던 과학자 또는 원소의 발견 이야기 소개', spans:[{text:'마리 퀴리가 방사성 원소인 폴로늄과 라듐을 발견하는 이야기가 가장 인상 깊었다. 그녀는 두 개의 노벨상을 수상했지만 방사선에 의한 건강 문제로 고통받았다.'}]},
+      { label:'문항 3', desc:'다룬 원소 중 하나와 우리 삶의 연관성 설명', spans:[{text:'리튬은 현재 스마트폰과 전기차 배터리의 핵심 소재로, 일상 속 전자기기 사용과 직결되어 있다. 재생 가능 에너지 저장에도 필수적인 원소다.'}]},
+      { label:'문항 4', desc:'과학 발전에서 국가 간 경쟁이 미친 영향 서술', spans:[{text:'냉전 시대 미국과 소련의 우주 경쟁은 새로운 소재와 원소 연구를 촉진시켰다. 경쟁이 없었다면 과학 발전의 속도는 훨씬 더뎠을 것이다.'}]},
+      { label:'문항 5', desc:'이 책을 읽고 더 알고 싶어진 점', spans:[{text:'주기율표에서 아직 발견되지 않은 원소가 있는지, 그리고 인공 원소를 실용적으로 활용할 수 있는지 더 알아보고 싶다.'}]}
     ]},
     '10102': { needsReview: true, questions: [
-      { label:'문항 1', desc:'이 책의 핵심 내용을 간략히 요약하시오.', spans:[{text:'이 책은 원소 주기율표를 중심으로 과학자들이 원소를 발견해 온 역사를 흥미롭게 서술한다. 단순한 화학 지식이 아닌 인간의 도전과 실수를 통해 과학이 발전해 온 과정을 보여준다.'}]},
-      { label:'문항 2', desc:'책에서 인상 깊었던 과학자 또는 원소의 발견 이야기를 소개하시오.', spans:[
+      { label:'문항 1', desc:'이 책의 핵심 내용 요약', spans:[{text:'이 책은 원소 주기율표를 중심으로 과학자들이 원소를 발견해 온 역사를 흥미롭게 서술한다. 단순한 화학 지식이 아닌 인간의 도전과 실수를 통해 과학이 발전해 온 과정을 보여준다.'}]},
+      { label:'문항 2', desc:'인상 깊었던 과학자 또는 원소의 발견 이야기 소개', spans:[
         {text:'빌헬름 뢴트겐이 X선을 발견한 이야기가 기억에 남는다. 실험 중 우연히 X선의 존재를 알게 되었는데, '},
         {text:'처음에는 그 원인을', uncertain:true, hint:'\'처음에는 그 원인을\' — 필기 불명확, 원본 확인 필요'},
         {text:' 이해하지 못했지만 지속적인 연구로 사상 최초로 내부 신체를 들여다볼 수 있는 기술을 만들어냈다.'}
       ]},
-      { label:'문항 3', desc:'책에서 다룬 원소 중 하나를 선택해 우리 삶과의 연관성을 설명하시오.', spans:[
+      { label:'문항 3', desc:'다룬 원소 중 하나와 우리 삶의 연관성 설명', spans:[
         {text:'수은은 과거 체온계와 형광등에 쓰였지만 독성이 밝혀지면서 규제되었다. '},
         {text:'일본 미나마타', uncertain:true, hint:'\'일본 미나마타\' — 고유명사 인식 불확실'},
         {text:' 병 사례처럼 수은 중독은 신경계에 심각한 피해를 주며, 현재는 '},
         {text:'부작용을 동반할 수 있다는', uncertain:true, hint:'\'부작용을 동반할 수 있다는\' — 필기 흐릿함, 원본 대조 필요'},
         {text:' 점에서 대체 소재 연구가 활발하다.'}
       ]},
-      { label:'문항 4', desc:'과학 발전에서 국가 간 경쟁이 미친 영향을 서술하시오.', spans:[{text:'과학 경쟁이 항상 나쁜 것은 아니다. 서로 다른 국가의 과학자들이 경쟁하면서도 논문과 학술대회를 통해 지식을 공유했기에 과학이 빠르게 발전할 수 있었다.'}]},
-      { label:'문항 5', desc:'이 책을 읽고 더 알고 싶어진 점을 쓰시오.', spans:[{text:'주기율표에 아직 빈자리가 남아 있는지, 그리고 이론적으로 존재할 수 있는 가장 무거운 원소의 한계는 무엇인지 더 공부해보고 싶다.'}]}
+      { label:'문항 4', desc:'과학 발전에서 국가 간 경쟁이 미친 영향 서술', spans:[{text:'과학 경쟁이 항상 나쁜 것은 아니다. 서로 다른 국가의 과학자들이 경쟁하면서도 논문과 학술대회를 통해 지식을 공유했기에 과학이 빠르게 발전할 수 있었다.'}]},
+      { label:'문항 5', desc:'이 책을 읽고 더 알고 싶어진 점', spans:[{text:'주기율표에 아직 빈자리가 남아 있는지, 그리고 이론적으로 존재할 수 있는 가장 무거운 원소의 한계는 무엇인지 더 공부해보고 싶다.'}]}
     ]},
     '10103': { needsReview: true, questions: [
-      { label:'문항 1', desc:'이 책의 핵심 내용을 간략히 요약하시오.', spans:[{text:'원소 발견의 역사를 통해 인류가 물질 세계를 어떻게 이해해 왔는지를 보여주는 책이다. 과학자들의 경쟁과 협력, 실수와 성공이 어우러진 흥미로운 이야기다.', uncertain:true, hint:'필기 전반이 흐릿해 판독 어려움 — 원본 확인 필요'}]},
-      { label:'문항 2', desc:'책에서 인상 깊었던 과학자 또는 원소의 발견 이야기를 소개하시오.', spans:[{text:'드미트리 멘델레예프가 꿈에서 주기율표의 완성된 모습을 보고 깨어나 그것을 기록했다는 일화가 인상 깊었다. 직관과 논리가 결합된 위대한 발견이었다.', uncertain:true, hint:'필기 흐릿 — 원본 확인 필요'}]},
-      { label:'문항 3', desc:'책에서 다룬 원소 중 하나를 선택해 우리 삶과의 연관성을 설명하시오.', spans:[{text:'실리콘은 반도체의 핵심 원소로, 현대 디지털 문명 전체를 지탱하는 소재다. 컴퓨터와 스마트폰이 없는 일상은 상상하기 어렵다.', uncertain:true, hint:'필기 흐릿 — 원본 확인 필요'}]},
-      { label:'문항 4', desc:'과학 발전에서 국가 간 경쟁이 미친 영향을 서술하시오.', spans:[{text:'2차 세계대전 당시 핵무기 개발 경쟁은 원자물리학의 급격한 발전을 이끌었다. 과학의 군사적 활용이라는 윤리 문제도 함께 제기했다.', uncertain:true, hint:'필기 흐릿 — 원본 확인 필요'}]},
-      { label:'문항 5', desc:'이 책을 읽고 더 알고 싶어진 점을 쓰시오.', spans:[{text:'미래에 새로운 원소가 더 발견될 수 있는지, 그리고 현재 주기율표 118번 이후의 원소들은 어떤 성질을 가질지 궁금하다.'}]}
+      { label:'문항 1', desc:'이 책의 핵심 내용 요약', spans:[{text:'원소 발견의 역사를 통해 인류가 물질 세계를 어떻게 이해해 왔는지를 보여주는 책이다. 과학자들의 경쟁과 협력, 실수와 성공이 어우러진 흥미로운 이야기다.', uncertain:true, hint:'필기 전반이 흐릿해 판독 어려움 — 원본 확인 필요'}]},
+      { label:'문항 2', desc:'인상 깊었던 과학자 또는 원소의 발견 이야기 소개', spans:[{text:'드미트리 멘델레예프가 꿈에서 주기율표의 완성된 모습을 보고 깨어나 그것을 기록했다는 일화가 인상 깊었다. 직관과 논리가 결합된 위대한 발견이었다.', uncertain:true, hint:'필기 흐릿 — 원본 확인 필요'}]},
+      { label:'문항 3', desc:'다룬 원소 중 하나와 우리 삶의 연관성 설명', spans:[{text:'실리콘은 반도체의 핵심 원소로, 현대 디지털 문명 전체를 지탱하는 소재다. 컴퓨터와 스마트폰이 없는 일상은 상상하기 어렵다.', uncertain:true, hint:'필기 흐릿 — 원본 확인 필요'}]},
+      { label:'문항 4', desc:'과학 발전에서 국가 간 경쟁이 미친 영향 서술', spans:[{text:'2차 세계대전 당시 핵무기 개발 경쟁은 원자물리학의 급격한 발전을 이끌었다. 과학의 군사적 활용이라는 윤리 문제도 함께 제기했다.', uncertain:true, hint:'필기 흐릿 — 원본 확인 필요'}]},
+      { label:'문항 5', desc:'이 책을 읽고 더 알고 싶어진 점', spans:[{text:'미래에 새로운 원소가 더 발견될 수 있는지, 그리고 현재 주기율표 118번 이후의 원소들은 어떤 성질을 가질지 궁금하다.'}]}
     ]},
     '10105': { ocrCase: 'pending' },  // OCR 미진행
     '10106': { ocrCase: 'failed' },   // OCR 인식 실패
     'default': { needsReview: false, questions: [
-      { label:'문항 1', desc:'이 책의 핵심 내용을 간략히 요약하시오.', spans:[{text:'원소 주기율표에 얽힌 과학자들의 이야기를 통해 원소들이 발견된 역사를 흥미롭게 풀어낸 책이다. 각 원소는 독특한 성질을 가지고 있으며 그 발견 과정에는 경쟁과 헌신의 역사가 담겨 있다.'}]},
-      { label:'문항 2', desc:'책에서 인상 깊었던 과학자 또는 원소의 발견 이야기를 소개하시오.', spans:[{text:'헨리 모즐리의 이야기가 슬프면서도 인상 깊었다. 원자번호 개념을 확립한 천재 과학자였지만 1차 세계대전에 참전해 27세의 나이로 전사했다.'}]},
-      { label:'문항 3', desc:'책에서 다룬 원소 중 하나를 선택해 우리 삶과의 연관성을 설명하시오.', spans:[{text:'탄소는 생명체의 근간이 되는 원소로, 다이아몬드부터 흑연까지 다양한 형태로 존재한다. 최근 탄소 나노튜브 등 신소재 연구에서도 핵심적인 역할을 한다.'}]},
-      { label:'문항 4', desc:'과학 발전에서 국가 간 경쟁이 미친 영향을 서술하시오.', spans:[{text:'국가 간 경쟁은 과학 발전을 가속화하기도 하지만 연구 결과의 공유를 막아 오히려 발전을 저해하기도 한다. 균형 있는 협력이 필요하다.'}]},
-      { label:'문항 5', desc:'이 책을 읽고 더 알고 싶어진 점을 쓰시오.', spans:[{text:'책에서 다루지 않은 원소들의 이야기와, 현재 연구 중인 새로운 합성 원소들이 실제로 어떤 성질을 보이는지 더 알아보고 싶다.'}]}
+      { label:'문항 1', desc:'이 책의 핵심 내용 요약', spans:[{text:'원소 주기율표에 얽힌 과학자들의 이야기를 통해 원소들이 발견된 역사를 흥미롭게 풀어낸 책이다. 각 원소는 독특한 성질을 가지고 있으며 그 발견 과정에는 경쟁과 헌신의 역사가 담겨 있다.'}]},
+      { label:'문항 2', desc:'인상 깊었던 과학자 또는 원소의 발견 이야기 소개', spans:[{text:'헨리 모즐리의 이야기가 슬프면서도 인상 깊었다. 원자번호 개념을 확립한 천재 과학자였지만 1차 세계대전에 참전해 27세의 나이로 전사했다.'}]},
+      { label:'문항 3', desc:'다룬 원소 중 하나와 우리 삶의 연관성 설명', spans:[{text:'탄소는 생명체의 근간이 되는 원소로, 다이아몬드부터 흑연까지 다양한 형태로 존재한다. 최근 탄소 나노튜브 등 신소재 연구에서도 핵심적인 역할을 한다.'}]},
+      { label:'문항 4', desc:'과학 발전에서 국가 간 경쟁이 미친 영향 서술', spans:[{text:'국가 간 경쟁은 과학 발전을 가속화하기도 하지만 연구 결과의 공유를 막아 오히려 발전을 저해하기도 한다. 균형 있는 협력이 필요하다.'}]},
+      { label:'문항 5', desc:'이 책을 읽고 더 알고 싶어진 점', spans:[{text:'책에서 다루지 않은 원소들의 이야기와, 현재 연구 중인 새로운 합성 원소들이 실제로 어떤 성질을 보이는지 더 알아보고 싶다.'}]}
     ]}
   };
 
@@ -711,6 +718,9 @@
   function initLeftPanelB(studentId) {
     // 학생별 OCR 케이스 적용 (정상/확인 필요/정확도 낮음/인식 실패/미진행). 데이터 없으면 default(정상 인식).
     var data = OCR_DATA_B[studentId] || OCR_DATA_B['default'];
+    // 직접 채점(AI 제외)으로 표시된 문항 — OCR 단계에서 설정, 세션으로 공유
+    var _excl = {};
+    try { var _em = JSON.parse(sessionStorage.getItem('hiai_ocr_exclude') || '{}'); _excl = _em[studentId] || {}; } catch(e){}
     // 우측 채점 패널 기본 복원(정상/확인필요/정확도낮음은 채점 가능)
     var _rGrade = document.getElementById('right-grading-content');
     var _rEmpty = document.getElementById('right-grading-empty');
@@ -795,7 +805,7 @@
     // OCR 텍스트 렌더
     var container = document.getElementById('left-ocr-content');
     var html = '';
-    // 인식 정확도 낮음(확인 필요 문항 ≥70%, 가변) — 결과 숨기고 직접 채점 안내
+    // 인식 정확도 낮음(확인 필요 문항 ≥70%, 가변) — 결과 숨기고 통째로 직접 채점 안내(문항 토글 없음)
     var _total = data.questions.length;
     var _unc = data.questions.filter(function(q){ return q.spans.some(function(s){ return s.uncertain; }); }).length;
     if (_total > 0 && _unc / _total >= 0.7) {
@@ -810,15 +820,24 @@
     data.questions.forEach(function(q, qi) {
       var hasUncertain = q.spans.some(function(sp){ return sp.uncertain; });
       var fullText = q.spans.map(function(sp){ return sp.text; }).join('');
-      html += '<div>';
+      var isExcl = !!_excl[qi];
+      html += '<div' + (isExcl ? ' style="background:#FAFAFA;border-radius:10px;padding:10px 12px;margin:0 -12px;"' : '') + '>';
       html += '<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap;">';
       html += '<span class="ocr-b-q-label">' + q.label + '</span>';
+      if (isExcl) html += '<span style="display:inline-flex;align-items:center;gap:3px;font-size:11px;font-weight:800;color:#7E44FB;background:#fff;border:1px solid #B28FFD;border-radius:100px;padding:2px 9px;"><i data-lucide="user-pen" style="width:11px;height:11px;"></i>직접 채점</span>';
       html += '<span class="ocr-b-q-desc">' + q.desc + '</span>';
       html += '</div>';
-      // 본문 — 읽기 전용. OCR 수정은 상단 'OCR 결과 수정' 버튼으로 과제물 관리에서만.
-      html += '<div id="left-ocr-body-' + qi + '" class="ocr-b-q-text">' + fullText + '</div>';
-      // AI 인식 불확실 메모 (불확실 문항만, 기존 본문/편집 아래에 추가)
-      if (hasUncertain) {
+      if (isExcl) {
+        html += '<div style="display:flex;align-items:center;gap:7px;margin-bottom:8px;padding:8px 11px;background:#F5F5F5;border-radius:8px;font-size:12px;font-weight:700;color:#808080;line-height:1.5;"><i data-lucide="user-pen" style="width:13px;height:13px;flex-shrink:0;"></i><span>선생님 직접 채점 문항으로, AI 채점에서 제외됩니다.</span></div>';
+        // 인식 결과는 기본 접음 — 직접 채점 문항은 인식 텍스트가 부정확할 수 있어 노이즈 방지. 필요 시 펼침.
+        html += '<button type="button" onclick="toggleExclBody(' + qi + ',this)" style="display:inline-flex;align-items:center;justify-content:center;line-height:1;gap:4px;background:none;border:none;padding:2px 0 6px;color:#808080;font-family:inherit;font-size:12px;font-weight:700;cursor:pointer;"><i data-lucide="chevron-down" style="width:13px;height:13px;"></i>인식 결과 보기</button>';
+        html += '<div id="left-ocr-body-' + qi + '" class="ocr-b-q-text" style="display:none;opacity:.6;">' + fullText + '</div>';
+      } else {
+        // 본문 — 읽기 전용. OCR 수정은 상단 'OCR 결과 수정' 버튼으로 과제물 관리에서만.
+        html += '<div id="left-ocr-body-' + qi + '" class="ocr-b-q-text">' + fullText + '</div>';
+      }
+      // AI 인식 불확실 메모 (불확실 문항만, 기존 본문/편집 아래에 추가) — 직접 채점 문항은 AI 제외라 생략
+      if (hasUncertain && !isExcl) {
         var _hints = q.spans.filter(function(sp){ return sp.uncertain && sp.hint; }).map(function(sp){ return sp.hint; });
         if (_hints.length) {
           html += '<div style="margin-top:8px;background:#FFF5F5;border:1px solid #FFBCBC;border-radius:8px;padding:10px 14px;">'
@@ -831,6 +850,16 @@
     });
     container.innerHTML = html;
     lucide.createIcons();
+  }
+
+  // 직접 채점(AI 제외) 문항 — 인식 결과 접기/펼치기 (기본 접음)
+  function toggleExclBody(qi, btn){
+    var b = document.getElementById('left-ocr-body-' + qi);
+    if (!b) return;
+    var open = b.style.display !== 'none';
+    b.style.display = open ? 'none' : 'block';
+    btn.innerHTML = '<i data-lucide="chevron-' + (open ? 'down' : 'up') + '" style="width:13px;height:13px;"></i>인식 결과 ' + (open ? '보기' : '접기');
+    if (window.lucide) lucide.createIcons();
   }
 
   // ── B안 좌측 OCR 인라인 편집 ──
@@ -943,6 +972,22 @@
         if (mc) mc.style.height = 'calc(100vh - 68px - 42px)';
       }
     }
+    // 직접 채점(AI 제외) 문항 안내 — OCR 단계에서 제외한 문항이 있으면 표시
+    try {
+      var _emAll = JSON.parse(sessionStorage.getItem('hiai_ocr_exclude') || '{}');
+      var _exObj = _emAll[studentId] || {};
+      var _exIdx = Object.keys(_exObj).filter(function(k){ return _exObj[k]; }).map(function(k){ return parseInt(k,10)+1; }).sort(function(a,b){ return a-b; });
+      if (_exIdx.length) {
+        var eb = document.getElementById('student-exclude-banner');
+        if (eb) {
+          var lab = document.getElementById('exclude-banner-q');
+          if (lab) lab.textContent = '(문항 ' + _exIdx.join(', ') + ')';
+          eb.style.display = 'flex';
+          var mc2 = document.querySelector('.main-content');
+          if (mc2) mc2.style.height = 'calc(100vh - 68px - 42px)';
+        }
+      }
+    } catch(e){}
     // AI 채점 재실행 (개별) — 데모: 배너 감추고 토스트
     window.rerunAiScoring = function() {
       showToast('loading', '이 학생의 AI 채점을 재실행합니다...');
@@ -1371,17 +1416,22 @@
     <button class="mp-btn" data-run="few" onclick="mpRun('few')">OCR 일부 미확인</button>
     <button class="mp-btn" data-run="first" onclick="mpRun('first')">OCR 인식 전</button>
     <div class="mp-cap">학생 채점 상세 · 케이스별</div>
-    <button class="mp-btn" data-id="10101" onclick="mpNav('scoring_student_v1.html?id=10101&name=김서윤')">채점 진행 <span class="mp-sub">AI 결과 검토</span></button>
+    <button class="mp-btn" data-id="10101" onclick="mpNavClearExcl('scoring_student_v1.html?id=10101&name=김서윤')">채점 진행 <span class="mp-sub">AI 결과 검토</span></button>
     <button class="mp-btn" data-id="10102" onclick="mpNav('scoring_student_v1.html?id=10102&name=이준호')">확인 필요 <span class="mp-sub">불확실 구간</span></button>
     <button class="mp-btn" data-id="10105" onclick="mpNav('scoring_student_v1.html?id=10105&name=정현우')">OCR 미진행 <span class="mp-sub">채점 불가</span></button>
     <button class="mp-btn" data-id="10106" onclick="mpNav('scoring_student_v1.html?id=10106&name=한가람')">OCR 인식 실패 <span class="mp-sub">채점 불가</span></button>
     <button class="mp-btn" data-rescore="1" onclick="mpNav('scoring_student_v1.html?id=10101&name=김서윤&rescore=1')">재채점 필요 <span class="mp-sub">완료 후 OCR 수정됨</span></button>
+    <button class="mp-btn" data-exclude="1" onclick="mpExclude()">문항 직접 채점 <span class="mp-sub">AI 채점 제외 문항</span></button>
     <button class="mp-btn" data-f="scoring_student_elementary_v1.html" onclick="mpNav('scoring_student_elementary_v1.html')">초등 채점 상세</button>
   </div>
 </div>
 <script>
   function mpToggle(){ var b=document.getElementById('mp-body'); var c=document.getElementById('mp-caret'); var open=b.style.display!=='none'; b.style.display=open?'none':'flex'; if(c)c.style.transform=open?'rotate(180deg)':''; }
   function mpNav(url){ if(location.pathname.split('/').pop()!==url) location.href=url; }
+  // 문항 직접 채점(AI 제외) 데모 — 10101의 문항 3(index 2)을 제외로 설정 후 이동
+  function mpExclude(){ try{ var em=JSON.parse(sessionStorage.getItem('hiai_ocr_exclude')||'{}'); em['10101']=em['10101']||{}; em['10101'][2]=true; sessionStorage.setItem('hiai_ocr_exclude',JSON.stringify(em)); }catch(e){} location.href='scoring_student_v1.html?id=10101&name=김서윤'; }
+  // 채점 진행(정상) 데모 — 10101 제외 상태를 비우고 이동 (두 케이스를 깨끗한 반대 상태로)
+  function mpNavClearExcl(url){ try{ var em=JSON.parse(sessionStorage.getItem('hiai_ocr_exclude')||'{}'); delete em['10101']; sessionStorage.setItem('hiai_ocr_exclude',JSON.stringify(em)); }catch(e){} location.href=url; }
   function mpRun(k){
     if (typeof openRunModal==='function'){
       document.querySelectorAll('.modal-overlay').forEach(function(m){ m.classList.remove('open'); });
@@ -1398,12 +1448,14 @@
     var isRescore=(sp.get('rescore')==='1');
     var om=document.querySelector('.modal-overlay.open');
     var runKey=om?({runModal:'ok',ocrFewModal:'few',ocrFirstModal:'first'}[om.id]||''):'';
+    var hasExcl=false; try{ var em=JSON.parse(sessionStorage.getItem('hiai_ocr_exclude')||'{}'); hasExcl=!!(em[qid]&&Object.keys(em[qid]).some(function(k){return em[qid][k];})); }catch(e){}
     document.querySelectorAll('#mockpick .mp-btn').forEach(function(b){
       var on=false;
       if(b.dataset.run) on=(b.dataset.run===runKey);
       else if(runKey) on=false;
       else if(b.dataset.rescore) on=(cur==='scoring_student_v1.html'&&isRescore);
-      else if(b.dataset.id) on=(cur==='scoring_student_v1.html'&&b.dataset.id===qid&&!isRescore);
+      else if(b.dataset.exclude) on=(cur==='scoring_student_v1.html'&&hasExcl&&!isRescore);
+      else if(b.dataset.id) on=(cur==='scoring_student_v1.html'&&b.dataset.id===qid&&!isRescore&&!hasExcl);
       else if(b.dataset.f) on=(b.dataset.f===cur);
       b.classList.toggle('on', on);
     });

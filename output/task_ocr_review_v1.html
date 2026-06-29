@@ -151,6 +151,22 @@
     .editing-badge{ font-size:11px; font-weight:800; color:#7E44FB; background:#EDE6FF; border-radius:100px; padding:2px 8px; }
     .saved-badge{ font-size:11px; font-weight:800; color:#00AF3D; display:inline-flex; align-items:center; gap:3px; transition:opacity .4s; }
 
+    /* 문항 단위 직접 채점(AI 채점 제외) 토글 */
+    .q-exclude-toggle{ display:inline-flex; align-items:center; gap:7px; cursor:pointer; flex-shrink:0; user-select:none; }
+    .q-exclude-toggle input{ display:none; }
+    .q-exclude-track{ width:34px; height:20px; border-radius:100px; background:#D9D9D9; position:relative; transition:background .15s; flex-shrink:0; }
+    .q-exclude-thumb{ position:absolute; top:2px; left:2px; width:16px; height:16px; border-radius:50%; background:white; box-shadow:0 1px 2px rgba(0,0,0,.18); transition:left .15s; }
+    .q-exclude-toggle input:checked + .q-exclude-track{ background:#7E44FB; }
+    .q-exclude-toggle input:checked + .q-exclude-track .q-exclude-thumb{ left:16px; }
+    .q-exclude-label{ font-size:12px; font-weight:800; color:#808080; white-space:nowrap; }
+    .q-exclude-toggle input:checked ~ .q-exclude-label{ color:#7E44FB; }
+    .rubric-ocr-section.ocr-section-excluded{ background:#FAFAFA; }
+    .ocr-section-excluded .ocr-subsec-body,
+    .ocr-section-excluded .ocr-uncertainty-note,
+    .ocr-section-excluded .rubric-suspect-chip{ opacity:.5; }
+    .ocr-direct-badge{ display:inline-flex; align-items:center; gap:3px; font-size:11px; font-weight:800; color:#808080; background:#F0F0F0; border-radius:100px; padding:2px 9px; }
+    .ocr-exclude-note{ display:flex; align-items:center; gap:8px; margin:8px 15px 2px; padding:9px 12px; background:#F5F5F5; border-radius:8px; font-size:13px; font-weight:700; color:#808080; line-height:1.5; }
+
     /* 학생 네비게이터 */
     .student-nav{ display:flex; align-items:center; justify-content:space-between; padding:14px 20px; background:#F7F4FF; border-radius:12px; margin-bottom:20px; }
     .student-nav-center{ display:flex; align-items:center; gap:16px; }
@@ -1538,6 +1554,19 @@ const RUBRIC_B = [
 var currentOcrBStudentIdx = 0; // B1 기준 인덱스
 var ocrBActiveTab = 'text';
 var ocrBScoreMap = {}; // studentId → scores array
+// 문항 단위 직접 채점(AI 채점 제외) 상태 — { studentId: { qi: true } }. 채점 화면과 세션으로 공유
+var ocrBExcludeMap = {};
+try { ocrBExcludeMap = JSON.parse(sessionStorage.getItem('hiai_ocr_exclude')) || {}; } catch(e) { ocrBExcludeMap = {}; }
+function persistOcrBExclude(){ try{ sessionStorage.setItem('hiai_ocr_exclude', JSON.stringify(ocrBExcludeMap)); }catch(e){} }
+function toggleQExclude(studentId, qi){
+  if (!ocrBExcludeMap[studentId]) ocrBExcludeMap[studentId] = {};
+  var now;
+  if (ocrBExcludeMap[studentId][qi]) { delete ocrBExcludeMap[studentId][qi]; now = false; }
+  else { ocrBExcludeMap[studentId][qi] = true; now = true; }
+  persistOcrBExclude();
+  renderOcrBText(STUDENTS_B1[currentOcrBStudentIdx]);
+  if (typeof showToast === 'function') showToast(now ? '이 문항을 직접 채점으로 설정했어요. AI 채점에서 제외돼요.' : '이 문항을 AI 채점에 다시 포함했어요.', 'success');
+}
 
 // ── 학급 제출 상세: 반별 상태 ──
 var currentListClass = 1;
@@ -1914,7 +1943,8 @@ function renderOcrBText(student) {
   if (countEl) countEl.textContent = uncertainCount;
   if (suspectEl) suspectEl.textContent = uncertainCount + '개';
 
-  // 확인 필요 비율이 임계치(기본 70%, 조정 가능) 이상이면 OCR 내용을 표시하지 않고 안내로 대체
+  // 확인 필요 비율이 임계치(기본 70%, 조정 가능) 이상이면 '정확도 낮음' — OCR 결과를 보여주지 않고
+  // 전체를 직접 채점하도록 안내(per-문항 토글 없음. 통째로 직접 채점이므로 문항 단위 제외 불필요).
   var guide = document.getElementById('ocr-b-edit-guide');
   var LOW_ACC_THRESHOLD = 0.7;
   if (data.questions.length > 0 && uncertainCount / data.questions.length >= LOW_ACC_THRESHOLD) {
@@ -1948,19 +1978,28 @@ function renderOcrBText(student) {
         ? '이 문항의 답변에서 ' + hints.length + '개 구간의 판독이 불확실합니다. (' + hints.join(' · ') + ') 원본 이미지와 대조 후 수정해 주세요.'
         : '이 문항의 답변 일부 글자 판독이 불확실합니다. 원본 이미지와 대조 후 수정해 주세요.';
     }
-    var chipHtml = hasUncertain
+    var excluded = !!(ocrBExcludeMap[student.id] && ocrBExcludeMap[student.id][qi]);
+    var chipHtml = (hasUncertain && !excluded)
       ? '<span class="rubric-suspect-chip"><i data-lucide="triangle-alert" style="width:11px;height:11px;"></i>확인 필요</span>'
       : '';
 
-    html += '<div class="rubric-ocr-section">';
+    html += '<div class="rubric-ocr-section' + (excluded ? ' ocr-section-excluded' : '') + '" id="ocr-sec-' + qi + '">';
 
-    // ── ① 문항정보 (번호 + 지시문 + 조건) ──
+    // ── ① 문항정보 (번호 + 지시문 + 조건) + 직접 채점(AI 제외) 토글 ──
     html += '<div class="rubric-ocr-header">';
     html += '<span class="badge badge-purple" style="background:#F0EAFF;color:#7E44FB;font-size:12px;font-weight:700;padding:3px 10px;border-radius:100px;">' + q.label + '</span>';
     html += '<span class="rubric-ocr-desc">' + q.desc + '</span>';
+    html += '<label class="q-exclude-toggle" style="margin-left:auto;" title="체크하면 이 문항은 AI 채점에서 빠지고 선생님이 직접 채점해요. 수식·그래프처럼 인식이 어려운 문항에 쓰세요.">'
+      + '<input type="checkbox" ' + (excluded ? 'checked' : '') + ' onchange="toggleQExclude(\'' + student.id + '\',' + qi + ')">'
+      + '<span class="q-exclude-track"><span class="q-exclude-thumb"></span></span>'
+      + '<span class="q-exclude-label">직접 채점 (AI 제외)</span>'
+      + '</label>';
     html += '</div>';
     if (q.condition && q.condition.length) {
       html += '<div style="padding:2px 15px 6px;font-size:13px;color:#808080;line-height:1.6;"><span style="font-weight:700;color:#494949;">조건</span> · ' + q.condition.join(' / ') + '</div>';
+    }
+    if (excluded) {
+      html += '<div class="ocr-exclude-note"><i data-lucide="user-pen" style="width:14px;height:14px;flex-shrink:0;"></i><span>선생님 직접 채점 문항으로, AI 채점에서 제외됩니다.</span></div>';
     }
 
     // ── ② 학생 답변 (수정 가능) ──
@@ -3038,7 +3077,8 @@ function mpGo(which) {
   else if (which === 'ocrFew') { goToOCR_B(1); }  // 확인 필요 일부 (10102)
   else if (which === 'ocrLow') { goToOCR_B(2); }  // 정확도 낮음 → 직접 채점 (10103)
   else if (which === 'ocrFail'){ var _fi=STUDENTS_B1.findIndex(function(s){return s.id==='10104';}); if(_fi!==-1){ STUDENTS_B1[_fi].ocrStatus='failed'; STUDENTS_B1[_fi].needsReview=false; } goToOCR_B(_fi!==-1?_fi:3); }  // 인식 실패 (10104) — 시연 위해 매번 실패로 리셋
-  else if (which === 'ocrVisual'){ var _vi=STUDENTS_B1.findIndex(function(s){return s.id==='10110';}); goToOCR_B(_vi!==-1?_vi:0); }  // 시각화 자료 포함 (10110)
+  else if (which === 'ocrVisual'){ var _vi=STUDENTS_B1.findIndex(function(s){return s.id==='10110';}); if(ocrBExcludeMap['10110'])delete ocrBExcludeMap['10110'][0]; persistOcrBExclude(); goToOCR_B(_vi!==-1?_vi:0); }  // 시각화 자료 포함 (10110)
+  else if (which === 'ocrExclude'){ var _xi=STUDENTS_B1.findIndex(function(s){return s.id==='10110';}); if(!ocrBExcludeMap['10110'])ocrBExcludeMap['10110']={}; ocrBExcludeMap['10110'][0]=true; persistOcrBExclude(); goToOCR_B(_xi!==-1?_xi:0); }  // 문항 단위 직접 채점(AI 제외) — 그래프 문항 (10110)
   // 현재 표시 버튼 강조
   document.querySelectorAll('.mp-btn').forEach(function(b){ b.classList.toggle('on', b.dataset.k === which); });
   lucide.createIcons();
@@ -3126,6 +3166,7 @@ else mpInitAll();
     <button class="mp-btn" data-k="ocrLow" onclick="mpGo('ocrLow')">정확도 낮음 <span class="mp-sub">직접 채점 안내</span></button>
     <button class="mp-btn" data-k="ocrFail" onclick="mpGo('ocrFail')">인식 실패 <span class="mp-sub">결과 없음 · 다시 인식</span></button>
     <button class="mp-btn" data-k="ocrVisual" onclick="mpGo('ocrVisual')">시각화 자료 포함 <span class="mp-sub">그래프 답안 · 수정 불가</span></button>
+    <button class="mp-btn" data-k="ocrExclude" onclick="mpGo('ocrExclude')">문항 직접 채점 <span class="mp-sub">AI 채점 제외 · 수식/그래프</span></button>
   </div>
 </div>
 </body>
