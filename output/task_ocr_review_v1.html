@@ -904,9 +904,9 @@
           <span style="font-size:13px;color:#808080;">PDF · PNG · JPG · 최대 1개</span>
         </div>
       </div>
-      <!-- OCR 바로 진행 체크박스 -->
-      <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:15px;font-weight:700;color:#494949;line-height:1.4;">
-        <input type="checkbox" id="student-upload-ocr-now" checked style="width:16px;height:16px;accent-color:#7E44FB;cursor:pointer;flex-shrink:0;">
+      <!-- OCR 바로 진행 체크박스 (업로드한 파일이 있을 때만 활성) -->
+      <label id="student-upload-ocr-label" style="display:flex;align-items:center;gap:8px;cursor:not-allowed;font-size:15px;font-weight:700;color:#B3B3B3;line-height:1.4;">
+        <input type="checkbox" id="student-upload-ocr-now" checked disabled style="width:16px;height:16px;accent-color:#7E44FB;cursor:not-allowed;flex-shrink:0;">
         업로드 후 OCR 인식 바로 진행하기
       </label>
     </div>
@@ -2975,9 +2975,12 @@ function resetStudentUploadState() {
   var drop = document.getElementById('student-upload-drop');
   var saveBtn = document.getElementById('student-upload-save');
   var ocrNow = document.getElementById('student-upload-ocr-now');
+  var ocrLabel = document.getElementById('student-upload-ocr-label');
   if (chip) chip.style.display = 'none';
   if (drop) drop.style.display = 'flex';
-  if (ocrNow) ocrNow.checked = true; // 기본: OCR 바로 진행
+  // 파일 없음 → OCR 바로 진행 체크박스 비활성(업로드 후에만 의미). 기본값은 체크 유지.
+  if (ocrNow) { ocrNow.checked = true; ocrNow.disabled = true; ocrNow.style.cursor = 'not-allowed'; }
+  if (ocrLabel) { ocrLabel.style.color = '#B3B3B3'; ocrLabel.style.cursor = 'not-allowed'; }
   if (saveBtn) {
     saveBtn.style.opacity = '0.5';
     saveBtn.style.cursor = 'not-allowed';
@@ -2994,6 +2997,11 @@ function pickStudentUploadFile() {
   if (chipName) chipName.textContent = '과제_제출본.pdf';
   if (chip) chip.style.display = 'flex';
   if (drop) drop.style.display = 'none';
+  // 파일 업로드됨 → OCR 바로 진행 체크박스 활성
+  var ocrNow = document.getElementById('student-upload-ocr-now');
+  var ocrLabel = document.getElementById('student-upload-ocr-label');
+  if (ocrNow) { ocrNow.disabled = false; ocrNow.style.cursor = 'pointer'; }
+  if (ocrLabel) { ocrLabel.style.color = '#494949'; ocrLabel.style.cursor = 'pointer'; }
   if (saveBtn) {
     saveBtn.style.opacity = '1';
     saveBtn.style.cursor = 'pointer';
