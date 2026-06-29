@@ -731,19 +731,9 @@
     var _aiSec = document.getElementById('ai-feedback-section');
     var _totVal = document.getElementById('grading-total-val');
     var _dgb = document.getElementById('direct-grade-btn');
-    if (data.ocrCase === 'pending') {
-      // OCR 미진행 — OCR 권장(주, 좌측) + 직접 채점(보조)
-      if (_rGrade) _rGrade.style.display = 'none';
-      if (_rEmpty) {
-        _rEmpty.style.display = 'flex';
-        var _et = document.getElementById('right-grading-empty-title');
-        var _ed = document.getElementById('right-grading-empty-desc');
-        if (_et) _et.textContent = 'OCR을 먼저 하면 AI 채점을 받을 수 있어요';
-        if (_ed) _ed.innerHTML = '답안 인식(OCR)을 끝내면 AI가 채점을 도와줘요. 왼쪽에서 과제물 관리로 이동해 인식하거나, 원본을 보고 바로 직접 채점할 수 있어요.';
-      }
-      if (_dgb) _dgb.style.display = 'inline-flex';
-    } else if (data.ocrCase === 'failed') {
-      // 인식 실패 — AI 채점만 불가, 교사 직접 채점은 가능 → 채점 UI 노출(점수 미체크·AI 기록 숨김)
+    if (data.ocrCase === 'pending' || data.ocrCase === 'failed') {
+      // OCR 미진행·인식 실패 — AI 채점만 불가. 잠그거나 '직접 채점하기'를 한 번 더 누르게 하지 않고
+      // 바로 직접 채점 UI 노출(점수 미체크·AI 기록 숨김). OCR 대안 경로는 좌측 안내로 제공.
       if (_rGrade) _rGrade.style.display = '';
       if (_rEmpty) _rEmpty.style.display = 'none';
       if (_note) _note.style.display = 'none';

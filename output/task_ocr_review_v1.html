@@ -132,6 +132,7 @@
     .rubric-ocr-header{ display:flex; align-items:center; gap:8px; padding:10px 14px; background:#F8F8F8; border-bottom:1px solid #E6E6E6; flex-wrap:wrap; }
     .rubric-ocr-desc{ font-size:13px; color:#808080; font-weight:700; flex:1; min-width:0; overflow:hidden; white-space:nowrap; text-overflow:ellipsis; }
     .rubric-suspect-chip{ display:inline-flex; align-items:center; gap:4px; background:#FFF0F0; border:1px solid #FFBCBC; border-radius:100px; padding:2px 8px; font-size:12px; font-weight:800; color:#DB3E51; flex-shrink:0; }
+    .rubric-done-chip{ display:inline-flex; align-items:center; gap:4px; background:#F1F9F3; border:1px solid #B6E6C8; border-radius:100px; padding:2px 8px; font-size:12px; font-weight:800; color:#00AF3D; flex-shrink:0; }
     .rubric-ocr-body{ padding:14px 16px; font-size:15px; line-height:1.85; color:#333; cursor:text; position:relative; }
     .rubric-ocr-body:hover{ background:#FDFCFF; }
     /* OCR 인식 결과 — 종류별 섹션 (문항정보 / 학생답변 / 시각화자료) */
@@ -884,11 +885,18 @@
     </div>
     <!-- 바디 -->
     <div style="padding:0 24px;display:flex;flex-direction:column;gap:24px;">
-      <!-- 비식별화 안내 (개별 — 한 줄 요약) -->
-      <div style="margin-bottom:-12px;"><span class="deid-mini"><i data-lucide="shield-check"></i>학번·이름은 가린 채 채점돼요</span></div>
+      <!-- 파일 규격 안내 (purple/subtle) -->
+      <div style="background:#F7F4FF;border:1px solid #F2ECFF;border-radius:8px;padding:14px 16px;">
+        <ul style="list-style:disc;padding-left:22px;margin:0;font-size:15px;font-weight:400;line-height:1.6;color:#494949;">
+          <li>제출 가능한 최대 파일 수 : 1</li>
+          <li>제출 가능한 파일 형식 : PDF, PNG, JPG</li>
+        </ul>
+      </div>
       <!-- 파일 업로드 (드래그앤드롭 · 최대 1개. 학생 로그인이 없어 선생님 업로드 단일) -->
       <div style="display:flex;flex-direction:column;gap:8px;">
         <p style="font-size:16px;font-weight:400;line-height:1.4;color:#333;margin:0;">파일 업로드</p>
+        <!-- 삭제 경고 (업로드 파일 있을 때만) -->
+        <p id="student-upload-warn" style="display:none;font-size:13px;color:#808080;margin:0;line-height:1.5;">X를 클릭하면 삭제되며 복구가 불가능합니다.</p>
         <!-- 업로드된 파일 (있을 때) -->
         <div id="student-upload-chip" style="display:none;align-items:center;justify-content:space-between;gap:8px;background:#F7F4FF;border:1px solid #E4D8FF;border-radius:8px;padding:12px 14px;">
           <span style="display:inline-flex;align-items:center;gap:8px;min-width:0;">
@@ -901,7 +909,6 @@
         <div id="student-upload-drop" onclick="pickStudentUploadFile()" ondragover="event.preventDefault();this.style.borderColor='#7E44FB';this.style.background='#F7F4FF';" ondragleave="this.style.borderColor='#D4BBFF';this.style.background='#FBFAFF';" ondrop="event.preventDefault();this.style.borderColor='#D4BBFF';this.style.background='#FBFAFF';pickStudentUploadFile();" style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;border:1.5px dashed #D4BBFF;border-radius:10px;background:#FBFAFF;padding:24px 16px;cursor:pointer;text-align:center;">
           <i data-lucide="upload-cloud" style="width:28px;height:28px;color:#7E44FB;"></i>
           <span style="font-size:15px;font-weight:700;color:#494949;line-height:1.4;">여기로 파일을 끌어다 놓거나 <span style="color:#7E44FB;">클릭해 업로드</span></span>
-          <span style="font-size:13px;color:#808080;">PDF · PNG · JPG · 최대 1개</span>
         </div>
       </div>
       <!-- OCR 바로 진행 체크박스 (업로드한 파일이 있을 때만 활성) -->
@@ -1600,6 +1607,8 @@ function confirmOcrRevert() {
   var sid = _pendingRevert.studentId, qi = _pendingRevert.qi;
   _pendingRevert = null;
   if (ocrBEditMap[sid]) delete ocrBEditMap[sid][qi];
+  // 되돌리기 = AI 원본이 맞다고 확정한 행위 → 해당 문항 확인 완료 처리(+ 상태·배너 갱신)
+  resolveUncertaintyB(qi);
   renderOcrBText(STUDENTS_B1[currentOcrBStudentIdx]);
   markAutoSaved();
 }
@@ -1791,6 +1800,56 @@ function goToOCR_B(b1Idx) {
   showScreen('screen-ocr-b');
 }
 
+// 학생 드롭다운 목록 — 학생별 OCR 상태 태그(완료/확인 필요/정확도 낮음/인식 실패). 저장·확인 시에도 갱신.
+function renderOcrBDropdown() {
+  var listEl = document.getElementById('ocr-b-dropdown-list');
+  if (!listEl) return;
+  var students = STUDENTS_B1;
+  var ddHtml = '';
+  students.forEach(function(s, i) {
+    var isCurrent = i === currentOcrBStudentIdx;
+    var _caseLabel, statusIcon;
+    if (s.ocrStatus === 'failed') {
+      _caseLabel = '인식 실패';
+      statusIcon = '<i data-lucide="circle-x" style="width:13px;height:13px;color:#DB3E51;flex-shrink:0;"></i>';
+    } else if (s.needsReview) {
+      var _d = OCR_DATA_B[s.id];
+      var _u = _d ? _d.questions.filter(function(q){ return (q.uncertain || (q.spans && q.spans.some(function(x){ return x.uncertain; }))) && !q.reviewed; }).length : 0;
+      var _t = _d ? _d.questions.length : 0;
+      var _uAll = _d ? _d.questions.filter(function(q){ return q.uncertain || (q.spans && q.spans.some(function(x){ return x.uncertain; })); }).length : 0;
+      if (_t > 0 && _uAll / _t >= 0.7) {
+        _caseLabel = '정확도 낮음';
+        statusIcon = '<i data-lucide="triangle-alert" style="width:13px;height:13px;color:#DB3E51;flex-shrink:0;"></i>';
+      } else {
+        _caseLabel = '확인 필요';
+        statusIcon = '<i data-lucide="triangle-alert" style="width:13px;height:13px;color:#FF8C4C;flex-shrink:0;"></i>';
+      }
+    } else {
+      // 인식 완료 + 확인 필요 없음 (정상 인식·확인 완료 모두) → 완료
+      _caseLabel = '완료';
+      statusIcon = '<i data-lucide="circle-check" style="width:13px;height:13px;color:#00AF3D;flex-shrink:0;"></i>';
+    }
+    var _caseColor = ({'완료':'#00AF3D','확인 필요':'#FF8C4C','정확도 낮음':'#DB3E51','인식 실패':'#DB3E51'})[_caseLabel] || '#808080';
+    ddHtml += '<div onclick="jumpToOcrBStudent(' + i + ')" style="padding:10px 16px;cursor:pointer;display:flex;align-items:center;gap:10px;background:' + (isCurrent ? '#F7F4FF' : 'transparent') + ';font-weight:' + (isCurrent ? '800' : '400') + ';" onmouseover="this.style.background=\'#F8F8F8\'" onmouseout="this.style.background=\'' + (isCurrent ? '#F7F4FF' : 'transparent') + '\'">';
+    ddHtml += statusIcon;
+    ddHtml += '<span style="font-size:15px;color:#333;"><span style="color:#808080;font-weight:400;">' + s.id + '</span> ' + s.name + '</span>';
+    ddHtml += '<span style="font-size:13px;font-weight:700;color:' + _caseColor + ';margin-left:auto;flex-shrink:0;">' + _caseLabel + '</span>';
+    ddHtml += '</div>';
+  });
+  // OCR 인식 안 된 학생(미진행·과제 미제출) — 선택 불가로 노출
+  [{id:'10111',name:'장하늘',label:'미진행',tip:'OCR 인식 전이라 선택할 수 없어요'},
+   {id:'10112',name:'문서아',label:'과제 미제출',tip:'과제 미제출이라 선택할 수 없어요'}].forEach(function(s){
+    var ic = s.label === '과제 미제출' ? 'minus' : 'circle';
+    ddHtml += '<div title="' + s.tip + '" style="padding:10px 16px;cursor:not-allowed;opacity:0.5;display:flex;align-items:center;gap:10px;">';
+    ddHtml += '<i data-lucide="' + ic + '" style="width:13px;height:13px;color:#B3B3B3;flex-shrink:0;"></i>';
+    ddHtml += '<span style="font-size:15px;color:#999;"><span style="color:#B3B3B3;font-weight:400;">' + s.id + '</span> ' + s.name + '</span>';
+    ddHtml += '<span style="font-size:13px;font-weight:700;color:#B3B3B3;margin-left:auto;flex-shrink:0;">' + s.label + '</span>';
+    ddHtml += '</div>';
+  });
+  listEl.innerHTML = ddHtml;
+  lucide.createIcons();
+}
+
 // ── B안 OCR 화면 렌더 ──
 function renderOCRView_B() {
   var students = STUDENTS_B1;
@@ -1813,53 +1872,7 @@ function renderOCRView_B() {
   if (scanEl) scanEl.src = (student.id === '10110') ? '../screens/math_graph_answer.svg' : '../screens/booklog_answer.svg';
 
   // 드롭다운 목록
-  var listEl = document.getElementById('ocr-b-dropdown-list');
-  if (listEl) {
-    var ddHtml = '';
-    students.forEach(function(s, i) {
-      var isCurrent = i === currentOcrBStudentIdx;
-      var _caseLabel, statusIcon;
-      if (s.ocrStatus === 'failed') {
-        _caseLabel = '인식 실패';
-        statusIcon = '<i data-lucide="circle-x" style="width:13px;height:13px;color:#DB3E51;flex-shrink:0;"></i>';
-      } else if (s.ocrStatus === 'confirmed') {
-        _caseLabel = '완료';
-        statusIcon = '<i data-lucide="circle-check" style="width:13px;height:13px;color:#00AF3D;flex-shrink:0;"></i>';
-      } else if (s.needsReview) {
-        var _d = OCR_DATA_B[s.id];
-        var _u = _d ? _d.questions.filter(function(q){ return q.uncertain || (q.spans && q.spans.some(function(x){ return x.uncertain; })); }).length : 0;
-        var _t = _d ? _d.questions.length : 0;
-        if (_t > 0 && _u / _t >= 0.7) {
-          _caseLabel = '정확도 낮음';
-          statusIcon = '<i data-lucide="triangle-alert" style="width:13px;height:13px;color:#DB3E51;flex-shrink:0;"></i>';
-        } else {
-          _caseLabel = '확인 필요';
-          statusIcon = '<i data-lucide="triangle-alert" style="width:13px;height:13px;color:#FF8C4C;flex-shrink:0;"></i>';
-        }
-      } else {
-        _caseLabel = '미확인';
-        statusIcon = '<i data-lucide="circle" style="width:13px;height:13px;color:#B3B3B3;flex-shrink:0;"></i>';
-      }
-      var _caseColor = ({'완료':'#00AF3D','확인 필요':'#FF8C4C','정확도 낮음':'#DB3E51','인식 실패':'#DB3E51','미확인':'#808080'})[_caseLabel] || '#808080';
-      ddHtml += '<div onclick="jumpToOcrBStudent(' + i + ')" style="padding:10px 16px;cursor:pointer;display:flex;align-items:center;gap:10px;background:' + (isCurrent ? '#F7F4FF' : 'transparent') + ';font-weight:' + (isCurrent ? '800' : '400') + ';" onmouseover="this.style.background=\'#F8F8F8\'" onmouseout="this.style.background=\'' + (isCurrent ? '#F7F4FF' : 'transparent') + '\'">';
-      ddHtml += statusIcon;
-      ddHtml += '<span style="font-size:15px;color:#333;"><span style="color:#808080;font-weight:400;">' + s.id + '</span> ' + s.name + '</span>';
-      ddHtml += '<span style="font-size:13px;font-weight:700;color:' + _caseColor + ';margin-left:auto;flex-shrink:0;">' + _caseLabel + '</span>';
-      ddHtml += '</div>';
-    });
-    // OCR 인식 안 된 학생(미진행·과제 미제출) — 선택 불가로 노출
-    [{id:'10111',name:'장하늘',label:'미진행',tip:'OCR 인식 전이라 선택할 수 없어요'},
-     {id:'10112',name:'문서아',label:'과제 미제출',tip:'과제 미제출이라 선택할 수 없어요'}].forEach(function(s){
-      var ic = s.label === '과제 미제출' ? 'minus' : 'circle';
-      ddHtml += '<div title="' + s.tip + '" style="padding:10px 16px;cursor:not-allowed;opacity:0.5;display:flex;align-items:center;gap:10px;">';
-      ddHtml += '<i data-lucide="' + ic + '" style="width:13px;height:13px;color:#B3B3B3;flex-shrink:0;"></i>';
-      ddHtml += '<span style="font-size:15px;color:#999;"><span style="color:#B3B3B3;font-weight:400;">' + s.id + '</span> ' + s.name + '</span>';
-      ddHtml += '<span style="font-size:13px;font-weight:700;color:#B3B3B3;margin-left:auto;flex-shrink:0;">' + s.label + '</span>';
-      ddHtml += '</div>';
-    });
-    listEl.innerHTML = ddHtml;
-    lucide.createIcons();
-  }
+  renderOcrBDropdown();
 
   // 이전/다음 버튼
   var btnPrev = document.getElementById('ocr-b-btn-prev');
@@ -1994,13 +2007,15 @@ function renderOcrBText(student) {
   var uncertainQuestions = data.questions.filter(function(q){
     return q.uncertain || (q.spans && q.spans.some(function(s){ return s.uncertain; }));
   });
-  var uncertainCount = uncertainQuestions.length;
+  var uncertainCount = uncertainQuestions.length; // 원래 불확실 문항 수(정확도 낮음 임계치 판단용)
+  // 아직 확인 안 한(미처리) 문항 수 — 배지·카운트는 이 값으로(확인 완료되면 줄어듦)
+  var pendingCount = uncertainQuestions.filter(function(q){ return !q.reviewed; }).length;
   var badge = document.getElementById('ocr-b-uncertain-badge');
   var countEl = document.getElementById('ocr-b-uncertain-count');
   var suspectEl = document.getElementById('ocr-b-suspect-count');
-  if (badge) badge.style.display = uncertainCount > 0 ? 'inline-flex' : 'none';
-  if (countEl) countEl.textContent = uncertainCount;
-  if (suspectEl) suspectEl.textContent = uncertainCount + '개';
+  if (badge) badge.style.display = pendingCount > 0 ? 'inline-flex' : 'none';
+  if (countEl) countEl.textContent = pendingCount;
+  if (suspectEl) suspectEl.textContent = pendingCount + '개';
 
   // 확인 필요 비율이 임계치(기본 70%, 조정 가능) 이상이면 '정확도 낮음' — OCR 결과를 보여주지 않고
   // 전체를 직접 채점하도록 안내(per-문항 토글 없음. 통째로 직접 채점이므로 문항 단위 제외 불필요).
@@ -2042,9 +2057,13 @@ function renderOcrBText(student) {
         : '이 문항의 답변 일부 글자 판독이 불확실합니다. 원본 이미지와 대조 후 수정해 주세요.';
     }
     var excluded = !!(ocrBExcludeMap[student.id] && ocrBExcludeMap[student.id][qi]);
-    var chipHtml = (hasUncertain && !excluded)
-      ? '<span class="rubric-suspect-chip"><i data-lucide="triangle-alert" style="width:11px;height:11px;"></i>확인 필요</span>'
-      : '';
+    var reviewed = !!q.reviewed; // 클릭·수정 후 이탈하면 확인 완료(흔적 유지)
+    var chipHtml = '';
+    if (hasUncertain && !excluded) {
+      chipHtml = reviewed
+        ? '<span class="rubric-done-chip"><i data-lucide="check" style="width:11px;height:11px;"></i>확인 완료</span>'
+        : '<span class="rubric-suspect-chip"><i data-lucide="triangle-alert" style="width:11px;height:11px;"></i>확인 필요</span>';
+    }
 
     html += '<div class="rubric-ocr-section' + (excluded ? ' ocr-section-excluded' : '') + '" id="ocr-sec-' + qi + '">';
 
@@ -2089,7 +2108,7 @@ function renderOcrBText(student) {
     if (!excluded) {
       html += '<textarea id="group-ta-' + qi + '" onblur="saveSection(this,' + qi + ')" style="display:none;width:100%;border:none;border-top:1px solid #D4BBFF;padding:12px 15px;font-family:inherit;font-size:15px;line-height:1.85;color:#333;outline:none;resize:none;overflow:hidden;box-sizing:border-box;" rows="4">' + (isEmpty ? '' : shownText) + '</textarea>';
     }
-    if (hasUncertain && noticeText && !excluded) {
+    if (hasUncertain && !reviewed && noticeText && !excluded) {
       html += '<div class="ocr-uncertainty-note"><span class="ocr-uncertainty-label"><i data-lucide="triangle-alert" style="width:12px;height:12px;"></i>AI 인식 불확실</span><span class="ocr-uncertainty-text">' + noticeText + '</span></div>';
     }
     html += '</div>';
@@ -2162,6 +2181,18 @@ function saveAndNextOcrB() {
   if (typeof _editingSection !== 'undefined' && _editingSection !== null) {
     var ta = document.getElementById('group-ta-' + _editingSection);
     if (ta && ta.style.display !== 'none') { saveSection(ta, _editingSection); saved = true; }
+  }
+  // 저장 후 다음 → 이 학생의 '확인 완료' 딱지는 정리(완전 해소). 미확인 확인필요는 그대로 남김.
+  var _s = STUDENTS_B1[currentOcrBStudentIdx];
+  var _d = _s && OCR_DATA_B[_s.id];
+  if (_d && _d.questions) {
+    _d.questions.forEach(function(q){
+      if (q.reviewed) {
+        q.uncertain = false;
+        if (q.spans) q.spans.forEach(function(sp){ sp.uncertain = false; });
+        q.reviewed = false;
+      }
+    });
   }
   if (!saved && typeof showToast === 'function') showToast('저장되었습니다.', 'success');
   navStudentB(1);
@@ -2578,10 +2609,19 @@ function saveSection(ta, gi) {
   var ocrScreenB = document.getElementById('screen-ocr-b');
   if (ocrScreen && ocrScreen.classList.contains('active')) resolveUncertainty(gi);
   else if (ocrScreenB && ocrScreenB.classList.contains('active')) {
-    // 수정본 저장(원본은 보존) → 재렌더로 수정 텍스트 반영 + '되돌리기' 노출
+    // 원본과 비교 — 실제 수정(1자 이상)이 있을 때만 수정본 저장 + 확인 완료 처리.
+    // 그냥 클릭했다 뗀 것(내용 동일)은 확인 완료로 보지 않고 '확인 필요' 유지.
     var _sid = STUDENTS_B1[currentOcrBStudentIdx] && STUDENTS_B1[currentOcrBStudentIdx].id;
-    if (_sid) { if (!ocrBEditMap[_sid]) ocrBEditMap[_sid] = {}; ocrBEditMap[_sid][gi] = ta.value; }
-    resolveUncertaintyB(gi);
+    var _q = _sid && OCR_DATA_B[_sid] && OCR_DATA_B[_sid].questions[gi];
+    var _orig = '';
+    if (_q && _q.spans) _q.spans.forEach(function(s){ _orig += s.text; });
+    var _changed = ta.value.trim() !== _orig.trim();
+    if (_sid) {
+      if (!ocrBEditMap[_sid]) ocrBEditMap[_sid] = {};
+      if (_changed) ocrBEditMap[_sid][gi] = ta.value;
+      else if (ocrBEditMap[_sid][gi] != null) delete ocrBEditMap[_sid][gi]; // 원본과 같아짐 → 수정본 제거
+    }
+    if (_changed) resolveUncertaintyB(gi); // 수정 1개 이상 → 확인 완료
     renderOcrBText(STUDENTS_B1[currentOcrBStudentIdx]);
   }
 }
@@ -2593,20 +2633,10 @@ function resolveUncertaintyB(gi) {
   var data = OCR_DATA_B[student.id];
   if (!data || !data.questions || !data.questions[gi]) return;
   markRescore(student.id); // OCR 수정 저장 → 채점 stale
-  // 해당 문항 불확실 해소
-  data.questions[gi].uncertain = false;
-  if (data.questions[gi].spans) data.questions[gi].spans.forEach(function(s){ s.uncertain = false; });
-  // 화면에서 노트·확인필요 칩 제거
-  var bodyEl = document.getElementById('group-body-' + gi);
-  var section = bodyEl ? bodyEl.closest('.rubric-ocr-section') : null;
-  if (section) {
-    var note = section.querySelector('.ocr-uncertainty-note');
-    if (note) note.remove();
-    var chip = section.querySelector('.rubric-suspect-chip');
-    if (chip) chip.remove();
-  }
-  // 남은 불확실 문항 확인
-  var still = data.questions.some(function(q){ return q.uncertain || (q.spans && q.spans.some(function(s){ return s.uncertain; })); });
+  // 해당 문항 = 확인 완료(클릭·수정 후 이탈). 원래 '불확실'은 유지해 어디가 확인 대상이었는지 흔적을 남김
+  data.questions[gi].reviewed = true;
+  // 남은 '미확인' 불확실 문항 확인(확인 완료 제외)
+  var still = data.questions.some(function(q){ return (q.uncertain || (q.spans && q.spans.some(function(s){ return s.uncertain; }))) && !q.reviewed; });
   if (!still) student.needsReview = false; // 목록에도 반영(완료)
   // 빨간 배너 갱신
   var banner = document.getElementById('ocr-b-review-banner');
@@ -2616,11 +2646,13 @@ function resolveUncertaintyB(gi) {
       var split = document.getElementById('ocr-b-split');
       if (split) split.style.height = 'calc(100vh - 68px)';
     } else {
-      var uq = data.questions.filter(function(q){ return q.uncertain || (q.spans && q.spans.some(function(s){ return s.uncertain; })); }).length;
+      var uq = data.questions.filter(function(q){ return (q.uncertain || (q.spans && q.spans.some(function(s){ return s.uncertain; }))) && !q.reviewed; }).length;
       var cntEl = document.getElementById('ocr-b-suspect-count');
       if (cntEl) cntEl.textContent = uq + '개';
     }
   }
+  // 학생 드롭다운 태그도 즉시 갱신(완료/확인 필요)
+  renderOcrBDropdown();
 }
 
 // 문항 확인/수정 저장 → 해당 문항 불확실 해소, 모두 해소되면 needsReview=false (목록에서 '완료')
@@ -3016,6 +3048,8 @@ function resetStudentUploadState() {
   var ocrLabel = document.getElementById('student-upload-ocr-label');
   if (chip) chip.style.display = 'none';
   if (drop) drop.style.display = 'flex';
+  var warn = document.getElementById('student-upload-warn');
+  if (warn) warn.style.display = 'none'; // 파일 없음 → 삭제 경고 숨김
   // 파일 없음 → OCR 바로 진행 체크박스 비활성(업로드 후에만 의미). 기본값은 체크 유지.
   if (ocrNow) { ocrNow.checked = true; ocrNow.disabled = true; ocrNow.style.cursor = 'not-allowed'; }
   if (ocrLabel) { ocrLabel.style.color = '#B3B3B3'; ocrLabel.style.cursor = 'not-allowed'; }
@@ -3035,6 +3069,8 @@ function pickStudentUploadFile() {
   if (chipName) chipName.textContent = '과제_제출본.pdf';
   if (chip) chip.style.display = 'flex';
   if (drop) drop.style.display = 'none';
+  var warn = document.getElementById('student-upload-warn');
+  if (warn) warn.style.display = 'block'; // 파일 있음 → 삭제 경고 노출
   // 파일 업로드됨 → OCR 바로 진행 체크박스 활성
   var ocrNow = document.getElementById('student-upload-ocr-now');
   var ocrLabel = document.getElementById('student-upload-ocr-label');
