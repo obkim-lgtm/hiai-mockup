@@ -392,7 +392,7 @@
                 <i data-lucide="scan-text" style="width:16px; height:16px;"></i>OCR 결과 확인
               </button>
             </span>
-            <button class="btn btn-primary btn-sm" onclick="showScreen('screen-upload');resetUpload();">
+            <button id="btn-class-pdf-upload" class="btn btn-primary btn-sm" onclick="if(ocrProcessing){return;}showScreen('screen-upload');resetUpload();">
               <i data-lucide="upload" style="width:16px; height:16px;"></i>학급 PDF 업로드
             </button>
           </div>
@@ -1338,7 +1338,9 @@ function renderTable() {
     // OCR 결과 셀 — 미제출(2~5반 포함)이면 '-'
     var ocrCell = '-';
     if (!allAbsent && effectiveStatus === '제출') {
-      if (s.ocrStatus === 'pending') {
+      if (ocrProcessing) {
+        ocrCell = '<span style="display:inline-flex;align-items:center;gap:4px;color:#5890FF;font-weight:700;font-size:13px;"><i data-lucide="loader" style="width:14px;height:14px;" class="spin"></i>진행 중</span>';
+      } else if (s.ocrStatus === 'pending') {
         ocrCell = '<span style="display:inline-flex;align-items:center;gap:4px;color:#FF8C4C;font-weight:700;font-size:13px;"><i data-lucide="clock" style="width:14px;height:14px;"></i>미진행</span>';
       } else if (s.ocrStatus === 'failed') {
         ocrCell = '<span style="display:inline-flex;align-items:center;justify-content:center;gap:8px;"><span style="display:inline-flex;align-items:center;gap:4px;color:#DB3E51;font-weight:700;font-size:13px;white-space:nowrap;"><i data-lucide="circle-x" style="width:14px;height:14px;flex-shrink:0;"></i>인식 실패</span><button onclick="retryOcr(\'' + s.id + '\')" style="display:inline-flex;align-items:center;gap:3px;background:none;border:none;cursor:pointer;color:#7E44FB;font-family:inherit;font-size:12px;font-weight:700;padding:2px 6px;border-radius:4px;white-space:nowrap;" onmouseover="this.style.background=\'#F7F4FF\'" onmouseout="this.style.background=\'none\'"><i data-lucide="rotate-cw" style="width:12px;height:12px;"></i>다시 시도</button></span>';
@@ -1366,10 +1368,17 @@ function renderTable() {
     html += '<td style="color:' + (displayDate === '-' ? '#B3B3B3' : '#333') + ';">' + displayDate + '</td>';
     html += '<td style="text-align:center;">' + displayFiles + '</td>';
     html += '<td style="text-align:center;">' + ocrCell + '</td>';
-    html += '<td style="text-align:center;">' + actionCell + '</td>';
+    html += fileMgmtCell(s.id, s.name); // OCR 진행 중이면 비활성
     html += '</tr>';
   });
   tbody.innerHTML = html;
+  // OCR 인식 중 — 학급 PDF 업로드 버튼 비활성(인식 중인 파일과 충돌 방지)
+  var _pdfBtnA = document.getElementById('btn-class-pdf-upload');
+  if (_pdfBtnA) {
+    _pdfBtnA.style.opacity = ocrProcessing ? '0.4' : '';
+    _pdfBtnA.style.cursor = ocrProcessing ? 'not-allowed' : '';
+    _pdfBtnA.title = ocrProcessing ? 'OCR 인식 중에는 업로드할 수 없어요' : '';
+  }
   lucide.createIcons();
 
   // 스피너 애니메이션
@@ -2831,7 +2840,7 @@ function renderTableB() {
       cols += dateCell;
       cols += filesCell;
       cols += '<td style="text-align:center;">' + ocrCell + '</td>';
-      cols += '<td style="text-align:center;"><button onclick="openStudentUploadModal(\'' + s.id + '\',\'' + s.name + '\')" style="background:none;border:none;cursor:pointer;font-family:inherit;display:inline-flex;align-items:center;gap:4px;color:#7E44FB;font-size:13px;font-weight:700;padding:4px 8px;border-radius:6px;" onmouseover="this.style.background=\'#F7F4FF\'" onmouseout="this.style.background=\'none\'"><i data-lucide="paperclip" style="width:13px;height:13px;flex-shrink:0;"></i>파일 추가/제거</button></td>';
+      cols += fileMgmtCell(s.id, s.name);
       html += '<tr>' + cols + '</tr>';
     });
   } else {
@@ -2878,13 +2887,28 @@ function renderTableB() {
         cols += '<td style="text-align:center;">' + b2OcrCell + '</td>';
       }
 
-      cols += '<td style="text-align:center;"><button onclick="openStudentUploadModal(\'' + s.id + '\',\'' + s.name + '\')" style="background:none;border:none;cursor:pointer;font-family:inherit;display:inline-flex;align-items:center;gap:4px;color:#7E44FB;font-size:13px;font-weight:700;padding:4px 8px;border-radius:6px;" onmouseover="this.style.background=\'#F7F4FF\'" onmouseout="this.style.background=\'none\'"><i data-lucide="paperclip" style="width:13px;height:13px;flex-shrink:0;"></i>파일 추가/제거</button></td>';
+      cols += fileMgmtCell(s.id, s.name);
       html += '<tr>' + cols + '</tr>';
     });
   }
 
   tbody.innerHTML = html;
+  // OCR 인식 중 — 학급 PDF 업로드 버튼 비활성(인식 중인 파일과 충돌 방지)
+  var _pdfBtn = document.getElementById('btn-class-pdf-upload');
+  if (_pdfBtn) {
+    _pdfBtn.style.opacity = ocrProcessing ? '0.4' : '';
+    _pdfBtn.style.cursor = ocrProcessing ? 'not-allowed' : '';
+    _pdfBtn.title = ocrProcessing ? 'OCR 인식 중에는 업로드할 수 없어요' : '';
+  }
   lucide.createIcons();
+}
+
+// 과제 제출 관리 셀 — OCR 인식 중에는 파일 추가/제거 비활성(인식 중인 파일과 충돌 방지)
+function fileMgmtCell(id, name) {
+  if (ocrProcessing) {
+    return '<td style="text-align:center;"><span title="OCR 인식 중에는 파일을 추가·제거할 수 없어요" style="display:inline-flex;align-items:center;gap:4px;color:#B3B3B3;font-size:13px;font-weight:700;padding:4px 8px;cursor:not-allowed;"><i data-lucide="paperclip" style="width:13px;height:13px;flex-shrink:0;"></i>파일 추가/제거</span></td>';
+  }
+  return '<td style="text-align:center;"><button onclick="openStudentUploadModal(\'' + id + '\',\'' + name + '\')" style="background:none;border:none;cursor:pointer;font-family:inherit;display:inline-flex;align-items:center;gap:4px;color:#7E44FB;font-size:13px;font-weight:700;padding:4px 8px;border-radius:6px;" onmouseover="this.style.background=\'#F7F4FF\'" onmouseout="this.style.background=\'none\'"><i data-lucide="paperclip" style="width:13px;height:13px;flex-shrink:0;"></i>파일 추가/제거</button></td>';
 }
 
 function uploadAndGoList() {
