@@ -1046,6 +1046,27 @@
   </div>
 </div>
 
+<!-- 되돌리기 확인 모달 (원래 인식 결과로 복구 — 되돌릴 수 없는 짧은 확인) -->
+<div id="ocrRevertConfirmModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:1200;align-items:center;justify-content:center;" onclick="if(event.target===this)closeOcrRevertConfirm()">
+  <div style="background:white;border-radius:24px;box-shadow:0 4px 12px rgba(95,102,178,0.16);width:440px;max-width:90vw;">
+    <div style="padding:24px 24px 16px;">
+      <div style="display:flex;align-items:center;gap:10px;">
+        <div style="width:36px;height:36px;background:#FFF4E6;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+          <i data-lucide="rotate-ccw" style="width:20px;height:20px;color:#E07000;"></i>
+        </div>
+        <h3 style="font-size:18px;font-weight:800;color:#222631;margin:0;">원래 인식 결과로 되돌릴까요?</h3>
+      </div>
+    </div>
+    <div style="padding:0 24px 24px;">
+      <p style="font-size:15px;color:#494949;margin:0;line-height:1.6;">이 문항의 수정 내용이 사라지고, <strong>AI가 처음 인식한 결과</strong>로 돌아갑니다. (이 문항만 적용돼요)</p>
+    </div>
+    <div style="padding:8px 24px 20px;display:flex;justify-content:flex-end;gap:10px;">
+      <button onclick="closeOcrRevertConfirm()" style="height:40px;background:white;color:#494949;border:1.5px solid #D9D9D9;border-radius:8px;padding:0 20px;font-size:15px;font-weight:700;font-family:inherit;cursor:pointer;">취소</button>
+      <button onclick="confirmOcrRevert()" style="height:40px;background:#7E44FB;color:white;border:none;border-radius:8px;padding:0 20px;font-size:15px;font-weight:800;font-family:inherit;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:8px;"><i data-lucide="rotate-ccw" style="width:16px;height:16px;"></i>되돌리기</button>
+    </div>
+  </div>
+</div>
+
 <script>
 // ── 데이터 ──
 const STUDENTS = [
@@ -1560,8 +1581,25 @@ var ocrBExcludeMap = {};
 try { ocrBExcludeMap = JSON.parse(sessionStorage.getItem('hiai_ocr_exclude')) || {}; } catch(e) { ocrBExcludeMap = {}; }
 // 학생 답변 수정본 저장소 — { studentId: { qi: 수정텍스트 } }. 원본 인식은 OCR_DATA_B spans에 보존되므로 '되돌리기' 가능
 var ocrBEditMap = {};
+var _pendingRevert = null;
 function revertOcrB(studentId, qi) {
-  if (ocrBEditMap[studentId]) delete ocrBEditMap[studentId][qi];
+  // 되돌릴 수 없는 동작이라 짧은 확인 — 어느 시점(원래 인식 결과)으로 가는지 안내
+  _pendingRevert = { studentId: studentId, qi: qi };
+  var m = document.getElementById('ocrRevertConfirmModal');
+  if (m) { m.style.display = 'flex'; if (window.lucide) lucide.createIcons(); }
+}
+function closeOcrRevertConfirm() {
+  var m = document.getElementById('ocrRevertConfirmModal');
+  if (m) m.style.display = 'none';
+  _pendingRevert = null;
+}
+function confirmOcrRevert() {
+  var m = document.getElementById('ocrRevertConfirmModal');
+  if (m) m.style.display = 'none';
+  if (!_pendingRevert) return;
+  var sid = _pendingRevert.studentId, qi = _pendingRevert.qi;
+  _pendingRevert = null;
+  if (ocrBEditMap[sid]) delete ocrBEditMap[sid][qi];
   renderOcrBText(STUDENTS_B1[currentOcrBStudentIdx]);
   markAutoSaved();
 }
