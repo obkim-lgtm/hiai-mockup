@@ -2940,48 +2940,16 @@ function closeOcrAskB(startNow) {
     if (ocrBtn2) { ocrBtn2.disabled = false; ocrBtn2.style.opacity = '1'; ocrBtn2.style.cursor = 'pointer'; ocrBtn2.style.pointerEvents = ''; }
     if (ocrWrap2) { ocrWrap2.removeAttribute('title'); ocrWrap2.style.cursor = ''; }
     showToast('OCR 인식을 시작합니다. 완료 후 결과를 확인해 주세요.', 'success');
-    // 배너: OCR대기 → 처리중 상태로 전환
+    // 진행 바 제거 — 진행 표시는 OCR 결과 열의 행별 '진행 중' 스피너로 단일화(중복 제거, 줄리 피드백)
     var bannerB2 = document.getElementById('list-b-ocr-pending-banner');
-    if (bannerB2) {
-      bannerB2.style.background = '#F2F5FF';
-      bannerB2.style.borderColor = '#B8C9FF';
-      bannerB2.innerHTML =
-        '<div style="display:flex;align-items:center;gap:12px;flex:1;">' +
-          '<i data-lucide="loader" style="width:16px;height:16px;color:#5890FF;flex-shrink:0;" class="spin"></i>' +
-          '<div style="display:flex;flex-direction:column;gap:6px;flex:1;min-width:0;">' +
-            '<div style="display:flex;align-items:center;justify-content:space-between;gap:12px;">' +
-              '<span style="font-size:14px;color:#5890FF;font-weight:800;">OCR 인식이 진행 중입니다.</span>' +
-              '<span id="ocr-progress-pct" style="font-size:13px;color:#5890FF;font-weight:700;flex-shrink:0;">0%</span>' +
-            '</div>' +
-            '<div class="ocr-progress-bg"><div id="ocr-progress-fill" class="ocr-progress-fill"></div></div>' +
-          '</div>' +
-        '</div>';
-      bannerB2.style.display = 'flex';
-      // 프로그레스바 애니메이션 (0→100% / 약 4.5초)
-      var fill = document.getElementById('ocr-progress-fill');
-      var pct = document.getElementById('ocr-progress-pct');
-      var p = 0;
-      var progTimer = setInterval(function(){
-        p += 5 + Math.random()*8;
-        if (p >= 100) {
-          p = 100;
-          clearInterval(progTimer);
-          ocrProcessing = false; // 진행 완료 → 미확인으로 전환
-          // 100% 도달 → 처리중(스피너) 상태를 미확인으로 전환, 테이블 재렌더
-          STUDENTS_B2.forEach(function(s){
-            if (s.ocrStatusAfter === 'processing') s.ocrStatusAfter = 'unconfirmed';
-          });
-          renderTable();
-          lucide.createIcons();
-        }
-        if (fill) fill.style.width = p + '%';
-        if (pct) pct.textContent = Math.round(p) + '%';
-      }, 220);
-      // 5초 후 자동 숨김
-      setTimeout(function() {
-        if (bannerB2) bannerB2.style.display = 'none';
-      }, 5000);
-    }
+    if (bannerB2) bannerB2.style.display = 'none';
+    // 약 4.5초 후 인식 완료 → 미확인으로 전환, 테이블 재렌더(행별 '진행 중'이 결과로 바뀜)
+    setTimeout(function(){
+      ocrProcessing = false;
+      STUDENTS_B2.forEach(function(s){ if (s.ocrStatusAfter === 'processing') s.ocrStatusAfter = 'unconfirmed'; });
+      renderTable();
+      lucide.createIcons();
+    }, 4500);
     // 테이블 재렌더 — B2 행에 처리중 스피너 표시
     renderTable();
     lucide.createIcons();
