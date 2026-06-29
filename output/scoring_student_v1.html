@@ -419,8 +419,8 @@
         </button>
       </div>
 
-      <!-- 컨텐츠 박스 -->
-      <div style="background:white;border:1px solid #D9D9D9;border-radius:12px;padding:20px;display:flex;flex-direction:column;gap:24px;margin-bottom:12px;">
+      <!-- 컨텐츠 박스 (과제물 분석 AI — OCR 인식 텍스트 기반) -->
+      <div id="ai-content-analysis" style="background:white;border:1px solid #D9D9D9;border-radius:12px;padding:20px;display:flex;flex-direction:column;gap:24px;margin-bottom:12px;">
         <!-- 뱃지 -->
         <div>
           <span style="background:#F0F0F0;color:#494949;border-radius:9999px;font-size:14px;font-weight:700;padding:3px 12px;display:inline-block;">기본 설정으로 채점</span>
@@ -472,8 +472,19 @@
         </div>
       </div>
 
+      <!-- 루브릭 기반 AI — OCR 없이 선생님 점수만으로 동작(직접 채점 케이스 포함) -->
+      <div id="ai-content-rubric" style="display:none;">
+        <div style="background:white;border:1px solid #D9D9D9;border-radius:12px;padding:40px 20px;text-align:center;margin-bottom:12px;">
+          <p style="font-size:16px;color:#808080;line-height:1.6;margin:0;">모든 채점요소 점수를 체크하면<br>점수에 맞는 루브릭 AI 기록이 나타납니다.</p>
+        </div>
+        <div style="display:flex;align-items:flex-start;gap:6px;margin-bottom:12px;">
+          <i data-lucide="info" style="width:14px;height:14px;color:#6D7381;flex-shrink:0;margin-top:3px;"></i>
+          <span style="font-size:13px;color:#6D7381;line-height:1.6;">선생님께서 입력하신 채점 요소와 점수만으로 피드백을 생성합니다. 최대 5개의 AI 피드백 기록이 저장됩니다.</span>
+        </div>
+      </div>
+
       <!-- AI 채점 재실행 버튼 -->
-      <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+      <div id="ai-rerun-wrap" style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
         <button onclick="openRerunModal()" style="background:#7E44FB;border:none;border-radius:8px;height:36px;padding:0 12px;font-size:16px;font-weight:700;color:white;cursor:pointer;display:inline-flex;align-items:center;gap:6px;" onmouseover="this.style.background='#6c35e0'" onmouseout="this.style.background='#7E44FB'">
           <i data-lucide="wand-sparkles" style="width:16px;height:16px;"></i>
           AI 채점 재실행
@@ -741,14 +752,25 @@
       if (_rGrade) _rGrade.style.display = '';
       if (_rEmpty) _rEmpty.style.display = 'none';
       if (_note) _note.style.display = 'none';
-      if (_aiSec) _aiSec.style.display = 'none';
+      // AI 섹션은 유지 — 루브릭 기반 AI는 OCR 없이 선생님 점수만으로 동작. 과제물 분석 AI만 비활성(인식 결과 없음).
+      if (_aiSec) _aiSec.style.display = '';
+      var _taD = document.getElementById('tab-analysis');
+      if (_taD) { _taD.disabled = true; _taD.style.opacity = '0.4'; _taD.style.cursor = 'not-allowed'; _taD.title = '인식 결과가 없어 과제물 분석 AI는 사용할 수 없어요'; }
+      var _rrD = document.getElementById('ai-rerun-wrap');
+      if (_rrD) _rrD.style.display = 'none'; // AI 채점 재실행은 OCR 필요 → 직접 채점 케이스에선 숨김
+      if (typeof switchTab === 'function') switchTab('rubric');
       if (_totVal) _totVal.textContent = '- / 50';
       if (_dgb) _dgb.style.display = 'none';
       if (typeof resetScores === 'function') resetScores();
     } else {
-      // 정상/확인 필요/정확도 낮음 — 노트·AI 기록 정상
+      // 정상/확인 필요/정확도 낮음 — 노트·AI 기록 정상(과제물 분석 AI 기본)
       if (_note) _note.style.display = 'none';
       if (_aiSec) _aiSec.style.display = '';
+      var _taN = document.getElementById('tab-analysis');
+      if (_taN) { _taN.disabled = false; _taN.style.opacity = ''; _taN.style.cursor = ''; _taN.title = ''; }
+      var _rrN = document.getElementById('ai-rerun-wrap');
+      if (_rrN) _rrN.style.display = 'flex';
+      if (typeof switchTab === 'function') switchTab('analysis');
       if (_dgb) _dgb.style.display = 'none';
     }
     if (data.ocrCase === 'failed' || data.ocrCase === 'pending') {
@@ -1139,6 +1161,11 @@
   function switchTab(tab) {
     document.getElementById('tab-analysis').classList.toggle('active', tab === 'analysis');
     document.getElementById('tab-rubric').classList.toggle('active', tab === 'rubric');
+    var a = document.getElementById('ai-content-analysis');
+    var r = document.getElementById('ai-content-rubric');
+    if (a) a.style.display = (tab === 'analysis') ? 'flex' : 'none';
+    if (r) r.style.display = (tab === 'rubric') ? 'block' : 'none';
+    if (window.lucide) lucide.createIcons();
   }
 
   // AI 피드백 모드 라디오

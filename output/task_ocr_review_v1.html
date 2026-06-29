@@ -1629,7 +1629,33 @@ function toggleQExclude(studentId, qi){
   else { ocrBExcludeMap[studentId][qi] = true; now = true; }
   persistOcrBExclude();
   renderOcrBText(STUDENTS_B1[currentOcrBStudentIdx]);
+  recomputeOcrBNeedsReview(); // 직접 채점도 확인 필요 해소로 취급 → 배너·목록·드롭다운 갱신
   markAutoSaved(); // 토글도 자동 저장 — 상단 표시만 갱신(토스트는 노이즈라 미사용)
+}
+// 확인 필요 해소 판정 — 불확실 문항이 수정(reviewed)되거나 직접 채점(excluded)되면 해소로 취급.
+// 모두 해소되면 needsReview=false + 상단 배너 숨김 + 드롭다운/목록 갱신.
+function recomputeOcrBNeedsReview() {
+  var student = STUDENTS_B1[currentOcrBStudentIdx];
+  if (!student) return;
+  var data = OCR_DATA_B[student.id];
+  if (!data || !data.questions) return;
+  var exMap = ocrBExcludeMap[student.id] || {};
+  var pending = data.questions.filter(function(q, qi){
+    return (q.uncertain || (q.spans && q.spans.some(function(s){ return s.uncertain; }))) && !q.reviewed && !exMap[qi];
+  }).length;
+  student.needsReview = pending > 0;
+  var banner = document.getElementById('ocr-b-review-banner');
+  var split = document.getElementById('ocr-b-split');
+  if (banner) {
+    if (pending === 0) { banner.style.display = 'none'; if (split) split.style.height = 'calc(100vh - 68px)'; }
+    else {
+      banner.style.display = 'flex';
+      if (split) split.style.height = 'calc(100vh - 68px - 42px)';
+      var cntEl = document.getElementById('ocr-b-suspect-count');
+      if (cntEl) cntEl.textContent = pending + '개';
+    }
+  }
+  if (typeof renderOcrBDropdown === 'function') renderOcrBDropdown();
 }
 // 자동 저장 표시 — blur 저장·토글 시 상단 '자동 저장됨 · 시각'으로 갱신(토스트 대체)
 function markAutoSaved() {
@@ -2017,8 +2043,9 @@ function renderOcrBText(student) {
     return q.uncertain || (q.spans && q.spans.some(function(s){ return s.uncertain; }));
   });
   var uncertainCount = uncertainQuestions.length; // 원래 불확실 문항 수(정확도 낮음 임계치 판단용)
-  // 아직 확인 안 한(미처리) 문항 수 — 배지·카운트는 이 값으로(확인 완료되면 줄어듦)
-  var pendingCount = uncertainQuestions.filter(function(q){ return !q.reviewed; }).length;
+  // 아직 확인 안 한(미처리) 문항 수 — 수정(reviewed)되거나 직접 채점(excluded)된 문항은 해소로 취급
+  var _exMapP = ocrBExcludeMap[student.id] || {};
+  var pendingCount = data.questions.filter(function(q, qi){ return (q.uncertain || (q.spans && q.spans.some(function(s){ return s.uncertain; }))) && !q.reviewed && !_exMapP[qi]; }).length;
   var badge = document.getElementById('ocr-b-uncertain-badge');
   var countEl = document.getElementById('ocr-b-uncertain-count');
   var suspectEl = document.getElementById('ocr-b-suspect-count');
@@ -2644,24 +2671,8 @@ function resolveUncertaintyB(gi) {
   markRescore(student.id); // OCR 수정 저장 → 채점 stale
   // 해당 문항 = 확인 완료(클릭·수정 후 이탈). 원래 '불확실'은 유지해 어디가 확인 대상이었는지 흔적을 남김
   data.questions[gi].reviewed = true;
-  // 남은 '미확인' 불확실 문항 확인(확인 완료 제외)
-  var still = data.questions.some(function(q){ return (q.uncertain || (q.spans && q.spans.some(function(s){ return s.uncertain; }))) && !q.reviewed; });
-  if (!still) student.needsReview = false; // 목록에도 반영(완료)
-  // 빨간 배너 갱신
-  var banner = document.getElementById('ocr-b-review-banner');
-  if (banner) {
-    if (!still) {
-      banner.style.display = 'none';
-      var split = document.getElementById('ocr-b-split');
-      if (split) split.style.height = 'calc(100vh - 68px)';
-    } else {
-      var uq = data.questions.filter(function(q){ return (q.uncertain || (q.spans && q.spans.some(function(s){ return s.uncertain; }))) && !q.reviewed; }).length;
-      var cntEl = document.getElementById('ocr-b-suspect-count');
-      if (cntEl) cntEl.textContent = uq + '개';
-    }
-  }
-  // 학생 드롭다운 태그도 즉시 갱신(완료/확인 필요)
-  renderOcrBDropdown();
+  // 확인 필요 해소 판정(수정·직접 채점 모두 반영) + 배너·드롭다운 갱신
+  recomputeOcrBNeedsReview();
 }
 
 // 문항 확인/수정 저장 → 해당 문항 불확실 해소, 모두 해소되면 needsReview=false (목록에서 '완료')
