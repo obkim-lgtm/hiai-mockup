@@ -808,7 +808,7 @@
         </div>
       </div>
 
-      <h3 class="section-title">검수 목록 <span style="font-size:13px;font-weight:400;color:var(--gray-700);margin-left:8px">경기도중학교 · 3학년 국어 · 수필쓰기 수행평가</span></h3>
+      <h3 class="section-title">검수 목록 <span style="font-size:13px;font-weight:400;color:var(--gray-700);margin-left:8px">전 학교급·과목 과제물 인식 파이프라인 QA 배치 · 목록은 비식별 표시</span></h3>
       <div class="filter-bar">
         <div class="filter-group">
           <span class="filter-label">처리 상태</span>
@@ -830,7 +830,7 @@
         </div>
         <div class="filter-search">
           <i data-lucide="search"></i>
-          <input id="deidText" type="text" placeholder="학생명·학번 검색">
+          <input id="deidText" type="text" placeholder="과제물 코드·학교급·과목 검색">
         </div>
       </div>
       <div class="list-meta"><span id="deidTotalLbl">총 0건</span></div>
@@ -838,14 +838,15 @@
       <table class="data" style="margin-top:0">
         <thead>
           <tr>
-            <th style="width:9%">학번</th>
-            <th style="width:11%">학생명</th>
-            <th style="width:13%">자동 회전</th>
-            <th style="width:13%">비식별화</th>
-            <th style="width:9%">OCR</th>
-            <th style="width:11%">채점</th>
-            <th style="width:14%">QA 판정</th>
-            <th style="width:9%">검수</th>
+            <th style="width:8%">학교급</th>
+            <th style="width:8%">과목</th>
+            <th style="width:14%">과제물 코드</th>
+            <th style="width:12%">자동 회전</th>
+            <th style="width:12%">비식별화</th>
+            <th style="width:8%">OCR</th>
+            <th style="width:10%">채점</th>
+            <th style="width:12%">QA 판정</th>
+            <th style="width:8%">검수</th>
           </tr>
         </thead>
         <tbody id="deidBody"></tbody>
@@ -2261,21 +2262,22 @@
   ];
   const verdictMap = Object.fromEntries(VERDICTS.map(v=>[v.key,v]));
 
+  // 목록은 비식별(학교급·과목·과제물코드), 개인정보(학교·학번·이름)는 상세 팝업에서만 노출
   let deidRows = [
-    {id:'d01', sid:'30301', name:'김서윤', rot:{a:90,c:98.7},  deid:{ok:true,regions:2}, ocr:{ok:true}, score:{ok:true,val:'42 / 50'}, qa:{verdict:'normal', memo:'정방향 보정(90°) 후 마스킹·채점 정상.', at:'2026-06-29 14:02'}},
-    {id:'d02', sid:'30302', name:'박지민', rot:{a:180,c:97.1}, deid:{ok:true,regions:2}, ocr:{ok:true}, score:{ok:true,val:'38 / 50'}, qa:{verdict:null, memo:'', at:null}},
-    {id:'d03', sid:'30303', name:'이도현', rot:{a:0,c:99.4},   deid:{ok:true,regions:2}, ocr:{ok:true}, score:{ok:true,val:'45 / 50'}, qa:{verdict:null, memo:'', at:null}},
-    {id:'d04', sid:'30304', name:'정하윤', rot:{a:270,c:72.3}, deid:{ok:false,regions:0,reason:'영역 검출 실패 — 정방향 보정 불완전으로 개인정보 영역 미검출'}, ocr:{ok:true}, score:{ok:true,val:'37 / 50'}, qa:{verdict:null, memo:'', at:null}},
-    {id:'d05', sid:'30305', name:'최예준', rot:{a:90,c:99.1},  deid:{ok:true,regions:2,over:true}, ocr:{ok:true}, score:{ok:true,val:'31 / 50'}, qa:{verdict:'mask_over', memo:'본문 첫 줄 일부가 마스킹됨 → OCR 전사 누락. 모델 과검출 케이스.', at:'2026-06-29 14:20'}},
-    {id:'d06', sid:'30306', name:'강지우', rot:{a:0,c:99.0},   deid:{ok:true,regions:1}, ocr:{ok:false,reason:'인식 실패 — 저해상도 스캔(회전 무관)'}, score:{ok:false}, qa:{verdict:null, memo:'', at:null}},
-    {id:'d07', sid:'30307', name:'윤서아', rot:{a:90,c:98.0},  deid:{ok:true,regions:2}, ocr:{ok:true}, score:{ok:true,val:'40 / 50'}, qa:{verdict:'normal', memo:'정상.', at:'2026-06-29 14:25'}},
-    {id:'d08', sid:'30308', name:'임채원', rot:{a:0,c:99.2},   deid:{ok:false,regions:0,reason:'비식별화 서버 네트워크 오류(timeout) — 회전 무관'}, ocr:{ok:true}, score:{ok:true,val:'43 / 50'}, qa:{verdict:null, memo:'', at:null}},
-    {id:'d09', sid:'30309', name:'한지호', rot:{a:180,c:96.5}, deid:{ok:true,regions:3}, ocr:{ok:true}, score:{ok:true,val:'47 / 50'}, qa:{verdict:null, memo:'', at:null}},
-    {id:'d10', sid:'30310', name:'오유나', rot:{a:90,c:98.9},  deid:{ok:true,regions:2}, ocr:{ok:true}, score:{ok:false,reason:'AI 채점 엔진 오류 — 일시적 처리 실패'}, qa:{verdict:null, memo:'', at:null}},
-    {id:'d11', sid:'30311', name:'신민준', rot:{a:0,c:99.5},   deid:{ok:true,regions:2}, ocr:{ok:true}, score:{ok:true,val:'44 / 50'}, qa:{verdict:'normal', memo:'정상.', at:'2026-06-29 14:31'}},
-    {id:'d12', sid:'30312', name:'권하린', rot:{a:270,c:95.2}, deid:{ok:true,regions:2}, ocr:{ok:true}, score:{ok:true,val:'39 / 50'}, qa:{verdict:null, memo:'', at:null}},
-    {id:'d13', sid:'30313', name:'배수아', rot:{a:90,c:91.0},  deid:{ok:true,regions:1,miss:true}, ocr:{ok:true}, score:{ok:true,val:'41 / 50'}, qa:{verdict:'mask_miss', memo:'이름 영역 미마스킹(누락). 회전은 정상 → 영역 검출 문제.', at:'2026-06-29 14:36'}},
-    {id:'d14', sid:'30314', name:'황지율', rot:{a:0,c:99.1},   deid:{ok:true,regions:2}, ocr:{ok:true}, score:{ok:true,val:'46 / 50'}, qa:{verdict:null, memo:'', at:null}},
+    {id:'d01', code:'SBM-471022', level:'고등', subject:'국어', school:'경기도고등학교', eval:'1학년 1차 논술형 평가', sid:'10312', name:'김서윤', rot:{a:90,c:98.7},  deid:{ok:true,regions:2}, ocr:{ok:true}, score:{ok:true,val:'42 / 50'}, qa:{verdict:'normal', memo:'정방향 보정(90°) 후 마스킹·채점 정상.', at:'2026-06-29 14:02'}},
+    {id:'d02', code:'SBM-330917', level:'중등', subject:'사회', school:'경기도중학교', eval:'지속가능한 도시 만들기', sid:'30214', name:'박지민', rot:{a:180,c:97.1}, deid:{ok:true,regions:2}, ocr:{ok:true}, score:{ok:true,val:'38 / 50'}, qa:{verdict:null, memo:'', at:null}},
+    {id:'d03', code:'SBM-118430', level:'초등', subject:'국어', school:'경기도초등학교', eval:'견학기록문 쓰기', sid:'40126', name:'이도현', rot:{a:0,c:99.4},   deid:{ok:true,regions:2}, ocr:{ok:true}, score:{ok:true,val:'45 / 50'}, qa:{verdict:null, memo:'', at:null}},
+    {id:'d04', code:'SBM-472089', level:'고등', subject:'과학', school:'경기도고등학교', eval:'인공지능과 진로탐구', sid:'10488', name:'정하윤', rot:{a:270,c:72.3}, deid:{ok:false,regions:0,reason:'영역 검출 실패 — 정방향 보정 불완전으로 개인정보 영역 미검출'}, ocr:{ok:true}, score:{ok:true,val:'37 / 50'}, qa:{verdict:null, memo:'', at:null}},
+    {id:'d05', code:'SBM-331205', level:'중등', subject:'국어', school:'경기도중학교', eval:'3학년 수필쓰기 수행평가', sid:'30305', name:'최예준', rot:{a:90,c:99.1},  deid:{ok:true,regions:2,over:true}, ocr:{ok:true}, score:{ok:true,val:'31 / 50'}, qa:{verdict:'mask_over', memo:'본문 첫 줄 일부가 마스킹됨 → OCR 전사 누락. 모델 과검출 케이스.', at:'2026-06-29 14:20'}},
+    {id:'d06', code:'SBM-119077', level:'초등', subject:'사회', school:'경기도초등학교', eval:'우리 고장 탐구', sid:'40233', name:'강지우', rot:{a:0,c:99.0},   deid:{ok:true,regions:1}, ocr:{ok:false,reason:'인식 실패 — 저해상도 스캔(회전 무관)'}, score:{ok:false}, qa:{verdict:null, memo:'', at:null}},
+    {id:'d07', code:'SBM-470551', level:'고등', subject:'영어', school:'경기도고등학교', eval:'1학기 서술형 평가', sid:'10277', name:'윤서아', rot:{a:90,c:98.0},  deid:{ok:true,regions:2}, ocr:{ok:true}, score:{ok:true,val:'40 / 50'}, qa:{verdict:'normal', memo:'정상.', at:'2026-06-29 14:25'}},
+    {id:'d08', code:'SBM-332640', level:'중등', subject:'과학', school:'경기도중학교', eval:'26 1학기 1차 정기시험', sid:'30109', name:'임채원', rot:{a:0,c:99.2},   deid:{ok:false,regions:0,reason:'비식별화 서버 네트워크 오류(timeout) — 회전 무관'}, ocr:{ok:true}, score:{ok:true,val:'43 / 50'}, qa:{verdict:null, memo:'', at:null}},
+    {id:'d09', code:'SBM-473318', level:'고등', subject:'수학', school:'경기도고등학교', eval:'AP 미적분학 8-10번', sid:'10502', name:'한지호', rot:{a:180,c:96.5}, deid:{ok:true,regions:3}, ocr:{ok:true}, score:{ok:true,val:'47 / 50'}, qa:{verdict:null, memo:'', at:null}},
+    {id:'d10', code:'SBM-330788', level:'중등', subject:'사회', school:'경기도중학교', eval:'전통 문화유산 재창조', sid:'30321', name:'오유나', rot:{a:90,c:98.9},  deid:{ok:true,regions:2}, ocr:{ok:true}, score:{ok:false,reason:'AI 채점 엔진 오류 — 일시적 처리 실패'}, qa:{verdict:null, memo:'', at:null}},
+    {id:'d11', code:'SBM-118902', level:'초등', subject:'국어', school:'경기도초등학교', eval:'전기 단상 대본', sid:'40187', name:'신민준', rot:{a:0,c:99.5},   deid:{ok:true,regions:2}, ocr:{ok:true}, score:{ok:true,val:'44 / 50'}, qa:{verdict:'normal', memo:'정상.', at:'2026-06-29 14:31'}},
+    {id:'d12', code:'SBM-471560', level:'고등', subject:'국어', school:'경기도고등학교', eval:'전공을 향한 교과 탐색', sid:'10334', name:'권하린', rot:{a:270,c:95.2}, deid:{ok:true,regions:2}, ocr:{ok:true}, score:{ok:true,val:'39 / 50'}, qa:{verdict:null, memo:'', at:null}},
+    {id:'d13', code:'SBM-331044', level:'중등', subject:'국어', school:'경기도중학교', eval:'3학년 수필쓰기 수행평가', sid:'30312', name:'배수아', rot:{a:90,c:91.0},  deid:{ok:true,regions:1,miss:true}, ocr:{ok:true}, score:{ok:true,val:'41 / 50'}, qa:{verdict:'mask_miss', memo:'이름 영역 미마스킹(누락). 회전은 정상 → 영역 검출 문제.', at:'2026-06-29 14:36'}},
+    {id:'d14', code:'SBM-472770', level:'고등', subject:'과학', school:'경기도고등학교', eval:'1차 정기시험(앞면)', sid:'10419', name:'황지율', rot:{a:0,c:99.1},   deid:{ok:true,regions:2}, ocr:{ok:true}, score:{ok:true,val:'46 / 50'}, qa:{verdict:null, memo:'', at:null}},
   ];
 
   let deidCurrent = null, deidSelVerdict = null, deidViewList = [], deidIdx = 0;
@@ -2335,16 +2337,17 @@
       if(deidQaF==='pending' && r.qa.verdict) return false;
       if(deidQaF==='normal'  && r.qa.verdict!=='normal') return false;
       if(deidQaF==='issue'   && !(r.qa.verdict && r.qa.verdict!=='normal')) return false;
-      // 보조 검색
-      if(q && !(r.name.toLowerCase().includes(q) || r.sid.includes(q))) return false;
+      // 보조 검색 (비식별 필드만 — 코드·학교급·과목)
+      if(q && !(r.code.toLowerCase().includes(q) || r.level.includes(q) || r.subject.includes(q))) return false;
       return true;
     });
     $('#deidBody').innerHTML = rows.length===0
-      ? `<tr><td colspan="8" style="padding:48px;color:var(--gray-700)">조건에 맞는 과제물이 없습니다.</td></tr>`
+      ? `<tr><td colspan="9" style="padding:48px;color:var(--gray-700)">조건에 맞는 과제물이 없습니다.</td></tr>`
       : rows.map(r=>`
         <tr data-id="${r.id}">
-          <td class="id-cell">${r.sid}</td>
-          <td style="font-weight:700">${r.name}</td>
+          <td>${r.level}</td>
+          <td>${r.subject}</td>
+          <td class="id-cell" style="font-weight:700">${r.code}</td>
           <td>${rotCell(r)}</td>
           <td>${deidCell(r)}</td>
           <td>${ocrCell(r)}</td>
@@ -2506,10 +2509,12 @@
     deidCurrent = r; deidSelVerdict = r.qa.verdict;
     $('#deidProfile').innerHTML = `
       <div class="stats-meta">
-        <div class="name">${r.sid} ${r.name}</div>
+        <div class="name">과제물 ${r.code} <span style="font-size:12px;font-weight:700;color:var(--gray-700);margin-left:6px">${r.level} · ${r.subject}</span></div>
         <div class="meta-row">
-          <span><em>학교</em>${DEID_BATCH.school}</span>
-          <span><em>평가</em>${DEID_BATCH.course} · ${DEID_BATCH.eval}</span>
+          <span><em>학교</em>${r.school}</span>
+          <span><em>학생</em>${r.sid} ${r.name}</span>
+          <span><em>수업명</em>${r.subject}</span>
+          <span><em>평가명</em>${r.eval}</span>
           <span><em>파일</em>${r.sid}_${r.name}.pdf</span>
         </div>
       </div>`;
