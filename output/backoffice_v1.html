@@ -851,6 +851,7 @@
         </thead>
         <tbody id="deidBody"></tbody>
       </table>
+      <div class="pagination" id="deidPager"></div>
     </div>
   </section>
 
@@ -2280,7 +2281,34 @@
     {id:'d14', code:'SBM-472770', level:'고등', subject:'과학', school:'경기도고등학교', eval:'1차 정기시험(앞면)', sid:'10419', name:'황지율', rot:{a:0,c:99.1},   deid:{ok:true,regions:2}, ocr:{ok:true}, score:{ok:true,val:'46 / 50'}, qa:{verdict:null, memo:'', at:null}},
   ];
 
+  // 실제 운영 볼륨 재현 — 디자인 케이스 14건 + 생성 데이터로 다수 페이지
+  (function seedDeidVolume(){
+    const LEVELS=['초등','중등','고등'], SUBJECTS=['국어','영어','수학','사회','과학'];
+    const SCHOOL={'초등':'경기도초등학교','중등':'경기도중학교','고등':'경기도고등학교'};
+    const SURN=['김','이','박','최','정','강','조','윤','장','임','한','오','서','신','권','황','안','송','전','홍'];
+    const GIVE=['민준','서윤','지호','하윤','도윤','시우','예준','주원','은우','지안','하린','유준','서연','가은','지유','하준','수아','지원','채원','유나'];
+    const EVALS=['1학기 서술형 평가','2학기 논술형 평가','단원 마무리 평가','수행평가 1차','정기고사 서술형','독서 감상 평가'];
+    const ROT=[0,0,0,90,180,270];
+    const extra=[];
+    for(let k=14;k<140;k++){
+      const level=LEVELS[k%3], subject=SUBJECTS[k%5];
+      const base=level==='초등'?40000:level==='중등'?30000:10000;
+      const m=k%50;
+      let deid={ok:true,regions:2}, ocr={ok:true}, score={ok:true,val:(30+(k%20))+' / 50'};
+      if(m===7||m===31) deid={ok:false,regions:0,reason:'영역 검출 실패 — 정방향 보정 불완전'};
+      if(m===19){ ocr={ok:false,reason:'인식 실패 — 저해상도 스캔'}; score={ok:false}; }
+      if(m===43) score={ok:false,reason:'AI 채점 엔진 오류 — 일시적 처리 실패'};
+      extra.push({
+        id:'g'+k, code:'SBM-'+String(500000+k*131), level, subject, school:SCHOOL[level],
+        eval:EVALS[k%EVALS.length], sid:String(base+101+(k*37)%800), name:SURN[k%SURN.length]+GIVE[(k*3)%GIVE.length],
+        rot:{a:ROT[k%6],c:98}, deid, ocr, score, qa:{verdict:null,memo:'',at:null}
+      });
+    }
+    deidRows = deidRows.concat(extra);
+  })();
+
   let deidCurrent = null, deidSelVerdict = null, deidViewList = [], deidIdx = 0;
+  let deidPage = 1; const DEID_PER_PAGE = 10;
 
   /* ---- table cells ---- */
   function rotCell(r){
@@ -2341,9 +2369,14 @@
       if(q && !(r.code.toLowerCase().includes(q) || r.level.includes(q) || r.subject.includes(q))) return false;
       return true;
     });
-    $('#deidBody').innerHTML = rows.length===0
+    deidViewList = rows;  // 모달 이전/다음은 페이지 무관 전체 필터셋 기준
+    const totalPages = Math.max(1, Math.ceil(rows.length / DEID_PER_PAGE));
+    if(deidPage > totalPages) deidPage = totalPages;
+    const start = (deidPage - 1) * DEID_PER_PAGE;
+    const pageRows = rows.slice(start, start + DEID_PER_PAGE);
+    $('#deidBody').innerHTML = pageRows.length===0
       ? `<tr><td colspan="9" style="padding:48px;color:var(--gray-700)">조건에 맞는 과제물이 없습니다.</td></tr>`
-      : rows.map(r=>`
+      : pageRows.map(r=>`
         <tr data-id="${r.id}">
           <td>${r.level}</td>
           <td>${r.subject}</td>
@@ -2355,9 +2388,19 @@
           <td>${qaCell(r)}</td>
           <td><a class="link-detail" href="#" onclick="return false">검수</a></td>
         </tr>`).join('');
-    $('#deidTotalLbl').textContent = `총 ${rows.length}건`;
-    deidViewList = rows;
+    const shownFrom = rows.length ? start + 1 : 0;
+    const shownTo = Math.min(start + DEID_PER_PAGE, rows.length);
+    $('#deidTotalLbl').textContent = `총 ${rows.length.toLocaleString()}건${rows.length ? ` · ${shownFrom}–${shownTo} 표시` : ''}`;
+    renderDeidPager(totalPages);
     lucide.createIcons();
+  }
+  function renderDeidPager(totalPages){
+    const cur = deidPage;
+    let st = Math.max(1, cur - 2), ed = Math.min(totalPages, st + 4); st = Math.max(1, ed - 4);
+    let html = `<button class="page-btn nav" data-dpage="prev" ${cur===1?'disabled':''}><i data-lucide="chevron-left" style="width:16px;height:16px"></i></button>`;
+    for(let p=st; p<=ed; p++) html += `<button class="page-btn ${p===cur?'active':''}" data-dpage="${p}">${p}</button>`;
+    html += `<button class="page-btn nav" data-dpage="next" ${cur===totalPages?'disabled':''}><i data-lucide="chevron-right" style="width:16px;height:16px"></i></button>`;
+    $('#deidPager').innerHTML = html;
   }
 
   /* ---- pipeline detail ---- */
@@ -2572,17 +2615,27 @@
 
   $('#deidStatusChips').addEventListener('click', (e)=>{
     const c = e.target.closest('.chip'); if(!c) return;
-    deidStatusF = c.dataset.status;
+    deidStatusF = c.dataset.status; deidPage = 1;
     $$('#deidStatusChips .chip').forEach(x=>x.classList.toggle('sel', x===c));
     renderDeid();
   });
   $('#deidQaChips').addEventListener('click', (e)=>{
     const c = e.target.closest('.chip'); if(!c) return;
-    deidQaF = c.dataset.qa;
+    deidQaF = c.dataset.qa; deidPage = 1;
     $$('#deidQaChips .chip').forEach(x=>x.classList.toggle('sel', x===c));
     renderDeid();
   });
-  $('#deidText').addEventListener('input', renderDeid);
+  $('#deidText').addEventListener('input', ()=>{ deidPage = 1; renderDeid(); });
+  // 페이지네이션
+  $('#deidPager').addEventListener('click', (e)=>{
+    const pb = e.target.closest('.page-btn'); if(!pb || pb.disabled) return;
+    const totalPages = Math.max(1, Math.ceil(deidViewList.length / DEID_PER_PAGE));
+    if(pb.dataset.dpage === 'prev') deidPage = Math.max(1, deidPage - 1);
+    else if(pb.dataset.dpage === 'next') deidPage = Math.min(totalPages, deidPage + 1);
+    else deidPage = parseInt(pb.dataset.dpage, 10);
+    renderDeid();
+    document.getElementById('view-deidQa').scrollIntoView({block:'start', behavior:'instant'});
+  });
 
   /* ---- 집계 (도넛 + 이슈 hbar) ---- */
   function renderDeidAgg(){
