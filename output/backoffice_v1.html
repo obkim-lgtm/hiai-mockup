@@ -23,7 +23,7 @@
     --sidebar-w:260px;
   }
   *{box-sizing:border-box}
-  html,body{margin:0;padding:0;font-family:'NanumSquareRound',-apple-system,sans-serif;background:#FAFAFA;color:#000}
+  html,body{margin:0;padding:0;font-family:'NanumSquareRound',-apple-system,sans-serif;background:#F4F5F7;color:#000}
   button{font-family:inherit;cursor:pointer}
   a{color:inherit;text-decoration:none}
 
@@ -58,7 +58,11 @@
   .main.full{margin-left:0}
 
   /* ===== Cards / Panels ===== */
-  .panel{background:#fff;border-radius:20px;box-shadow:var(--shadow-card);padding:28px 24px}
+  /* 페이지 콘텐츠 — 회색 배경 위 흰 섹션 카드 구조 */
+  .panel{background:#fff;border-radius:16px;box-shadow:0 2px 8px rgba(95,102,178,.06);padding:24px 28px}
+  /* 검수 뷰는 KPI·집계·목록이 각자 카드라 패널은 투명(섹션이 회색 위에 얹힘) */
+  #view-deidQa .panel{background:transparent;box-shadow:none;border-radius:0;padding:8px 0 40px}
+  .content-card{background:#fff;border-radius:16px;box-shadow:0 2px 8px rgba(95,102,178,.06);padding:22px 24px;margin-top:10px}
   .page-title{font-size:24px;font-weight:800;color:#000;text-align:center;margin:8px 0 24px}
   .section-title{display:flex;align-items:center;gap:8px;font-size:18px;font-weight:800;color:#000;margin:32px 0 12px}
   .section-title::before{content:"";display:inline-block;width:3px;height:18px;background:var(--purple-800);border-radius:2px}
@@ -291,9 +295,9 @@
   @keyframes toastIn{from{opacity:0;transform:translate(-50%,12px)}to{opacity:1;transform:translate(-50%,0)}}
 
   /* ===== 비식별화 검수 (QA) ===== */
-  .qa-note{display:flex;align-items:flex-start;gap:8px;background:var(--blue-100);border-radius:10px;padding:12px 16px;margin:14px 0 4px;font-size:13px;color:var(--gray-800);font-weight:700;line-height:1.55}
-  .qa-note .lucide{width:18px;height:18px;color:var(--blue-600);flex-shrink:0;margin-top:1px}
-  .qa-note b{color:var(--blue-600)}
+  .qa-note{display:flex;align-items:flex-start;gap:8px;background:var(--purple-50);border-radius:10px;padding:12px 16px;margin:14px 0 4px;font-size:13px;color:var(--gray-800);font-weight:700;line-height:1.55}
+  .qa-note .lucide{width:18px;height:18px;color:var(--purple-800);flex-shrink:0;margin-top:1px}
+  .qa-note b{color:var(--purple-800)}
   .icon-btn.dl{border-color:#B28FFD;color:var(--purple-800);margin-top:8px}
   .icon-btn.dl:hover{background:var(--purple-50)}
 
@@ -302,6 +306,7 @@
   .rate.bad{background:var(--red-100);color:var(--red-600)}
   .rate.warn{background:var(--orange-100);color:var(--orange-600)}
   .rate.good{background:var(--green-100);color:var(--green-600)}
+  .rate.muted{background:var(--gray-100);color:var(--gray-700)}
 
   /* 필터 칩 바 */
   .filter-bar{display:flex;flex-wrap:wrap;gap:14px 28px;align-items:center;margin:4px 0 10px}
@@ -358,6 +363,22 @@
   .ocr-toggle{margin-top:8px;border:none;background:none;color:var(--purple-800);font-weight:800;font-size:13px;cursor:pointer;display:inline-flex;align-items:center;gap:4px;padding:0}
   .ocr-toggle .lucide{width:14px;height:14px}
   .open-row{display:flex;gap:8px;flex-wrap:wrap}
+  /* 과제 단위 */
+  #taskBody tr, #taskStudentBody tr{cursor:pointer}
+  .task-sum{display:flex;flex-wrap:wrap;gap:8px 22px;margin-top:16px;padding:14px 18px;background:var(--gray-50);border-radius:10px;font-size:14px;font-weight:700;color:var(--gray-800)}
+  .task-sum span em{font-style:normal;color:var(--gray-700);font-weight:400;margin-right:6px}
+  .task-sum b{color:var(--gray-900)}
+  .task-sum .bad{color:var(--red-600)}
+  .stage-cnt{display:inline-flex;gap:6px;align-items:center;flex-wrap:wrap;justify-content:center}
+  /* 단계별 실패 케이스 리스트 */
+  .fail-sum{font-size:13px;font-weight:700;color:var(--gray-700);margin-bottom:10px}
+  .fail-sum b{color:var(--gray-900);margin:0 2px}
+  .fail-list{display:flex;flex-direction:column;gap:6px;max-height:218px;overflow-y:auto;padding-right:4px}
+  .fail-item{display:flex;align-items:center;gap:10px;padding:8px 10px;border:1px solid var(--gray-200);border-radius:8px;cursor:pointer;font-size:13px}
+  .fail-item:hover{background:var(--purple-50);border-color:var(--purple-600)}
+  .fail-item .badge{flex-shrink:0}
+  .fail-code{font-family:'Menlo','Consolas',monospace;font-weight:800;color:var(--gray-900);flex-shrink:0}
+  .fail-meta{color:var(--gray-700);font-weight:400;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .ocr-mask{background:#222;color:#222;border-radius:3px;padding:0 4px}
   .fail-box{display:flex;align-items:center;gap:8px;background:var(--red-100);border-radius:8px;padding:12px 14px;font-size:13px;color:var(--red-600);font-weight:700;line-height:1.5}
   .fail-box .lucide{width:18px;height:18px;flex-shrink:0}
@@ -764,15 +785,11 @@
   <!-- ===== View: 비식별화 검수 (QA) ===== -->
   <section class="view hidden" id="view-deidQa">
     <div class="panel">
+      <div id="deidOverview">
       <div class="dash-head" style="margin-bottom:6px">
         <div class="dash-head-left">
           <h1 style="font-size:22px">과제물 인식 검수</h1>
           <div class="sub">자동 회전 → 비식별화 마스킹 → OCR → 채점 전체 파이프라인을 과제물 단위로 검수합니다.</div>
-        </div>
-        <div class="dash-head-right">
-          <button class="btn-primary" id="btnDeidExcel" style="height:36px;padding:0 16px;font-size:14px">
-            <i data-lucide="download" style="width:16px;height:16px"></i> QA 결과 내보내기
-          </button>
         </div>
       </div>
 
@@ -783,33 +800,42 @@
 
       <!-- KPI — 실패율·QA 이슈율 (절대값 + 상대값) -->
       <div class="kpi-row" style="grid-template-columns:repeat(4,1fr);margin-top:14px">
-        <div class="kpi"><h4>비식별화 실패율</h4><div class="num"><span id="kDeidN">0</span><em>건</em> <span class="rate" id="kDeidR"></span></div><div class="accum" id="kDeidS">—</div></div>
-        <div class="kpi"><h4>OCR 실패율</h4><div class="num"><span id="kOcrN">0</span><em>건</em> <span class="rate" id="kOcrR"></span></div><div class="accum" id="kOcrS">—</div></div>
-        <div class="kpi"><h4>채점 실패율</h4><div class="num"><span id="kScoreN">0</span><em>건</em> <span class="rate" id="kScoreR"></span></div><div class="accum" id="kScoreS">—</div></div>
-        <div class="kpi"><h4>QA 이슈(비정상)</h4><div class="num"><span id="kQaN">0</span><em>건</em> <span class="rate" id="kQaR"></span></div><div class="accum" id="kQaS">—</div></div>
+        <div class="kpi"><h4 id="kDeidH">비식별화 실패율</h4><div class="num"><span id="kDeidN">0</span><em>건</em> <span class="rate" id="kDeidR"></span></div><div class="accum" id="kDeidS">—</div></div>
+        <div class="kpi"><h4 id="kOcrH">OCR 실패율</h4><div class="num"><span id="kOcrN">0</span><em>건</em> <span class="rate" id="kOcrR"></span></div><div class="accum" id="kOcrS">—</div></div>
+        <div class="kpi"><h4 id="kScoreH">채점 실패율</h4><div class="num"><span id="kScoreN">0</span><em>건</em> <span class="rate" id="kScoreR"></span></div><div class="accum" id="kScoreS">—</div></div>
+        <div class="kpi"><h4 id="kQaH">QA 이슈(비정상)</h4><div class="num"><span id="kQaN">0</span><em>건</em> <span class="rate" id="kQaR"></span></div><div class="accum" id="kQaS">—</div></div>
       </div>
 
       <!-- 검수 집계 -->
-      <h3 class="section-title">검수 집계</h3>
+      <h3 class="section-title">검수 집계 <span id="deidAggMeta" style="font-size:13px;font-weight:400;color:var(--gray-700);margin-left:8px">—</span></h3>
       <div class="chart-row">
         <div class="chart-card">
-          <h4>QA 판정 분포</h4>
+          <h4><span id="deidDonutTitle">QA 판정 분포</span> <span class="chart-period" id="deidDonutSub">(검수 완료분 기준)</span></h4>
           <div class="donut-wrap">
             <div class="donut" id="deidDonut">
-              <div class="donut-total"><div class="t-num" id="deidDonutNum">0</div><div class="t-lbl">과제물 (건)</div></div>
+              <div class="donut-total"><div class="t-num" id="deidDonutNum">0</div><div class="t-lbl" id="deidDonutLbl">검수 완료 (건)</div></div>
             </div>
             <div class="legend" id="deidLegend"></div>
           </div>
         </div>
         <div class="chart-card">
-          <h4>이슈 유형 분포 <span class="chart-period">(회전 vs 영역 vs OCR vs 채점)</span></h4>
-          <div class="hbar-wrap" id="deidHbar"></div>
-          <div id="deidNoIssue" class="hidden" style="text-align:center;color:var(--gray-700);font-weight:700;padding:36px 0;font-size:14px">확인된 이슈가 없습니다.</div>
+          <h4>단계별 실패 케이스 <span class="chart-period">(시스템 자동 처리 실패 · 클릭해 점검)</span></h4>
+          <div class="fail-sum" id="deidFailSum"></div>
+          <div class="fail-list" id="deidFailList"></div>
+          <div id="deidNoFail" class="hidden" style="text-align:center;color:var(--gray-700);font-weight:700;padding:36px 0;font-size:14px">실패 케이스가 없습니다.</div>
         </div>
       </div>
 
       <h3 class="section-title">검수 목록 <span style="font-size:13px;font-weight:400;color:var(--gray-700);margin-left:8px">전 학교급·과목 과제물 인식 파이프라인 QA 배치 · 목록은 비식별 표시</span></h3>
+      <div class="content-card">
       <div class="filter-bar">
+        <div class="filter-group">
+          <span class="filter-label">보기 단위</span>
+          <div class="chips" id="deidGrainChips">
+            <button class="chip sel" data-grain="task">과제별</button>
+            <button class="chip" data-grain="student">학생별</button>
+          </div>
+        </div>
         <div class="filter-group">
           <span class="filter-label">처리 상태</span>
           <div class="chips" id="deidStatusChips">
@@ -819,7 +845,7 @@
             <button class="chip" data-status="score_fail">채점 실패</button>
           </div>
         </div>
-        <div class="filter-group">
+        <div class="filter-group" id="deidQaGroup">
           <span class="filter-label">QA 판정</span>
           <div class="chips" id="deidQaChips">
             <button class="chip sel" data-qa="all">전체</button>
@@ -830,28 +856,82 @@
         </div>
         <div class="filter-search">
           <i data-lucide="search"></i>
-          <input id="deidText" type="text" placeholder="과제물 코드·학교급·과목 검색">
+          <input id="deidText" type="text" placeholder="과제명·과제물 코드·학교급·과목 검색">
         </div>
       </div>
       <div class="list-meta"><span id="deidTotalLbl">총 0건</span></div>
 
-      <table class="data" style="margin-top:0">
-        <thead>
-          <tr>
-            <th style="width:8%">학교급</th>
-            <th style="width:8%">과목</th>
-            <th style="width:14%">과제물 코드</th>
-            <th style="width:12%">자동 회전</th>
-            <th style="width:12%">비식별화</th>
-            <th style="width:8%">OCR</th>
-            <th style="width:10%">채점</th>
-            <th style="width:12%">QA 판정</th>
-            <th style="width:8%">검수</th>
-          </tr>
-        </thead>
-        <tbody id="deidBody"></tbody>
-      </table>
-      <div class="pagination" id="deidPager"></div>
+      <!-- 과제별 보기 -->
+      <div id="deidTaskView">
+        <table class="data" style="margin-top:0">
+          <thead>
+            <tr>
+              <th style="width:7%">학교급</th>
+              <th style="width:7%">과목</th>
+              <th style="width:24%">평가명</th>
+              <th style="width:8%">과제물 수</th>
+              <th style="width:15%">비식별화</th>
+              <th style="width:15%">OCR</th>
+              <th style="width:15%">채점</th>
+              <th style="width:10%">검수 진행</th>
+            </tr>
+          </thead>
+          <tbody id="taskBody"></tbody>
+        </table>
+        <div class="pagination" id="taskPager"></div>
+      </div>
+
+      <!-- 학생별 보기 -->
+      <div id="deidStudentView" class="hidden">
+        <table class="data" style="margin-top:0">
+          <thead>
+            <tr>
+              <th style="width:8%">학교급</th>
+              <th style="width:8%">과목</th>
+              <th style="width:14%">과제물 코드</th>
+              <th style="width:12%">자동 회전</th>
+              <th style="width:12%">비식별화</th>
+              <th style="width:8%">OCR</th>
+              <th style="width:10%">채점</th>
+              <th style="width:12%">QA 판정</th>
+              <th style="width:8%">검수</th>
+            </tr>
+          </thead>
+          <tbody id="deidBody"></tbody>
+        </table>
+        <div class="pagination" id="deidPager"></div>
+      </div>
+      </div><!-- /content-card -->
+      </div><!-- /deidOverview -->
+
+      <!-- 과제 상세 (페이지) -->
+      <div id="deidTaskDetailPage" class="hidden">
+        <button class="btn-outline" id="taskBackBtn" style="margin-bottom:20px"><i data-lucide="chevron-left" style="width:16px;height:16px"></i> 검수 목록으로</button>
+        <div class="dash-head" style="margin-bottom:16px">
+          <div class="dash-head-left">
+            <h1 id="taskName" style="font-size:22px">—</h1>
+            <div class="sub" id="taskMeta"></div>
+          </div>
+        </div>
+        <div class="content-card">
+        <div class="task-sum" id="taskSum" style="margin-top:0"></div>
+        <div class="recent-head" style="margin:20px 0 10px"><div class="recent-title">과제물 목록</div></div>
+        <table class="data">
+          <thead>
+            <tr>
+              <th style="width:18%">과제물 코드</th>
+              <th style="width:16%">자동 회전</th>
+              <th style="width:16%">비식별화</th>
+              <th style="width:12%">OCR</th>
+              <th style="width:14%">채점</th>
+              <th style="width:14%">QA 판정</th>
+              <th style="width:10%">검수</th>
+            </tr>
+          </thead>
+          <tbody id="taskStudentBody"></tbody>
+        </table>
+        </div><!-- /content-card -->
+      </div>
     </div>
   </section>
 
@@ -1438,6 +1518,11 @@
       return b.dataset.target === target;
     });
     if (navBtn) navBtn.classList.add('active');
+    // 검수 화면 재진입 시 과제 상세 페이지는 닫고 개요로
+    if (target === 'deidQa'){
+      const ov = document.getElementById('deidOverview'), dp = document.getElementById('deidTaskDetailPage');
+      if (ov && dp){ ov.classList.remove('hidden'); dp.classList.add('hidden'); }
+    }
     window.scrollTo({top:0, behavior:'instant'});
   }
 
@@ -2263,52 +2348,56 @@
   ];
   const verdictMap = Object.fromEntries(VERDICTS.map(v=>[v.key,v]));
 
-  // 목록은 비식별(학교급·과목·과제물코드), 개인정보(학교·학번·이름)는 상세 팝업에서만 노출
-  let deidRows = [
-    {id:'d01', code:'SBM-471022', level:'고등', subject:'국어', school:'경기도고등학교', eval:'1학년 1차 논술형 평가', sid:'10312', name:'김서윤', rot:{a:90,c:98.7},  deid:{ok:true,regions:2}, ocr:{ok:true}, score:{ok:true,val:'42 / 50'}, qa:{verdict:'normal', memo:'정방향 보정(90°) 후 마스킹·채점 정상.', at:'2026-06-29 14:02'}},
-    {id:'d02', code:'SBM-330917', level:'중등', subject:'사회', school:'경기도중학교', eval:'지속가능한 도시 만들기', sid:'30214', name:'박지민', rot:{a:180,c:97.1}, deid:{ok:true,regions:2}, ocr:{ok:true}, score:{ok:true,val:'38 / 50'}, qa:{verdict:null, memo:'', at:null}},
-    {id:'d03', code:'SBM-118430', level:'초등', subject:'국어', school:'경기도초등학교', eval:'견학기록문 쓰기', sid:'40126', name:'이도현', rot:{a:0,c:99.4},   deid:{ok:true,regions:2}, ocr:{ok:true}, score:{ok:true,val:'45 / 50'}, qa:{verdict:null, memo:'', at:null}},
-    {id:'d04', code:'SBM-472089', level:'고등', subject:'과학', school:'경기도고등학교', eval:'인공지능과 진로탐구', sid:'10488', name:'정하윤', rot:{a:270,c:72.3}, deid:{ok:false,regions:0,reason:'영역 검출 실패 — 정방향 보정 불완전으로 개인정보 영역 미검출'}, ocr:{ok:true}, score:{ok:true,val:'37 / 50'}, qa:{verdict:null, memo:'', at:null}},
-    {id:'d05', code:'SBM-331205', level:'중등', subject:'국어', school:'경기도중학교', eval:'3학년 수필쓰기 수행평가', sid:'30305', name:'최예준', rot:{a:90,c:99.1},  deid:{ok:true,regions:2,over:true}, ocr:{ok:true}, score:{ok:true,val:'31 / 50'}, qa:{verdict:'mask_over', memo:'본문 첫 줄 일부가 마스킹됨 → OCR 전사 누락. 모델 과검출 케이스.', at:'2026-06-29 14:20'}},
-    {id:'d06', code:'SBM-119077', level:'초등', subject:'사회', school:'경기도초등학교', eval:'우리 고장 탐구', sid:'40233', name:'강지우', rot:{a:0,c:99.0},   deid:{ok:true,regions:1}, ocr:{ok:false,reason:'인식 실패 — 저해상도 스캔(회전 무관)'}, score:{ok:false}, qa:{verdict:null, memo:'', at:null}},
-    {id:'d07', code:'SBM-470551', level:'고등', subject:'영어', school:'경기도고등학교', eval:'1학기 서술형 평가', sid:'10277', name:'윤서아', rot:{a:90,c:98.0},  deid:{ok:true,regions:2}, ocr:{ok:true}, score:{ok:true,val:'40 / 50'}, qa:{verdict:'normal', memo:'정상.', at:'2026-06-29 14:25'}},
-    {id:'d08', code:'SBM-332640', level:'중등', subject:'과학', school:'경기도중학교', eval:'26 1학기 1차 정기시험', sid:'30109', name:'임채원', rot:{a:0,c:99.2},   deid:{ok:false,regions:0,reason:'비식별화 서버 네트워크 오류(timeout) — 회전 무관'}, ocr:{ok:true}, score:{ok:true,val:'43 / 50'}, qa:{verdict:null, memo:'', at:null}},
-    {id:'d09', code:'SBM-473318', level:'고등', subject:'수학', school:'경기도고등학교', eval:'AP 미적분학 8-10번', sid:'10502', name:'한지호', rot:{a:180,c:96.5}, deid:{ok:true,regions:3}, ocr:{ok:true}, score:{ok:true,val:'47 / 50'}, qa:{verdict:null, memo:'', at:null}},
-    {id:'d10', code:'SBM-330788', level:'중등', subject:'사회', school:'경기도중학교', eval:'전통 문화유산 재창조', sid:'30321', name:'오유나', rot:{a:90,c:98.9},  deid:{ok:true,regions:2}, ocr:{ok:true}, score:{ok:false,reason:'AI 채점 엔진 오류 — 일시적 처리 실패'}, qa:{verdict:null, memo:'', at:null}},
-    {id:'d11', code:'SBM-118902', level:'초등', subject:'국어', school:'경기도초등학교', eval:'전기 단상 대본', sid:'40187', name:'신민준', rot:{a:0,c:99.5},   deid:{ok:true,regions:2}, ocr:{ok:true}, score:{ok:true,val:'44 / 50'}, qa:{verdict:'normal', memo:'정상.', at:'2026-06-29 14:31'}},
-    {id:'d12', code:'SBM-471560', level:'고등', subject:'국어', school:'경기도고등학교', eval:'전공을 향한 교과 탐색', sid:'10334', name:'권하린', rot:{a:270,c:95.2}, deid:{ok:true,regions:2}, ocr:{ok:true}, score:{ok:true,val:'39 / 50'}, qa:{verdict:null, memo:'', at:null}},
-    {id:'d13', code:'SBM-331044', level:'중등', subject:'국어', school:'경기도중학교', eval:'3학년 수필쓰기 수행평가', sid:'30312', name:'배수아', rot:{a:90,c:91.0},  deid:{ok:true,regions:1,miss:true}, ocr:{ok:true}, score:{ok:true,val:'41 / 50'}, qa:{verdict:'mask_miss', memo:'이름 영역 미마스킹(누락). 회전은 정상 → 영역 검출 문제.', at:'2026-06-29 14:36'}},
-    {id:'d14', code:'SBM-472770', level:'고등', subject:'과학', school:'경기도고등학교', eval:'1차 정기시험(앞면)', sid:'10419', name:'황지율', rot:{a:0,c:99.1},   deid:{ok:true,regions:2}, ocr:{ok:true}, score:{ok:true,val:'46 / 50'}, qa:{verdict:null, memo:'', at:null}},
+  // 진실의 원천 = 과제(일괄 업로드 = 학급 PDF 1건)별 학생 묶음. 목록·집계는 과제/학생으로 토글
+  const TASK_DEFS = [
+    {tcode:'TSK-2601', level:'중등', subject:'국어', school:'경기도중학교', eval:'3학년 수필쓰기 수행평가', n:32, deidFail:0, ocrFail:0, scoreFail:0,
+      designed:[
+        {deid:{ok:true,regions:2,over:true}, score:{ok:true,val:'31 / 50'}, qa:{verdict:'mask_over', memo:'본문 첫 줄 일부가 마스킹됨(과검출).', at:'2026-06-29 14:20'}},
+        {deid:{ok:true,regions:1,miss:true}, qa:{verdict:'mask_miss', memo:'이름 영역 미마스킹(누락). 회전은 정상 → 영역 검출 문제.', at:'2026-06-29 14:36'}},
+        {qa:{verdict:'normal', memo:'정상.', at:'2026-06-29 14:02'}}
+      ]},
+    {tcode:'TSK-2602', level:'고등', subject:'국어', school:'경기도고등학교', eval:'1학년 1차 논술형 평가', n:28, deidFail:0, ocrFail:0, scoreFail:0,
+      designed:[ {qa:{verdict:'normal', memo:'정상.', at:'2026-06-29 14:25'}}, {qa:{verdict:'normal', memo:'정상.', at:'2026-06-29 14:31'}} ]},
+    {tcode:'TSK-2603', level:'고등', subject:'과학', school:'경기도고등학교', eval:'인공지능과 진로탐구', n:24, deidFail:2, ocrFail:0, scoreFail:0},
+    {tcode:'TSK-2604', level:'중등', subject:'과학', school:'경기도중학교', eval:'26 1학기 1차 정기시험', n:30, deidFail:1, ocrFail:8, scoreFail:0},
+    {tcode:'TSK-2605', level:'초등', subject:'국어', school:'경기도초등학교', eval:'견학기록문 쓰기', n:18, deidFail:0, ocrFail:0, scoreFail:0},
+    {tcode:'TSK-2606', level:'초등', subject:'사회', school:'경기도초등학교', eval:'우리 고장 탐구', n:16, deidFail:0, ocrFail:3, scoreFail:0},
+    {tcode:'TSK-2607', level:'중등', subject:'사회', school:'경기도중학교', eval:'전통 문화유산 재창조', n:22, deidFail:0, ocrFail:0, scoreFail:1},
+    {tcode:'TSK-2608', level:'고등', subject:'수학', school:'경기도고등학교', eval:'AP 미적분학 8-10번', n:20, deidFail:0, ocrFail:0, scoreFail:0},
   ];
-
-  // 실제 운영 볼륨 재현 — 디자인 케이스 14건 + 생성 데이터로 다수 페이지
-  (function seedDeidVolume(){
-    const LEVELS=['초등','중등','고등'], SUBJECTS=['국어','영어','수학','사회','과학'];
-    const SCHOOL={'초등':'경기도초등학교','중등':'경기도중학교','고등':'경기도고등학교'};
+  function genStudents(t){
     const SURN=['김','이','박','최','정','강','조','윤','장','임','한','오','서','신','권','황','안','송','전','홍'];
     const GIVE=['민준','서윤','지호','하윤','도윤','시우','예준','주원','은우','지안','하린','유준','서연','가은','지유','하준','수아','지원','채원','유나'];
-    const EVALS=['1학기 서술형 평가','2학기 논술형 평가','단원 마무리 평가','수행평가 1차','정기고사 서술형','독서 감상 평가'];
-    const ROT=[0,0,0,90,180,270];
-    const extra=[];
-    for(let k=14;k<140;k++){
-      const level=LEVELS[k%3], subject=SUBJECTS[k%5];
-      const base=level==='초등'?40000:level==='중등'?30000:10000;
-      const m=k%50;
-      let deid={ok:true,regions:2}, ocr={ok:true}, score={ok:true,val:(30+(k%20))+' / 50'};
-      if(m===7||m===31) deid={ok:false,regions:0,reason:'영역 검출 실패 — 정방향 보정 불완전'};
-      if(m===19){ ocr={ok:false,reason:'인식 실패 — 저해상도 스캔'}; score={ok:false}; }
-      if(m===43) score={ok:false,reason:'AI 채점 엔진 오류 — 일시적 처리 실패'};
-      extra.push({
-        id:'g'+k, code:'SBM-'+String(500000+k*131), level, subject, school:SCHOOL[level],
-        eval:EVALS[k%EVALS.length], sid:String(base+101+(k*37)%800), name:SURN[k%SURN.length]+GIVE[(k*3)%GIVE.length],
-        rot:{a:ROT[k%6],c:98}, deid, ocr, score, qa:{verdict:null,memo:'',at:null}
+    const ROT=[0,0,90,180,270,0];
+    const base=t.level==='초등'?40000:t.level==='중등'?30000:10000;
+    const out=[];
+    for(let i=0;i<t.n;i++){
+      out.push({
+        id:t.tcode+'-'+(i+1), code:'SBM-'+t.tcode.slice(4)+'-'+String(i+1).padStart(2,'0'),
+        level:t.level, subject:t.subject, school:t.school, eval:t.eval, tcode:t.tcode,
+        sid:String(base+101+i), name:SURN[(i*3+t.n)%20]+GIVE[(i*7+t.n)%20],
+        rot:{a:ROT[i%6],c:98}, deid:{ok:true,regions:2}, ocr:{ok:true}, score:{ok:true,val:(30+(i%20))+' / 50'},
+        qa:{verdict:null, memo:'', at:null}
       });
     }
-    deidRows = deidRows.concat(extra);
-  })();
+    for(let i=0;i<(t.deidFail||0);i++) out[i].deid={ok:false,regions:0,reason:'영역 검출 실패 — 정방향 보정 불완전으로 개인정보 영역 미검출'};
+    for(let i=0;i<(t.ocrFail||0);i++){ const s=out[t.n-1-i]; s.ocr={ok:false,reason:'인식 실패 — 저해상도 스캔'}; s.score={ok:false}; }
+    for(let i=0;i<(t.scoreFail||0);i++){ const s=out[Math.floor(t.n/2)+i]; s.ocr={ok:true}; s.score={ok:false,reason:'AI 채점 엔진 오류 — 일시적 처리 실패'}; }
+    (t.designed||[]).forEach((d,idx)=>{ if(out[idx]) Object.assign(out[idx], d); });
+    return out;
+  }
+  const TASKS = TASK_DEFS.map(t=>{ const tt=Object.assign({}, t); tt.students=genStudents(tt); return tt; });
+  function taskFC(t){ return {
+    deidOk:t.students.filter(s=>s.deid.ok).length, deidFail:t.students.filter(s=>!s.deid.ok).length,
+    ocrOk:t.students.filter(s=>s.ocr.ok).length,  ocrFail:t.students.filter(s=>!s.ocr.ok).length,
+    scoreOk:t.students.filter(s=>s.score.ok).length, scoreFail:t.students.filter(s=>s.ocr.ok && !s.score.ok).length,
+    reviewed:t.students.filter(s=>s.qa.verdict).length };
+  }
+  let deidRows = TASKS.flatMap(t=>t.students);
 
   let deidCurrent = null, deidSelVerdict = null, deidViewList = [], deidIdx = 0;
   let deidPage = 1; const DEID_PER_PAGE = 10;
+  let deidGrain = 'task', taskPage = 1, taskCurrent = null, deidFailRows = []; const TASK_PER_PAGE = 10;
 
   /* ---- table cells ---- */
   function rotCell(r){
@@ -2324,8 +2413,7 @@
   }
   function scoreCell(r){
     if(!r.ocr.ok) return `<span class="badge neutral">–</span>`;
-    if(!r.score.ok) return `<span class="badge fail">실패</span>`;
-    return `<span style="font-weight:800">${r.score.val}</span>`;
+    return r.score.ok ? `<span class="badge ok">성공</span>` : `<span class="badge fail">실패</span>`;
   }
   function qaCell(r){
     if(!r.qa.verdict) return `<span class="badge neutral">미검토</span>`;
@@ -2341,17 +2429,20 @@
     const r = $('#k'+key+'R'); r.textContent = rate; r.className = 'rate ' + rateCls;
     $('#k'+key+'S').textContent = sub;
   }
+  function setKpiTitles(a){ ['Deid','Ocr','Score','Qa'].forEach((k,i)=> $('#k'+k+'H').textContent = a[i]); }
+  // 비식별화 검수 정체성 — 안정성(실패) + 품질(QA 점검) 중심, OCR·채점은 묶어 부차. 제출물(과제물) 단위
   function renderDeidKpi(){
+    setKpiTitles(['비식별화 실패','OCR·채점 실패','QA 검수 진행','마스킹 품질 이슈']);
     const total = deidRows.length;
     const deidFail  = deidRows.filter(r=>!r.deid.ok).length;
-    const ocrFail   = deidRows.filter(r=>!r.ocr.ok).length;
-    const scoreFail = deidRows.filter(r=>r.ocr.ok && !r.score.ok).length;
     const reviewed  = deidRows.filter(r=>r.qa.verdict).length;
-    const issues    = deidRows.filter(r=>r.qa.verdict && r.qa.verdict!=='normal').length;
-    setKpi('Deid',  deidFail,  pct(deidFail,total),  deidFail?'bad':'good',   `전체 ${total}건 중`);
-    setKpi('Ocr',   ocrFail,   pct(ocrFail,total),   ocrFail?'bad':'good',    `전체 ${total}건 중`);
-    setKpi('Score', scoreFail, pct(scoreFail,total), scoreFail?'bad':'good',  `전체 ${total}건 중`);
-    setKpi('Qa',    issues,    pct(issues,reviewed), issues?'warn':'good',    `검수 ${reviewed}/${total}건 기준`);
+    const maskIssue = deidRows.filter(r=>r.qa.verdict==='mask_miss' || r.qa.verdict==='mask_over').length;
+    // OCR·채점 실패: OCR 실패 OR (OCR 성공인데 채점 실패) — 한 제출물당 최대 1회, 중복 없음
+    const backFail  = deidRows.filter(r=>!r.ocr.ok || (r.ocr.ok && !r.score.ok)).length;
+    setKpi('Deid',  deidFail,  pct(deidFail,total),     deidFail?'bad':'good',    `전체 ${total}건 · 개인정보 노출 위험`);
+    setKpi('Ocr',   backFail,  pct(backFail,total),     backFail?'bad':'good',    `전체 ${total}건 · OCR+채점`);
+    setKpi('Score', reviewed,  pct(reviewed,total),     'muted',                  `전체 ${total}건 중 점검`);
+    setKpi('Qa',    maskIssue, pct(maskIssue,reviewed), maskIssue?'warn':'good',  `검수 ${reviewed}건 중 과검출·누락`);
   }
 
   function renderDeid(){
@@ -2601,6 +2692,11 @@
     }
   });
 
+  /* ---- 보기 단위 디스패처 ---- */
+  function renderList(){ deidGrain==='task' ? renderTaskTable() : renderDeid(); }
+  // 집계(KPI·도넛·hbar)는 보기 토글과 무관하게 항상 QA 결과 요약(비식별화 중심) — 표만 토글
+  function renderAgg(){ renderDeidKpi(); renderDeidAgg(); }
+
   $('#btnDeidSave').addEventListener('click', ()=>{
     if(!deidCurrent) return;
     if(!deidSelVerdict){ showToast('QA 판정을 선택해주세요.', 'error'); return; }
@@ -2610,14 +2706,29 @@
     deidCurrent.qa.at = `${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}`;
     closeOverlay('deid-detail');
     showToast('검수 결과가 저장되었습니다.');
-    renderDeid(); renderDeidKpi(); renderDeidAgg();
+    renderList(); renderAgg();
+    if(taskCurrent && !$('#deidTaskDetailPage').classList.contains('hidden')) openTaskDetail(taskCurrent);
+  });
+
+  // 보기 단위 토글 (과제별 / 학생별)
+  $('#deidGrainChips').addEventListener('click', (e)=>{
+    const c = e.target.closest('.chip'); if(!c) return;
+    deidGrain = c.dataset.grain;
+    $$('#deidGrainChips .chip').forEach(x=>x.classList.toggle('sel', x===c));
+    const task = deidGrain==='task';
+    $('#deidTaskView').classList.toggle('hidden', !task);
+    $('#deidStudentView').classList.toggle('hidden', task);
+    $('#deidQaGroup').classList.toggle('hidden', task);
+    $('#deidText').placeholder = task ? '과제명·학교급·과목 검색' : '과제물 코드·학교급·과목 검색';
+    taskPage = 1; deidPage = 1;
+    renderList();   // 집계는 토글과 무관 — 표만 전환
   });
 
   $('#deidStatusChips').addEventListener('click', (e)=>{
     const c = e.target.closest('.chip'); if(!c) return;
-    deidStatusF = c.dataset.status; deidPage = 1;
+    deidStatusF = c.dataset.status; deidPage = 1; taskPage = 1;
     $$('#deidStatusChips .chip').forEach(x=>x.classList.toggle('sel', x===c));
-    renderDeid();
+    renderList();
   });
   $('#deidQaChips').addEventListener('click', (e)=>{
     const c = e.target.closest('.chip'); if(!c) return;
@@ -2625,8 +2736,8 @@
     $$('#deidQaChips .chip').forEach(x=>x.classList.toggle('sel', x===c));
     renderDeid();
   });
-  $('#deidText').addEventListener('input', ()=>{ deidPage = 1; renderDeid(); });
-  // 페이지네이션
+  $('#deidText').addEventListener('input', ()=>{ deidPage = 1; taskPage = 1; renderList(); });
+  // 페이지네이션 (학생별)
   $('#deidPager').addEventListener('click', (e)=>{
     const pb = e.target.closest('.page-btn'); if(!pb || pb.disabled) return;
     const totalPages = Math.max(1, Math.ceil(deidViewList.length / DEID_PER_PAGE));
@@ -2636,49 +2747,196 @@
     renderDeid();
     document.getElementById('view-deidQa').scrollIntoView({block:'start', behavior:'instant'});
   });
+  // 페이지네이션 (과제별)
+  $('#taskPager').addEventListener('click', (e)=>{
+    const pb = e.target.closest('.page-btn'); if(!pb || pb.disabled) return;
+    if(pb.dataset.tpage === 'prev') taskPage = Math.max(1, taskPage - 1);
+    else if(pb.dataset.tpage === 'next') taskPage = taskPage + 1;
+    else taskPage = parseInt(pb.dataset.tpage, 10);
+    renderTaskTable();
+    document.getElementById('view-deidQa').scrollIntoView({block:'start', behavior:'instant'});
+  });
+  // 과제 행 클릭 → 과제 상세 페이지
+  $('#taskBody').addEventListener('click', (e)=>{
+    const tr = e.target.closest('tr[data-task]'); if(!tr) return;
+    const t = TASKS.find(x=>x.tcode===tr.dataset.task);
+    if(t){ openTaskDetail(t); window.scrollTo({top:0, behavior:'instant'}); }
+  });
+  $('#taskBackBtn').addEventListener('click', closeTaskDetail);
+  // 과제 모달 내 학생 클릭 → 파이프라인 상세 (그 과제 학생으로 이전/다음)
+  $('#taskStudentBody').addEventListener('click', (e)=>{
+    const tr = e.target.closest('tr[data-id]'); if(!tr || !taskCurrent) return;
+    const s = taskCurrent.students.find(x=>x.id===tr.dataset.id);
+    if(s){ deidViewList = taskCurrent.students; openDeidDetail(s); }
+  });
+  // 단계별 실패 케이스 클릭 → 파이프라인 상세 (실패 목록으로 이전/다음)
+  $('#deidFailList').addEventListener('click', (e)=>{
+    const item = e.target.closest('.fail-item'); if(!item) return;
+    const r = deidRows.find(x=>x.id===item.dataset.id);
+    if(r){ deidViewList = deidFailRows; openDeidDetail(r); }
+  });
 
   /* ---- 집계 (도넛 + 이슈 hbar) ---- */
   function renderDeidAgg(){
+    $('#deidDonutTitle').textContent = 'QA 판정 분포'; $('#deidDonutSub').textContent = '(검수 완료분 기준)';
+    $('#deidDonutLbl').textContent = '검수 완료 (건)';
     const counts = {normal:0, rotation:0, mask_miss:0, mask_over:0, ocr:0, scoring:0, pending:0};
     deidRows.forEach(r => counts[r.qa.verdict || 'pending']++);
+    // 모든 QA 판정 사유 표시(0건도) — 사유 체크리스트. 비식별화(마스킹) 사유를 위로. '미검토'만 제외(검수 완료분 기준)
     const donutData = [
       {label:'정상',         value:counts.normal,    color:'#00AF3D'},
-      {label:'회전 이슈',     value:counts.rotation,  color:'#FF8C4C'},
       {label:'마스킹 누락',   value:counts.mask_miss, color:'#DB3E51'},
       {label:'마스킹 과검출', value:counts.mask_over, color:'#E75D6E'},
+      {label:'회전 이슈',     value:counts.rotation,  color:'#FF8C4C'},
       {label:'OCR 이슈',      value:counts.ocr,       color:'#5890FF'},
       {label:'채점 이슈',     value:counts.scoring,   color:'#b28ffd'},
-      {label:'미검토',        value:counts.pending,   color:'#D9D9D9'},
-    ].filter(d => d.value > 0);
-    $('#deidDonutNum').textContent = deidRows.length;
-    renderDonut('deidDonut', 'deidLegend', donutData.length ? donutData : [{label:'없음', value:1, color:'#D9D9D9'}]);
+    ];
+    const reviewed = counts.normal + counts.rotation + counts.mask_miss + counts.mask_over + counts.ocr + counts.scoring;
+    $('#deidDonutNum').textContent = reviewed;
+    $('#deidAggMeta').textContent = `전체 ${deidRows.length.toLocaleString()}건 중 ${reviewed.toLocaleString()}건 검수 결과`;
+    renderDonut('deidDonut', 'deidLegend', reviewed > 0 ? donutData : [{label:'검수 전', value:1, color:'#D9D9D9'}]);
 
-    const issue = [
-      {name:'회전 문제',          value:counts.rotation},
-      {name:'영역(마스킹) 문제',  value:counts.mask_miss + counts.mask_over},
-      {name:'OCR 문제',           value:counts.ocr},
-      {name:'채점 문제',          value:counts.scoring},
-    ].filter(d => d.value > 0).sort((a,b) => b.value - a.value);
-    if (issue.length){
-      $('#deidHbar').classList.remove('hidden'); $('#deidNoIssue').classList.add('hidden');
-      renderHBar('deidHbar', issue);
+    // 단계별 실패 케이스 — 시스템 자동 처리 실패(전체 기준), 클릭해 바로 점검
+    const stageOf = r => !r.deid.ok ? '비식별화' : !r.ocr.ok ? 'OCR' : '채점';
+    const ord = {비식별화:0, OCR:1, 채점:2};
+    const failRows = deidRows.filter(r => !r.deid.ok || !r.ocr.ok || (r.ocr.ok && !r.score.ok))
+      .sort((a,b)=> (ord[stageOf(a)]-ord[stageOf(b)]) || a.code.localeCompare(b.code));
+    deidFailRows = failRows;
+    const fc = {비식별화:0, OCR:0, 채점:0};
+    failRows.forEach(r => fc[stageOf(r)]++);
+    $('#deidFailSum').innerHTML = `비식별화 <b>${fc.비식별화}</b> · OCR <b>${fc.OCR}</b> · 채점 <b>${fc.채점}</b> <span style="color:var(--gray-500);font-weight:400">· 총 ${failRows.length}건</span>`;
+    if (failRows.length){
+      $('#deidFailList').classList.remove('hidden'); $('#deidNoFail').classList.add('hidden');
+      $('#deidFailList').innerHTML = failRows.map(r=>`
+        <div class="fail-item" data-id="${r.id}">
+          <span class="badge fail">${stageOf(r)} 실패</span>
+          <span class="fail-code">${r.code}</span>
+          <span class="fail-meta">${r.level}·${r.subject} · ${r.eval}</span>
+        </div>`).join('');
     } else {
-      $('#deidHbar').classList.add('hidden'); $('#deidNoIssue').classList.remove('hidden');
+      $('#deidFailList').classList.add('hidden'); $('#deidNoFail').classList.remove('hidden');
     }
+  }
+
+  /* ====== 과제 단위 (과제별 보기 + 과제 상세 모달) ====== */
+  function stageCnt(ok, fail){
+    return `<span class="stage-cnt"><span class="badge ok">성공 ${ok}</span>${fail>0?`<span class="badge fail">실패 ${fail}</span>`:''}</span>`;
+  }
+  function renderTaskTable(){
+    const q = $('#deidText').value.trim().toLowerCase();
+    const tasks = TASKS.filter(t=>{
+      const fc = taskFC(t);
+      if(deidStatusF==='deid_fail'  && fc.deidFail===0)  return false;
+      if(deidStatusF==='ocr_fail'   && fc.ocrFail===0)   return false;
+      if(deidStatusF==='score_fail' && fc.scoreFail===0) return false;
+      if(q && !(t.eval.toLowerCase().includes(q) || t.level.includes(q) || t.subject.includes(q) || t.tcode.toLowerCase().includes(q))) return false;
+      return true;
+    });
+    const totalPages = Math.max(1, Math.ceil(tasks.length / TASK_PER_PAGE));
+    if(taskPage > totalPages) taskPage = totalPages;
+    const start = (taskPage-1)*TASK_PER_PAGE;
+    const pageTasks = tasks.slice(start, start+TASK_PER_PAGE);
+    $('#taskBody').innerHTML = pageTasks.length===0
+      ? `<tr><td colspan="8" style="padding:48px;color:var(--gray-700)">조건에 맞는 과제가 없습니다.</td></tr>`
+      : pageTasks.map(t=>{ const fc=taskFC(t); return `
+        <tr data-task="${t.tcode}">
+          <td>${t.level}</td>
+          <td>${t.subject}</td>
+          <td style="font-weight:700">${t.eval}</td>
+          <td>${t.students.length}건</td>
+          <td>${stageCnt(fc.deidOk, fc.deidFail)}</td>
+          <td>${stageCnt(fc.ocrOk, fc.ocrFail)}</td>
+          <td>${stageCnt(fc.scoreOk, fc.scoreFail)}</td>
+          <td>${fc.reviewed}/${t.students.length}</td>
+        </tr>`; }).join('');
+    const to = Math.min(start+TASK_PER_PAGE, tasks.length);
+    $('#deidTotalLbl').textContent = `총 ${tasks.length}개 과제${tasks.length?` · ${start+1}–${to} 표시`:''}`;
+    renderTaskPager(totalPages);
+    lucide.createIcons();
+  }
+  function renderTaskPager(totalPages){
+    const cur = taskPage; let st=Math.max(1,cur-2), ed=Math.min(totalPages,st+4); st=Math.max(1,ed-4);
+    let html = `<button class="page-btn nav" data-tpage="prev" ${cur===1?'disabled':''}><i data-lucide="chevron-left" style="width:16px;height:16px"></i></button>`;
+    for(let p=st;p<=ed;p++) html += `<button class="page-btn ${p===cur?'active':''}" data-tpage="${p}">${p}</button>`;
+    html += `<button class="page-btn nav" data-tpage="next" ${cur===totalPages?'disabled':''}><i data-lucide="chevron-right" style="width:16px;height:16px"></i></button>`;
+    $('#taskPager').innerHTML = html;
+  }
+  function renderTaskKpi(){
+    setKpiTitles(['비식별화 실패 과제','OCR 실패 과제','채점 실패 과제','검수 완료 과제']);
+    const N = TASKS.length;
+    const dF = TASKS.filter(t=>taskFC(t).deidFail>0).length;
+    const oF = TASKS.filter(t=>taskFC(t).ocrFail>0).length;
+    const sF = TASKS.filter(t=>taskFC(t).scoreFail>0).length;
+    const rv = TASKS.filter(t=>taskFC(t).reviewed===t.students.length).length;
+    setKpi('Deid', dF, pct(dF,N), dF?'bad':'good', `전체 ${N}개 과제 중`);
+    setKpi('Ocr',  oF, pct(oF,N), oF?'bad':'good', `전체 ${N}개 과제 중`);
+    setKpi('Score',sF, pct(sF,N), sF?'bad':'good', `전체 ${N}개 과제 중`);
+    setKpi('Qa',   rv, pct(rv,N), 'good',          `전체 ${N}개 과제 중`);
+  }
+  function renderTaskAgg(){
+    $('#deidDonutTitle').textContent = '과제 처리 상태'; $('#deidDonutSub').textContent = '(전 단계 기준)';
+    $('#deidDonutLbl').textContent = '전체 과제 (개)';
+    $('#deidHbarTitle').textContent = '단계별 실패 과제'; $('#deidHbarSub').textContent = '(어느 단계가 과제를 깨뜨리나)';
+    const N = TASKS.length;
+    let normal=0, issue=0;
+    TASKS.forEach(t=>{ const fc=taskFC(t); (fc.deidFail+fc.ocrFail+fc.scoreFail)===0 ? normal++ : issue++; });
+    const donutData = [
+      {label:'정상 과제', value:normal, color:'#00AF3D'},
+      {label:'실패 포함 과제', value:issue, color:'#DB3E51'},
+    ].filter(d=>d.value>0);
+    $('#deidDonutNum').textContent = N;
+    renderDonut('deidDonut','deidLegend', donutData.length?donutData:[{label:'없음',value:1,color:'#D9D9D9'}]);
+    $('#deidAggMeta').textContent = `전체 ${N}개 과제 · 학생 ${deidRows.length.toLocaleString()}명 기준`;
+    const bar = [
+      {name:'비식별화 실패 과제', value:TASKS.filter(t=>taskFC(t).deidFail>0).length},
+      {name:'OCR 실패 과제',     value:TASKS.filter(t=>taskFC(t).ocrFail>0).length},
+      {name:'채점 실패 과제',     value:TASKS.filter(t=>taskFC(t).scoreFail>0).length},
+    ].filter(d=>d.value>0).sort((a,b)=>b.value-a.value);
+    if(bar.length){ $('#deidHbar').classList.remove('hidden'); $('#deidNoIssue').classList.add('hidden'); renderHBar('deidHbar', bar); }
+    else { $('#deidHbar').classList.add('hidden'); $('#deidNoIssue').classList.remove('hidden'); }
+  }
+  function renderTaskStudents(t){
+    $('#taskStudentBody').innerHTML = t.students.map(s=>`
+      <tr data-id="${s.id}">
+        <td class="id-cell" style="font-weight:700">${s.code}</td>
+        <td>${rotCell(s)}</td>
+        <td>${deidCell(s)}</td>
+        <td>${ocrCell(s)}</td>
+        <td>${scoreCell(s)}</td>
+        <td>${qaCell(s)}</td>
+        <td><a class="link-detail" href="#" onclick="return false">검수</a></td>
+      </tr>`).join('');
+    lucide.createIcons();
+  }
+  function openTaskDetail(t){
+    taskCurrent = t;
+    const fc = taskFC(t);
+    $('#taskName').innerHTML = `${t.eval} <span style="font-size:13px;font-weight:700;color:var(--gray-700);margin-left:8px">${t.level} · ${t.subject}</span>`;
+    $('#taskMeta').textContent = `${t.school} · 과제 코드 ${t.tcode} · 과제물 ${t.students.length}건`;
+    $('#taskSum').innerHTML = `
+      <span><em>비식별화</em><b>성공 ${fc.deidOk}</b>${fc.deidFail?` · <b class="bad">실패 ${fc.deidFail}</b>`:''}</span>
+      <span><em>OCR</em><b>성공 ${fc.ocrOk}</b>${fc.ocrFail?` · <b class="bad">실패 ${fc.ocrFail}</b>`:''}</span>
+      <span><em>채점</em><b>성공 ${fc.scoreOk}</b>${fc.scoreFail?` · <b class="bad">실패 ${fc.scoreFail}</b>`:''}</span>
+      <span><em>검수</em><b>${fc.reviewed}/${t.students.length}</b></span>`;
+    renderTaskStudents(t);
+    $('#deidOverview').classList.add('hidden');
+    $('#deidTaskDetailPage').classList.remove('hidden');
+    lucide.createIcons();
+  }
+  function closeTaskDetail(){
+    $('#deidTaskDetailPage').classList.add('hidden');
+    $('#deidOverview').classList.remove('hidden');
+    window.scrollTo({top:0, behavior:'instant'});
   }
 
   /* ---- 모달 이전/다음 ---- */
   $('#deidPrev').addEventListener('click', ()=>{ if (deidIdx > 0){ deidIdx--; openDeidDetail(deidViewList[deidIdx]); } });
   $('#deidNext').addEventListener('click', ()=>{ if (deidIdx < deidViewList.length - 1){ deidIdx++; openDeidDetail(deidViewList[deidIdx]); } });
 
-  /* ---- 엑셀 내보내기 + 실서버 반영(위임) ---- */
-  $('#btnDeidExcel').addEventListener('click', ()=>{
-    showToast(`QA 검수 결과를 내보냅니다. (총 ${deidRows.length}건)`);
-  });
-
-  renderDeidKpi();
-  renderDeid();
-  renderDeidAgg();
+  // 초기: 과제별 기본 (QA 판정 필터는 학생별에서만 노출)
+  $('#deidQaGroup').classList.add('hidden');
+  renderList();
+  renderAgg();
 
   lucide.createIcons();
 </script>
