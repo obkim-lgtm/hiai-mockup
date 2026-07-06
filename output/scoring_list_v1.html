@@ -191,7 +191,7 @@
             <!-- C안 1-4: 업데이트 전 과제 (채점됨 · 인식 결과 없음) -->
             <div style="display:flex; align-items:center; height:58px; border-top:1px solid #D9D9D9; font-size:16px; color:#333;">
               <div style="width:80px; text-align:center; font-weight:700;">1-4</div>
-              <div style="flex:1; display:flex; align-items:center; gap:10px; padding:0 16px;"><div class="progress-bar-bg" style="max-width:100px;"><div class="progress-bar-fill" style="width:100%;"></div></div><span style="font-size:14px; color:#333; font-weight:700;">9/9</span><span style="font-size:11px;font-weight:800;color:#7E44FB;background:#F0EAFF;border-radius:100px;padding:2px 8px;">업데이트 전</span></div>
+              <div style="flex:1; display:flex; align-items:center; gap:10px; padding:0 16px;"><div class="progress-bar-bg" style="max-width:100px;"><div class="progress-bar-fill" style="width:100%;"></div></div><span style="font-size:14px; color:#333; font-weight:700;">9/9</span></div>
               <div style="width:120px; text-align:center; font-weight:700; color:#333;">12.4</div>
               <div style="width:260px; display:flex; align-items:center; justify-content:center; gap:8px;">
                 <button class="btn-primary" style="height:36px; font-size:14px;" onclick="openLegacyRescoreModal()"><i data-lucide="rotate-cw" style="width:16px; height:16px;"></i>재실행</button>
@@ -532,10 +532,17 @@
             <span style="font-size:13px; color:#808080;">정확도 낮음</span>
           </div>
           <!-- Student 4: 최유진 — 인식 실패(채점 불가) -->
-          <div style="padding:10px 16px; display:flex; align-items:center; gap:10px; opacity:0.5;">
+          <div style="padding:10px 16px; display:flex; align-items:center; gap:10px; border-bottom:1px solid #F0F0F0; opacity:0.5;">
             <div class="chk" style="cursor:not-allowed;"></div>
             <span style="font-size:14px; color:#333; flex:1;">10104 최유진</span>
             <span style="font-size:13px; color:#808080;">인식 실패</span>
+          </div>
+          <!-- Student 5: 임도윤 — 업데이트 전(인식 결과 없음 · 채점 불가) -->
+          <div style="padding:10px 16px; display:flex; align-items:center; gap:10px;">
+            <div class="chk" style="cursor:not-allowed; opacity:0.5;"></div>
+            <span style="font-size:14px; color:#333; flex:1; opacity:0.5;">10109 임도윤</span>
+            <span style="font-size:13px; color:#808080; display:inline-flex; align-items:center; gap:4px; opacity:0.5;"><i data-lucide="history" style="width:13px;height:13px;"></i>업데이트 전 · 인식 필요</span>
+            <a href="task_ocr_review_v1.html#ocr-b=10109" style="font-size:12px; font-weight:700; color:#7E44FB; text-decoration:none; display:inline-flex; align-items:center; gap:3px; padding:2px 6px; border-radius:4px;" onmouseover="this.style.background='#F7F4FF'" onmouseout="this.style.background='none'">인식하기 <i data-lucide="chevron-right" style="width:11px;height:11px;"></i></a>
           </div>
         </div>
       </div>
