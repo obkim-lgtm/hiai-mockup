@@ -48,11 +48,9 @@ const {ResponsiveContainer,BarChart,Bar,XAxis,YAxis,Tooltip,Cell,
 
 /* ─── 에셋 ─── */
 const LOGO = {
-  icon:"https://www.figma.com/api/mcp/asset/aa025bb4-24f6-4ca0-99f2-d38cd7831f19",
-  top: "https://www.figma.com/api/mcp/asset/da5b9c15-214c-4011-8dbb-6edd9aecdffd",
-  btm: "https://www.figma.com/api/mcp/asset/a0d914fb-8e28-426b-a514-ecaca4d93549",
-  ai:  "https://www.figma.com/api/mcp/asset/9f7e059a-12a4-40b7-ab5b-2623dfdbbbd6",
-  back:"https://www.figma.com/api/mcp/asset/a09068e4-f527-4908-902b-b581237aea6c",
+  icon:"../screens/logo_icon.png",
+  top: "../screens/logo_text_top.svg",
+  btm: "../screens/logo_text_bottom.svg",
 };
 
 /* ─── 더미 데이터 ─── */
@@ -181,7 +179,9 @@ function GNB(){
           <span style={{color:"#000",fontWeight:700}}>고객센터</span>
         </div>
         <div style={{display:"flex",alignItems:"center",gap:12}}>
-          <img src={LOGO.ai} alt="" style={{width:36,height:36}}/>
+          <div style={{width:36,height:36,borderRadius:"50%",background:"#F7F4FF",display:"inline-flex",alignItems:"center",justifyContent:"center"}}>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#7E44FB" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          </div>
           <span style={{fontSize:20,fontWeight:700}}>김동* 님</span>
         </div>
       </div>
