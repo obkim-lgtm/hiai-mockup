@@ -194,7 +194,7 @@
               <div style="flex:1; display:flex; align-items:center; gap:10px; padding:0 16px;"><div class="progress-bar-bg" style="max-width:100px;"><div class="progress-bar-fill" style="width:100%;"></div></div><span style="font-size:14px; color:#333; font-weight:700;">9/9</span></div>
               <div style="width:120px; text-align:center; font-weight:700; color:#333;">12.4</div>
               <div style="width:260px; display:flex; align-items:center; justify-content:center; gap:8px;">
-                <button class="btn-primary" style="height:36px; font-size:14px;" onclick="openLegacyRescoreModal()"><i data-lucide="rotate-cw" style="width:16px; height:16px;"></i>재실행</button>
+                <button class="btn-primary" style="height:36px; font-size:14px;" onclick="openRerunModal(4)"><i data-lucide="rotate-cw" style="width:16px; height:16px;"></i>재실행</button>
                 <button class="btn-secondary" style="height:36px; font-size:14px;" onclick="location.href='scoring_student_v1.html?id=10109&name=%EC%9E%84%EB%8F%84%EC%9C%A4&eval=C&from=scoring_list_v1.html'"><i data-lucide="chart-column-decreasing" style="width:16px; height:16px;"></i>AI 점수 확인</button>
               </div>
               <div style="width:158px; text-align:center;"><button class="btn-ghost" style="justify-content:center; width:100%;" onclick="location.href='scoring_student_v1.html?id=10109&name=%EC%9E%84%EB%8F%84%EC%9C%A4&eval=C&from=scoring_list_v1.html'">채점 결과 상세 <i data-lucide="chevron-right" style="width:14px;height:14px;"></i></button></div>
@@ -283,27 +283,27 @@
 
 </div><!-- /screen-list -->
 
-<!-- ===== OCR 경고 모달 (소수) — 1-1반: 2명 미확인 ===== -->
+<!-- ===== 과제물 인식 결과 확인 필요 모달 (개발 디자인 1804:5778) — 1-1반: 2명 미확인 ===== -->
 <div id="ocrFewModal" class="modal-overlay" onclick="if(event.target===this) closeOcrFewModal()">
-  <div class="modal-box" style="width:512px;">
+  <div class="modal-box" style="width:520px;">
     <div style="padding:24px 24px 16px; position:relative;">
-      <div style="display:flex; align-items:center; gap:10px; padding-right:36px;">
-        <i id="ocrReview-icon" data-lucide="triangle-alert" style="width:22px; height:22px; color:#FF8C4C; flex-shrink:0;"></i>
-        <span id="ocrReview-title" style="font-size:20px; font-weight:700; color:#333;">OCR 미확인 학생이 있습니다</span>
-      </div>
+      <span id="ocrReview-title" style="font-size:18px; font-weight:700; color:#333; line-height:1.25; display:block; padding-right:36px;">과제물 인식 결과 확인이 필요한 학생이 있어요</span>
       <button onclick="closeOcrFewModal()" style="position:absolute; top:11px; right:11px; width:36px; height:36px; background:none; border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; border-radius:6px;" onmouseover="this.style.background='#F0F0F0'" onmouseout="this.style.background='none'">
         <i data-lucide="x" style="width:20px; height:20px; color:#808080;"></i>
       </button>
     </div>
-    <div style="padding:0 24px 24px; display:flex; flex-direction:column; gap:14px;">
-      <p id="ocrReview-summary" style="font-size:14px; color:#494949; line-height:1.55; margin:0;"></p>
-      <div id="ocrReview-list" style="border:1px solid #FFD6B0; border-radius:8px; overflow:hidden; background:#FFFAF5; max-height:220px; overflow-y:auto;"></div>
+    <div style="padding:8px 24px 16px; display:flex; flex-direction:column; gap:24px;">
+      <p id="ocrReview-summary" style="font-size:14px; color:#333; line-height:1.55; margin:0;">일부 학생의 인식 결과가 부정확합니다. 채점 정확도에 영향을 줄 수 있어요.</p>
+      <div style="display:flex; flex-direction:column; gap:12px;">
+        <span style="font-size:16px; font-weight:700; color:#333; line-height:1.25;">확인 필요 대상</span>
+        <div id="ocrReview-list" style="border:1px solid #FFE3CD; border-radius:8px; overflow:hidden; max-height:348px; overflow-y:auto;"></div>
+      </div>
     </div>
-    <div style="padding:8px 24px 24px; display:flex; justify-content:flex-end; gap:12px;">
-      <button onclick="location.href='task_ocr_review_v1.html#list'" style="background:white; color:#7E44FB; border:1.5px solid #B28FFD; border-radius:8px; height:40px; padding:0 20px; font-size:16px; font-weight:700; cursor:pointer; font-family:inherit; display:inline-flex; align-items:center; gap:6px;">
-        과제물 확인하러 가기
+    <div style="padding:8px 24px 16px; display:flex; justify-content:flex-end; gap:12px;">
+      <button onclick="location.href='task_ocr_review_v1.html#list'" style="background:none; color:#E4631C; border:1px solid #FF9960; border-radius:8px; height:40px; padding:0 16px; font-size:16px; font-weight:700; cursor:pointer; font-family:inherit; display:inline-flex; align-items:center; justify-content:center; line-height:1; vertical-align:middle; gap:6px;" onmouseover="this.style.background='#FFF3EA'" onmouseout="this.style.background='none'">
+        <i data-lucide="scan-text" style="width:20px; height:20px;"></i>인식 결과 확인
       </button>
-      <button onclick="proceedToRunModal('ocrFewModal')" style="background:#7E44FB; color:white; border:none; border-radius:8px; height:40px; padding:0 20px; font-size:16px; font-weight:700; cursor:pointer; font-family:inherit;">이대로 채점 진행하기</button>
+      <button onclick="proceedToRunModal('ocrFewModal')" style="background:#7E44FB; color:white; border:none; border-radius:8px; height:40px; padding:0 16px; font-size:16px; font-weight:700; cursor:pointer; font-family:inherit; display:inline-flex; align-items:center; justify-content:center; line-height:1; vertical-align:middle; gap:6px;">이대로 채점 진행<i data-lucide="chevron-right" style="width:20px; height:20px;"></i></button>
     </div>
   </div>
 </div>
@@ -511,38 +511,55 @@
           <!-- Header row -->
           <div style="background:#F8F8F8; padding:12px 16px; display:flex; align-items:center; gap:10px; border-bottom:1px solid #D9D9D9;">
             <div class="chk checked" onclick="toggleRunAll(this)"></div>
-            <span style="font-size:14px; font-weight:700; color:#333;">1-1반 (2/4명)</span>
+            <span style="font-size:14px; font-weight:700; color:#333;">1-1반 (2/8명)</span>
           </div>
-          <!-- Student 1: 김서윤 — 채점 가능 -->
+          <!-- 김서윤 — AI 채점 완료(재채점 가능) · 선택 가능 -->
           <div style="padding:10px 16px; display:flex; align-items:center; gap:10px; border-bottom:1px solid #F0F0F0;">
             <div class="chk checked" onclick="toggleChk(this)"></div>
             <span style="font-size:14px; color:#333; flex:1;">10101 김서윤</span>
-            <span style="font-size:13px; color:#7E44FB; font-weight:700;">AI 채점결과 12점</span>
+            <span style="font-size:13px; color:#7E44FB; font-weight:700;">AI 채점 결과 12점</span>
           </div>
-          <!-- Student 2: 이준호 — 확인 필요(채점 가능) -->
+          <!-- 이준호 — 미채점·인식 완료(채점 가능) · 선택 가능 -->
           <div style="padding:10px 16px; display:flex; align-items:center; gap:10px; border-bottom:1px solid #F0F0F0;">
             <div class="chk checked" onclick="toggleChk(this)"></div>
             <span style="font-size:14px; color:#333; flex:1;">10102 이준호</span>
-            <span style="font-size:13px; color:#7E44FB; font-weight:700;">AI 채점결과 10점</span>
+            <span style="font-size:13px; color:#808080;">-</span>
           </div>
-          <!-- Student 3: 박지민 — 정확도 낮음(채점 불가) -->
+          <!-- 조민재 — 과제 미제출 -->
           <div style="padding:10px 16px; display:flex; align-items:center; gap:10px; border-bottom:1px solid #F0F0F0; opacity:0.5;">
             <div class="chk" style="cursor:not-allowed;"></div>
-            <span style="font-size:14px; color:#333; flex:1;">10103 박지민</span>
-            <span style="font-size:13px; color:#808080;">정확도 낮음</span>
+            <span style="font-size:14px; color:#333; flex:1;">10107 조민재</span>
+            <span style="font-size:13px; color:#808080;">과제 미제출</span>
           </div>
-          <!-- Student 4: 최유진 — 인식 실패(채점 불가) -->
+          <!-- 한지우 — AI 채점 실행중(중복 실행 방지) -->
+          <div style="padding:10px 16px; display:flex; align-items:center; gap:10px; border-bottom:1px solid #F0F0F0; opacity:0.5;">
+            <div class="chk" style="cursor:not-allowed;"></div>
+            <span style="font-size:14px; color:#333; flex:1;">10106 한지우</span>
+            <span style="font-size:13px; color:#808080;">AI 채점 실행중</span>
+          </div>
+          <!-- 정현우 — 과제물 인식 진행 중(인식이 끝나야 채점 가능) -->
+          <div style="padding:10px 16px; display:flex; align-items:center; gap:10px; border-bottom:1px solid #F0F0F0; opacity:0.5;">
+            <div class="chk" style="cursor:not-allowed;"></div>
+            <span style="font-size:14px; color:#333; flex:1;">10105 정현우</span>
+            <span style="font-size:13px; color:#808080;">과제물 인식 진행 중</span>
+          </div>
+          <!-- 임도윤 — 과제물 인식 필요(미인식 · 업데이트 전 포함) -->
+          <div style="padding:10px 16px; display:flex; align-items:center; gap:10px; border-bottom:1px solid #F0F0F0; opacity:0.5;">
+            <div class="chk" style="cursor:not-allowed;"></div>
+            <span style="font-size:14px; color:#333; flex:1;">10109 임도윤</span>
+            <span style="font-size:13px; color:#808080;">과제물 인식 필요</span>
+          </div>
+          <!-- 최유진 — 과제물 인식 실패 -->
           <div style="padding:10px 16px; display:flex; align-items:center; gap:10px; border-bottom:1px solid #F0F0F0; opacity:0.5;">
             <div class="chk" style="cursor:not-allowed;"></div>
             <span style="font-size:14px; color:#333; flex:1;">10104 최유진</span>
-            <span style="font-size:13px; color:#808080;">인식 실패</span>
+            <span style="font-size:13px; color:#808080;">과제물 인식 실패</span>
           </div>
-          <!-- Student 5: 임도윤 — 업데이트 전(인식 결과 없음 · 채점 불가) -->
-          <div style="padding:10px 16px; display:flex; align-items:center; gap:10px;">
-            <div class="chk" style="cursor:not-allowed; opacity:0.5;"></div>
-            <span style="font-size:14px; color:#333; flex:1; opacity:0.5;">10109 임도윤</span>
-            <span style="font-size:13px; color:#808080; display:inline-flex; align-items:center; gap:4px; opacity:0.5;"><i data-lucide="history" style="width:13px;height:13px;"></i>업데이트 전 · 인식 필요</span>
-            <a href="task_ocr_review_v1.html#ocr-b=10109" style="font-size:12px; font-weight:700; color:#7E44FB; text-decoration:none; display:inline-flex; align-items:center; gap:3px; padding:2px 6px; border-radius:4px;" onmouseover="this.style.background='#F7F4FF'" onmouseout="this.style.background='none'">인식하기 <i data-lucide="chevron-right" style="width:11px;height:11px;"></i></a>
+          <!-- 박지민 — 과제물 인식 정확도 낮음 -->
+          <div style="padding:10px 16px; display:flex; align-items:center; gap:10px; opacity:0.5;">
+            <div class="chk" style="cursor:not-allowed;"></div>
+            <span style="font-size:14px; color:#333; flex:1;">10103 박지민</span>
+            <span style="font-size:13px; color:#808080;">과제물 인식 정확도 낮음</span>
           </div>
         </div>
       </div>
@@ -567,40 +584,7 @@
   </div>
 </div>
 
-<!-- ===== 업데이트 전(기존) 과제 재채점 안내 모달 ===== -->
-<div id="legacyRescoreModal" class="modal-overlay" onclick="if(event.target===this) closeLegacyRescoreModal()">
-  <div class="modal-box" style="width:520px;">
-    <div style="padding:28px 28px 0; position:relative;">
-      <button onclick="closeLegacyRescoreModal()" style="position:absolute;top:16px;right:16px;width:36px;height:36px;background:none;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;border-radius:6px;" onmouseover="this.style.background='#F0F0F0'" onmouseout="this.style.background='none'">
-        <i data-lucide="x" style="width:20px;height:20px;color:#808080;"></i>
-      </button>
-      <div style="display:flex;flex-direction:column;align-items:center;gap:16px;text-align:center;padding-bottom:24px;">
-        <div style="width:64px;height:64px;border-radius:20px;background:#F0EAFF;display:flex;align-items:center;justify-content:center;">
-          <i data-lucide="history" style="width:32px;height:32px;color:#7E44FB;"></i>
-        </div>
-        <div>
-          <div style="font-size:20px;font-weight:800;color:#222;margin-bottom:8px;">업데이트 전에 채점된 과제물이에요</div>
-          <div style="font-size:14px;color:#494949;line-height:1.65;">이 과제물은 과제물 인식 기능 업데이트 전에 채점됐어요.<br>기존 채점 결과는 그대로 볼 수 있어요. 다시 채점하려면 먼저 과제물 인식이 필요해요.</div>
-        </div>
-      </div>
-    </div>
-    <div style="padding:0 28px 24px;">
-      <div style="background:#F7F4FF;border:1px solid #E0D2FF;border-radius:12px;padding:16px 20px;display:flex;gap:14px;align-items:flex-start;">
-        <i data-lucide="info" style="width:18px;height:18px;color:#7E44FB;flex-shrink:0;margin-top:2px;"></i>
-        <div style="font-size:14px;color:#341761;line-height:1.65;">
-          <strong>재채점하려면 과제물 인식부터 진행해 주세요.</strong><br>
-          인식이 끝나면 원본과 대조해 확인하고 AI 재채점을 실행할 수 있어요.
-        </div>
-      </div>
-    </div>
-    <div style="padding:0 28px 28px;display:flex;justify-content:flex-end;gap:12px;">
-      <button onclick="closeLegacyRescoreModal()" style="background:#F0F0F0;color:#494949;border:none;border-radius:8px;height:40px;padding:0 20px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;">닫기</button>
-      <button onclick="location.href='task_ocr_review_v1.html#list'" style="background:#7E44FB;color:white;border:none;border-radius:8px;height:40px;padding:0 20px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;display:inline-flex;align-items:center;gap:8px;">
-        <i data-lucide="scan-text" style="width:16px;height:16px;"></i>과제물 인식하러 가기
-      </button>
-    </div>
-  </div>
-</div>
+<!-- 업데이트 전(기존) 과제 재채점 안내 모달 폐지 — 재실행 모달의 학생별 '과제물 인식 필요' 게이팅으로 흡수 -->
 
 <!-- ===== AI 채점 재실행 모달 ===== -->
 <div id="rerunModal" class="modal-overlay" onclick="if(event.target===this) closeRerunModal()">
@@ -623,13 +607,13 @@
           <!-- Header row -->
           <div style="background:#F8F8F8; padding:12px 16px; display:flex; align-items:center; gap:10px; border-bottom:1px solid #D9D9D9;">
             <div class="chk checked" onclick="toggleRerunAll(this)"></div>
-            <span style="font-size:14px; font-weight:700; color:#333;">1-2반 (1/4명)</span>
+            <span style="font-size:14px; font-weight:700; color:#333;">1-2반 (1/5명)</span>
           </div>
-          <!-- Student 1 -->
+          <!-- Student 1 — 재채점 가능 -->
           <div style="padding:10px 16px; display:flex; align-items:center; gap:10px; border-bottom:1px solid #F0F0F0;">
             <div class="chk checked" onclick="toggleChk(this)"></div>
             <span style="font-size:14px; color:#333; flex:1;">10101 김하나</span>
-            <span style="font-size:13px; color:#7E44FB; font-weight:700;">AI 채점결과 30점</span>
+            <span style="font-size:13px; color:#7E44FB; font-weight:700;">AI 채점 결과 30점</span>
           </div>
           <!-- Student 2 -->
           <div style="padding:10px 16px; display:flex; align-items:center; gap:10px; border-bottom:1px solid #F0F0F0; opacity:0.5;">
@@ -637,17 +621,23 @@
             <span style="font-size:14px; color:#333; flex:1;">10102 김하이</span>
             <span style="font-size:13px; color:#808080;">과제 미제출</span>
           </div>
-          <!-- Student 3 -->
+          <!-- Student 3 — 업데이트 전 과제(인식 결과 없음) → 과제물 인식 필요로 게이팅 (전용 팝업 대체) -->
           <div style="padding:10px 16px; display:flex; align-items:center; gap:10px; border-bottom:1px solid #F0F0F0; opacity:0.5;">
             <div class="chk" style="cursor:not-allowed;"></div>
             <span style="font-size:14px; color:#333; flex:1;">10103 김하삼</span>
-            <span style="font-size:13px; color:#808080;">인식 실패</span>
+            <span style="font-size:13px; color:#808080;">과제물 인식 필요</span>
           </div>
           <!-- Student 4 -->
-          <div style="padding:10px 16px; display:flex; align-items:center; gap:10px; opacity:0.5;">
+          <div style="padding:10px 16px; display:flex; align-items:center; gap:10px; border-bottom:1px solid #F0F0F0; opacity:0.5;">
             <div class="chk" style="cursor:not-allowed;"></div>
             <span style="font-size:14px; color:#333; flex:1;">10104 김하사</span>
-            <span style="font-size:13px; color:#808080;">정확도 낮음</span>
+            <span style="font-size:13px; color:#808080;">과제물 인식 실패</span>
+          </div>
+          <!-- Student 5 -->
+          <div style="padding:10px 16px; display:flex; align-items:center; gap:10px; opacity:0.5;">
+            <div class="chk" style="cursor:not-allowed;"></div>
+            <span style="font-size:14px; color:#333; flex:1;">10105 김하오</span>
+            <span style="font-size:13px; color:#808080;">과제물 인식 정확도 낮음</span>
           </div>
         </div>
       </div>
@@ -907,8 +897,6 @@
   }
 
   // ── 업데이트 전(기존) 과제 재채점 안내 모달 ──
-  function openLegacyRescoreModal(){ var m=document.getElementById('legacyRescoreModal'); if(m){ m.classList.add('open'); if(window.lucide) lucide.createIcons(); } }
-  function closeLegacyRescoreModal(){ var m=document.getElementById('legacyRescoreModal'); if(m) m.classList.remove('open'); }
 
   // ── OCR 먼저 진행 모달 (B안 1-3반 / 1-4반) ──
   var ocrFirstTimer = null;
@@ -998,17 +986,14 @@
   function closeRerunModal() { document.getElementById('rerunModal').classList.remove('open'); }
   // OCR 미확인 안내 — 소수/다수 통합 (미확인 수 + 임계 경고 동적)
   function openOcrReview(total, students) {
-    var m = students.length;
-    document.getElementById('ocrReview-summary').innerHTML =
-      '제출 학생 ' + total + '명 중 <strong>' + m + '명</strong>의 OCR 결과가 아직 확인되지 않았습니다. 인식 불확실 구간이 있어 채점 정확도에 영향을 줄 수 있습니다.';
+    // 행 — 주황 warning 톤(#FFF9F2/#FFE3CD) + "과제물 인식 결과 확인" 링크 (개발 디자인 1804:5778)
     var listHtml = students.map(function(s, i) {
-      return '<div style="padding:10px 16px; display:flex; align-items:center; justify-content:space-between;' + (i > 0 ? ' border-top:1px solid #FFD6B0;' : '') + '">'
-        + '<div style="display:flex; align-items:center; gap:8px;">'
-        + '<i data-lucide="triangle-alert" style="width:14px; height:14px; color:#FF8C4C; flex-shrink:0;"></i>'
-        + '<span style="font-size:15px; font-weight:700; color:#333;">' + s.id + ' ' + s.name + '</span>'
-        + '<span style="font-size:12px; font-weight:700; background:#FFEDD5; color:#FF8C4C; border-radius:100px; padding:2px 8px; white-space:nowrap;">' + s.q + '개 문항</span>'
+      return '<div style="height:52px; padding:12px 20px; display:flex; align-items:center; justify-content:space-between; background:#FFF9F2; box-sizing:border-box;' + (i > 0 ? ' border-top:1px solid #FFE3CD;' : '') + '">'
+        + '<div style="display:flex; align-items:center; gap:8px; min-width:0;">'
+        + '<i data-lucide="triangle-alert" style="width:20px; height:20px; color:#E4631C; flex-shrink:0;"></i>'
+        + '<span style="font-size:16px; font-weight:700; color:#333; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">' + s.id + ' ' + s.name + '</span>'
         + '</div>'
-        + '<a href="task_ocr_review_v1.html#ocr=' + s.id + '" target="_blank" style="font-size:14px; font-weight:700; color:#7E44FB; display:flex; align-items:center; gap:4px; text-decoration:none; white-space:nowrap;">OCR 결과 확인 <i data-lucide="external-link" style="width:13px; height:13px;"></i></a>'
+        + '<a href="task_ocr_review_v1.html#ocr=' + s.id + '" target="_blank" style="font-size:14px; font-weight:700; color:#7E44FB; display:inline-flex; align-items:center; gap:4px; text-decoration:none; white-space:nowrap; flex-shrink:0;">과제물 인식 결과 확인 <i data-lucide="square-arrow-out-up-right" style="width:18px; height:18px;"></i></a>'
         + '</div>';
     }).join('');
     document.getElementById('ocrReview-list').innerHTML = listHtml;
@@ -1158,7 +1143,7 @@
     <button class="mp-btn" data-run="ok" onclick="mpRun('ok')">OCR 완료 <span class="mp-sub">채점 가능·불가 표</span></button>
     <button class="mp-btn" data-run="few" onclick="mpRun('few')">OCR 일부 미확인</button>
     <button class="mp-btn" data-run="first" onclick="mpRun('first')">OCR 인식 전</button>
-    <button class="mp-btn" data-run="legacy" onclick="mpRun('legacy')">업데이트 전 과제 <span class="mp-sub">채점됨·인식없음 → 재채점 안내</span></button>
+    <button class="mp-btn" onclick="document.querySelectorAll('.modal-overlay').forEach(function(m){m.classList.remove('open')}); openRerunModal(4)">업데이트 전 과제 <span class="mp-sub">재실행 모달 · 인식 필요 게이팅</span></button>
     <div class="mp-cap">학생 채점 상세 · 케이스별</div>
     <button class="mp-btn" data-id="10101" onclick="mpNav('scoring_student_v1.html?id=10101&name=김서윤')">채점 진행 <span class="mp-sub">AI 결과 검토</span></button>
     <button class="mp-btn" data-id="10102" onclick="mpNav('scoring_student_v1.html?id=10102&name=이준호')">확인 필요 <span class="mp-sub">불확실 구간</span></button>
@@ -1179,7 +1164,7 @@
       if(k==='ok') openRunModal();
       else if(k==='few') openOcrReviewFew();
       else if(k==='first') openOcrFirstModal();
-      else if(k==='legacy') openLegacyRescoreModal();
+      else if(k==='legacy') openRerunModal(4);
       if(typeof mpSyncActiveScoring==='function') mpSyncActiveScoring();
     } else { location.href='scoring_list_v1.html?run='+k; }
   }
@@ -1189,7 +1174,7 @@
     var qid=sp.get('id');
     var isRescore=(sp.get('rescore')==='1');
     var om=document.querySelector('.modal-overlay.open');
-    var runKey=om?({runModal:'ok',ocrFewModal:'few',ocrFirstModal:'first',legacyRescoreModal:'legacy'}[om.id]||''):'';
+    var runKey=om?({runModal:'ok',ocrFewModal:'few',ocrFirstModal:'first'}[om.id]||''):'';
     document.querySelectorAll('#mockpick .mp-btn').forEach(function(b){
       var on=false;
       if(b.dataset.run) on=(b.dataset.run===runKey);
