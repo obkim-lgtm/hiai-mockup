@@ -794,9 +794,9 @@
     <!-- 이전으로 버튼 (다크 틸 블록) -->
     <button onclick="goBackFromOcrB()" style="width:68px;height:68px;background:#7E44FB;border:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;flex-shrink:0;padding:0;" onmouseover="this.style.opacity='.88'" onmouseout="this.style.opacity='1'">
       <i data-lucide="arrow-left" style="width:28px;height:28px;color:white;"></i>
-      <span style="font-size:14px;font-weight:700;color:white;line-height:1;">이전으로</span>
+      <span style="font-size:14px;font-weight:700;color:white;line-height:1;">목록으로</span>
     </button>
-    <!-- 타이틀바 영역 -->
+    <!-- 타이틀바 영역 (개발 디자인 1736:3895 — 좌: 드롭다운 / 우: 이전·다음 학생 + 자동 저장 필) -->
     <div style="flex:1;display:flex;align-items:center;justify-content:space-between;padding:0 24px;">
       <!-- 좌측: 학생 드롭다운 -->
       <div style="display:flex;align-items:center;gap:16px;">
@@ -809,17 +809,15 @@
             <div id="ocr-b-dropdown-list"></div>
           </div>
         </div>
-        <!-- 이전/다음 학생 (드롭다운 옆 — 개발 디자인) -->
+      </div>
+      <!-- 우측: 이전/다음 학생 + 자동 저장 상태 필 -->
+      <div style="display:flex;align-items:center;gap:16px;">
         <div style="display:flex;align-items:center;gap:12px;">
           <button id="ocr-b-btn-prev" onclick="navStudentB(-1)" style="background:none;border:none;font-size:16px;font-weight:700;color:#494949;cursor:pointer;padding:0;font-family:inherit;display:inline-flex;align-items:center;gap:4px;line-height:1;"><i data-lucide="chevron-left" style="width:20px;height:20px;"></i>이전 학생</button>
           <div style="width:1px;height:13px;background:#D9D9D9;"></div>
           <button id="ocr-b-btn-next" onclick="navStudentB(1)" style="background:none;border:none;font-size:16px;font-weight:700;color:#494949;cursor:pointer;padding:0;font-family:inherit;display:inline-flex;align-items:center;gap:4px;line-height:1;">다음 학생<i data-lucide="chevron-right" style="width:20px;height:20px;"></i></button>
         </div>
-      </div>
-      <!-- 우측: 자동 저장 안내 + 저장 -->
-      <div style="display:flex;align-items:center;gap:12px;">
-        <span id="ocr-b-autosave" style="font-size:14px;font-weight:400;color:#333;display:inline-flex;align-items:center;gap:5px;white-space:nowrap;">수정하면 자동으로 저장돼요</span>
-        <button id="ocr-b-save-btn" onclick="saveOcrB()" style="height:40px;padding:0 16px;background:#7E44FB;color:white;border:none;border-radius:8px;font-size:16px;font-weight:700;cursor:pointer;font-family:inherit;display:inline-flex;align-items:center;justify-content:center;line-height:1;vertical-align:middle;gap:6px;"><i data-lucide="check" style="width:20px;height:20px;"></i>저장</button>
+        <span id="ocr-b-autosave" style="display:inline-flex;align-items:center;justify-content:center;gap:6px;height:40px;min-width:192px;padding:0 16px;background:white;border:1px solid #D9D9D9;border-radius:9999px;font-size:14px;font-weight:700;color:#494949;white-space:nowrap;">수정하면 자동으로 저장돼요</span>
       </div>
     </div>
   </div>
@@ -1698,16 +1696,6 @@ function toggleOcrCard(key) {
   if (el) el.classList.toggle('folded');
 }
 
-// 상단 '저장' — 열린 편집 커밋 + 자동 저장 표시 (blur 자동 저장과 별개의 수동 저장)
-function saveOcrB() {
-  if (typeof _editingSection !== 'undefined' && _editingSection !== null) {
-    var ta = document.getElementById('group-ta-' + _editingSection);
-    if (ta && ta.style.display !== 'none') saveSection(ta, _editingSection);
-  }
-  markAutoSaved();
-  showToast('저장되었습니다.', 'success');
-}
-
 // '다시 인식' — 수정 내역이 있으면 확인 팝업, 없으면 바로 재인식
 function askReRecognizeB() {
   var s = STUDENTS_B1[currentOcrBStudentIdx];
@@ -1778,7 +1766,7 @@ function markAutoSaved() {
   if (!el) return;
   var t = '';
   try { t = new Date().toLocaleTimeString('ko-KR', { hour: 'numeric', minute: '2-digit' }); } catch (e) {}
-  el.innerHTML = '<i data-lucide="check" style="width:14px;height:14px;color:#00AF3D;"></i>자동 저장됨' + (t ? ' · ' + t : '');
+  el.innerHTML = '<i data-lucide="check" style="width:16px;height:16px;color:#00AF3D;"></i>자동 저장됨' + (t ? ' · ' + t : '');
   if (window.lucide) lucide.createIcons();
 }
 
@@ -2004,21 +1992,6 @@ function renderOCRView_B() {
   var btnNext = document.getElementById('ocr-b-btn-next');
   if (btnPrev) { btnPrev.disabled = currentOcrBStudentIdx === 0; btnPrev.style.opacity = currentOcrBStudentIdx === 0 ? '0.4' : '1'; }
   if (btnNext) { btnNext.disabled = currentOcrBStudentIdx === students.length - 1; btnNext.style.opacity = currentOcrBStudentIdx === students.length - 1 ? '0.4' : '1'; }
-
-  // 저장 버튼 — 편집할 내용이 없는 상태(인식 실패·정확도 낮음·미진행)는 비활성 (개발 디자인)
-  var _lowAcc = false;
-  if (OCR_DATA_B[student.id] && OCR_DATA_B[student.id].questions.length) {
-    var _uAll = OCR_DATA_B[student.id].questions.filter(function(q){ return q.uncertain || (q.spans && q.spans.some(function(x){ return x.uncertain; })); }).length;
-    _lowAcc = _uAll / OCR_DATA_B[student.id].questions.length >= 0.7;
-  }
-  var _noEdit = student.ocrStatus === 'failed' || student.ocrStatus === 'legacy' || _lowAcc;
-  var _saveBtn = document.getElementById('ocr-b-save-btn');
-  if (_saveBtn) {
-    _saveBtn.disabled = _noEdit;
-    _saveBtn.style.opacity = _noEdit ? '0.4' : '1';
-    _saveBtn.style.cursor = _noEdit ? 'not-allowed' : 'pointer';
-    _saveBtn.style.pointerEvents = _noEdit ? 'none' : '';
-  }
 
   // 경고 배너 — 확인 필요 비율(≥70%)이면 직접 채점 안내로 문구 분기
   var banner = document.getElementById('ocr-b-review-banner');

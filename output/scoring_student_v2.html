@@ -199,7 +199,7 @@
   <!-- 뒤로가기 버튼 -->
   <button id="btn-back" onclick="goBack()" style="width:68px;height:68px;background:#7E44FB;border:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;flex-shrink:0;padding:0;">
     <i data-lucide="arrow-left" style="width:28px;height:28px;color:white;"></i>
-    <span style="font-size:14px;font-weight:700;color:white;line-height:1;">이전으로</span>
+    <span style="font-size:14px;font-weight:700;color:white;line-height:1;">목록으로</span>
   </button>
 
   <!-- 나머지 타이틀바 영역 -->
@@ -214,7 +214,6 @@
         </div>
         <div id="studentDropdownList" style="display:none;position:absolute;top:calc(100% + 4px);left:0;min-width:345px;max-height:400px;overflow-y:auto;background:white;border:1px solid #D4D3D1;border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,0.12);z-index:100;padding:4px 0;"></div>
       </div>
-      <span style="font-size:16px;color:#333;">21명 중 5명 채점 완료</span>
     </div>
 
     <!-- 우측 -->
@@ -229,11 +228,8 @@
           다음 학생 &gt;
         </button>
       </div>
-      <!-- 저장 버튼 -->
-      <button class="purple-btn" style="height:40px;font-size:16px;">
-        <i data-lucide="check" style="width:16px;height:16px;"></i>
-        저장
-      </button>
+      <!-- 자동 저장 상태 필 (개발 디자인 1817:4184 수정 전 → 1751:4122 저장 후) -->
+      <div id="autosave-pill" style="display:inline-flex;align-items:center;justify-content:center;gap:6px;height:40px;min-width:192px;padding:0 16px;background:white;border:1px solid #D9D9D9;border-radius:9999px;font-size:14px;font-weight:700;color:#494949;white-space:nowrap;">수정하면 자동으로 저장돼요</div>
     </div>
   </div>
 </div>
@@ -386,8 +382,8 @@
       <div id="rubrics-container" style="display:flex;flex-direction:column;gap:0;margin-bottom:12px;"></div>
       <!-- 일괄 액션 -->
       <div style="display:flex;justify-content:flex-end;gap:8px;">
-        <button class="pill-btn" onclick="resetScoresV2()">점수 초기화</button>
-        <button class="pill-btn" onclick="applyAiScoresV2()">
+        <button class="pill-btn" onclick="resetScoresV2();markAutoSavedTop()">점수 초기화</button>
+        <button class="pill-btn" onclick="applyAiScoresV2();markAutoSavedTop()">
           <i data-lucide="sparkles" style="width:14px;height:14px;color:#7E44FB;"></i>
           AI 점수 그대로 적용
         </button>
@@ -433,7 +429,7 @@
       </div>
 
       <!-- 텍스트에어리어 -->
-      <textarea id="teacherFeedback" oninput="updateCharCount()"
+      <textarea id="teacherFeedback" oninput="updateCharCount()" onblur="markAutoSavedTop()"
         style="width:100%;background:white;border:1px solid #D9D9D9;border-radius:12px;padding:20px;height:180px;resize:none;font-size:16px;font-family:'NanumSquareRound',sans-serif;color:#333;outline:none;line-height:1.55;"
         placeholder="채점 완료 시, 학생에게 제공되는 과제 피드백 내용입니다.&#10;AI 생성 기록을 참고하여 피드백을 작성해 보세요."
       ></textarea>
@@ -928,6 +924,7 @@
     row.querySelectorAll('.score-btn').forEach(function(b){ b.classList.remove('selected'); });
     btn.classList.add('selected');
     updateTotalScoreV2();
+    markAutoSavedTop();
   }
 
   function updateTotalScoreV2() {
@@ -1180,6 +1177,17 @@
       item.querySelector('.radio-circle').classList.remove('selected');
     });
     el.querySelector('.radio-circle').classList.add('selected');
+    markAutoSavedTop();
+  }
+
+  // 자동 저장 표시 — 점수·상태·피드백 수정 시 상단 필 갱신 (개발 디자인 1817:4184 → 1751:4122)
+  function markAutoSavedTop() {
+    var el = document.getElementById('autosave-pill');
+    if (!el) return;
+    var t = '';
+    try { t = new Date().toLocaleTimeString('ko-KR', { hour: 'numeric', minute: '2-digit' }); } catch (e) {}
+    el.innerHTML = '<i data-lucide="check" style="width:16px;height:16px;color:#00AF3D;"></i>자동 저장됨' + (t ? ' · ' + t : '');
+    if (window.lucide) lucide.createIcons();
   }
 
   // 점수 버튼 토글 (같은 행 내)
@@ -1191,6 +1199,7 @@
     const allBtns = container.querySelectorAll('.score-btn:not(.hatched)');
     allBtns.forEach(b => b.classList.remove('selected'));
     btn.classList.add('selected');
+    markAutoSavedTop();
   }
 
   // 점수 초기화
