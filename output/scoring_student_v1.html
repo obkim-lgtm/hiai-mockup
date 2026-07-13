@@ -509,7 +509,23 @@
       <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px;">
         <i data-lucide="message-circle" style="width:20px;height:20px;color:#7E44FB;"></i>
         <span style="font-size:18px;font-weight:700;color:#333;">선생님 직접 피드백</span>
-        <i data-lucide="circle-help" title="채점 완료 시 학생에게 제공되는 피드백이에요" style="width:18px;height:18px;color:#B3B3B3;flex-shrink:0;margin-left:auto;cursor:help;"></i>
+        <!-- 도움말 (?) — 클릭 팝오버 (개발 디자인 2067:11957) -->
+        <div style="position:relative;margin-left:auto;flex-shrink:0;">
+          <button id="fbGuideBtn" onclick="toggleFeedbackGuide(event)" aria-label="선생님 피드백 가이드" style="width:28px;height:28px;border:none;background:none;border-radius:6px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;padding:0;" onmouseover="this.style.background='#F0F0F0'" onmouseout="this.style.background='none'">
+            <i data-lucide="circle-help" style="width:18px;height:18px;color:#B3B3B3;"></i>
+          </button>
+          <!-- 팝오버 박스 -->
+          <div id="fbGuidePop" style="display:none;position:absolute;top:calc(100% + 10px);right:0;width:300px;background:white;border-radius:8px;box-shadow:0 0 1px #494949, 0 8px 32px rgba(95,102,178,0.16);padding:16px;z-index:60;">
+            <div style="position:absolute;top:-6px;right:9px;width:12px;height:12px;background:white;transform:rotate(45deg);box-shadow:-1px -1px 2px rgba(95,102,178,0.08);"></div>
+            <div style="display:flex;flex-direction:column;gap:16px;">
+              <div style="font-size:16px;font-weight:700;color:#27272A;line-height:1.25;">선생님 피드백 가이드</div>
+              <div style="font-size:14px;font-weight:400;color:#27272A;line-height:1.55;">이 피드백은 결과지 출력·배부에서 학생에게 공개할지 선택할 수 있어요.<br>AI 채점 근거와 피드백은 선생님 참고용으로, 학생에게 공개되지 않아요.</div>
+              <div style="display:flex;justify-content:flex-end;">
+                <button onclick="closeFeedbackGuide()" style="height:36px;padding:0 12px;background:#8751FA;color:white;border:none;border-radius:8px;font-size:16px;font-weight:700;font-family:inherit;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;line-height:1;">확인</button>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
 
       <!-- 입력 박스 (텍스트 + 하단 글자수·수식 버튼) -->
@@ -1268,6 +1284,24 @@
     const byteLen = new TextEncoder().encode(text).length;
     document.getElementById('charCount').textContent = `${charLen}자 / ${byteLen} byte`;
   }
+
+  // ── 선생님 피드백 가이드 팝오버 ──
+  function toggleFeedbackGuide(e) {
+    if (e) e.stopPropagation();
+    var pop = document.getElementById('fbGuidePop');
+    if (pop) pop.style.display = (pop.style.display === 'none' || !pop.style.display) ? 'block' : 'none';
+  }
+  function closeFeedbackGuide() {
+    var pop = document.getElementById('fbGuidePop');
+    if (pop) pop.style.display = 'none';
+  }
+  document.addEventListener('click', function(e) {
+    var pop = document.getElementById('fbGuidePop');
+    var btn = document.getElementById('fbGuideBtn');
+    if (pop && pop.style.display === 'block' && !pop.contains(e.target) && btn && !btn.contains(e.target)) {
+      pop.style.display = 'none';
+    }
+  });
 
   // ── 뷰어 컨트롤 ──
   var viewerZoom = 100, viewerRotation = 0, viewerPage = 1, viewerTotal = 2;
