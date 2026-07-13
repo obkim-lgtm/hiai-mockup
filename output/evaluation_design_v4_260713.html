@@ -2871,8 +2871,10 @@ function simulateUpload() {
   document.getElementById('s2-loading').style.display = 'block';
   document.getElementById('s2-result').style.display = 'none';
   lucide.createIcons();
-  // 3초 후 자동으로 결과로 넘어가는 애니메이션 (데모용)
-  // setTimeout(simulateResult, 3000);
+  // 3초 후 자동으로 결과 표시 (분석 중 파일 삭제 시에는 넘어가지 않음)
+  setTimeout(function() {
+    if (document.getElementById('s2-loading').style.display !== 'none') simulateResult();
+  }, 3000);
 }
 function simulateResult() {
   document.getElementById('s2-upload').style.display = 'none';
