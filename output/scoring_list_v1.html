@@ -62,6 +62,7 @@
 
     /* Spinning animation for loader */
     @keyframes spin { to { transform:rotate(360deg); } }
+    .spin { animation: spin 1s linear infinite; }
     .animate-spin { animation:spin 1s linear infinite; }
 
     /* Multi-screen SPA */
@@ -75,10 +76,10 @@
     .tbl-b tbody tr:hover { background:#FAFAFE; }
     .score-chip { display:inline-flex; align-items:center; justify-content:center; width:32px; height:32px; border-radius:8px; font-size:14px; font-weight:800; background:#F7F4FF; color:#7E44FB; }
     .score-total { font-size:18px; font-weight:800; color:#1C3A3A; }
-    .b-done  { background:#F1F9F3; color:#00AF3D; }
-    .b-doing { background:#FFF8F3; color:#FF8C4C; }
-    .b-todo  { background:#FFF4E6; color:#E07000; }
-    .b-check { background:#FFEFEF; color:#DB3E51; }
+    .b-done  { background:#F1F9F3; color:#00AF3D; }   /* 완료 */
+    .b-doing { background:#F2F5FF; color:#5890FF; }   /* AI 채점 진행 중 */
+    .b-todo  { background:#F8F8F8; color:#808080; }   /* 미채점 (개발 디자인 1608:7823 — 회색) */
+    .b-check { background:#FFEFEF; color:#DB3E51; }   /* 확인 필요 */
     .b-review { background:#FFF4E6; color:#E07000; }
   </style>
 </head>
@@ -798,32 +799,34 @@
     1: {
       title: '주장하는 글 쓰기 — 1-1반',
       subtitle: '주장하는 글 쓰기 — 1-1반 채점 결과',
+      // 상태 정의 표(1608:7823 확정) 정합 — 미채점(-/-) · AI 채점 진행 중(진행 중/-) · 확인 필요(성공/괄호 제안점수) · 완료(성공/확정점수)
+      // lock: 'ocr'=과제물 인식 중 / 'ai'=AI 채점 중 → 학생 채점 상세 비활성 + 툴팁
       students: [
-        { id:'10101', name:'김서윤', st:'진행 중',   stCls:'b-doing', ai:'성공',          score:'-'    },
-        { id:'10102', name:'이준호', st:'확인 필요', stCls:'b-check', ai:'성공',          score:'10'   },
-        { id:'10103', name:'박지민', st:'완료',      stCls:'b-done',  ai:'성공',          score:'12'   },
-        { id:'10104', name:'최유진', st:'완료',      stCls:'b-done',  ai:'성공',          score:'15'   },
-        { id:'10105', name:'정현우', st:'완료',      stCls:'b-done',  ai:'성공',          score:'35',   link:'scoring_student_v2.html' },
-        { id:'10106', name:'한지우', st:'미채점',    stCls:'b-todo',  ai:'성공',          score:'(11)' },
-        { id:'10107', name:'조민재', st:'미채점',    stCls:'b-todo',  ai:'성공',          score:'(12)' },
-        { id:'10108', name:'윤하은', st:'확인 필요', stCls:'b-check', ai:'네트워크 오류', score:'(13)' },
-        { id:'10109', name:'임도윤', st:'완료',      stCls:'b-done',  ai:'성공',          score:'14'   },
-        { id:'10110', name:'서지호', st:'미채점',    stCls:'b-todo',  ai:'성공',          score:'(11)' }
+        { id:'10101', name:'김서윤', st:'AI 채점 진행 중', stCls:'b-doing', ai:'진행 중',       score:'-',    lock:'ai' },
+        { id:'10102', name:'이준호', st:'확인 필요',       stCls:'b-check', ai:'성공',          score:'(10)' },
+        { id:'10103', name:'박지민', st:'완료',            stCls:'b-done',  ai:'성공',          score:'12'   },
+        { id:'10104', name:'최유진', st:'완료',            stCls:'b-done',  ai:'성공',          score:'15'   },
+        { id:'10105', name:'정현우', st:'완료',            stCls:'b-done',  ai:'성공',          score:'35',   link:'scoring_student_v2.html' },
+        { id:'10106', name:'한지우', st:'미채점',          stCls:'b-todo',  ai:'-',             score:'-',    lock:'ocr' },
+        { id:'10107', name:'조민재', st:'확인 필요',       stCls:'b-check', ai:'성공',          score:'(12)' },
+        { id:'10108', name:'윤하은', st:'미채점',          stCls:'b-todo',  ai:'네트워크 오류', score:'(13)' },
+        { id:'10109', name:'임도윤', st:'완료',            stCls:'b-done',  ai:'성공',          score:'14'   },
+        { id:'10110', name:'서지호', st:'미채점',          stCls:'b-todo',  ai:'-',             score:'-'    }
       ]
     },
     2: {
       title: '주장하는 글 쓰기 — 1-2반',
       subtitle: '주장하는 글 쓰기 — 1-2반 채점 결과',
       students: [
-        { id:'10201', name:'강민준', st:'완료',      stCls:'b-done',  ai:'성공',          score:'14'   },
-        { id:'10202', name:'오서영', st:'완료',      stCls:'b-done',  ai:'성공',          score:'12'   },
-        { id:'10203', name:'배찬혁', st:'확인 필요', stCls:'b-check', ai:'성공',          score:'10'   },
-        { id:'10204', name:'류지아', st:'완료',      stCls:'b-done',  ai:'성공',          score:'12'   },
-        { id:'10205', name:'신동현', st:'미채점',    stCls:'b-todo',  ai:'성공',          score:'(13)' },
-        { id:'10206', name:'황예은', st:'완료',      stCls:'b-done',  ai:'성공',          score:'12'   },
-        { id:'10207', name:'문태양', st:'미채점',    stCls:'b-todo',  ai:'성공',          score:'(10)' },
-        { id:'10208', name:'전수빈', st:'진행 중',   stCls:'b-doing', ai:'네트워크 오류', score:'-'    },
-        { id:'10209', name:'고은찬', st:'완료',      stCls:'b-done',  ai:'성공',          score:'14'   }
+        { id:'10201', name:'강민준', st:'완료',            stCls:'b-done',  ai:'성공',          score:'14'   },
+        { id:'10202', name:'오서영', st:'완료',            stCls:'b-done',  ai:'성공',          score:'12'   },
+        { id:'10203', name:'배찬혁', st:'확인 필요',       stCls:'b-check', ai:'성공',          score:'(10)' },
+        { id:'10204', name:'류지아', st:'완료',            stCls:'b-done',  ai:'성공',          score:'12'   },
+        { id:'10205', name:'신동현', st:'미채점',          stCls:'b-todo',  ai:'-',             score:'-'    },
+        { id:'10206', name:'황예은', st:'완료',            stCls:'b-done',  ai:'성공',          score:'12'   },
+        { id:'10207', name:'문태양', st:'미채점',          stCls:'b-todo',  ai:'-',             score:'-'    },
+        { id:'10208', name:'전수빈', st:'미채점',          stCls:'b-todo',  ai:'네트워크 오류', score:'-'    },
+        { id:'10209', name:'고은찬', st:'AI 채점 진행 중', stCls:'b-doing', ai:'진행 중',       score:'-',    lock:'ai' }
       ]
     }
   };
@@ -863,20 +866,34 @@
     var tbody = document.getElementById('class-b-tbody');
     if (!tbody) return;
     var html = '';
-    students.forEach(function(s) {
-      // 상태 배지
-      var statusBadge = '<span class="' + s.stCls + '" style="border-radius:100px;padding:3px 10px;font-size:12px;font-weight:800;">' + s.st + '</span>';
-      // AI 채점 결과
-      var aiCell = s.ai === '네트워크 오류'
-        ? '<span style="color:#DB3E51;font-weight:700;font-size:14px;">네트워크 오류</span>'
-          + ' <button class="btn-primary" style="height:28px;font-size:12px;padding:0 10px;margin-left:6px;display:inline-flex;align-items:center;gap:4px;">'
-          + '<i data-lucide="rotate-cw" style="width:12px;height:12px;"></i>재실행</button>'
-        : '<span style="color:#00AF3D;font-weight:700;font-size:14px;">' + s.ai + '</span>';
-      // 선생님 채점 — 학생 채점 상세 링크 (학생별 시안 link 분기)
-      var lnk = s.link || 'scoring_student_v1.html';
-      var teacherCell = '<span onclick="goToStudentDetail(\'' + s.id + '\',\'' + s.name + '\',\'' + lnk + '\')" '
-        + 'style="color:#7E44FB;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:3px;font-size:14px;">'
-        + '학생 채점 상세 <i data-lucide="chevron-right" style="width:13px;height:13px;"></i></span>';
+    students.forEach(function(s, idx) {
+      // 상태 배지 — 미채점(회색)/AI 채점 진행 중(파랑)/확인 필요(빨강)/완료(초록)
+      var statusBadge = '<span class="' + s.stCls + '" style="border-radius:100px;padding:3px 10px;font-size:12px;font-weight:800;white-space:nowrap;">' + s.st + '</span>';
+      // AI 채점 결과 — '-' / 진행 중 / 성공 / 네트워크 오류(+재실행)
+      var aiCell;
+      if (s.ai === '네트워크 오류') {
+        aiCell = '<span style="color:#333;font-weight:700;font-size:14px;">네트워크 오류</span>'
+          + ' <button class="btn-primary" onclick="retryRowAi(' + idx + ')" style="height:28px;font-size:12px;padding:0 10px;margin-left:6px;display:inline-flex;align-items:center;gap:4px;">'
+          + '<i data-lucide="wand-sparkles" style="width:12px;height:12px;"></i>재실행</button>';
+      } else if (s.ai === '진행 중') {
+        aiCell = '<span style="display:inline-flex;align-items:center;gap:4px;color:#5890FF;font-weight:700;font-size:14px;"><i data-lucide="loader" class="spin" style="width:14px;height:14px;"></i>진행 중</span>';
+      } else if (s.ai === '성공') {
+        aiCell = '<span style="color:#00AF3D;font-weight:700;font-size:14px;">성공</span>';
+      } else {
+        aiCell = '<span style="color:#B3B3B3;font-size:14px;">-</span>';
+      }
+      // 선생님 채점 — 학생 채점 상세 링크 (인식 중/AI 채점 중이면 비활성 + 툴팁)
+      var teacherCell;
+      if (s.lock) {
+        var lockTip = s.lock === 'ocr' ? '과제물 인식 중이에요. 완료 후 이용할 수 있어요.' : 'AI 채점 중이에요. 완료 후 이용할 수 있어요.';
+        teacherCell = '<span title="' + lockTip + '" style="color:#7E44FB;opacity:0.45;font-weight:700;cursor:not-allowed;display:inline-flex;align-items:center;gap:3px;font-size:14px;">'
+          + '학생 채점 상세 <i data-lucide="chevron-right" style="width:13px;height:13px;"></i></span>';
+      } else {
+        var lnk = s.link || 'scoring_student_v1.html';
+        teacherCell = '<span onclick="goToStudentDetail(\'' + s.id + '\',\'' + s.name + '\',\'' + lnk + '\')" '
+          + 'style="color:#7E44FB;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:3px;font-size:14px;">'
+          + '학생 채점 상세 <i data-lucide="chevron-right" style="width:13px;height:13px;"></i></span>';
+      }
 
       html += '<tr style="border-bottom:1px solid #F0F0F0;">';
       html += '<td style="padding:14px 12px;text-align:center;">' + statusBadge + '</td>';
@@ -894,6 +911,22 @@
   function goToStudentDetail(studentId, studentName, link) {
     var page = link || 'scoring_student_v1.html';
     location.href = page + '?id=' + studentId + '&name=' + encodeURIComponent(studentName) + '&eval=' + currentEvalPlan + '&classNum=' + currentClassB + '&from=scoring_list_v1.html';
+  }
+
+  // 네트워크 오류 행 '재실행' — AI 채점 진행 중 전환 후 완료(확인 필요)로 (표 ② 이벤트)
+  function retryRowAi(idx) {
+    var s = CLASS_B_DATA[currentClassB] && CLASS_B_DATA[currentClassB].students[idx];
+    if (!s) return;
+    s.st = 'AI 채점 진행 중'; s.stCls = 'b-doing'; s.ai = '진행 중'; s.lock = 'ai';
+    renderClassBTable(CLASS_B_DATA[currentClassB].students);
+    showToast('success', 'AI 채점을 다시 실행합니다.');
+    setTimeout(function() {
+      s.st = '확인 필요'; s.stCls = 'b-check'; s.ai = '성공';
+      if (s.score === '-') s.score = '(13)';
+      delete s.lock;
+      renderClassBTable(CLASS_B_DATA[currentClassB].students);
+      showToast('success', 'AI 채점이 완료되었습니다. 제안 점수를 확인해 주세요.');
+    }, 1800);
   }
 
   // ── 업데이트 전(기존) 과제 재채점 안내 모달 ──
