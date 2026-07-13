@@ -3001,6 +3001,8 @@ function _runStep3LoadingAnim() {
       step3.style.background = '#F7F4FF';
       step3.querySelector('span').style.color = '#7E44FB';
       step3.querySelector('div').style.cssText = 'width:18px;height:18px;border-radius:50%;border:3px solid transparent;border-top-color:#7E44FB;animation:spin 0.9s linear infinite;flex-shrink:0;';
+      // 2초 후 자동으로 연결 결과 표시
+      _s3LoadTimer = setTimeout(showStep3Result, 2000);
     }, 2200);
   }, 2000);
 }
