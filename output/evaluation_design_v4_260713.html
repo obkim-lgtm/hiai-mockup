@@ -298,7 +298,7 @@ body { margin: 0; background: #EDF1FC; min-width: 1280px; }
                   <span style="width:22px;height:22px;border-radius:50%;background:white;border:2px solid #7E44FB;color:#7E44FB;font-size:11px;font-weight:800;display:inline-flex;align-items:center;justify-content:center;">3</span>
                   <span style="width:22px;height:22px;border-radius:50%;background:#E6E6E6;color:#B3B3B3;font-size:11px;font-weight:800;display:inline-flex;align-items:center;justify-content:center;">4</span>
                 </div>
-                <span style="font-size:14px;color:#808080;font-weight:400;margin-left:4px;">문항-채점기준 연결 중</span>
+                <span style="font-size:14px;color:#808080;font-weight:400;margin-left:4px;">채점기준 연결 중</span>
               </div>
               <!-- 수정일 -->
               <div style="font-size:14px;color:#808080;font-weight:400;text-align:right;">26.03.28 수정됨</div>
@@ -332,7 +332,7 @@ body { margin: 0; background: #EDF1FC; min-width: 1280px; }
                   <span style="width:22px;height:22px;border-radius:50%;background:white;border:2px solid #7E44FB;color:#7E44FB;font-size:11px;font-weight:800;display:inline-flex;align-items:center;justify-content:center;">3</span>
                   <span style="width:22px;height:22px;border-radius:50%;background:#E6E6E6;color:#B3B3B3;font-size:11px;font-weight:800;display:inline-flex;align-items:center;justify-content:center;">4</span>
                 </div>
-                <span style="font-size:14px;color:#808080;font-weight:400;margin-left:4px;">문항-채점기준 연결 중</span>
+                <span style="font-size:14px;color:#808080;font-weight:400;margin-left:4px;">채점기준 연결 중</span>
               </div>
               <!-- 수정일 -->
               <div style="font-size:14px;color:#808080;font-weight:400;text-align:right;">26.03.27 수정됨</div>
@@ -527,7 +527,7 @@ body { margin: 0; background: #EDF1FC; min-width: 1280px; }
             <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:14px;">
               <div class="t0-step-row"><span class="t0-step-num">1</span>성취기준 및 채점기준 입력</div>
               <div class="t0-step-row"><span class="t0-step-num">2</span>빈 활동지 업로드</div>
-              <div class="t0-step-row"><span class="t0-step-num">3</span>문항-채점기준 연결</div>
+              <div class="t0-step-row"><span class="t0-step-num">3</span>채점기준 연결</div>
               <div class="t0-step-row"><span class="t0-step-num">4</span>모범답안 입력</div>
             </div>
             <div style="font-size:12px;color:#808080;font-weight:400;margin-bottom:6px;">이런 평가에 적합해요</div>
@@ -677,7 +677,7 @@ body { margin: 0; background: #EDF1FC; min-width: 1280px; }
                 <div style="width:22px;height:22px;border-radius:50%;background:#E6E6E6;color:#B3B3B3;font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;">3</div>
                 <div id="tip-d3" style="display:none;position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%);background:rgba(0,0,0,0.78);color:white;font-size:11px;font-weight:700;border-radius:6px;padding:5px 10px;white-space:nowrap;z-index:50;pointer-events:none;">이전 단계를 먼저 완료해 주세요<div style="position:absolute;top:100%;left:50%;transform:translateX(-50%);border:5px solid transparent;border-top-color:rgba(0,0,0,0.78);"></div></div>
               </div>
-              <span style="font-size:14px;color:#808080;white-space:nowrap;">채점기준 입력</span>
+              <span style="font-size:14px;color:#808080;white-space:nowrap;">채점기준 연결</span>
             </div>
             <div style="flex:1;height:1px;background:#B3B3B3;margin:0 10px;min-width:12px;"></div>
             <!-- step 4: LOCKED + 선택 -->
@@ -1095,65 +1095,6 @@ body { margin: 0; background: #EDF1FC; min-width: 1280px; }
 <!-- ═══════════════════════════════════════
      SCREEN: 정교한 평가 2단계 - 활동지 문항 인식
 ═══════════════════════════════════════ -->
-<!-- ═══════════════════════════════════════
-     MODAL: 2단계 시작 안내
-═══════════════════════════════════════ -->
-<div id="modal-step2-guide" style="display:none;position:fixed;inset:0;z-index:500;background:rgba(0,0,0,0.45);align-items:center;justify-content:center;" onclick="if(event.target===this)closeStep2Guide()">
-  <div style="background:white;border-radius:16px;width:560px;box-shadow:0px 4px 12px rgba(95,102,178,0.16);overflow:hidden;">
-    <!-- 헤더 -->
-    <div style="padding:24px 24px 20px;border-bottom:1px solid #F0F0F0;display:flex;align-items:center;justify-content:space-between;">
-      <div>
-        <h3 style="font-size:18px;font-weight:800;color:#000;margin:0 0 4px;">활동지 문항 인식 전 확인해 주세요</h3>
-        <p style="font-size:14px;color:#494949;margin:0;font-weight:400;">정확한 채점을 위한 안내입니다.</p>
-      </div>
-      <button onclick="closeStep2Guide()" style="width:32px;height:32px;border:none;background:transparent;cursor:pointer;border-radius:8px;display:flex;align-items:center;justify-content:center;color:#808080;" onmouseover="this.style.background='#F0F0F0'" onmouseout="this.style.background='transparent'">
-        <i data-lucide="x" style="width:18px;height:18px;"></i>
-      </button>
-    </div>
-    <!-- 바디 -->
-    <div style="padding:20px 24px;display:flex;flex-direction:column;gap:16px;">
-      <!-- 안내 1 -->
-      <div style="display:flex;gap:14px;align-items:flex-start;">
-        <div style="width:36px;height:36px;background:#F7F4FF;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-          <i data-lucide="file-text" style="width:18px;height:18px;color:#7E44FB;"></i>
-        </div>
-        <div>
-          <div style="font-size:15px;font-weight:800;color:#000;margin-bottom:4px;">빈 활동지를 준비해 주세요</div>
-          <div style="font-size:14px;color:#494949;line-height:1.6;">학생 답안이 없는 <strong>빈 활동지</strong>를 업로드해 주세요. 학생 답안이 있으면 AI가 잘못 인식할 수 있습니다.</div>
-        </div>
-      </div>
-      <!-- 안내 2 -->
-      <div style="display:flex;gap:14px;align-items:flex-start;">
-        <div style="width:36px;height:36px;background:#F7F4FF;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-          <i data-lucide="eye" style="width:18px;height:18px;color:#7E44FB;"></i>
-        </div>
-        <div>
-          <div style="font-size:15px;font-weight:800;color:#000;margin-bottom:4px;">이렇게 인식돼요</div>
-          <div style="font-size:14px;color:#494949;line-height:1.6;">채점 정확도를 위해 <strong>번호 옆의 문항 텍스트만</strong> 화면에 표시됩니다.<br>지문, 이미지, 차트 등은 화면에 나타나지 않지만, AI가 읽어 채점에 활용합니다.</div>
-        </div>
-      </div>
-      <!-- 안내 3 -->
-      <div style="display:flex;gap:14px;align-items:flex-start;">
-        <div style="width:36px;height:36px;background:#F7F4FF;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-          <i data-lucide="link" style="width:18px;height:18px;color:#7E44FB;"></i>
-        </div>
-        <div>
-          <div style="font-size:15px;font-weight:800;color:#000;margin-bottom:4px;">이 단계의 목적</div>
-          <div style="font-size:14px;color:#494949;line-height:1.6;">문항과 학생 답변을 정확히 구분하고, <strong>문항별 채점기준을 연결</strong>하기 위한 단계입니다.</div>
-        </div>
-      </div>
-    </div>
-    <!-- 푸터 -->
-    <div style="padding:16px 24px;border-top:1px solid #F0F0F0;display:flex;align-items:center;justify-content:space-between;">
-      <label style="display:flex;align-items:center;gap:8px;cursor:pointer;">
-        <div id="step2-dont-show-box" onclick="toggleDontShow()" style="width:20px;height:20px;border:1.5px solid #B3B3B3;border-radius:4px;background:white;display:flex;align-items:center;justify-content:center;flex-shrink:0;cursor:pointer;transition:all .15s;"></div>
-        <span style="font-size:14px;color:#494949;font-weight:400;">다시 보지 않기</span>
-      </label>
-      <button onclick="closeStep2Guide()" style="height:40px;padding:0 28px;background:#7E44FB;border:none;border-radius:8px;font-size:15px;font-weight:700;color:white;cursor:pointer;font-family:inherit;">확인</button>
-    </div>
-  </div>
-</div>
-
 <div id="screen-step2" class="screen">
   <!-- GNB -->
   <header style="background:white;height:98px;border-bottom:1px solid #D9D9D9;display:flex;align-items:center;padding:0 36px;position:sticky;top:0;z-index:100;">
@@ -1206,14 +1147,14 @@ body { margin: 0; background: #EDF1FC; min-width: 1280px; }
         <!-- 헤딩 -->
         <div style="margin-bottom:16px;">
           <h2 style="font-size:20px;font-weight:800;color:#000;margin:0 0 4px;">활동지 문항 인식</h2>
-          <p style="font-size:14px;color:#494949;margin:0;font-weight:400;">빈 활동지를 업로드하면 AI가 문항을 자동으로 인식합니다.</p>
+          <p style="font-size:14px;color:#494949;margin:0;font-weight:400;">활동지를 업로드하면 AI가 문항을 자동으로 인식하고, 문항별 채점기준을 연결할 수 있게 됩니다.</p>
         </div>
         <!-- 진행 현황 바 -->
         <div style="background:#EDF1FC;border-radius:12px;padding:14px 20px;display:flex;align-items:center;margin-bottom:24px;">
           <span style="font-size:14px;font-weight:800;color:#341761;white-space:nowrap;margin-right:20px;">설계 진행 현황</span>
           <div style="display:flex;align-items:center;flex:1;">
             <!-- step 1: COMPLETED -->
-            <div style="display:flex;align-items:center;gap:6px;flex-shrink:0;cursor:pointer;" onclick="showScreen('detail')">
+            <div style="display:flex;align-items:center;gap:6px;flex-shrink:0;cursor:pointer;" onclick="navToStep(1)">
               <div style="width:22px;height:22px;border-radius:50%;background:#7E44FB;color:white;display:flex;align-items:center;justify-content:center;">
                 <i data-lucide="check" style="width:12px;height:12px;stroke-width:3;"></i>
               </div>
@@ -1234,7 +1175,7 @@ body { margin: 0; background: #EDF1FC; min-width: 1280px; }
                 <div style="width:22px;height:22px;border-radius:50%;background:#E6E6E6;color:#B3B3B3;font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;">3</div>
                 <div id="tip-s2-3" style="display:none;position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%);background:rgba(0,0,0,0.78);color:white;font-size:11px;font-weight:700;border-radius:6px;padding:5px 10px;white-space:nowrap;z-index:50;pointer-events:none;">이전 단계를 먼저 완료해 주세요<div style="position:absolute;top:100%;left:50%;transform:translateX(-50%);border:5px solid transparent;border-top-color:rgba(0,0,0,0.78);"></div></div>
               </div>
-              <span style="font-size:14px;color:#808080;white-space:nowrap;">문항-채점기준 연결</span>
+              <span style="font-size:14px;color:#808080;white-space:nowrap;">채점기준 연결</span>
             </div>
             <div style="flex:1;height:1px;background:#B3B3B3;margin:0 10px;min-width:12px;"></div>
             <!-- step 4: LOCKED + 선택 -->
@@ -1255,6 +1196,11 @@ body { margin: 0; background: #EDF1FC; min-width: 1280px; }
         <!-- ── 상태 A: 업로드 대기 ── -->
         <div id="s2-upload" style="background:#F8F8F8;border-radius:16px;padding:24px;">
           <div style="background:white;border-radius:12px;padding:28px 24px;">
+            <!-- 안내: 업로드 전 확인 (드롭존 앞 — 행동 전에 이유 먼저) -->
+            <div style="margin-bottom:16px;padding:14px 16px;background:#F2ECFF;border-radius:8px;display:flex;gap:10px;align-items:flex-start;">
+              <i data-lucide="info" style="width:16px;height:16px;color:#7E44FB;flex-shrink:0;margin-top:2px;"></i>
+              <p style="font-size:14px;color:#494949;margin:0;line-height:1.6;">학생 답안이 없는 <strong>빈 활동지</strong>를 업로드해 주세요. 학생 답안이 포함돼 있으면 AI가 문항을 잘못 인식할 수 있습니다.</p>
+            </div>
             <!-- 드롭존 -->
             <div onclick="simulateUpload()" style="border:2px dashed #C4AAFD;border-radius:12px;padding:56px 24px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;cursor:pointer;background:#FDFCFF;transition:background .15s;"
               onmouseover="this.style.background='#F7F4FF';this.style.borderColor='#9B68F3'" onmouseout="this.style.background='#FDFCFF';this.style.borderColor='#C4AAFD'">
@@ -1266,11 +1212,6 @@ body { margin: 0; background: #EDF1FC; min-width: 1280px; }
                 <p style="font-size:14px;color:#808080;margin:0;font-weight:400;">PDF · JPG · PNG · 최대 20MB · <strong style="color:#494949;">1개 파일만</strong> 업로드 가능</p>
               </div>
               <button style="height:40px;padding:0 24px;background:#7E44FB;color:white;border:none;border-radius:8px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;">파일 선택</button>
-            </div>
-            <!-- 안내 박스 -->
-            <div style="margin-top:16px;padding:14px 16px;background:#F2ECFF;border-radius:8px;display:flex;gap:10px;align-items:flex-start;">
-              <i data-lucide="info" style="width:16px;height:16px;color:#7E44FB;flex-shrink:0;margin-top:2px;"></i>
-              <p style="font-size:14px;color:#494949;margin:0;line-height:1.6;"><strong>빈 활동지</strong>를 업로드해 주세요. 학생 답안이 포함된 활동지는 문항 인식 정확도가 낮아집니다.</p>
             </div>
           </div>
         </div>
@@ -1528,7 +1469,7 @@ body { margin: 0; background: #EDF1FC; min-width: 1280px; }
 
 
 <!-- ═══════════════════════════════════════
-     SCREEN: 정교한 평가 3단계 - 문항-채점기준 연결
+     SCREEN: 정교한 평가 3단계 - 채점기준 연결
 ═══════════════════════════════════════ -->
 <div id="screen-step3" class="screen">
   <header style="background:white;height:98px;border-bottom:1px solid #D9D9D9;display:flex;align-items:center;padding:0 36px;position:sticky;top:0;z-index:100;">
@@ -1605,7 +1546,7 @@ body { margin: 0; background: #EDF1FC; min-width: 1280px; }
         <!-- ── 3단계 실제 콘텐츠 ── -->
         <div id="s3-content" style="display:none;">
         <div style="margin-bottom:16px;">
-          <h2 style="font-size:20px;font-weight:800;color:#000;margin:0 0 4px;">문항-채점기준 연결</h2>
+          <h2 style="font-size:20px;font-weight:800;color:#000;margin:0 0 4px;">채점기준 연결</h2>
           <p style="font-size:14px;color:#494949;margin:0;">인식된 문항에 해당하는 채점기준을 연결해 주세요.</p>
         </div>
         <!-- 진행 현황 바 -->
@@ -1613,7 +1554,7 @@ body { margin: 0; background: #EDF1FC; min-width: 1280px; }
           <span style="font-size:14px;font-weight:800;color:#341761;white-space:nowrap;margin-right:20px;">설계 진행 현황</span>
           <div style="display:flex;align-items:center;flex:1;">
             <!-- step 1: COMPLETED -->
-            <div style="display:flex;align-items:center;gap:6px;flex-shrink:0;cursor:pointer;" onclick="showScreen('detail')">
+            <div style="display:flex;align-items:center;gap:6px;flex-shrink:0;cursor:pointer;" onclick="navToStep(1)">
               <div style="width:22px;height:22px;border-radius:50%;background:#7E44FB;color:white;display:flex;align-items:center;justify-content:center;">
                 <i data-lucide="check" style="width:12px;height:12px;stroke-width:3;"></i>
               </div>
@@ -1621,7 +1562,7 @@ body { margin: 0; background: #EDF1FC; min-width: 1280px; }
             </div>
             <div style="flex:1;height:1px;background:#7E44FB;margin:0 10px;min-width:12px;"></div>
             <!-- step 2: COMPLETED -->
-            <div style="display:flex;align-items:center;gap:6px;flex-shrink:0;cursor:pointer;" onclick="showScreenBack('step2')">
+            <div style="display:flex;align-items:center;gap:6px;flex-shrink:0;cursor:pointer;" onclick="navToStep(2)">
               <div style="width:22px;height:22px;border-radius:50%;background:#7E44FB;color:white;display:flex;align-items:center;justify-content:center;">
                 <i data-lucide="check" style="width:12px;height:12px;stroke-width:3;"></i>
               </div>
@@ -1631,7 +1572,7 @@ body { margin: 0; background: #EDF1FC; min-width: 1280px; }
             <!-- step 3: ACTIVE -->
             <div style="display:flex;align-items:center;gap:6px;flex-shrink:0;">
               <div style="width:26px;height:26px;border-radius:50%;background:#7E44FB;color:white;font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center;">3</div>
-              <span style="font-size:14px;font-weight:800;color:#7E44FB;white-space:nowrap;">문항-채점기준 연결</span>
+              <span style="font-size:14px;font-weight:800;color:#7E44FB;white-space:nowrap;">채점기준 연결</span>
             </div>
             <div style="flex:1;height:1px;background:#B3B3B3;margin:0 10px;min-width:12px;"></div>
             <!-- step 4: LOCKED + 선택 -->
@@ -1932,7 +1873,7 @@ body { margin: 0; background: #EDF1FC; min-width: 1280px; }
           <span style="font-size:14px;font-weight:800;color:#341761;white-space:nowrap;margin-right:20px;">설계 진행 현황</span>
           <div style="display:flex;align-items:center;flex:1;">
             <!-- step 1: COMPLETED -->
-            <div style="display:flex;align-items:center;gap:6px;flex-shrink:0;cursor:pointer;" onclick="showScreen('detail')">
+            <div style="display:flex;align-items:center;gap:6px;flex-shrink:0;cursor:pointer;" onclick="navToStep(1)">
               <div style="width:22px;height:22px;border-radius:50%;background:#7E44FB;color:white;display:flex;align-items:center;justify-content:center;">
                 <i data-lucide="check" style="width:12px;height:12px;stroke-width:3;"></i>
               </div>
@@ -1940,7 +1881,7 @@ body { margin: 0; background: #EDF1FC; min-width: 1280px; }
             </div>
             <div style="flex:1;height:1px;background:#7E44FB;margin:0 10px;min-width:12px;"></div>
             <!-- step 2: COMPLETED -->
-            <div style="display:flex;align-items:center;gap:6px;flex-shrink:0;cursor:pointer;" onclick="showScreenBack('step2')">
+            <div style="display:flex;align-items:center;gap:6px;flex-shrink:0;cursor:pointer;" onclick="navToStep(2)">
               <div style="width:22px;height:22px;border-radius:50%;background:#7E44FB;color:white;display:flex;align-items:center;justify-content:center;">
                 <i data-lucide="check" style="width:12px;height:12px;stroke-width:3;"></i>
               </div>
@@ -1948,11 +1889,11 @@ body { margin: 0; background: #EDF1FC; min-width: 1280px; }
             </div>
             <div style="flex:1;height:1px;background:#7E44FB;margin:0 10px;min-width:12px;"></div>
             <!-- step 3: COMPLETED -->
-            <div style="display:flex;align-items:center;gap:6px;flex-shrink:0;cursor:pointer;" onclick="showScreen('step3')">
+            <div style="display:flex;align-items:center;gap:6px;flex-shrink:0;cursor:pointer;" onclick="navToStep(3)">
               <div style="width:22px;height:22px;border-radius:50%;background:#7E44FB;color:white;display:flex;align-items:center;justify-content:center;">
                 <i data-lucide="check" style="width:12px;height:12px;stroke-width:3;"></i>
               </div>
-              <span style="font-size:14px;font-weight:700;color:#7E44FB;white-space:nowrap;">문항-채점기준 연결</span>
+              <span style="font-size:14px;font-weight:700;color:#7E44FB;white-space:nowrap;">채점기준 연결</span>
             </div>
             <div style="flex:1;height:1px;background:#7E44FB;margin:0 10px;min-width:12px;"></div>
             <!-- step 4: ACTIVE + 선택 -->
@@ -2621,7 +2562,7 @@ body { margin: 0; background: #EDF1FC; min-width: 1280px; }
               <span style="width:20px;height:20px;border-radius:50%;background:#E6E6E6;color:#808080;font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;">2</span>빈 활동지 업로드
             </div>
             <div style="display:flex;align-items:center;gap:8px;font-size:14px;color:#808080;font-weight:400;">
-              <span style="width:20px;height:20px;border-radius:50%;background:#E6E6E6;color:#808080;font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;">3</span>문항-채점기준 연결
+              <span style="width:20px;height:20px;border-radius:50%;background:#E6E6E6;color:#808080;font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;">3</span>채점기준 연결
             </div>
             <div style="display:flex;align-items:center;gap:8px;font-size:14px;color:#808080;font-weight:400;">
               <span style="width:20px;height:20px;border-radius:50%;background:#E6E6E6;color:#808080;font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;">4</span>모범답안 입력
@@ -2658,12 +2599,15 @@ function showScreen(name) {
   lucide.createIcons();
   if (name === 'step3') {
     _step3Dirty = false;
+    _maxReached = Math.max(_maxReached, 3);
     // 목록에서 직접 진입 시 로딩 없이 콘텐츠 바로 표시
     document.getElementById('s3-loading').style.display = 'none';
     document.getElementById('s3-content').style.display = 'block';
+    setTimeout(initStep3Labels, 100);
   }
   if (name === 'detail') {
     _hasDownstreamData = false;
+    _maxReached = 1;
     // 신규 작성 상태로 초기화
     document.getElementById('d1-name-input').value = '';
     document.getElementById('d1-std-empty').style.display = 'flex';
@@ -2674,20 +2618,18 @@ function showScreen(name) {
     var c1 = document.getElementById('d1-step1-circle');
     c1.style.background = '#7E44FB'; c1.style.border = 'none';
     c1.innerHTML = '1'; c1.style.color = 'white'; c1.style.fontSize = '12px';
-  }
-  if (name === 'step2') {
-    // 업로드 상태 초기화 후 안내 팝업
+    // 2단계 업로드 상태도 신규로 초기화
     document.getElementById('s2-upload').style.display = 'block';
     document.getElementById('s2-loading').style.display = 'none';
     document.getElementById('s2-result').style.display = 'none';
-    setTimeout(openStep2Guide, 200);
   }
-  if (name === 'step3') {
-    setTimeout(initStep3Labels, 100);
+  if (name === 'step2') {
+    _maxReached = Math.max(_maxReached, 2);
   }
-  if (name === 'step4') {
-    _step3Dirty = false;
+  if (name === 'step4' || name === 'step4-excel') {
+    _maxReached = Math.max(_maxReached, 4);
   }
+  updateStepBars();
 }
 function toggleAddDropdown(e) {
   e.stopPropagation();
@@ -2855,30 +2797,72 @@ function closeLibraryModal(e) {
     document.getElementById('modal-library').style.display = 'none';
   }
 }
-// 2단계 시작 안내 팝업
-var step2DontShow = false;
-function openStep2Guide() {
-  if (step2DontShow) return;
-  var m = document.getElementById('modal-step2-guide');
-  m.style.display = 'flex';
-  lucide.createIcons();
+// 진행 현황 바 단계 이동 — 진행한 단계까지만 이동 가능, 이후 단계는 잠금
+var _maxReached = 1;
+var _barLockedSteps = [
+  { tip: 'tip-d2', n: 2 }, { tip: 'tip-d3', n: 3 }, { tip: 'tip-d4', n: 4 },
+  { tip: 'tip-s2-3', n: 3 }, { tip: 'tip-s2-4', n: 4 },
+  { tip: 'tip-s3-4', n: 4 }
+];
+function navToStep(n) {
+  if (n > _maxReached) return;
+  if (n === 1) { showDetailBack(); }
+  else if (n === 2) { if (_maxReached >= 3) showScreenBack('step2'); else showScreen('step2'); }
+  else if (n === 3) { showScreen('step3'); }
+  else { showScreen('step4'); }
 }
-function closeStep2Guide() {
-  document.getElementById('modal-step2-guide').style.display = 'none';
+function updateStepBars() {
+  _barLockedSteps.forEach(function(s) {
+    var tip = document.getElementById(s.tip);
+    if (!tip) return;
+    var wrap = tip.parentElement;
+    var circle = wrap.firstElementChild;
+    var cont = wrap.parentElement;
+    var label = cont.querySelector('span');
+    var line = cont.previousElementSibling;
+    var bar = cont.closest('div[style*="EDF1FC"]');
+    if (s.n < _maxReached) {
+      // 완료한 단계: 체크 + 클릭 이동
+      cont.style.cursor = 'pointer';
+      cont.onmouseenter = null; cont.onmouseleave = null; tip.style.display = 'none';
+      cont.onclick = function() { navToStep(s.n); };
+      circle.style.background = '#7E44FB'; circle.style.border = 'none'; circle.style.color = 'white';
+      circle.innerHTML = '<svg width="12" height="12" viewBox="0 0 13 13" fill="none"><polyline points="2,7 5.5,10.5 11,3" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+      label.style.color = '#7E44FB'; label.style.fontWeight = '700';
+      if (line) line.style.background = '#7E44FB';
+    } else if (s.n === _maxReached) {
+      // 진행 중이던 단계: 번호 유지 + 클릭 이동 (목록 카드의 진행 표시와 동일한 외곽선 스타일)
+      cont.style.cursor = 'pointer';
+      cont.onmouseenter = null; cont.onmouseleave = null; tip.style.display = 'none';
+      cont.onclick = function() { navToStep(s.n); };
+      circle.style.background = 'white'; circle.style.border = '2px solid #7E44FB'; circle.style.color = '#7E44FB';
+      circle.textContent = String(s.n);
+      label.style.color = '#7E44FB'; label.style.fontWeight = '700';
+      if (line) line.style.background = '#7E44FB';
+    } else {
+      // 잠긴 단계: 이전 단계 완료 필요 (호버 시 툴팁)
+      cont.style.cursor = 'not-allowed';
+      cont.onclick = null;
+      cont.onmouseenter = function() { tip.style.display = 'block'; };
+      cont.onmouseleave = function() { tip.style.display = 'none'; };
+      circle.style.background = '#E6E6E6'; circle.style.border = 'none'; circle.style.color = '#B3B3B3';
+      circle.textContent = String(s.n);
+      label.style.color = '#808080'; label.style.fontWeight = '400';
+      if (line) line.style.background = '#B3B3B3';
+    }
+    if (bar) bar.lastElementChild.textContent = (_maxReached - 1) + ' / 4 완료';
+  });
 }
-function toggleDontShow() {
-  step2DontShow = !step2DontShow;
-  var box = document.getElementById('step2-dont-show-box');
-  if (step2DontShow) {
-    box.style.background = '#7E44FB';
-    box.style.borderColor = '#7E44FB';
-    box.innerHTML = '<i data-lucide="check" style="width:13px;height:13px;color:white;stroke-width:3;"></i>';
-  } else {
-    box.style.background = 'white';
-    box.style.borderColor = '#B3B3B3';
-    box.innerHTML = '';
-  }
+// 진행 바에서 1단계로 돌아가기: 작성된 상태 유지한 채 표시
+function showDetailBack() {
+  var keep = _maxReached;
+  showScreen('detail');
+  _maxReached = keep;
+  document.getElementById('d1-name-input').value = '소설 독후감 평가';
+  document.getElementById('d1-std-empty').style.display = 'none';
+  document.getElementById('d1-std-filled').style.display = 'block';
   lucide.createIcons();
+  updateStepBars();
 }
 
 // 2단계 상태 전환
@@ -2926,6 +2910,7 @@ function showScreenBack(target) {
     document.getElementById('s2-loading').style.display = 'none';
     document.getElementById('s2-result').style.display = 'block';
     restoreResultGuide();
+    updateStepBars();
   } else {
     showScreen(target);
   }
