@@ -1547,26 +1547,7 @@ function bindEditableHandlers(){
       var block = el.closest('.ec-block');
       if(block) block.classList.toggle('dirty', el.textContent !== orig);
     });
-    el.addEventListener('focus', function(){
-      el.setAttribute('data-snapshot', el.textContent);
-    });
-    el.addEventListener('blur', function(){
-      var snap = el.getAttribute('data-snapshot');
-      if(snap === null) return;
-      if(snap !== el.textContent) notifyAutosave();
-      el.removeAttribute('data-snapshot');
-    });
   });
-}
-
-// blur 시 자동저장 토스트 (점수 미선택이면 에러 토스트)
-function notifyAutosave(){
-  var hasScore = document.querySelectorAll('.score-btn.selected').length > 0;
-  if(!hasScore){
-    showToast('error', '점수 체크 후 저장해 주세요.');
-  } else {
-    showToast('success', '저장되었습니다.');
-  }
 }
 
 function revertBlock(btn){
@@ -1798,7 +1779,12 @@ function doRevertTeacherFeedback(){
 }
 
 // ══════ 액션 ══════
-function saveAndNext(){ showToast('success','저장됐어요.'); }
+// 저장 — 채점은 자동 저장 없이 저장 버튼으로만 저장 (점수 미선택이면 에러 토스트)
+function saveAndNext(){
+  var hasScore = document.querySelectorAll('.score-btn.selected').length > 0;
+  if(!hasScore){ showToast('error', '점수 체크 후 저장해 주세요.'); return; }
+  showToast('success','저장됐어요.');
+}
 
 // ══════ 미리보기 전용 모달 (개별 채점) ══════
 function openPreviewModal(){
@@ -2102,7 +2088,7 @@ function confirmShare(){
   showToast('success', '학생에게 결과가 공개됐어요.');
 }
 
-// iframe 로드 완료 시 옵션 전송 + 선생님 한마디 textarea blur 자동저장 토스트
+// iframe 로드 완료 시 옵션 전송
 document.addEventListener('DOMContentLoaded', function(){
   var shareIframe = document.querySelector('#shareModal .share-preview-frame');
   if(shareIframe){ shareIframe.addEventListener('load', sendShareOpts); }
@@ -2110,16 +2096,6 @@ document.addEventListener('DOMContentLoaded', function(){
   if(pdfIframe){ pdfIframe.addEventListener('load', sendPdfOpts); }
   var prevIframe = document.getElementById('previewFrame');
   if(prevIframe){ prevIframe.addEventListener('load', sendPreviewOpts); }
-  var tf = document.getElementById('teacherFeedback');
-  if(tf){
-    tf.addEventListener('focus', function(){ tf.setAttribute('data-snapshot', tf.value); });
-    tf.addEventListener('blur', function(){
-      var snap = tf.getAttribute('data-snapshot');
-      if(snap === null) return;
-      if(snap !== tf.value) notifyAutosave();
-      tf.removeAttribute('data-snapshot');
-    });
-  }
 });
 
 // ══════ 뷰어 ══════
