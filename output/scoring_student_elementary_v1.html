@@ -683,6 +683,35 @@ select.field-input{appearance:none;-webkit-appearance:none;background-image:url(
 
   <!-- 좌측: 뷰어 -->
   <div class="viewer" id="viewer">
+    <!-- ══════ 원본 제출물 / 인식 결과 전환 바 (채점 상세 공통 패턴) ══════ -->
+    <style>
+      .el-recog-bar{display:flex;align-items:center;gap:12px;background:#FAFAFA;border-bottom:1px solid #E5E5E5;padding:10px 20px;flex-shrink:0}
+      .el-recog-switch{display:inline-flex;gap:4px;background:#EBEBEB;padding:4px;border-radius:10px}
+      .el-recog-tab{display:inline-flex;align-items:center;justify-content:center;line-height:1;vertical-align:middle;gap:6px;height:34px;padding:0 16px;border-radius:7px;border:none;cursor:pointer;font-size:14px;font-weight:700;color:#808080;background:transparent;transition:all .15s;font-family:inherit}
+      .el-recog-tab.active{background:#7E44FB;color:#fff}
+      .el-view-check{display:none;align-items:center;gap:8px;cursor:pointer;font-size:14px;font-weight:700;color:#333;user-select:none;white-space:nowrap}
+      .el-view-check input[type="checkbox"]{width:14px;height:14px;accent-color:#7E44FB;cursor:pointer;flex-shrink:0}
+      .el-recog-q-label{display:inline-flex;align-items:center;justify-content:center;line-height:1;vertical-align:middle;background:#F0EAFF;color:#7E44FB;border-radius:100px;padding:5px 12px;font-size:13px;font-weight:800}
+    </style>
+    <div class="el-recog-bar">
+      <div class="el-recog-switch">
+        <button class="el-recog-tab active" id="el-tab-original" onclick="switchElViewerTab('original')"><i data-lucide="file-image" style="width:14px;height:14px"></i>원본 제출물</button>
+        <button class="el-recog-tab" id="el-tab-text" onclick="switchElViewerTab('text')"><i data-lucide="align-left" style="width:14px;height:14px"></i>인식 결과</button>
+      </div>
+      <div style="margin-left:auto;display:flex;align-items:center;gap:16px;">
+        <label class="el-view-check" id="el-answersonly-wrap">
+          <input type="checkbox" id="el-answers-only" checked onchange="renderElRecog()">
+          학생 풀이와 답만 보기
+        </label>
+        <a id="el-ocr-review-link" href="task_ocr_review_v1.html" target="_blank" rel="noopener" style="display:none;background:#fff;border:1px solid #B28FFD;border-radius:8px;height:32px;padding:0 12px;font-size:13px;font-weight:700;color:#7E44FB;cursor:pointer;align-items:center;justify-content:center;line-height:1;gap:6px;text-decoration:none;" onmouseover="this.style.background='#F7F4FF'" onmouseout="this.style.background='#fff'">
+          <i data-lucide="scan-text" style="width:14px;height:14px"></i>인식 결과 수정
+        </a>
+      </div>
+    </div>
+    <!-- 인식 결과 패널 (탭 전환 시 표시) -->
+    <div id="el-recog-panel" style="display:none;flex:1;overflow-y:auto;padding:24px;background:#F0F0F0;">
+      <div id="el-recog-content" style="background:#fff;border-radius:12px;padding:32px 36px;min-height:100%;display:flex;flex-direction:column;gap:28px;"></div>
+    </div>
     <div class="viewer-topbar">
       <div class="viewer-ctrl">
         <button class="ctrl-btn" onclick="changeViewerPage(-1)"><i data-lucide="chevron-left" style="width:16px;height:16px"></i></button>
@@ -2821,6 +2850,7 @@ lucide.createIcons();
     <button class="mp-btn" data-id="10106" onclick="mpNav('scoring_student_v1.html?id=10106&name=한가람')">OCR 인식 실패 <span class="mp-sub">채점 불가</span></button>
     <button class="mp-btn" data-rescore="1" onclick="mpNav('scoring_student_v1.html?id=10101&name=김서윤&rescore=1')">재채점 필요 <span class="mp-sub">완료 후 OCR 수정됨</span></button>
     <button class="mp-btn" data-f="scoring_student_elementary_v1.html" onclick="mpNav('scoring_student_elementary_v1.html')">초등 채점 상세</button>
+    <button class="mp-btn" data-f="scoring_highlight_v1.html" onclick="mpNav('scoring_highlight_v1.html')">하이라이팅 <span class="mp-sub">10월 기능</span></button>
   </div>
 </div>
 <script>
@@ -2860,6 +2890,53 @@ lucide.createIcons();
     document.addEventListener('mouseup',function(){ drag=false; });
     if(window.lucide) lucide.createIcons();
   })();
+</script>
+
+<script>
+// ══════ 원본 제출물 / 인식 결과 탭 (채점 상세 공통 패턴 이식) ══════
+// 2-1 그림지도는 그림 답안 — 텍스트 인식 대상 아님(시각화 자료 처리)
+var EL_RECOG = [
+  { label:'1-1', prompt:'내가 경험한 주변의 장소 4곳 쓰기', answer:'중앙 시장, 익산역, 솜리 어린이 도서관, 이마트' },
+  { label:'1-2', prompt:'1번에서 적은 장소 중 2곳을 골라 각 장소의 이름과 기능, 그곳에서 겪은 일과 느낀 점을 표 안에 빠짐없이 채워 완성하기', answer:'중앙 시장 — 물건을 사고파는 곳. 엄마와 함께 장을 봤는데 사람이 많아서 신기했다.\n익산역 — 기차를 타는 곳. 방학에 할머니 댁에 갈 때 기차를 탔다. 기분이 설렜다.' },
+  { label:'2-1', prompt:'우리 집 중심으로 주변 장소 5곳 그림지도로 그리기', visual:true },
+  { label:'2-2', prompt:'우리가 사는 곳에 대한 생각·느낌을 한마디로 표현', answer:'우리 고장은 행복한 곳입니다.' }
+];
+function renderElRecog(){
+  var answersOnly = document.getElementById('el-answers-only').checked;
+  var html='';
+  EL_RECOG.forEach(function(q){
+    html+='<div>';
+    html+='<div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;flex-wrap:wrap;"><span class="el-recog-q-label">문항 '+q.label+'</span></div>';
+    if(!answersOnly){ html+='<div style="background:#F8F8F8;border-radius:8px;padding:10px 14px;font-size:14px;color:#494949;line-height:1.6;margin-bottom:10px;">'+q.prompt+'</div>'; }
+    html+='<div style="font-size:13px;font-weight:800;color:#808080;margin-bottom:6px;">학생 답안</div>';
+    if(q.visual){
+      html+='<div style="border:1.5px dashed #D9D9D9;border-radius:10px;padding:16px;display:flex;align-items:center;gap:10px;">'
+        +'<i data-lucide="image" style="width:18px;height:18px;color:#808080;flex-shrink:0"></i>'
+        +'<span style="font-size:14px;color:#494949;line-height:1.6;flex:1;">그림 답안(그림지도)은 텍스트 인식 대상이 아니에요. 원본 제출물에서 확인해 주세요.</span>'
+        +'<button onclick="switchElViewerTab(\'original\')" style="background:#fff;border:1px solid #B28FFD;border-radius:8px;height:30px;padding:0 10px;font-size:13px;font-weight:700;color:#7E44FB;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;line-height:1;gap:4px;font-family:inherit;flex-shrink:0;">원본에서 보기</button>'
+        +'</div>';
+    } else {
+      html+='<div style="font-size:16px;color:#333;line-height:1.9;white-space:pre-line;">'+q.answer+'</div>';
+    }
+    html+='</div>';
+  });
+  document.getElementById('el-recog-content').innerHTML=html;
+  if(window.lucide) lucide.createIcons();
+}
+function switchElViewerTab(tab){
+  var isText=(tab==='text');
+  document.getElementById('el-tab-text').classList.toggle('active',isText);
+  document.getElementById('el-tab-original').classList.toggle('active',!isText);
+  var topbar=document.querySelector('.viewer-topbar');
+  var body=document.querySelector('.viewer-body');
+  if(topbar) topbar.style.display=isText?'none':'flex';
+  if(body) body.style.display=isText?'none':'flex';
+  document.getElementById('el-recog-panel').style.display=isText?'block':'none';
+  // 보기 옵션·인식 결과 수정은 인식 결과 탭에서만 노출
+  document.getElementById('el-answersonly-wrap').style.display=isText?'inline-flex':'none';
+  document.getElementById('el-ocr-review-link').style.display=isText?'inline-flex':'none';
+  if(isText) renderElRecog();
+}
 </script>
 </body>
 </html>
