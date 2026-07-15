@@ -415,7 +415,7 @@
   .nav-pos{margin:0 auto;font-size:13px;font-weight:700;color:var(--gray-700)}
 
   /* 까망이 목업 내비게이터 (시연용 · 실제 화면 아님) */
-  #mockpick{position:fixed;right:24px;bottom:24px;z-index:3000;background:#1F2233;border-radius:14px;padding:8px;box-shadow:0 10px 30px rgba(0,0,0,.35);width:max-content;max-width:360px;cursor:move;user-select:none}
+  #mockpick{position:fixed;left:24px;bottom:24px;z-index:3000;background:#1F2233;border-radius:14px;padding:8px;box-shadow:0 10px 30px rgba(0,0,0,.35);width:max-content;max-width:360px;cursor:move;user-select:none}
   #mockpick .mp-head{font-size:11px;font-weight:800;color:#8A8FB0;letter-spacing:.04em;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:6px 8px;cursor:pointer}
   #mockpick .mp-body{display:flex;flex-direction:column;gap:6px;margin-top:6px}
   #mockpick .mp-cap{font-size:10px;font-weight:800;color:#6B6F8C;letter-spacing:.05em;padding:7px 8px 2px}
@@ -1339,9 +1339,9 @@
 <div id="mockpick">
   <div class="mp-head" onclick="mpToggle()">
     <span style="display:inline-flex;align-items:center;gap:6px;"><i data-lucide="layout-grid" style="width:13px;height:13px;"></i>MOCKUP · 화면 보기</span>
-    <i id="mp-caret" data-lucide="chevron-down" style="width:14px;height:14px;"></i>
+    <i id="mp-caret" data-lucide="chevron-down" style="width:14px;height:14px;transform:rotate(180deg);"></i>
   </div>
-  <div id="mp-body" class="mp-body">
+  <div id="mp-body" class="mp-body" style="display:none">
     <div class="mp-cap">과제물 인식 검수</div>
     <button class="mp-btn" data-k="list" onclick="mpGo('list')">검수 목록 <span class="mp-sub">과제별·집계</span></button>
     <button class="mp-btn" data-k="task" onclick="mpGo('task')">과제 상세 <span class="mp-sub">과제물 목록</span></button>
