@@ -3394,8 +3394,16 @@ var ocrBFromUrl = null; // 외부에서 진입 시 돌아갈 URL
   var from = params.get('from');
   if (from) ocrBFromUrl = from;
 
-  var hash = window.location.hash;
-  if (hash.startsWith('#ocr-b=')) {
+  routeHash(window.location.hash);
+})();
+
+// 해시 기반 라우팅 — 초기 진입 + 이미 열린 탭에서 해시 변경(공유 링크) 모두 처리
+function routeHash(hash) {
+  if (!hash) return;
+  if (hash.startsWith('#case=')) {
+    // 데모 케이스 직접 진입 — 까망이 선택기(mpGo)와 동일한 상태 세팅 포함
+    mpGo(hash.replace('#case=', ''));
+  } else if (hash.startsWith('#ocr-b=')) {
     // B안 학생 채점 상세 직접 진입
     var sid = hash.replace('#ocr-b=', '');
     var idx = STUDENTS_B1.findIndex(function(s){ return s.id === sid; });
@@ -3408,7 +3416,8 @@ var ocrBFromUrl = null; // 외부에서 진입 시 돌아갈 URL
   } else if (hash === '#list') {
     showScreen('screen-list');
   }
-})();
+}
+window.addEventListener('hashchange', function(){ routeHash(window.location.hash); });
 
 function goBackFromOcrB() {
   if (ocrBFromUrl) {

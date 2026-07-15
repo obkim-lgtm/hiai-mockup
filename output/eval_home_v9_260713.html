@@ -934,9 +934,9 @@
   <span style="font-size:11px; font-weight:700; color:#9090A8; white-space:nowrap; letter-spacing:0.04em;">MOCKUP</span>
   <div style="width:1px; height:16px; background:#3A3A52;"></div>
   <div style="display:flex; gap:4px;">
-    <button id="btn-view-filled" onclick="setView('filled')"
+    <button id="btn-view-filled" onclick="location.hash='filled'"
       style="height:28px; padding:0 12px; font-size:12px; font-weight:700; font-family:inherit; border-radius:7px; border:none; background:#7E44FB; color:white; cursor:pointer; white-space:nowrap;">데이터 있는 뷰</button>
-    <button id="btn-view-empty" onclick="setView('empty')"
+    <button id="btn-view-empty" onclick="location.hash='empty'"
       style="height:28px; padding:0 12px; font-size:12px; font-weight:700; font-family:inherit; border-radius:7px; border:none; background:#3A3A52; color:#9090A8; cursor:pointer; white-space:nowrap;">빈 화면</button>
   </div>
 </div>
@@ -1172,6 +1172,13 @@
     document.getElementById('modal-feedback').classList.remove('open');
     showToast('success', '의견이 전송되었습니다. 감사합니다!');
   }
+
+  /* ── 해시 기반 뷰 라우팅 (#empty = 빈 화면, 그 외/#filled = 데이터 있는 뷰) ── */
+  function applyViewFromHash() {
+    setView(location.hash === '#empty' ? 'empty' : 'filled');
+  }
+  window.addEventListener('hashchange', applyViewFromHash);
+  applyViewFromHash();
 </script>
 
 <!-- ===== 채점 만족도 피드백 모달 ===== -->

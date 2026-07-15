@@ -789,7 +789,7 @@
     var list = document.getElementById('studentDropdownList');
     list.innerHTML = STUDENT_LIST.map(function(s){
       var isCurrent = s.id === CURRENT_STUDENT_ID;
-      return '<div class="sd-item" data-link="'+s.link+'" style="padding:10px 16px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;'+(isCurrent?'background:#F7F4FF;':'')+'font-size:16px;font-weight:'+(isCurrent?'700':'400')+';color:#333;">'
+      return '<div class="sd-item" data-link="'+s.link+'" data-id="'+s.id+'" data-name="'+s.name+'" style="padding:10px 16px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;'+(isCurrent?'background:#F7F4FF;':'')+'font-size:16px;font-weight:'+(isCurrent?'700':'400')+';color:#333;">'
         +'<span>'+s.id+' '+s.name+'</span>'
         +'<span style="font-size:13px;font-weight:700;color:'+s.statusCls+';">'+s.status+'</span>'
         +'</div>';
@@ -799,9 +799,12 @@
       el.addEventListener('mouseleave',function(){if(!this.style.background.includes('F7F4FF'))this.style.background='';});
       el.addEventListener('click',function(){
         var link=this.getAttribute('data-link');
-        var p2=new URLSearchParams(location.search); p2.delete('id'); p2.delete('name');
-        var qs=p2.toString();
-        location.href = link + (qs ? '?' + qs : '');
+        var sid=this.getAttribute('data-id');
+        var sname=this.getAttribute('data-name');
+        // 현재 컨텍스트(eval 등) 유지 + 선택 학생 id/name 갱신하여 대상 파일로 딥링크
+        var p=new URLSearchParams(location.search);
+        p.set('id', sid); p.set('name', sname);
+        location.href = (link || 'scoring_student_kimhi_v1.html') + '?' + p.toString();
       });
     });
     document.getElementById('studentDropdownBtn').addEventListener('click',function(e){

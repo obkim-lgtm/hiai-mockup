@@ -2589,6 +2589,19 @@ body { margin: 0; background: #EDF1FC; min-width: 1280px; }
 </div>
 
 <script>
+// ── 해시 기반 URL 라우팅 ──
+// 프로그램 방식 해시 변경과 사용자 해시 변경(뒤로가기/직접입력)을 구분하는 가드
+var _routing = false;
+function _syncHash(name) {
+  // 기본 화면(list)은 해시를 비워 bare URL 유지 (강제 리다이렉트 방지)
+  if (name === 'list') {
+    if (location.hash) history.replaceState(null, '', location.pathname + location.search);
+    return;
+  }
+  if (location.hash.slice(1) === name) return; // 이미 동일 → 변경 없음(hashchange 미발생)
+  _routing = true;                              // 다음 hashchange는 프로그램 발생분이므로 무시
+  location.hash = name;
+}
 function showScreen(name) {
   if (name === 'step4') { _step3Dirty = false; }
   if (name === 'type') { resetType0(); }
@@ -2630,6 +2643,7 @@ function showScreen(name) {
     _maxReached = Math.max(_maxReached, 4);
   }
   updateStepBars();
+  _syncHash(name);
 }
 function toggleAddDropdown(e) {
   e.stopPropagation();
@@ -2913,6 +2927,7 @@ function showScreenBack(target) {
     document.getElementById('s2-result').style.display = 'block';
     restoreResultGuide();
     updateStepBars();
+    _syncHash('step2'); // showScreen을 거치지 않는 분기이므로 URL 직접 동기화
   } else {
     showScreen(target);
   }
@@ -3710,13 +3725,26 @@ function confirmRubricReset() {
 }
 function closeRubricResetModal() { document.getElementById('modal-rubric-reset').style.display = 'none'; }
 
-// URL 파라미터로 진입 화면 제어 (?screen=detail / simple / type)
+// 해시 기반 URL 라우팅: 모든 screen-* 화면을 공유 가능한 #<name> 으로 진입/이동
+// (name = 요소 id "screen-<name>" 의 뒷부분). 예: #detail, #step3, #step4-excel
 (function() {
-  var params = new URLSearchParams(window.location.search);
-  var screen = params.get('screen');
-  if (screen === 'detail' || screen === 'simple' || screen === 'type') {
-    showScreen(screen);
+  function routeFromUrl() {
+    var name = location.hash.slice(1);
+    if (name) {
+      // 존재하는 화면만 전환 (오타/잘못된 해시는 무시 → 오류 방지)
+      if (document.getElementById('screen-' + name)) showScreen(name);
+      return;
+    }
+    // 해시 없음: 구 방식 ?screen= 하위호환 (있으면 해시로 승격), 없으면 기본 screen-list 유지
+    var q = new URLSearchParams(location.search).get('screen');
+    if (q && document.getElementById('screen-' + q)) showScreen(q);
   }
+  window.addEventListener('hashchange', function() {
+    // 프로그램 방식 해시 변경(showScreen이 유발)이면 화면 전환을 재실행하지 않음 → side effect 중복 방지
+    if (_routing) { _routing = false; return; }
+    routeFromUrl();
+  });
+  routeFromUrl(); // 최초 로드 시 해시/쿼리 반영
 })();
 </script>
 

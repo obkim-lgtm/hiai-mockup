@@ -450,9 +450,16 @@ function TeacherOnlyDetails({assignments}){
   );
 }
 
+// ───────── URL 해시 라우팅 (비교선 토글) ─────────
+function readCompareHash(){
+  if(typeof window==="undefined") return "cls";
+  const m = window.location.hash.match(/compare=(cls|grade|none)/);
+  return m ? m[1] : "cls"; // 기본값 cls = 해시 없음
+}
+
 // ───────── 메인 화면 ─────────
 function App(){
-  const [compare,setCompare] = useState("cls"); // cls | grade | none
+  const [compare,setCompare] = useState(readCompareHash); // cls | grade | none — #compare=grade|none
   const [printOpen, setPrintOpen] = useState(false);
   const [seteukOpen, setSeteukOpen] = useState(false);
   const [editing, setEditing] = useState(null); // "growth" | "note" | null
@@ -465,6 +472,20 @@ function App(){
   );
 
   const isAttention = STUDENT.status==="attention";
+
+  /* ─── URL 라우팅: 성장 흐름 비교선(#compare=cls|grade|none) ─── */
+  /* 토글 변경 시 해시 갱신 (cls = 기본, 해시 없음) */
+  useEffect(()=>{
+    if(readCompareHash()===compare) return;
+    if(compare==="cls") history.replaceState(null,"", window.location.pathname + window.location.search);
+    else window.location.hash = "compare="+compare;
+  },[compare]);
+  /* 공유 URL / 해시 변경으로 진입 시 복원 */
+  useEffect(()=>{
+    function onHash(){ setCompare(readCompareHash()); }
+    window.addEventListener("hashchange", onHash);
+    return ()=>window.removeEventListener("hashchange", onHash);
+  },[]);
 
   /* ─── 공통 래퍼 ─── */
   const Shell = ({children}) => (

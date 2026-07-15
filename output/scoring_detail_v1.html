@@ -666,6 +666,8 @@ function selectStudent(idx){
     el.classList.toggle('active', i===idx);
   });
   document.getElementById('studentDropdown').classList.remove('open');
+  // URL 반영 (공유 가능) — 동일 값이면 재설정 안 함(불필요한 hashchange 방지)
+  if(location.hash.replace(/^#/,'') !== 'student='+idx) location.hash = 'student='+idx;
 }
 
 /* ── 학생 선택 팝업 (출력 버튼 → 인쇄) ── */
@@ -746,6 +748,18 @@ function applyItems(){
 }
 
 render();
+
+/* ── URL 해시 라우팅 (공유 가능한 학생 선택) ── */
+function routeHash(){
+  const h = (location.hash||'').replace(/^#/,'');
+  const m = h.match(/^student=(\d+)$/);
+  const idx = m ? parseInt(m[1],10) : 0;                 // 해시 없음/비정상 → 기본(0번) 학생
+  if(isNaN(idx) || idx<0 || idx>=PRINT_STUDENTS.length) return;
+  if(idx===currentStudentIdx) return;                    // 이미 선택된 학생이면 재전환 안 함(중복 전환 방지)
+  selectStudent(idx);
+}
+window.addEventListener('hashchange', routeHash);
+routeHash();                                             // 로드 시 1회 — PRINT_STUDENTS/selectStudent 정의 이후
 
 function openFbIntro(){document.getElementById('fbIntro').classList.add('show');setTimeout(function(){lucide.createIcons();},10);}
 function closeFbIntro(){document.getElementById('fbIntro').classList.remove('show');}

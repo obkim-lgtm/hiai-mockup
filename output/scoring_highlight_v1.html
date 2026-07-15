@@ -684,6 +684,8 @@
     document.getElementById('tab-rubric').classList.toggle('active', !isAnalysis);
     document.getElementById('ai-content-analysis').style.display = isAnalysis ? 'flex' : 'none';
     document.getElementById('ai-content-rubric').style.display = isAnalysis ? 'none' : 'block';
+    // URL 반영 (routeHash가 호출한 경우엔 동일 값이라 재대입/루프 없음)
+    if (location.hash.slice(1) !== 'ai=' + tab) location.hash = 'ai=' + tab;
   }
 
   // ── 선생님 피드백 가이드 팝오버 ──
@@ -785,6 +787,22 @@
     document.getElementById('answersonly-wrap').style.display = isText ? 'inline-flex' : 'none';
     document.getElementById('hl-check-wrap').style.display = isText ? 'inline-flex' : 'none';
     document.getElementById('ocr-review-link').style.display = isText ? 'inline-flex' : 'none';
+    // URL 반영 (routeHash가 호출한 경우엔 동일 값이라 재대입/루프 없음)
+    if (location.hash.slice(1) !== 'view=' + tab) location.hash = 'view=' + tab;
+  }
+
+  // ── 해시 라우팅: 공유 가능한 화면 상태를 URL(#key=value)로 표현 ──
+  //   #ai=analysis | #ai=rubric     → 우측 AI 근거/피드백 탭
+  //   #view=text   | #view=original → 좌측 답안 뷰어 탭
+  //   빈/미지원 해시 = 기본 화면(인식 결과 + 과제물 분석 AI), 강제 이동 없음
+  function routeHash(hash) {
+    var raw = (hash || '').replace(/^#/, '');
+    if (!raw) return;
+    var eq = raw.indexOf('=');
+    var key = eq < 0 ? raw : raw.slice(0, eq);
+    var val = eq < 0 ? '' : raw.slice(eq + 1);
+    if (key === 'ai' && (val === 'analysis' || val === 'rubric')) switchTab(val);
+    else if (key === 'view' && (val === 'original' || val === 'text')) switchLeftTab(val);
   }
 
   // ── 토스트 ──
@@ -818,6 +836,9 @@
   });
   updateTotalScore();
   lucide.createIcons();
+  // 해시 라우팅: 로드 시 URL 반영 + 이후 해시 변경 감지 (정의·초기 렌더 이후 실행)
+  routeHash(location.hash);
+  window.addEventListener('hashchange', function() { routeHash(location.hash); });
 </script>
 
 <!-- ===== 까망이 목업 화면 선택기 (AI 채점 — 공용) ===== -->

@@ -1131,20 +1131,11 @@
         var link = this.getAttribute('data-link');
         var sid = this.getAttribute('data-id');
         var sname = this.getAttribute('data-name');
+        // 현재 컨텍스트(eval/from/classNum) 유지하고 학생 id/name만 갱신 — URL로 딥링크 가능
         var p = new URLSearchParams(location.search);
-        // 현재 컨텍스트(eval/from/classNum) 유지하고 학생 id/name만 갱신
         p.set('id', sid);
         p.set('name', sname);
-        // 같은 페이지면 기존 쿼리 유지 + id/name 갱신, 다른 페이지면 해당 파일로 이동
-        if (link && link.indexOf('scoring_student_v1.html') !== 0) {
-          // 별도 파일(예: kimmh, kimhi) — id/name 제외한 컨텍스트(eval/from/classNum)는 유지
-          var p2 = new URLSearchParams(location.search);
-          p2.delete('id'); p2.delete('name');
-          var qs = p2.toString();
-          location.href = link + (qs ? '?' + qs : '');
-        } else {
-          location.href = 'scoring_student_v1.html?' + p.toString();
-        }
+        location.href = (link || 'scoring_student_v3.html') + '?' + p.toString();
       });
     });
     // toggle

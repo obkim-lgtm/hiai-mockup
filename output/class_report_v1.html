@@ -563,6 +563,26 @@ function App(){
     }
   },[currentKey]);
 
+  /* ─── URL 라우팅: 서브탭(?tab=student|class) ─── */
+  /* 탭 클릭 시 URL 갱신 (class = 기본, 파라미터 없음) */
+  useEffect(()=>{
+    const params = new URLSearchParams(window.location.search);
+    const cur = params.get("tab")==="student" ? "student" : "class";
+    if(cur===subTab) return;
+    if(subTab==="student") params.set("tab","student"); else params.delete("tab");
+    const qs = params.toString();
+    history.pushState(null,"", window.location.pathname + (qs?"?"+qs:"") + window.location.hash);
+  },[subTab]);
+  /* 공유 URL / 뒤로가기로 진입 시 탭 복원 */
+  useEffect(()=>{
+    function onPop(){
+      const t = new URLSearchParams(window.location.search).get("tab")==="student" ? "student" : "class";
+      setSubTab(t);
+    }
+    window.addEventListener("popstate", onPop);
+    return ()=>window.removeEventListener("popstate", onPop);
+  },[]);
+
   function handleGenerateAi(){
     setAiStatus("generating");
     setTimeout(()=>{

@@ -436,10 +436,34 @@ function QuestionsChart(){
   );
 }
 
+/* ─── 해시 라우팅: 학생표 정렬 상태를 URL(#sort=<열>-<방향>)에 반영 ─── */
+/* 이 대시보드의 탭 밴드는 다른 파일로 이동(location.href)하는 내비게이션이므로 */
+/* 이 파일 내에서 사용자가 UI로 전환 가능한 유일한 내부 상태는 학생표 정렬이다.  */
+const SORT_KEYS = ['id','name','total','grade','status'];
+const SORT_DEFAULT = {key:'id', dir:'asc'};
+function parseSortHash(){
+  const m = /^#sort=([a-z]+)-(asc|desc)$/.exec(location.hash || '');
+  if(m && SORT_KEYS.includes(m[1])) return {key:m[1], dir:m[2]};
+  return SORT_DEFAULT;   // 해시 없음/무효 → 기본 정렬(강제 리다이렉트 없음)
+}
+
 function StudentTable(){
-  const [sortKey, setSortKey] = useState('id');
-  const [sortDir, setSortDir] = useState('asc');
+  const initialSort = parseSortHash();
+  const [sortKey, setSortKey] = useState(initialSort.key);
+  const [sortDir, setSortDir] = useState(initialSort.dir);
   const [query, setQuery] = useState('');
+
+  // 로드 시점 상태는 위 useState 초기값이 해시에서 읽어옴.
+  // 공유 URL 붙여넣기·해시 변경 시 재현되도록 hashchange를 단일 라우터로 사용.
+  useEffect(()=>{
+    function routeHash(){
+      const s = parseSortHash();
+      setSortKey(s.key);
+      setSortDir(s.dir);
+    }
+    window.addEventListener('hashchange', routeHash);
+    return ()=>window.removeEventListener('hashchange', routeHash);
+  }, []);
 
   const sorted = useMemo(()=>{
     const filtered = STUDENTS.filter(s =>
@@ -461,8 +485,9 @@ function StudentTable(){
   }, [sortKey, sortDir, query]);
 
   function toggleSort(key){
-    if(sortKey === key) setSortDir(sortDir === 'asc' ? 'desc' : 'asc');
-    else { setSortKey(key); setSortDir('asc'); }
+    // 상태를 직접 바꾸지 않고 해시만 갱신 → hashchange 라우터가 실제 전환을 수행(이중 전환 방지)
+    const dir = (sortKey === key) ? (sortDir === 'asc' ? 'desc' : 'asc') : 'asc';
+    location.hash = `sort=${key}-${dir}`;
   }
 
   function gotoStudent(s){
