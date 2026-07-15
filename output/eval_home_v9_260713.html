@@ -1173,9 +1173,14 @@
     showToast('success', '의견이 전송되었습니다. 감사합니다!');
   }
 
-  /* ── 해시 기반 뷰 라우팅 (#empty = 빈 화면, 그 외/#filled = 데이터 있는 뷰) ── */
+  /* ── 해시 기반 뷰 라우팅 (#empty = 빈 화면, #survey = 데이터 뷰 + 설문 팝업, 그 외/#filled = 데이터 있는 뷰) ── */
   function applyViewFromHash() {
     setView(location.hash === '#empty' ? 'empty' : 'filled');
+    if (location.hash === '#survey') {
+      // 모달 마크업이 이 스크립트 뒤에 있어, 초기 로드 시엔 DOM 준비 후 오픈
+      if (document.getElementById('modal-feedback')) openFeedbackModal();
+      else document.addEventListener('DOMContentLoaded', openFeedbackModal);
+    }
   }
   window.addEventListener('hashchange', applyViewFromHash);
   applyViewFromHash();

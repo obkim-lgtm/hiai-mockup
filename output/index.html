@@ -67,6 +67,11 @@
   .sec-head{display:flex; align-items:center; gap:10px; margin-bottom:14px;}
   .sec-head .dot{width:10px; height:10px; border-radius:50%; flex-shrink:0;}
   .sec-head h2{margin:0; font-size:20px; font-weight:800; color:#341761;}
+  .sec-note{
+    display:inline-flex; align-items:center; justify-content:center; line-height:1;
+    font-size:13px; font-weight:700; color:var(--primary);
+    background:var(--primary-100); border-radius:100px; padding:4px 11px;
+  }
 
   /* 카드 */
   .card{
@@ -106,6 +111,9 @@
     font-family:'SFMono-Regular',Consolas,monospace; font-weight:400;
   }
 
+  .sub-row{display:flex; align-items:center; gap:12px; flex-wrap:wrap; margin-top:14px; padding-top:14px; border-top:1px dashed var(--border-soft);}
+  .sub-label{font-size:14px; font-weight:700; color:var(--subtle); white-space:nowrap;}
+
   .empty-note{display:none; text-align:center; padding:48px 0; color:var(--subtle); font-size:15px;}
 
   footer{margin-top:20px; text-align:center; color:#B3B3B3; font-size:12.5px; line-height:1.7;}
@@ -125,21 +133,12 @@
 
 <div class="wrap">
 
-  <div class="search-row">
-    <label class="search">
-      <i data-lucide="search"></i>
-      <input id="q" type="text" placeholder="화면·상태·파일명 검색 (예: 채점, step3, OCR 실패)" autocomplete="off">
-    </label>
-    <span class="count" id="count"></span>
-  </div>
-
   <div class="info">
     <i data-lucide="info"></i>
     <span>링크는 모두 <b>새 탭</b>으로 열려 <code>#해시</code> 딥링크도 항상 정상 로드됩니다. 상태가 여러 개인 화면은 칩으로 구분했고, 학생처럼 목록이 긴 경우 대표 예시 + 패턴을 표기했습니다.</span>
   </div>
 
   <div id="board"></div>
-  <div class="empty-note" id="empty">검색 결과가 없습니다.</div>
 
   <footer>
     HIAI 목업 인덱스 · 로컬 미리보기 <code>http://localhost:3503/output/</code><br>
@@ -151,50 +150,63 @@
 // ── 데이터: 서비스 흐름 순서 ──
 const SECTIONS = [
   {
-    title:'평가 홈', color:'#7E44FB',
+    title:'평가 홈 / 설문조사 팝업', color:'#7E44FB', note:'9~10월',
     cards:[
-      { name:'평가 홈', file:'eval_home_v9_260713.html', desc:'수업 정보 · 평가 대상 · 평가 현황 대시보드 (v9 현행)',
+      { name:'평가 홈', file:'eval_home_v9_260713.html', desc:'홈 화면 디자인 개선 · 평가 단위 설문조사 배너 추가<br><b>설문 문항 전달 주신 이후 착수 예정</b>',
         states:[
-          {label:'데이터 있음', hash:'#filled', def:true},
-          {label:'빈 화면', hash:'#empty'},
+          {label:'평가홈', hash:'#filled', def:true},
+          {label:'설문조사 팝업', hash:'#survey'},
         ]},
     ]
   },
   {
-    title:'평가 설계', color:'#7E44FB',
+    title:'평가 설계', color:'#7E44FB', note:'10월',
     cards:[
-      { name:'평가 설계', file:'evaluation_design_v4_260713.html', desc:'평가 생성 마법사 — 목록 → 유형선택 → 상세설계 4단계 (v4 현행). 구 ?screen= 링크도 호환.',
+      { name:'평가 설계', file:'evaluation_design_v4_260713.html', desc:'기존 평가 설계는 「간편한 평가」로 유지, <b>채점 정확도 향상을 위해 「정교한 평가」 단계 추가</b><br>— ② 빈 활동지 업로드(필수), ③ 채점요소·문항 연결(선택 · AI가 관련 요소를 매칭해 기본값 표시), ④ 모범답안 입력(선택).',
         states:[
-          {label:'목록', hash:'', def:true},
-          {label:'유형 선택', hash:'#type'},
-          {label:'상세 1단계', hash:'#detail'},
-          {label:'2단계', hash:'#step2'},
-          {label:'3단계', hash:'#step3'},
-          {label:'4단계', hash:'#step4'},
-          {label:'4단계 엑셀', hash:'#step4-excel'},
-          {label:'간편평가', hash:'#simple'},
+          {label:'설계 목록', hash:'', def:true},
+          {label:'평가 유형 선택', hash:'#type'},
+          {label:'상세 1단계 (간편)', hash:'#detail'},
+          {label:'상세 2단계 (정교)', hash:'#step2'},
+          {label:'상세 3단계 (정교)', hash:'#step3'},
+          {label:'상세 4단계 (정교)', hash:'#step4'},
         ]},
     ]
   },
   {
-    title:'과제물 관리 / OCR', color:'#FF8C4C',
+    title:'과제물 인식 확인·수정 (OCR)', color:'#FF8C4C', note:'9/1 배포 예정',
     cards:[
-      { name:'과제물 인식 확인·수정 (OCR)', file:'task_ocr_review_v1.html', desc:'OCR 인식 결과 검토. 에러 케이스와 화면 단계를 #case= 로 딥링크.',
+      { name:'과제물 관리', file:'task_ocr_review_v1.html', desc:'<b>AI 채점 실시 전 과제물 인식 결과를 보고 사용자가 학생 답안을 직접 수정</b>할 수 있도록 제공<br>업로드와 동시에 과제물 OCR이 진행되며, 과제물 확인 없이도 AI 채점 진행 가능 (단, 사용자 확인을 묻는 팝업 표시)',
         states:[
+          {label:'과제물 관리 목록', hash:'#case=task', def:true},
+          {label:'학급 과제 상세', hash:'#case=list'},
+          {label:'과제물 일괄 업로드', hash:'#case=bulk'},
+        ],
+        sub:{ label:'과제물 인식 결과 확인', states:[
           {label:'정상 인식', hash:'#case=ocrOk'},
           {label:'확인 필요', hash:'#case=ocrFew'},
           {label:'정확도 낮음', hash:'#case=ocrLow'},
-          {label:'인식 실패', hash:'#case=ocrFail', tag:'#DB3E51'},
-          {label:'시각화 포함', hash:'#case=ocrVisual'},
-          {label:'문항 제외', hash:'#case=ocrExclude'},
-          {label:'레거시 미인식', hash:'#case=ocrLegacy'},
-          {label:'수식 깨짐', hash:'#case=ocrFormula', tag:'#DB3E51'},
-          {label:'과제물 등록', hash:'#case=task'},
-          {label:'제출 목록', hash:'#case=list'},
-          {label:'일괄 업로드', hash:'#case=bulk'},
-          {label:'개별 업로드', hash:'#case=indiv'},
-        ],
-        pattern:'개별 학생: #ocr-b=<학생id> (예: #ocr-b=10105)'},
+          {label:'인식 실패', hash:'#case=ocrFail'},
+          {label:'문항 제외', hash:'#case=ocrExclude', tip:'사용자가 원할 경우 AI 채점에서 제외할 문항 선택 가능'},
+          {label:'레거시 미인식', hash:'#case=ocrLegacy', tip:'업데이트 전 업로드된 과제'},
+        ]}},
+      { name:'AI 채점', file:'task_ocr_review_v1.html', desc:'AI 채점 실행 전 과제물 인식 여부 확인, OCR 인식 결과 확인이 필요한 학생의 과제물이 확인되지 않은 경우 재안내<br><b>학생 채점 상세 화면에서 OCR 인식 결과 표시</b> (단, 과제물 인식 결과 수정은 과제물 관리에서 진행, 채점 화면에서 제공하지 않음)',
+        states:[],
+        subs:[
+          { label:'AI 채점 실행', states:[
+            {label:'OCR 미인식', hash:'#run=ocrNone'},
+            {label:'확인 필요 과제물 미확인', hash:'#run=ocrUnchecked'},
+            {label:'OCR 인식 완료(정상)', hash:'#run=ocrOk'},
+          ]},
+          { label:'학생 채점 상세', states:[
+            {label:'정상', file:'scoring_student_v1.html', query:'?id=10101&name=김서윤'},
+            {label:'확인 필요', file:'scoring_student_v1.html', query:'?id=10102&name=이준호'},
+            {label:'채점 실패', file:'scoring_student_v1.html', query:'?id=10106&name=한가람'},
+            {label:'채점 전', file:'scoring_student_v1.html', query:'?id=10105&name=정현우'},
+            {label:'미제출', file:'scoring_student_elementary_v1.html', query:'?id=40202&name=미제출'},
+            {label:'직접 채점', file:'scoring_student_v1.html', query:'?id=10101&name=김서윤&exclude=1'},
+          ]},
+        ]},
     ]
   },
   {
@@ -301,37 +313,37 @@ SECTIONS.forEach(sec=>{
 
   const head = document.createElement('div');
   head.className='sec-head';
-  head.innerHTML = '<span class="dot" style="background:'+sec.color+'"></span><h2>'+sec.title+'</h2>';
+  head.innerHTML = '<span class="dot" style="background:'+sec.color+'"></span><h2>'+sec.title+'</h2>'+
+    (sec.note ? '<span class="sec-note">'+sec.note+'</span>' : '');
   secEl.appendChild(head);
 
   sec.cards.forEach(card=>{
     const cardEl = document.createElement('div');
     cardEl.className='card';
-    // 검색용 텍스트
-    const searchText = (sec.title+' '+card.name+' '+card.file+' '+card.desc+' '+
-      card.states.map(s=>s.label+' '+(s.hash||'')+' '+(s.query||'')).join(' ')+' '+(card.pattern||'')).toLowerCase();
-    cardEl.dataset.search = searchText;
-
-    let chipsHtml = card.states.map(s=>{
+    const chip = s=>{
       const f = s.file || card.file;
       const href = f + (s.query||'') + (s.hash||'');
       const tag = s.tag ? '<span class="tag" style="background:'+s.tag+'">!</span>' : '';
-      return '<a class="chip'+(s.def?' default':'')+'" href="'+href+'" target="_blank" rel="noopener">'+
+      const tip = s.tip ? ' title="'+s.tip+'"' : '';
+      return '<a class="chip'+(s.def?' default':'')+'" href="'+href+'"'+tip+' target="_blank" rel="noopener">'+
         s.label+tag+'<i class="ext" data-lucide="arrow-up-right"></i></a>';
-    }).join('');
+    };
+    let chipsHtml = card.states.map(chip).join('');
 
-    const patternHtml = card.pattern ? '<div class="pattern"><i data-lucide="link" style="width:13px;height:13px"></i>'+card.pattern+'</div>' : '';
+    const subList = card.subs || (card.sub ? [card.sub] : []);
+    const subHtml = subList.map(sub=>
+      '<div class="sub-row"><span class="sub-label">'+sub.label+'</span><div class="chips">'+sub.states.map(chip).join('')+'</div></div>'
+    ).join('');
 
     cardEl.innerHTML =
       '<div class="card-head">'+
         '<div class="card-title"><h3>'+card.name+'</h3></div>'+
-        '<a class="file-open" href="'+card.file+'" target="_blank" rel="noopener"><i data-lucide="external-link"></i>'+card.file+'</a>'+
       '</div>'+
       '<div class="card-desc">'+card.desc+'</div>'+
       '<div class="chips">'+chipsHtml+'</div>'+
-      patternHtml;
+      subHtml;
 
-    TOTAL += card.states.length;
+    TOTAL += card.states.length + subList.reduce((n,s)=>n+s.states.length, 0);
     secEl.appendChild(cardEl);
   });
 
@@ -339,34 +351,6 @@ SECTIONS.forEach(sec=>{
 });
 
 lucide.createIcons();
-
-// ── 검색 필터 ──
-const q = document.getElementById('q');
-const countEl = document.getElementById('count');
-const emptyEl = document.getElementById('empty');
-
-function updateCount(){
-  const cards = [...document.querySelectorAll('.card')].filter(c=>c.style.display!=='none').length;
-  countEl.textContent = cards + '개 화면 · ' + TOTAL + '개 링크';
-}
-function filter(){
-  const term = q.value.trim().toLowerCase();
-  let anyVisible = false;
-  document.querySelectorAll('.section').forEach(sec=>{
-    let secVisible = false;
-    sec.querySelectorAll('.card').forEach(card=>{
-      const hit = !term || card.dataset.search.includes(term);
-      card.style.display = hit ? '' : 'none';
-      if(hit){ secVisible=true; anyVisible=true; }
-    });
-    sec.style.display = secVisible ? '' : 'none';
-  });
-  emptyEl.style.display = anyVisible ? 'none' : 'block';
-  const visCards = [...document.querySelectorAll('.card')].filter(c=>c.style.display!=='none').length;
-  countEl.textContent = visCards + '개 화면';
-}
-q.addEventListener('input', filter);
-updateCount();
 </script>
 </body>
 </html>
