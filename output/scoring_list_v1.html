@@ -974,6 +974,8 @@
       else if(k==='few') openOcrReviewFew();
       else if(k==='first') openOcrFirstModal();
       else if(k==='legacy') openRerunModal(4);
+      // 주소창 URL도 케이스 딥링크로 갱신 — 복사해서 바로 공유 가능
+      try{ history.replaceState(null,'','scoring_list_v1.html?run='+k); }catch(e){}
       if(typeof mpSyncActiveScoring==='function') mpSyncActiveScoring();
     } else { location.href='scoring_list_v1.html?run='+k; }
   }
