@@ -188,7 +188,7 @@ const SECTIONS = [
             {label:'문항 직접 채점', file:'scoring_student_v1.html', query:'?id=10101&name=김서윤&exclude=1'},
           ]},
         ]},
-      { name:'백오피스(관리자 기능) : 과제물 인식 검수', file:'backoffice_v1.html', desc:'과제물 인식 결과를 평가, 과제물 단위로 모니터링하여 인식 정확도 개선 및 관련 CS 대응에 활용',
+      { name:'백오피스(관리자 기능) : 과제물 인식 검수', file:'backoffice_v1.html', desc:'<b>개인정보 비식별화를 포함한</b> 과제물 인식 결과를 평가, 과제물 단위로 모니터링하여 인식 정확도 개선 및 관련 CS 대응에 활용',
         states:[
           {label:'검수 목록', hash:'#recognition-review', def:true},
           {label:'과제 상세', hash:'#recognition-review/task'},
@@ -221,11 +221,12 @@ const SECTIONS = [
     ]
   },
   {
-    title:'채점 근거 하이라이팅', color:'#5890FF', note:'10월',
+    title:'AI 채점 결과 개선', color:'#5890FF', note:'9~10월',
     cards:[
-      { name:'학생 채점 상세', file:'scoring_highlight_v1.html', desc:'AI가 생성한 채점 근거를 인식된 과제물 위에 하이라이팅 표시<br>채점기준 점수가 낮게 나온 항목과 높게 나온 항목을 구분하여 제공',
+      { name:'학생 채점 상세', file:'scoring_highlight_v1.html', desc:'• 문항 단위 채점을 통한 <b>문항 단위 AI 피드백</b> 제공 (9~10월)<br>• 손글씨 답안 <b>글자 수 표시 및 분량 채점</b> (9~10월)<br>• AI가 생성한 채점 근거를 인식된 과제물 위에 <b>하이라이팅</b> 표시 (10월)',
         states:[
-          {label:'채점 근거 하이라이팅', hash:'', def:true},
+          {label:'문항 단위 피드백', file:'scoring_student_elementary_v1.html', query:'', def:true},
+          {label:'채점 근거 하이라이팅', hash:''},
         ]},
     ]
   },
