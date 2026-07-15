@@ -20,24 +20,41 @@
       cursor: help;
       position: relative;
     }
+    /* 툴팁 스킨: Figma MM23…FVJpB 1900:20405 (화이트 · 14px Bold #341761 · 화살표 14px) */
     .ocr-uncertain::after {
       content: attr(data-hint);
       display: none;
       position: absolute;
-      bottom: calc(100% + 6px);
+      bottom: calc(100% + 12px);
       left: 50%;
       transform: translateX(-50%);
-      background: #333;
-      color: white;
-      font-size: 12px;
+      background: #fff;
+      color: #341761;
+      font-size: 14px;
+      font-weight: 700;
+      line-height: 18px;
       font-family: 'NanumSquareRound', sans-serif;
       white-space: nowrap;
-      padding: 4px 8px;
-      border-radius: 6px;
+      padding: 10px 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 36px rgba(95,102,178,.16);
       z-index: 100;
       pointer-events: none;
     }
-    .ocr-uncertain:hover::after { display: block; }
+    .ocr-uncertain::before {
+      content: '';
+      display: none;
+      position: absolute;
+      bottom: calc(100% + 6px);
+      left: 50%;
+      transform: translateX(-50%) rotate(45deg);
+      width: 14px;
+      height: 14px;
+      background: #fff;
+      z-index: 101;
+      pointer-events: none;
+    }
+    .ocr-uncertain:hover::after, .ocr-uncertain:hover::before { display: block; }
     /* OCR-B 탭 토글 */
     .ocr-b-tab-wrap { display:inline-flex; gap:4px; background:#EBEBEB; padding:4px; border-radius:10px; }
     .ocr-b-tab { height:34px; padding:0 16px; border:none; border-radius:7px; font-size:14px; font-weight:700; cursor:pointer; font-family:inherit; transition:all .15s; }
@@ -104,6 +121,18 @@
 
     /* 테이블 */
     .tbl{ width:100%; border-collapse:collapse; }
+    /* 개발 디자인 테이블 (Figma MM23…FVJpB 1606:11902 — 과제물 관리 목록 카드) */
+    .tbl-dev{ width:100%; border-collapse:collapse; }
+    .tbl-dev th{ background:#F8F8F8; height:40px; font-size:16px; font-weight:700; color:#333; padding:8px 12px; text-align:center; }
+    .tbl-dev th:first-child{ border-radius:8px 0 0 8px; }
+    .tbl-dev th:last-child{ border-radius:0 8px 8px 0; }
+    .tbl-dev td{ height:58px; font-size:16px; color:#333; padding:8px 12px; border-bottom:1px solid #D9D9D9; text-align:center; }
+    /* 과제물 인식 상태 뱃지 (Figma 신규 팔레트) */
+    .ob{ display:inline-flex; align-items:center; justify-content:center; height:26px; padding:0 8px; border-radius:9999px; font-size:14px; font-weight:700; line-height:1; white-space:nowrap; }
+    .ob-gray{ background:#F0F0F0; color:#494949; }
+    .ob-orange{ background:#FFF3EA; color:#E4631C; }
+    .ob-red{ background:#FFE9E9; color:#DB3E51; }
+    .ob-green{ background:#DFFCE6; color:#00AF3D; }
     .tbl th{ background:#F8F8F8; font-size:14px; font-weight:800; color:#808080; padding:12px 16px; text-align:center; border-bottom:1px solid #E6E6E6; }
     .tbl td{ font-size:14px; padding:12px 16px; border-bottom:1px solid #F0F0F0; color:#333; text-align:center; }
     .tbl tr:hover td{ background:#FDFCFF; }
@@ -278,35 +307,35 @@
           <!-- 카드 0: 평가명(최종) (C안) -->
           <div style="background:white;border-radius:16px;padding:24px;display:flex;flex-direction:column;gap:20px;">
             <h3 style="font-size:20px;font-weight:700;color:#333;margin:0;">주장하는 글 쓰기</h3>
-            <table class="tbl">
+            <table class="tbl-dev">
               <thead><tr>
-                <th style="width:94px;text-align:center;">반</th>
+                <th style="width:128px;">반</th>
                 <th>제출 현황</th>
-                <th style="width:94px;text-align:center;">미제출</th>
-                <th style="width:110px;text-align:center;">과제물 인식 상태</th>
-                <th style="width:194px;text-align:center;">과제 제출 관리</th>
+                <th style="width:128px;">미제출</th>
+                <th style="width:164px;">과제물 인식</th>
+                <th style="width:176px;">과제 제출 관리</th>
               </tr></thead>
               <tbody>
                 <tr>
-                  <td style="text-align:center;">1-1</td>
-                  <td><div style="display:flex;align-items:center;gap:12px;"><div style="flex:1;height:16px;background:#F2ECFF;border-radius:4px;overflow:hidden;"><div style="width:0%;height:100%;background:#7E44FB;opacity:0.72;"></div></div><span style="font-size:16px;color:#333;min-width:45px;text-align:right;">0/14</span></div></td>
-                  <td style="text-align:center;font-size:16px;color:#333;">14</td>
-                  <td style="text-align:center;"><span style="color:#B3B3B3;font-size:16px;">—</span></td>
-                  <td style="text-align:center;"><button onclick="showListForClass(1,'C')" style="background:none;border:none;cursor:pointer;font-family:inherit;font-size:16px;font-weight:700;color:#7E44FB;display:inline-flex;align-items:center;gap:4px;padding:4px 8px;border-radius:8px;" onmouseover="this.style.background='#F7F4FF'" onmouseout="this.style.background='none'">과제 제출 상세 <i data-lucide="chevron-right" style="width:16px;height:16px;"></i></button></td>
+                  <td>1-1</td>
+                  <td><div style="display:flex;align-items:center;gap:12px;"><div style="flex:1;height:16px;background:#E9E0FE;border-radius:4px;overflow:hidden;"><div style="width:0%;height:100%;background:#8751FA;opacity:0.72;"></div></div><span style="font-size:16px;color:#333;min-width:45px;text-align:right;">0%</span></div></td>
+                  <td>14</td>
+                  <td><span class="ob ob-gray">-</span></td>
+                  <td><button onclick="showListForClass(1,'C')" style="background:none;border:none;cursor:pointer;font-family:inherit;font-size:16px;font-weight:700;color:#6C2DF4;display:inline-flex;align-items:center;justify-content:center;gap:6px;height:36px;padding:0 12px;border-radius:8px;line-height:1;vertical-align:middle;" onmouseover="this.style.background='#F7F4FF'" onmouseout="this.style.background='none'">과제 제출 상세 <i data-lucide="chevron-right" style="width:20px;height:20px;"></i></button></td>
                 </tr>
                 <tr>
-                  <td style="text-align:center;">1-2</td>
-                  <td><div style="display:flex;align-items:center;gap:12px;"><div style="flex:1;height:16px;background:#F2ECFF;border-radius:4px;overflow:hidden;"><div style="width:100%;height:100%;background:#7E44FB;opacity:0.72;"></div></div><span style="font-size:16px;color:#333;min-width:45px;text-align:right;">14/14</span></div></td>
-                  <td style="text-align:center;font-size:16px;color:#333;">0</td>
-                  <td style="text-align:center;"><span class="badge badge-green">완료</span></td>
-                  <td style="text-align:center;"><button onclick="showListForClass(2,'C')" style="background:none;border:none;cursor:pointer;font-family:inherit;font-size:16px;font-weight:700;color:#7E44FB;display:inline-flex;align-items:center;gap:4px;padding:4px 8px;border-radius:8px;" onmouseover="this.style.background='#F7F4FF'" onmouseout="this.style.background='none'">과제 제출 상세 <i data-lucide="chevron-right" style="width:16px;height:16px;"></i></button></td>
+                  <td>1-2</td>
+                  <td><div style="display:flex;align-items:center;gap:12px;"><div style="flex:1;height:16px;background:#E9E0FE;border-radius:4px;overflow:hidden;"><div style="width:100%;height:100%;background:#8751FA;opacity:0.72;"></div></div><span style="font-size:16px;color:#333;min-width:45px;text-align:right;">100%</span></div></td>
+                  <td>0</td>
+                  <td><span class="ob ob-green">완료</span></td>
+                  <td><button onclick="showListForClass(2,'C')" style="background:none;border:none;cursor:pointer;font-family:inherit;font-size:16px;font-weight:700;color:#6C2DF4;display:inline-flex;align-items:center;justify-content:center;gap:6px;height:36px;padding:0 12px;border-radius:8px;line-height:1;vertical-align:middle;" onmouseover="this.style.background='#F7F4FF'" onmouseout="this.style.background='none'">과제 제출 상세 <i data-lucide="chevron-right" style="width:20px;height:20px;"></i></button></td>
                 </tr>
                 <tr>
-                  <td style="text-align:center;">1-3</td>
-                  <td><div style="display:flex;align-items:center;gap:12px;"><div style="flex:1;height:16px;background:#F2ECFF;border-radius:4px;overflow:hidden;"><div style="width:100%;height:100%;background:#7E44FB;opacity:0.72;"></div></div><span style="font-size:16px;color:#333;min-width:45px;text-align:right;">14/14</span></div></td>
-                  <td style="text-align:center;font-size:16px;color:#333;">0</td>
-                  <td style="text-align:center;"><span class="badge badge-orange">미진행</span></td>
-                  <td style="text-align:center;"><button onclick="showListForClass(3,'C')" style="background:none;border:none;cursor:pointer;font-family:inherit;font-size:16px;font-weight:700;color:#7E44FB;display:inline-flex;align-items:center;gap:4px;padding:4px 8px;border-radius:8px;" onmouseover="this.style.background='#F7F4FF'" onmouseout="this.style.background='none'">과제 제출 상세 <i data-lucide="chevron-right" style="width:16px;height:16px;"></i></button></td>
+                  <td>1-3</td>
+                  <td><div style="display:flex;align-items:center;gap:12px;"><div style="flex:1;height:16px;background:#E9E0FE;border-radius:4px;overflow:hidden;"><div style="width:100%;height:100%;background:#8751FA;opacity:0.72;"></div></div><span style="font-size:16px;color:#333;min-width:45px;text-align:right;">100%</span></div></td>
+                  <td>0</td>
+                  <td><span class="ob ob-gray">미진행</span></td>
+                  <td><button onclick="showListForClass(3,'C')" style="background:none;border:none;cursor:pointer;font-family:inherit;font-size:16px;font-weight:700;color:#6C2DF4;display:inline-flex;align-items:center;justify-content:center;gap:6px;height:36px;padding:0 12px;border-radius:8px;line-height:1;vertical-align:middle;" onmouseover="this.style.background='#F7F4FF'" onmouseout="this.style.background='none'">과제 제출 상세 <i data-lucide="chevron-right" style="width:20px;height:20px;"></i></button></td>
                 </tr>
               </tbody>
             </table>
@@ -315,65 +344,65 @@
           <!-- 카드 1: 미래사회 예측 시나리오 -->
           <div style="background:white;border-radius:16px;padding:24px;display:flex;flex-direction:column;gap:20px;">
             <h3 style="font-size:20px;font-weight:700;color:#333;margin:0;">독서 감상문 쓰기</h3>
-            <table class="tbl">
+            <table class="tbl-dev">
               <thead>
                 <tr>
-                  <th style="width:94px;text-align:center;">반</th>
+                  <th style="width:128px;">반</th>
                   <th>제출 현황</th>
-                  <th style="width:94px;text-align:center;">미제출</th>
-                  <th style="width:110px;text-align:center;">과제물 인식 상태</th>
-                  <th style="width:194px;text-align:center;">과제 제출 관리</th>
+                  <th style="width:128px;">미제출</th>
+                  <th style="width:164px;">과제물 인식</th>
+                  <th style="width:176px;">과제 제출 관리</th>
                 </tr>
               </thead>
               <tbody>
-                <!-- 1-1반: OCR 일부 미확인 -->
+                <!-- 1-1반: 제출자 전원 인식 완료 + 확인 필요 학생 있음 -->
                 <tr>
-                  <td style="text-align:center;">1-1</td>
+                  <td>1-1</td>
                   <td>
                     <div style="display:flex;align-items:center;gap:12px;">
-                      <div style="flex:1;height:16px;background:#F2ECFF;border-radius:4px;overflow:hidden;"><div style="width:57%;height:100%;background:#7E44FB;opacity:0.72;"></div></div>
-                      <span style="font-size:16px;color:#333;min-width:45px;text-align:right;">8/14</span>
+                      <div style="flex:1;height:16px;background:#E9E0FE;border-radius:4px;overflow:hidden;"><div style="width:57%;height:100%;background:#8751FA;opacity:0.72;"></div></div>
+                      <span style="font-size:16px;color:#333;min-width:45px;text-align:right;">57%</span>
                     </div>
                   </td>
-                  <td style="text-align:center;font-size:16px;color:#333;">6</td>
-                  <td style="text-align:center;"><span class="badge badge-orange">확인 필요</span></td>
-                  <td style="text-align:center;">
-                    <button onclick="showListForClass(1)" style="background:none;border:none;cursor:pointer;font-family:inherit;font-size:16px;font-weight:700;color:#7E44FB;display:inline-flex;align-items:center;gap:4px;padding:4px 8px;border-radius:8px;" onmouseover="this.style.background='#F7F4FF'" onmouseout="this.style.background='none'">
-                      과제 제출 상세 <i data-lucide="chevron-right" style="width:16px;height:16px;"></i>
+                  <td>6</td>
+                  <td><span class="ob ob-red">확인 필요</span></td>
+                  <td>
+                    <button onclick="showListForClass(1)" style="background:none;border:none;cursor:pointer;font-family:inherit;font-size:16px;font-weight:700;color:#6C2DF4;display:inline-flex;align-items:center;justify-content:center;gap:6px;height:36px;padding:0 12px;border-radius:8px;line-height:1;vertical-align:middle;" onmouseover="this.style.background='#F7F4FF'" onmouseout="this.style.background='none'">
+                      과제 제출 상세 <i data-lucide="chevron-right" style="width:20px;height:20px;"></i>
                     </button>
                   </td>
                 </tr>
-                <!-- 1-2반 -->
+                <!-- 1-2반: 제출 0명 -->
                 <tr>
-                  <td style="text-align:center;">1-2</td>
+                  <td>1-2</td>
                   <td>
                     <div style="display:flex;align-items:center;gap:12px;">
-                      <div style="flex:1;height:16px;background:#F2ECFF;border-radius:4px;overflow:hidden;"><div style="width:0%;height:100%;background:#7E44FB;opacity:0.72;"></div></div>
-                      <span style="font-size:16px;color:#333;min-width:45px;text-align:right;">0/14</span>
+                      <div style="flex:1;height:16px;background:#E9E0FE;border-radius:4px;overflow:hidden;"><div style="width:0%;height:100%;background:#8751FA;opacity:0.72;"></div></div>
+                      <span style="font-size:16px;color:#333;min-width:45px;text-align:right;">0%</span>
                     </div>
                   </td>
-                  <td style="text-align:center;font-size:16px;color:#333;">14</td>
-                  <td style="text-align:center;"><span style="color:#B3B3B3;font-size:16px;">—</span></td>
-                  <td style="text-align:center;">
-                    <button onclick="showListForClass(2)" style="background:none;border:none;cursor:pointer;font-family:inherit;font-size:16px;font-weight:700;color:#7E44FB;display:inline-flex;align-items:center;gap:4px;padding:4px 8px;border-radius:8px;" onmouseover="this.style.background='#F7F4FF'" onmouseout="this.style.background='none'">
-                      과제 제출 상세 <i data-lucide="chevron-right" style="width:16px;height:16px;"></i>
+                  <td>14</td>
+                  <td><span class="ob ob-gray">-</span></td>
+                  <td>
+                    <button onclick="showListForClass(2)" style="background:none;border:none;cursor:pointer;font-family:inherit;font-size:16px;font-weight:700;color:#6C2DF4;display:inline-flex;align-items:center;justify-content:center;gap:6px;height:36px;padding:0 12px;border-radius:8px;line-height:1;vertical-align:middle;" onmouseover="this.style.background='#F7F4FF'" onmouseout="this.style.background='none'">
+                      과제 제출 상세 <i data-lucide="chevron-right" style="width:20px;height:20px;"></i>
                     </button>
                   </td>
                 </tr>
-                <!-- 1-3반 -->
+                <!-- 1-3반: 제출 0명 -->
                 <tr>
-                  <td style="text-align:center;">1-3</td>
+                  <td>1-3</td>
                   <td>
                     <div style="display:flex;align-items:center;gap:12px;">
-                      <div style="flex:1;height:16px;background:#F2ECFF;border-radius:4px;overflow:hidden;"><div style="width:0%;height:100%;background:#7E44FB;opacity:0.72;"></div></div>
-                      <span style="font-size:16px;color:#333;min-width:45px;text-align:right;">0/14</span>
+                      <div style="flex:1;height:16px;background:#E9E0FE;border-radius:4px;overflow:hidden;"><div style="width:0%;height:100%;background:#8751FA;opacity:0.72;"></div></div>
+                      <span style="font-size:16px;color:#333;min-width:45px;text-align:right;">0%</span>
                     </div>
                   </td>
-                  <td style="text-align:center;font-size:16px;color:#333;">14</td>
-                  <td style="text-align:center;"><span style="color:#B3B3B3;font-size:16px;">—</span></td>
-                  <td style="text-align:center;">
-                    <button onclick="showListForClass(3)" style="background:none;border:none;cursor:pointer;font-family:inherit;font-size:16px;font-weight:700;color:#7E44FB;display:inline-flex;align-items:center;gap:4px;padding:4px 8px;border-radius:8px;" onmouseover="this.style.background='#F7F4FF'" onmouseout="this.style.background='none'">
-                      과제 제출 상세 <i data-lucide="chevron-right" style="width:16px;height:16px;"></i>
+                  <td>14</td>
+                  <td><span class="ob ob-gray">-</span></td>
+                  <td>
+                    <button onclick="showListForClass(3)" style="background:none;border:none;cursor:pointer;font-family:inherit;font-size:16px;font-weight:700;color:#6C2DF4;display:inline-flex;align-items:center;justify-content:center;gap:6px;height:36px;padding:0 12px;border-radius:8px;line-height:1;vertical-align:middle;" onmouseover="this.style.background='#F7F4FF'" onmouseout="this.style.background='none'">
+                      과제 제출 상세 <i data-lucide="chevron-right" style="width:20px;height:20px;"></i>
                     </button>
                   </td>
                 </tr>
@@ -3516,6 +3545,12 @@ function mpToggle() {
   var b = document.getElementById('mp-body');
   var c = document.getElementById('mp-caret');
   var open = b.style.display !== 'none';
+  if (!open) {
+    // 펼치기 전 현재 아래 모서리에 bottom 재앵커 → 목록이 위로 펼쳐짐 (드래그로 top 고정된 상태 포함)
+    var el = document.getElementById('mockpick');
+    var r = el.getBoundingClientRect();
+    el.style.top = 'auto'; el.style.bottom = Math.max(16, window.innerHeight - r.bottom) + 'px';
+  }
   b.style.display = open ? 'none' : 'flex';
   if (c) c.style.transform = open ? 'rotate(180deg)' : '';
 }

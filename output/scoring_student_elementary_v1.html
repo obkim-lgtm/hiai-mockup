@@ -188,11 +188,11 @@ body.before-ai-rerun .score-btn.ai-suggest:hover{background:#f7f4ff;border-color
 .ec-level .ai-suggest-note{font-size:11px;font-weight:500;color:#6d7381;margin-left:4px}
 .ec-level .ai-suggest-prefix{font-size:11px;font-weight:500;color:#6d7381;margin-right:4px}
 .ec-summary{flex:1;font-size:15px;font-weight:600;color:#222631;line-height:1.4}
-/* 문항 제목 1줄 말줄임 + 호버 시 전체 텍스트 디자인 툴팁(블랙, .credit-tooltip 룰과 동일) */
+/* 문항 제목 1줄 말줄임 + 호버 시 전체 텍스트 디자인 툴팁(화이트, Figma 1900:20405 · .credit-tooltip 룰과 동일) */
 .ec-summary-wrap{flex:1;min-width:0;position:relative;display:flex}
 #pane-instruction .ec-summary-wrap>.ec-summary,#pane-rubric .ec-summary-wrap>.ec-summary{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.ec-summary-tip{position:absolute;left:0;bottom:calc(100% + 8px);background:#222631;color:#fff;font-size:13px;line-height:1.5;font-weight:500;padding:8px 12px;border-radius:8px;max-width:340px;opacity:0;visibility:hidden;transition:opacity .15s,visibility .15s;z-index:1100;pointer-events:none;box-shadow:0 4px 16px rgba(0,0,0,.25);text-align:left;white-space:normal}
-.ec-summary-tip::after{content:"";position:absolute;top:100%;left:16px;border:5px solid transparent;border-top-color:#222631}
+.ec-summary-tip{position:absolute;left:0;bottom:calc(100% + 8px);background:#fff;color:#341761;font-size:14px;line-height:1.5;font-weight:700;padding:10px 20px;border-radius:8px;max-width:340px;opacity:0;visibility:hidden;transition:opacity .15s,visibility .15s;z-index:1100;pointer-events:none;box-shadow:0 4px 36px rgba(95,102,178,.16);text-align:left;white-space:normal}
+.ec-summary-tip::after{content:"";position:absolute;top:calc(100% - 7px);left:18px;width:14px;height:14px;background:#fff;transform:rotate(45deg)}
 .ec-summary-wrap.has-tip:hover .ec-summary-tip{opacity:1;visibility:visible}
 .ec-header-edit-icon{visibility:hidden;flex-shrink:0;color:var(--ac)}
 .ec-card-header:hover .ec-header-edit-icon{visibility:visible}
@@ -557,10 +557,10 @@ select.field-input{appearance:none;-webkit-appearance:none;background-image:url(
 .credit-notice-sub{color:#6d7381;font-weight:500;margin-left:2px;white-space:nowrap}
 .credit-help{color:#6d7381 !important;cursor:help}
 
-/* (?) 툴팁 — hover + 클릭 토글 (Lucide가 <i>를 <svg>로 교체하며 native title 속성을 소실시켜서 커스텀 구현) */
+/* (?) 툴팁 — hover + 클릭 토글 (Lucide가 <i>를 <svg>로 교체하며 native title 속성을 소실시켜서 커스텀 구현) · 스킨: Figma 1900:20405 화이트 */
 .credit-tooltip-wrap{position:relative;display:inline-flex;align-items:center;cursor:help;margin-left:2px;line-height:1}
-.credit-tooltip{position:absolute;bottom:calc(100% + 8px);right:-8px;background:#222631;color:#fff;font-size:12px;line-height:1.5;padding:8px 12px;border-radius:8px;width:240px;font-weight:500;opacity:0;visibility:hidden;transition:opacity .15s,visibility .15s;z-index:1100;pointer-events:none;box-shadow:0 4px 16px rgba(0,0,0,.25);text-align:left;white-space:normal}
-.credit-tooltip::after{content:"";position:absolute;top:100%;right:14px;border:5px solid transparent;border-top-color:#222631}
+.credit-tooltip{position:absolute;bottom:calc(100% + 8px);right:-8px;background:#fff;color:#341761;font-size:14px;line-height:1.5;padding:10px 20px;border-radius:8px;width:260px;font-weight:700;opacity:0;visibility:hidden;transition:opacity .15s,visibility .15s;z-index:1100;pointer-events:none;box-shadow:0 4px 36px rgba(95,102,178,.16);text-align:left;white-space:normal}
+.credit-tooltip::after{content:"";position:absolute;top:calc(100% - 7px);right:16px;width:14px;height:14px;background:#fff;transform:rotate(45deg)}
 .credit-tooltip-wrap:hover .credit-tooltip,
 .credit-tooltip-wrap.show .credit-tooltip{opacity:1;visibility:visible}
 
@@ -2854,7 +2854,7 @@ lucide.createIcons();
   </div>
 </div>
 <script>
-  function mpToggle(){ var b=document.getElementById('mp-body'); var c=document.getElementById('mp-caret'); var open=b.style.display!=='none'; b.style.display=open?'none':'flex'; if(c)c.style.transform=open?'rotate(180deg)':''; }
+  function mpToggle(){ var b=document.getElementById('mp-body'); var c=document.getElementById('mp-caret'); var open=b.style.display!=='none'; if(!open){ var el=document.getElementById('mockpick'); var r=el.getBoundingClientRect(); el.style.top='auto'; el.style.bottom=Math.max(16, window.innerHeight-r.bottom)+'px'; } b.style.display=open?'none':'flex'; if(c)c.style.transform=open?'rotate(180deg)':''; }
   function mpNav(url){ if(location.pathname.split('/').pop()!==url) location.href=url; }
   function mpRun(k){
     if (typeof openRunModal==='function'){

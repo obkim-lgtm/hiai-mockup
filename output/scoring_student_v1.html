@@ -103,11 +103,16 @@
       background: #FFF4CC; border-bottom: 2px solid #E07000;
       cursor: pointer; position: relative; border-radius: 2px;
     }
+    /* 툴팁 스킨: Figma MM23…FVJpB 1900:20405 (화이트 · 14px Bold #341761 · 화살표 14px) */
     .ocr-uncertain:hover::after {
-      content: attr(data-hint); position: absolute; bottom: calc(100% + 6px); left: 0;
-      background: #333; color: white; font-size: 12px; font-weight: 400;
-      padding: 5px 10px; border-radius: 6px; white-space: nowrap; z-index: 10;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+      content: attr(data-hint); position: absolute; bottom: calc(100% + 12px); left: 0;
+      background: #fff; color: #341761; font-size: 14px; font-weight: 700; line-height: 18px;
+      padding: 10px 20px; border-radius: 8px; white-space: nowrap; z-index: 10;
+      box-shadow: 0 4px 36px rgba(95,102,178,.16);
+    }
+    .ocr-uncertain:hover::before {
+      content: ''; position: absolute; bottom: calc(100% + 6px); left: 12px;
+      width: 14px; height: 14px; background: #fff; transform: rotate(45deg); z-index: 11;
     }
     .ocr-b-q-label {
       display: inline-flex; align-items: center; background: #F0EAFF; color: #7E44FB;
@@ -1603,7 +1608,7 @@
   </div>
 </div>
 <script>
-  function mpToggle(){ var b=document.getElementById('mp-body'); var c=document.getElementById('mp-caret'); var open=b.style.display!=='none'; b.style.display=open?'none':'flex'; if(c)c.style.transform=open?'rotate(180deg)':''; }
+  function mpToggle(){ var b=document.getElementById('mp-body'); var c=document.getElementById('mp-caret'); var open=b.style.display!=='none'; if(!open){ var el=document.getElementById('mockpick'); var r=el.getBoundingClientRect(); el.style.top='auto'; el.style.bottom=Math.max(16, window.innerHeight-r.bottom)+'px'; } b.style.display=open?'none':'flex'; if(c)c.style.transform=open?'rotate(180deg)':''; }
   function mpNav(url){ if(location.pathname.split('/').pop()!==url) location.href=url; }
   // 문항 직접 채점(AI 제외) 데모 — 10101의 문항 3(index 2)을 제외로 설정 후 이동
   function mpExclude(){ try{ var em=JSON.parse(sessionStorage.getItem('hiai_ocr_exclude')||'{}'); em['10101']=em['10101']||{}; em['10101'][2]=true; sessionStorage.setItem('hiai_ocr_exclude',JSON.stringify(em)); }catch(e){} location.href='scoring_student_v1.html?id=10101&name=김서윤'; }
