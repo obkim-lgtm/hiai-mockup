@@ -1576,8 +1576,14 @@
     b.addEventListener('click', ()=>{ location.hash = VIEW_SLUGS[b.dataset.goto] || b.dataset.goto; });
   });
   function routeFromHash(){
-    const slug = location.hash.replace(/^#/,'');
+    const raw = location.hash.replace(/^#/,'');
+    const [slug, sub] = raw.split('/');
     showView(SLUG_VIEWS[slug] || 'dashboard');
+    // 검수 하위 딥링크: #recognition-review/task(과제 상세) · /student(과제물 상세) — mpGo 재활용
+    // setTimeout(0): 스크립트 블록 평가가 끝난 뒤 실행 (mpGo가 쓰는 $ 등 const가 아직 TDZ라 즉시 호출 불가)
+    if (slug === 'recognition-review' && sub){
+      setTimeout(()=>{ if (typeof mpGo === 'function') mpGo(sub); }, 0);
+    }
   }
   window.addEventListener('hashchange', routeFromHash);
   routeFromHash();  // 최초 진입 시 해시 반영 (딥링크 지원)
