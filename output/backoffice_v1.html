@@ -2968,6 +2968,11 @@
   function mpToggle(){
     const b = document.getElementById('mp-body'), c = document.getElementById('mp-caret');
     const open = b.style.display !== 'none';
+    if(!open){
+      // 펼치기 전 현재 아래 모서리에 bottom 재앵커 → 목록이 위로 펼쳐짐 (드래그로 top 고정된 상태 포함)
+      const el = document.getElementById('mockpick'), r = el.getBoundingClientRect();
+      el.style.top = 'auto'; el.style.bottom = Math.max(16, window.innerHeight - r.bottom) + 'px';
+    }
     b.style.display = open ? 'none' : 'flex';
     if(c) c.style.transform = open ? 'rotate(180deg)' : '';
   }

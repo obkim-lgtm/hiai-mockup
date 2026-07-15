@@ -874,7 +874,7 @@
   </div>
 </div>
 <script>
-  function mpToggle(){ var b=document.getElementById('mp-body'); var c=document.getElementById('mp-caret'); var open=b.style.display!=='none'; b.style.display=open?'none':'flex'; if(c)c.style.transform=open?'rotate(180deg)':''; }
+  function mpToggle(){ var b=document.getElementById('mp-body'); var c=document.getElementById('mp-caret'); var open=b.style.display!=='none'; if(!open){ var el=document.getElementById('mockpick'); var r=el.getBoundingClientRect(); el.style.top='auto'; el.style.bottom=Math.max(16, window.innerHeight-r.bottom)+'px'; } b.style.display=open?'none':'flex'; if(c)c.style.transform=open?'rotate(180deg)':''; }
   function mpNav(url){ if(location.pathname.split('/').pop()!==url) location.href=url; }
   (function(){
     // 현재 화면(하이라이팅) 버튼 활성 표시
