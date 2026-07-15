@@ -562,50 +562,59 @@
         <img src="../screens/student_submission.png" alt="PDF 미리보기" style="max-width:100%;max-height:100%;object-fit:contain;box-shadow:0 4px 24px rgba(0,0,0,0.5);">
       </div>
     </div>
-    <!-- 우측: 분할 설정 패널 -->
+    <!-- 우측: 분할 설정 패널 (Figma 1841:17916) -->
     <div style="width:600px;flex-shrink:0;background:white;display:flex;flex-direction:column;border-left:1px solid #E6E6E6;">
-      <div style="padding:24px;border-bottom:1px solid #E6E6E6;flex-shrink:0;">
-        <h3 style="font-size:18px;font-weight:800;color:#222;margin:0 0 6px;">분할 설정</h3>
-        <p style="font-size:14px;color:#808080;margin:0;">학생 수에 맞게 PDF를 자동으로 분할합니다.</p>
-      </div>
-      <div style="flex:1;overflow-y:auto;padding:20px 24px;display:flex;flex-direction:column;gap:16px;">
-        <div style="background:#F8F8F8;border-radius:12px;padding:16px;">
-          <p style="font-size:14px;color:#494949;margin:0 0 8px;font-weight:700;">파일 정보</p>
-          <div style="display:flex;align-items:center;gap:8px;">
-            <i data-lucide="file-text" style="width:16px;height:16px;color:#7E44FB;flex-shrink:0;"></i>
-            <span style="font-size:14px;color:#333;">1학년1반과제파일.pdf</span>
-            <span style="font-size:12px;color:#808080;margin-left:auto;">120페이지</span>
+      <div style="flex:1;overflow-y:auto;padding:24px;display:flex;flex-direction:column;gap:24px;">
+        <h3 style="font-size:18px;font-weight:800;color:#333;margin:0;">분할 설정</h3>
+        <!-- PDF 파일 정보 -->
+        <div style="display:flex;flex-direction:column;gap:12px;">
+          <p style="font-size:16px;font-weight:700;color:#333;margin:0;">PDF 파일 정보</p>
+          <div style="display:flex;align-items:center;gap:12px;">
+            <span style="font-size:16px;color:#333;">학생당 기본</span>
+            <div style="display:flex;align-items:stretch;width:149px;height:40px;flex-shrink:0;">
+              <input id="split-pages-per" type="number" value="2" min="1" max="99" style="flex:1;min-width:0;height:40px;border:1px solid #D9D9D9;border-right:none;border-radius:4px 0 0 4px;padding:0 8px 0 16px;font-size:16px;font-family:inherit;color:#333;outline:none;" onfocus="this.style.borderColor='#7E44FB'" onblur="this.style.borderColor='#D9D9D9'">
+              <div style="width:24px;flex-shrink:0;display:flex;flex-direction:column;border:1px solid #D9D9D9;border-radius:0 4px 4px 0;overflow:hidden;">
+                <button onclick="stepInput('split-pages-per',1)" style="flex:1;background:white;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;"><i data-lucide="chevron-up" style="width:12px;height:12px;color:#333;"></i></button>
+                <button onclick="stepInput('split-pages-per',-1)" style="flex:1;background:white;border:none;border-top:1px solid #D9D9D9;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;"><i data-lucide="chevron-down" style="width:12px;height:12px;color:#333;"></i></button>
+              </div>
+            </div>
+            <span style="font-size:16px;color:#333;">장 분량으로 작성</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:12px;">
+            <span style="font-size:16px;color:#333;">스캔된 파일</span>
+            <div style="display:flex;align-items:stretch;width:149px;height:40px;flex-shrink:0;">
+              <input id="split-scan-start" type="number" value="3" min="1" max="999" style="flex:1;min-width:0;height:40px;border:1px solid #D9D9D9;border-right:none;border-radius:4px 0 0 4px;padding:0 8px 0 16px;font-size:16px;font-family:inherit;color:#333;outline:none;" onfocus="this.style.borderColor='#7E44FB'" onblur="this.style.borderColor='#D9D9D9'">
+              <div style="width:24px;flex-shrink:0;display:flex;flex-direction:column;border:1px solid #D9D9D9;border-radius:0 4px 4px 0;overflow:hidden;">
+                <button onclick="stepInput('split-scan-start',1)" style="flex:1;background:white;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;"><i data-lucide="chevron-up" style="width:12px;height:12px;color:#333;"></i></button>
+                <button onclick="stepInput('split-scan-start',-1)" style="flex:1;background:white;border:none;border-top:1px solid #D9D9D9;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;"><i data-lucide="chevron-down" style="width:12px;height:12px;color:#333;"></i></button>
+              </div>
+            </div>
+            <span style="font-size:16px;color:#333;">페이지부터 과제물 시작</span>
           </div>
         </div>
-        <div>
-          <p style="font-size:14px;font-weight:700;color:#333;margin:0 0 8px;">분할 방식</p>
-          <div style="display:flex;flex-direction:column;gap:8px;">
-            <label style="display:flex;align-items:center;gap:10px;padding:12px;border:2px solid #7E44FB;border-radius:8px;cursor:pointer;background:#F7F4FF;">
-              <input type="radio" name="splitType" checked style="accent-color:#7E44FB;width:16px;height:16px;">
-              <div>
-                <p style="font-size:14px;font-weight:700;color:#7E44FB;margin:0;">자동 분할</p>
-                <p style="font-size:12px;color:#808080;margin:0;">학생 수(9명)에 맞게 균등 분할</p>
-              </div>
+        <!-- PDF 분할 결과 수정 방식 -->
+        <div style="display:flex;flex-direction:column;gap:12px;">
+          <p style="font-size:16px;font-weight:700;color:#333;margin:0;">PDF 분할 결과 수정 방식</p>
+          <div style="display:flex;align-items:center;gap:20px;height:40px;">
+            <label style="display:flex;align-items:center;gap:12px;cursor:pointer;">
+              <input type="radio" name="splitEditMode" value="count" checked style="width:24px;height:24px;accent-color:#7E44FB;cursor:pointer;margin:0;">
+              <span style="font-size:16px;color:#000;">페이지 장수 입력</span>
             </label>
-            <label style="display:flex;align-items:center;gap:10px;padding:12px;border:1px solid #D9D9D9;border-radius:8px;cursor:pointer;">
-              <input type="radio" name="splitType" style="accent-color:#7E44FB;width:16px;height:16px;">
-              <div>
-                <p style="font-size:14px;font-weight:700;color:#333;margin:0;">수동 분할</p>
-                <p style="font-size:12px;color:#808080;margin:0;">학생별 페이지 번호를 직접 입력</p>
-              </div>
+            <label style="display:flex;align-items:center;gap:12px;cursor:pointer;">
+              <input type="radio" name="splitEditMode" value="number" style="width:24px;height:24px;accent-color:#7E44FB;cursor:pointer;margin:0;">
+              <span style="font-size:16px;color:#000;">페이지 번호 입력</span>
             </label>
           </div>
         </div>
-        <div style="background:#FFF5F5;border-radius:8px;padding:12px 14px;display:flex;align-items:flex-start;gap:8px;">
-          <i data-lucide="info" style="width:14px;height:14px;color:#DB3E51;flex-shrink:0;margin-top:2px;"></i>
-          <p style="font-size:13px;color:#DB3E51;margin:0;line-height:1.5;">이미 업로드된 파일이 있는 경우, 새로 업로드하는 파일로 교체됩니다.</p>
+        <!-- 버튼 -->
+        <div style="display:flex;align-items:center;justify-content:space-between;">
+          <button onclick="resetUpload()" style="height:40px;background:transparent;color:#7E44FB;border:1px solid #B28FFD;border-radius:8px;padding:0 16px;font-size:16px;font-weight:700;font-family:inherit;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;line-height:1;vertical-align:middle;gap:6px;">
+            <i data-lucide="upload" style="width:20px;height:20px;"></i>파일 다시 업로드
+          </button>
+          <button onclick="startSplit()" style="height:40px;background:#7E44FB;color:white;border:none;border-radius:8px;padding:0 16px;font-size:16px;font-weight:700;font-family:inherit;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;line-height:1;vertical-align:middle;gap:6px;">
+            <i data-lucide="check" style="width:20px;height:20px;"></i>파일 분할 시작
+          </button>
         </div>
-      </div>
-      <div style="padding:16px 24px;border-top:1px solid #E6E6E6;display:flex;justify-content:flex-end;gap:10px;flex-shrink:0;">
-        <button onclick="resetUpload()" style="height:36px;background:white;color:#494949;border:1.5px solid #D9D9D9;border-radius:8px;padding:0 16px;font-size:14px;font-weight:700;font-family:inherit;cursor:pointer;">취소</button>
-        <button onclick="startSplit()" style="height:36px;background:#7E44FB;color:white;border:none;border-radius:8px;padding:0 16px;font-size:14px;font-weight:700;font-family:inherit;cursor:pointer;display:inline-flex;align-items:center;gap:6px;">
-          <i data-lucide="scissors" style="width:15px;height:15px;"></i>분할 시작
-        </button>
       </div>
     </div>
   </div>
@@ -642,7 +651,7 @@
       <div style="display:flex;flex-direction:column;gap:24px;flex:1;min-height:0;">
         <h3 style="font-size:18px;font-weight:800;color:#333;margin:0;">PDF 분할 결과</h3>
         <div style="display:flex;flex-direction:column;gap:24px;flex:1;min-height:0;">
-          <p style="font-size:16px;color:#333;margin:0;line-height:1.25;">페이지 번호를 입력하여 학생별 과제물을 구분해 주세요.</p>
+          <p id="done-desc" style="font-size:16px;color:#333;margin:0;line-height:1.25;">페이지 번호를 입력하여 학생별 과제물을 구분해 주세요.</p>
           <!-- 테이블 -->
           <div style="flex:1;overflow-y:auto;min-height:0;">
             <div style="display:flex;flex-direction:column;">
@@ -658,6 +667,11 @@
               <div id="done-result-tbody"></div>
             </div>
           </div>
+          <!-- 업로드 후 과제물 인식 바로 진행 체크 (Figma 1841:18015 — 디폴트 상시 체크, 마지막 체크 사항 저장 X) -->
+          <label style="display:flex;align-items:center;gap:10px;cursor:pointer;flex-shrink:0;">
+            <input id="ocr-now-check" type="checkbox" checked style="width:20px;height:20px;accent-color:#7E44FB;cursor:pointer;margin:0;flex-shrink:0;">
+            <span style="font-size:16px;font-weight:700;color:#333;line-height:1.25;">업로드 후 과제물 인식 바로 진행하기</span>
+          </label>
           <!-- 버튼 -->
           <div style="display:flex;align-items:center;justify-content:space-between;padding-bottom:20px;flex-shrink:0;">
             <button onclick="resetUpload()" style="height:40px;background:transparent;color:#7E44FB;border:1.5px solid #B28FFD;border-radius:8px;padding:0 16px;font-size:16px;font-weight:800;font-family:inherit;cursor:pointer;display:inline-flex;align-items:center;gap:8px;">
@@ -1037,37 +1051,7 @@
   </div>
 </div>
 
-<!-- B안: 업로드 후 과제물 인식 진행 여부 확인 모달 -->
-<div id="modal-ocr-ask-b" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:1000;align-items:center;justify-content:center;">
-  <div style="background:white;border-radius:24px;box-shadow:0 4px 12px rgba(95,102,178,0.16);width:480px;max-width:90vw;position:relative;">
-    <div style="padding:24px 24px 16px;">
-      <div style="display:flex;align-items:center;gap:10px;">
-        <div style="width:36px;height:36px;background:#FFF4E6;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-          <i data-lucide="scan-text" style="width:20px;height:20px;color:#E07000;"></i>
-        </div>
-        <h3 style="font-size:18px;font-weight:800;color:#222631;margin:0;">업로드가 완료되었습니다</h3>
-      </div>
-    </div>
-    <div style="padding:0 24px 24px;display:flex;flex-direction:column;gap:16px;">
-      <div style="background:#F8F8F8;border-radius:12px;padding:16px 18px;display:flex;flex-direction:column;gap:10px;">
-        <div style="display:flex;align-items:flex-start;gap:10px;">
-          <i data-lucide="file-text" style="width:18px;height:18px;color:#7E44FB;flex-shrink:0;margin-top:2px;"></i>
-          <p style="font-size:15px;color:#333;margin:0;line-height:1.55;">업로드된 과제물 인식을 <strong>지금 진행</strong>하면 AI 채점을 바로 시작할 수 있습니다.</p>
-        </div>
-        <div style="display:flex;align-items:flex-start;gap:10px;">
-          <i data-lucide="clock" style="width:18px;height:18px;color:#808080;flex-shrink:0;margin-top:2px;"></i>
-          <p style="font-size:15px;color:#808080;margin:0;line-height:1.55;"><strong>나중에 하기</strong>를 선택하면 과제물 관리 화면에서 언제든 과제물 인식을 진행할 수 있습니다.</p>
-        </div>
-      </div>
-    </div>
-    <div style="padding:8px 24px 20px;display:flex;justify-content:flex-end;gap:10px;">
-      <button onclick="closeOcrAskB(false)" style="height:40px;background:white;color:#494949;border:1.5px solid #D9D9D9;border-radius:8px;padding:0 20px;font-size:15px;font-weight:700;font-family:inherit;cursor:pointer;">나중에 하기</button>
-      <button onclick="closeOcrAskB(true)" style="height:40px;background:#7E44FB;color:white;border:none;border-radius:8px;padding:0 20px;font-size:15px;font-weight:800;font-family:inherit;cursor:pointer;display:inline-flex;align-items:center;gap:8px;">
-        <i data-lucide="scan-text" style="width:16px;height:16px;"></i>지금 과제물 인식 진행
-      </button>
-    </div>
-  </div>
-</div>
+<!-- (구) B안 업로드 후 과제물 인식 진행 여부 확인 모달 — 분할 결과 화면의 '업로드 후 과제물 인식 바로 진행하기' 체크박스로 대체되어 제거 (Figma 1841:18015) -->
 
 <!-- 되돌리기 확인 모달 (원래 인식 결과로 복구 — 되돌릴 수 없는 짧은 확인) -->
 <div id="ocrRevertConfirmModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:1200;align-items:center;justify-content:center;" onclick="if(event.target===this)closeOcrRevertConfirm()">
@@ -2973,13 +2957,34 @@ function simulateUpload() {
   lucide.createIcons();
 }
 
+function stepInput(id, delta) {
+  var el = document.getElementById(id);
+  if (!el) return;
+  var min = parseInt(el.min) || 1;
+  var max = parseInt(el.max) || 999;
+  var v = (parseInt(el.value) || min) + delta;
+  el.value = Math.min(max, Math.max(min, v));
+}
+
 function startSplit() {
+  // 분할 설정 값 읽기 (Figma 1841:17916)
+  var modeEl = document.querySelector('input[name="splitEditMode"]:checked');
+  splitEditMode = modeEl ? modeEl.value : 'count';
+  var per = parseInt((document.getElementById('split-pages-per') || {}).value) || 2;
+  // 학생별 행 데이터 구성 — 미제출 학생은 0장
+  doneRows = STUDENTS.map(function(s) {
+    var absent = s.status === '미제출';
+    return { id: s.id, name: s.name, absent: absent, count: absent ? 0 : per };
+  });
   document.getElementById('upload-state-processing').style.display = 'flex';
   lucide.createIcons();
   setTimeout(function() {
     document.getElementById('upload-state-split').style.display = 'none';
     document.getElementById('upload-state-processing').style.display = 'none';
     document.getElementById('upload-state-done').style.display = 'flex';
+    // 과제물 인식 바로 진행 체크 — 디폴트 상시 체크, 마지막 체크 사항 저장 X (Figma 주석)
+    var ocrNow = document.getElementById('ocr-now-check');
+    if (ocrNow) ocrNow.checked = true;
     renderDoneTable();
     lucide.createIcons();
   }, 2000);
@@ -2993,36 +2998,77 @@ function resetUpload() {
   lucide.createIcons();
 }
 
+// PDF 분할 결과 테이블 — 수정 방식 2모드 (Figma 1841:18123 페이지 장수 입력 · 1841:18015 페이지 번호 입력)
+var splitEditMode = 'count';
+var doneRows = [];
+
 function renderDoneTable() {
   var container = document.getElementById('done-result-tbody');
   if (!container) return;
   var rows = '';
-  var pageStart = 1;
+  var scanStart = parseInt((document.getElementById('split-scan-start') || {}).value) || 1;
+  var pageStart = scanStart;
   var cellBase = 'border-bottom:1px solid #D9D9D9;display:flex;align-items:center;justify-content:center;padding:12px;font-size:16px;color:#333;';
-  STUDENTS.forEach(function(s) {
-    var isAbsent = s.status === '미제출';
-    var pageCount = isAbsent ? 0 : 2;
-    var pageEnd = isAbsent ? pageStart : pageStart + pageCount - 1;
-    var checkboxHtml = isAbsent
-      ? '<input type="checkbox" checked onchange="this.checked=true;" style="width:20px;height:20px;accent-color:#7E44FB;cursor:pointer;border-radius:2px;flex-shrink:0;">'
-      : '<input type="checkbox" style="width:20px;height:20px;accent-color:#7E44FB;cursor:pointer;border-radius:2px;flex-shrink:0;">';
-    var pageInputHtml = isAbsent
-      ? '<span style="font-size:16px;color:#333;">(미제출)</span>'
-      : '<div style="display:flex;align-items:center;gap:8px;">'
-        + '<input type="number" value="' + pageStart + '" min="1" max="999" style="width:64px;height:40px;border:1px solid #D9D9D9;border-radius:8px;text-align:center;font-size:16px;font-family:inherit;padding:0;outline:none;" onfocus="this.style.borderColor=\'#7E44FB\'" onblur="this.style.borderColor=\'#D9D9D9\'">'
-        + '<span style="color:#333;font-size:16px;opacity:.5;">~</span>'
-        + '<input type="number" value="' + pageEnd + '" min="1" max="999" style="width:64px;height:40px;border:1px solid #D9D9D9;border-radius:8px;text-align:center;font-size:16px;font-family:inherit;padding:0;outline:none;" onfocus="this.style.borderColor=\'#7E44FB\'" onblur="this.style.borderColor=\'#D9D9D9\'">'
-        + '</div>';
+  var inputStyle = 'width:64px;height:40px;border:1px solid #D9D9D9;border-radius:8px;text-align:center;font-size:16px;font-family:inherit;padding:0;outline:none;';
+  var focusAttr = ' onfocus="this.style.borderColor=\'#7E44FB\'" onblur="this.style.borderColor=\'#D9D9D9\'"';
+  doneRows.forEach(function(r, i) {
+    var countCell, pageNoCell;
+    if (r.absent) {
+      countCell = splitEditMode === 'count'
+        ? '<input type="number" value="0" disabled style="' + inputStyle + 'background:#F8F8F8;color:#B3B3B3;cursor:not-allowed;">'
+        : '0';
+      pageNoCell = '<span style="font-size:16px;color:#333;">(미제출)</span>';
+    } else {
+      var pageEnd = pageStart + r.count - 1;
+      if (splitEditMode === 'count') {
+        // 페이지 장수 입력 — 페이지 수=입력, 페이지 번호=자동 계산
+        countCell = '<input type="number" value="' + r.count + '" min="1" max="99" onchange="updateRowCount(' + i + ', this.value)" style="' + inputStyle + '"' + focusAttr + '>';
+        pageNoCell = '<span style="font-size:16px;color:#333;">' + pageStart + '~' + pageEnd + '</span>';
+      } else {
+        // 페이지 번호 입력 — 페이지 수=표시, 페이지 번호=범위 입력
+        countCell = String(r.count);
+        pageNoCell = '<div style="display:flex;align-items:center;gap:8px;">'
+          + '<input type="number" value="' + pageStart + '" min="1" max="999" onchange="updateRowRange(' + i + ', this.value, ' + pageEnd + ')" style="' + inputStyle + '"' + focusAttr + '>'
+          + '<span style="color:#333;font-size:16px;opacity:.5;">~</span>'
+          + '<input type="number" value="' + pageEnd + '" min="1" max="999" onchange="updateRowRange(' + i + ', ' + pageStart + ', this.value)" style="' + inputStyle + '"' + focusAttr + '>'
+          + '</div>';
+      }
+      pageStart += r.count;
+    }
+    var checkboxHtml = '<input type="checkbox"' + (r.absent ? ' checked' : '') + ' onchange="toggleAbsent(' + i + ', this.checked)" style="width:20px;height:20px;accent-color:#7E44FB;cursor:pointer;border-radius:2px;flex-shrink:0;">';
     rows += '<div style="display:flex;align-items:stretch;">'
-      + '<div style="width:102px;flex-shrink:0;' + cellBase + '">' + s.id + '</div>'
-      + '<div style="width:102px;flex-shrink:0;' + cellBase + '">' + s.name + '</div>'
-      + '<div style="width:86px;flex-shrink:0;' + cellBase + '">' + (isAbsent ? '0' : pageCount) + '</div>'
-      + '<div style="flex:1;min-width:0;' + cellBase + 'gap:8px;">' + pageInputHtml + '</div>'
+      + '<div style="width:102px;flex-shrink:0;' + cellBase + '">' + r.id + '</div>'
+      + '<div style="width:102px;flex-shrink:0;' + cellBase + '">' + r.name + '</div>'
+      + '<div style="width:86px;flex-shrink:0;' + cellBase + '">' + countCell + '</div>'
+      + '<div style="flex:1;min-width:0;' + cellBase + 'gap:8px;">' + pageNoCell + '</div>'
       + '<div style="width:68px;flex-shrink:0;' + cellBase + '">' + checkboxHtml + '</div>'
       + '</div>';
-    if (!isAbsent) pageStart += pageCount;
   });
   container.innerHTML = rows;
+}
+
+// 페이지 장수 입력 모드 — 장수 변경 시 이후 학생 페이지 번호 자동 재계산
+function updateRowCount(i, v) {
+  if (!doneRows[i]) return;
+  doneRows[i].count = Math.max(1, parseInt(v) || 1);
+  renderDoneTable();
+}
+
+// 페이지 번호 입력 모드 — 범위 변경 시 페이지 수 갱신 + 이후 학생 시작 번호 재계산
+function updateRowRange(i, startV, endV) {
+  if (!doneRows[i]) return;
+  var start = parseInt(startV) || 1;
+  var end = Math.max(start, parseInt(endV) || start);
+  doneRows[i].count = end - start + 1;
+  renderDoneTable();
+}
+
+// 미제출 체크 토글 — 체크 시 해당 학생 분량 제외, 해제 시 기본 장수로 복원
+function toggleAbsent(i, checked) {
+  if (!doneRows[i]) return;
+  doneRows[i].absent = checked;
+  doneRows[i].count = checked ? 0 : (parseInt((document.getElementById('split-pages-per') || {}).value) || 2);
+  renderDoneTable();
 }
 
 // ── B안 테이블 렌더 ──
@@ -3171,13 +3217,25 @@ function uploadAndGoList() {
   pendingUploadStudentId = null;
   // 현재 반을 일괄 업로드 완료 상태로 표시 → 목록에서 전원 제출·파일 수 1로 반영
   if (currentListClass) bulkUploadedClasses[currentListClass] = true;
+  // '업로드 후 과제물 인식 바로 진행하기' 체크 여부 — 팝업 대체 (Figma 1841:18015)
+  var ocrNow = document.getElementById('ocr-now-check');
+  var startNow = !ocrNow || ocrNow.checked;
   renderTable();
   showScreen('screen-list');
-  showToast('과제물이 업로드되었습니다.', 'success');
-  // 업로드 후 과제물 인식 진행 여부 팝업 (모든 평가 공통) → '지금 진행' 시 progress 표시
-  setTimeout(function() {
-    showOcrAskB();
-  }, 300);
+  if (startNow) {
+    // 업로드 성공 + 과제물 인식 시작 툴팁 1개만 (기존 업로드 성공 툴팁 제거 — 2개 금지, Figma 주석)
+    startOcrRun();
+    showToast('과제물이 업로드되었습니다. 과제물 인식을 시작합니다.', 'success');
+  } else {
+    showToast('과제물이 업로드되었습니다.', 'success');
+    // 과제물 인식 미진행(주황) 배너 노출
+    var bannerB2 = document.getElementById('list-b-ocr-pending-banner');
+    if (bannerB2) {
+      fillPendingBannerNames();
+      bannerB2.style.display = 'flex';
+      lucide.createIcons();
+    }
+  }
 }
 
 // 탭 "AI 채점" 이동 — eval 파라미터 유지
@@ -3194,48 +3252,46 @@ function startOcrFromBanner() {
   closeOcrAskB(true);
 }
 
-function showOcrAskB() {
-  var modal = document.getElementById('modal-ocr-ask-b');
-  if (modal) { modal.style.display = 'flex'; lucide.createIcons(); }
-}
-
-function closeOcrAskB(startNow) {
-  var modal = document.getElementById('modal-ocr-ask-b');
-  if (modal) modal.style.display = 'none';
-  if (startNow) {
-    // 업로드 범위에 따라 과제물 인식 진행 대상 결정
-    if (pendingUploadMode === 'individual' && pendingUploadStudentId) {
-      if (b2OcrStartedIds !== 'all') {
-        if (!b2OcrStartedIds || typeof b2OcrStartedIds.has !== 'function') b2OcrStartedIds = new Set();
-        b2OcrStartedIds.add(pendingUploadStudentId);
-      }
-    } else {
-      b2OcrStartedIds = 'all';
+// 과제물 인식 시작 로직 (토스트 없음 — 호출부에서 문구 결정)
+function startOcrRun() {
+  // 업로드 범위에 따라 과제물 인식 진행 대상 결정
+  if (pendingUploadMode === 'individual' && pendingUploadStudentId) {
+    if (b2OcrStartedIds !== 'all') {
+      if (!b2OcrStartedIds || typeof b2OcrStartedIds.has !== 'function') b2OcrStartedIds = new Set();
+      b2OcrStartedIds.add(pendingUploadStudentId);
     }
-    b2OcrStarted = true; // 호환성 유지
-    ocrProcessing = true; // progress 도는 동안 미업로드반 테이블 '진행 중' 표시
-    // OCR 1건 이상 시작되면 상단 "과제물 인식 결과 확인" 버튼 활성화
-    var ocrBtn2 = document.getElementById('btn-ocr-confirm');
-    var ocrWrap2 = document.getElementById('btn-ocr-confirm-wrap');
-    if (ocrBtn2) { ocrBtn2.disabled = false; ocrBtn2.style.opacity = '1'; ocrBtn2.style.cursor = 'pointer'; ocrBtn2.style.pointerEvents = ''; }
-    if (ocrWrap2) { ocrWrap2.removeAttribute('title'); ocrWrap2.style.cursor = ''; }
-    showToast('과제물 인식을 시작합니다. 완료 후 결과를 확인해 주세요.', 'success');
-    // 진행 바 제거 — 진행 표시는 과제물 인식 결과 열의 행별 '진행 중' 스피너로 단일화(중복 제거, 줄리 피드백)
-    var bannerB2 = document.getElementById('list-b-ocr-pending-banner');
-    if (bannerB2) bannerB2.style.display = 'none';
-    // 약 4.5초 후 인식 완료 → 미확인으로 전환, 테이블 재렌더(행별 '진행 중'이 결과로 바뀜)
-    setTimeout(function(){
-      ocrProcessing = false;
-      STUDENTS_B2.forEach(function(s){ if (s.ocrStatusAfter === 'processing') s.ocrStatusAfter = 'unconfirmed'; });
-      renderTable();
-      lucide.createIcons();
-    }, 4500);
-    // 테이블 재렌더 — B2 행에 처리중 스피너 표시
+  } else {
+    b2OcrStartedIds = 'all';
+  }
+  b2OcrStarted = true; // 호환성 유지
+  ocrProcessing = true; // progress 도는 동안 미업로드반 테이블 '진행 중' 표시
+  // OCR 1건 이상 시작되면 상단 "과제물 인식 결과 확인" 버튼 활성화
+  var ocrBtn2 = document.getElementById('btn-ocr-confirm');
+  var ocrWrap2 = document.getElementById('btn-ocr-confirm-wrap');
+  if (ocrBtn2) { ocrBtn2.disabled = false; ocrBtn2.style.opacity = '1'; ocrBtn2.style.cursor = 'pointer'; ocrBtn2.style.pointerEvents = ''; }
+  if (ocrWrap2) { ocrWrap2.removeAttribute('title'); ocrWrap2.style.cursor = ''; }
+  // 진행 바 제거 — 진행 표시는 과제물 인식 결과 열의 행별 '진행 중' 스피너로 단일화(중복 제거, 줄리 피드백)
+  var bannerB2 = document.getElementById('list-b-ocr-pending-banner');
+  if (bannerB2) bannerB2.style.display = 'none';
+  // 약 4.5초 후 인식 완료 → 미확인으로 전환, 테이블 재렌더(행별 '진행 중'이 결과로 바뀜)
+  setTimeout(function(){
+    ocrProcessing = false;
+    STUDENTS_B2.forEach(function(s){ if (s.ocrStatusAfter === 'processing') s.ocrStatusAfter = 'unconfirmed'; });
     renderTable();
     lucide.createIcons();
+  }, 4500);
+  // 테이블 재렌더 — B2 행에 처리중 스피너 표시
+  renderTable();
+  lucide.createIcons();
+}
+
+// (구) B안 확인 팝업 진입점 — 팝업은 제거됐고, 배너 '일괄 과제물 인식' 등 기존 호출부 호환용으로 유지
+function closeOcrAskB(startNow) {
+  if (startNow) {
+    startOcrRun();
+    showToast('과제물 인식을 시작합니다. 완료 후 결과를 확인해 주세요.', 'success');
   } else {
     showToast('과제물 인식을 나중에 진행할 수 있습니다.', 'success');
-    // 배너: 과제물 인식 미진행(주황) 배너 다시 노출 (innerHTML은 고정 마크업이라 복원 불필요)
     var bannerB2 = document.getElementById('list-b-ocr-pending-banner');
     if (bannerB2) {
       fillPendingBannerNames();
@@ -3356,11 +3412,18 @@ function submitStudentUpload() {
     renderTable();
     var _ocrNow = document.getElementById('student-upload-ocr-now');
     if (_ocrNow && _ocrNow.checked) {
-      // 'OCR 바로 진행' 체크 → 팝업 없이 바로 과제물 인식 진행(지금 진행과 동일)
-      closeOcrAskB(true);
+      // 'OCR 바로 진행' 체크 → 저장 성공 + 과제물 인식 시작 툴팁 1개
+      startOcrRun();
+      showToast('파일이 저장되었습니다. 과제물 인식을 시작합니다.', 'success');
     } else {
-      // 미체크 → 기존처럼 과제물 인식 진행 여부 팝업 노출
-      showOcrAskB();
+      // 미체크 → 저장만 하고 미진행 배너 노출 (확인 팝업 제거 — 체크박스로 대체)
+      showToast('파일이 저장되었습니다.', 'success');
+      var bannerB2 = document.getElementById('list-b-ocr-pending-banner');
+      if (bannerB2) {
+        fillPendingBannerNames();
+        bannerB2.style.display = 'flex';
+        lucide.createIcons();
+      }
     }
   }, 1500);
 }
@@ -3430,7 +3493,7 @@ function goBackFromOcrB() {
 // ===== 까망이 목업 화면 선택기 =====
 function mpGo(which) {
   // 열려있는 모달 닫기
-  ['studentUploadModal','ocrStartModal','modal-ocr-ask-b','brokenReportModal'].forEach(function(id){
+  ['studentUploadModal','ocrStartModal','brokenReportModal'].forEach(function(id){
     var m = document.getElementById(id); if (m) m.style.display = 'none';
   });
   if (which === 'task')      { showScreen('screen-task'); }
