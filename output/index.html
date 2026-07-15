@@ -37,6 +37,13 @@
     font-size:13px; font-weight:700; letter-spacing:0.02em;
   }
   header h1{margin:0; font-size:28px; font-weight:800; letter-spacing:-0.01em;}
+  .h-flex{display:flex; justify-content:space-between; align-items:center; gap:24px; flex-wrap:wrap;}
+  .slogan{
+    display:inline-flex; align-items:center; justify-content:center;
+    background:#fff; border-radius:14px; padding:10px 18px; flex-shrink:0;
+    box-shadow:0 4px 16px rgba(0,0,0,0.10);
+  }
+  .slogan img{height:56px; display:block;}
   header p{margin:8px 0 0; font-size:15px; font-weight:400; color:rgba(255,255,255,0.88); line-height:1.6;}
 
   /* 검색 */
@@ -122,8 +129,13 @@
 <body>
 <header>
   <div class="wrap">
-    <h1>AI 서·논술형 평가 서비스 - 목업 화면 URL 인덱스</h1>
-    <p>개선 예정 화면을 미리 볼 수 있는 목업 모음입니다. 링크를 누르면 새 탭에서 화면이 열려요.<br>업데이트: 2026. 7. 15.</p>
+    <div class="h-flex">
+      <div>
+        <h1>AI 서·논술형 평가 서비스 - 목업 화면 URL 인덱스</h1>
+        <p>개선 예정 화면을 미리 볼 수 있는 목업 모음입니다. 링크를 누르면 새 탭에서 화면이 열려요.<br>업데이트: 2026. 7. 15.</p>
+      </div>
+      <div class="slogan"><img src="../screens/slogan.jpg" alt="경기교육 대전환, 크게 제대로!"></div>
+    </div>
   </div>
 </header>
 
