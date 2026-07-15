@@ -309,185 +309,31 @@
   </div>
 </div>
 
-<!-- ===== OCR 먼저 진행 모달 (B안 1-3반) ===== -->
+<!-- ===== 과제 인식 필요 팝업 (전원 인식 전 · 개발 디자인 1789:15125) ===== -->
 <div id="ocrFirstModal" class="modal-overlay" onclick="if(event.target===this) closeOcrFirstModal()">
-  <div class="modal-box" style="width:520px;">
-
-    <!-- ── 1단계: 안내 ── -->
-    <div id="ocrf-stage1">
-      <div style="padding:28px 28px 0; position:relative;">
-        <button onclick="closeOcrFirstModal()" style="position:absolute;top:16px;right:16px;width:36px;height:36px;background:none;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;border-radius:6px;" onmouseover="this.style.background='#F0F0F0'" onmouseout="this.style.background='none'">
-          <i data-lucide="x" style="width:20px;height:20px;color:#808080;"></i>
-        </button>
-        <!-- 아이콘 + 제목 -->
-        <div style="display:flex;flex-direction:column;align-items:center;gap:16px;text-align:center;padding-bottom:24px;">
-          <div style="width:64px;height:64px;border-radius:20px;background:#F0EAFF;display:flex;align-items:center;justify-content:center;">
-            <i data-lucide="scan-text" style="width:32px;height:32px;color:#7E44FB;"></i>
-          </div>
-          <div>
-            <div style="font-size:20px;font-weight:800;color:#222;margin-bottom:8px;">AI 채점 전 OCR 인식이 필요해요</div>
-            <div style="font-size:14px;color:#494949;line-height:1.65;">1-3반 제출물이 아직 OCR 인식 전이에요.<br>AI가 답안을 인식해야 채점할 수 있어요.</div>
-          </div>
+  <div class="modal-box" style="width:406px;border-radius:16px;padding:28px 20px;">
+    <div style="display:flex;flex-direction:column;gap:24px;">
+      <!-- 아이콘 -->
+      <div style="display:flex;justify-content:center;">
+        <div style="width:44px;height:44px;border-radius:100px;background:#F2EDFF;display:flex;align-items:center;justify-content:center;">
+          <i data-lucide="circle-alert" style="width:22px;height:22px;color:#7E44FB;"></i>
         </div>
       </div>
-      <!-- 안내 카드 -->
-      <div style="padding:0 28px 24px;">
-        <div style="background:#F7F4FF;border:1px solid #E0D2FF;border-radius:12px;padding:16px 20px;display:flex;gap:14px;align-items:flex-start;">
-          <i data-lucide="info" style="width:18px;height:18px;color:#7E44FB;flex-shrink:0;margin-top:2px;"></i>
-          <div style="font-size:14px;color:#341761;line-height:1.65;">
-            <strong>먼저 OCR 인식을 진행합니다.</strong><br>
-            인식 후 확인이 필요한 항목을 검토하거나, 확인 없이 바로 AI 채점을 실행할 수 있어요.
-          </div>
-        </div>
+      <!-- 텍스트 -->
+      <div style="display:flex;flex-direction:column;gap:12px;text-align:center;">
+        <p style="font-size:18px;font-weight:700;color:#333;margin:0;line-height:1.25;">AI 채점 전 과제 인식이 필요해요</p>
+        <p style="font-size:14px;color:#333;margin:0;line-height:1.55;">1-3반 과제물이 아직 인식 전이에요.<br>과제물 관리에서 과제물 인식을 먼저 진행해 주세요.</p>
       </div>
-      <div style="padding:0 28px 28px;display:flex;justify-content:flex-end;gap:12px;">
-        <button onclick="closeOcrFirstModal()" style="background:#F0F0F0;color:#494949;border:none;border-radius:8px;height:40px;padding:0 20px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;">취소</button>
-        <button onclick="startOcrAnalysis()" style="background:#7E44FB;color:white;border:none;border-radius:8px;height:40px;padding:0 20px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;display:inline-flex;align-items:center;gap:8px;">
-          <i data-lucide="scan-text" style="width:16px;height:16px;"></i>OCR 인식 시작하기
-        </button>
+      <!-- 버튼 — 과제물 관리 클릭 시 해당 학급 과제물 상세로 이동 -->
+      <div style="display:flex;gap:12px;">
+        <button onclick="closeOcrFirstModal()" style="flex:1;height:40px;background:transparent;color:#7E44FB;border:1px solid #B28FFD;border-radius:8px;padding:0 16px;font-size:16px;font-weight:700;font-family:inherit;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;line-height:1;vertical-align:middle;">취소</button>
+        <button onclick="location.href='task_ocr_review_v1.html#list'" style="flex:1;height:40px;background:#7E44FB;color:white;border:none;border-radius:8px;padding:0 16px;font-size:16px;font-weight:700;font-family:inherit;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;line-height:1;vertical-align:middle;gap:6px;">과제물 관리<i data-lucide="arrow-right" style="width:20px;height:20px;"></i></button>
+      </div>
+      <!-- 푸터 — 클릭 시 학생 채점 상세(학번 제일 낮은 학생)로 이동 -->
+      <div style="display:flex;justify-content:center;">
+        <a href="scoring_student_v1.html" style="display:inline-flex;align-items:center;gap:4px;font-size:13px;color:#494949;text-decoration:none;cursor:pointer;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">과제물 인식 없이 직접 채점하기<i data-lucide="pen-line" style="width:14px;height:14px;color:#494949;"></i></a>
       </div>
     </div>
-
-    <!-- ── 2단계: 진행 중 ── -->
-    <div id="ocrf-stage2" style="display:none;">
-      <div style="padding:48px 28px 40px;display:flex;flex-direction:column;align-items:center;gap:28px;text-align:center;">
-        <!-- 스피너 -->
-        <div style="width:72px;height:72px;border-radius:50%;background:#F0EAFF;display:flex;align-items:center;justify-content:center;">
-          <i data-lucide="loader-circle" style="width:36px;height:36px;color:#7E44FB;" class="animate-spin"></i>
-        </div>
-        <div>
-          <div style="font-size:20px;font-weight:800;color:#222;margin-bottom:8px;">OCR 인식 중...</div>
-          <div id="ocrf-prog-text" style="font-size:14px;color:#808080;font-weight:700;">9명 중 0명 처리 완료</div>
-        </div>
-        <!-- 프로그레스 바 -->
-        <div style="width:100%;">
-          <div style="background:#F2ECFF;border-radius:8px;height:10px;overflow:hidden;">
-            <div id="ocrf-prog-bar" style="background:#7E44FB;height:100%;border-radius:8px;width:0%;transition:width 0.4s ease;"></div>
-          </div>
-          <div style="display:flex;justify-content:space-between;margin-top:8px;font-size:13px;color:#808080;font-weight:700;">
-            <span>처리 중</span>
-            <span id="ocrf-prog-pct">0%</span>
-          </div>
-        </div>
-        <!-- 현재 처리 학생 -->
-        <div id="ocrf-current-stu" style="font-size:13px;color:#7E44FB;font-weight:700;min-height:20px;"></div>
-        <!-- 소요 시간 안내 -->
-        <div style="font-size:13px;color:#808080;line-height:1.6;text-align:center;">학생당 최대 1분 정도 소요돼요.<br>이 창을 닫아도 인식은 계속 진행됩니다.</div>
-      </div>
-    </div>
-
-    <!-- ── 3단계: 결과 (review) — 확인 필요 있음 ── -->
-    <div id="ocrf-stage3-review" style="display:none;">
-      <div style="padding:28px 28px 0;position:relative;">
-        <button onclick="closeOcrFirstModal()" style="position:absolute;top:16px;right:16px;width:36px;height:36px;background:none;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;border-radius:6px;" onmouseover="this.style.background='#F0F0F0'" onmouseout="this.style.background='none'">
-          <i data-lucide="x" style="width:20px;height:20px;color:#808080;"></i>
-        </button>
-        <div style="display:flex;flex-direction:column;align-items:center;gap:12px;text-align:center;padding-bottom:20px;">
-          <div style="width:64px;height:64px;border-radius:20px;background:#F0EAFF;display:flex;align-items:center;justify-content:center;">
-            <i data-lucide="circle-check-big" style="width:32px;height:32px;color:#7E44FB;"></i>
-          </div>
-          <div>
-            <div style="font-size:20px;font-weight:800;color:#222;margin-bottom:6px;">OCR 인식 완료</div>
-            <div style="font-size:14px;color:#494949;line-height:1.6;">제출 학생 9명의 OCR 인식이 끝났어요.</div>
-          </div>
-          <!-- 요약 칩 -->
-          <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center;">
-            <span style="background:#F1F9F3;border:1px solid #B8E8C8;color:#00AF3D;border-radius:100px;padding:4px 14px;font-size:13px;font-weight:800;">6명 정상 인식</span>
-            <span style="background:#FFF4E8;border:1px solid #FFD6B0;color:#FF8C4C;border-radius:100px;padding:4px 14px;font-size:13px;font-weight:800;">2명 확인 필요</span>
-            <span style="background:#F2F2F2;border:1px solid #DADADA;color:#808080;border-radius:100px;padding:4px 14px;font-size:13px;font-weight:800;">1명 인식 실패</span>
-          </div>
-        </div>
-      </div>
-      <!-- 결과 목록 -->
-      <div style="padding:0 28px 20px;">
-        <div style="border:1px solid #FFD6B0;border-radius:12px;overflow:hidden;background:#FFFAF5;">
-          <div style="padding:10px 16px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #FFD6B0;">
-            <div style="display:flex;align-items:center;gap:8px;">
-              <i data-lucide="triangle-alert" style="width:14px;height:14px;color:#FF8C4C;flex-shrink:0;"></i>
-              <span style="font-size:15px;font-weight:700;color:#333;">10301 이지후</span>
-              <span style="font-size:12px;font-weight:700;background:#FFEDD5;color:#FF8C4C;border-radius:100px;padding:2px 8px;">2개 문항</span>
-            </div>
-            <a href="task_ocr_review_v1.html#ocr=10301" target="_blank" style="font-size:14px;font-weight:700;color:#7E44FB;display:flex;align-items:center;gap:4px;text-decoration:none;">
-              OCR 결과 확인 <i data-lucide="external-link" style="width:13px;height:13px;"></i>
-            </a>
-          </div>
-          <div style="padding:10px 16px;display:flex;align-items:center;justify-content:space-between;">
-            <div style="display:flex;align-items:center;gap:8px;">
-              <i data-lucide="triangle-alert" style="width:14px;height:14px;color:#FF8C4C;flex-shrink:0;"></i>
-              <span style="font-size:15px;font-weight:700;color:#333;">10304 박서준</span>
-              <span style="font-size:12px;font-weight:700;background:#FFEDD5;color:#FF8C4C;border-radius:100px;padding:2px 8px;">2개 문항</span>
-            </div>
-            <a href="task_ocr_review_v1.html#ocr=10304" target="_blank" style="font-size:14px;font-weight:700;color:#7E44FB;display:flex;align-items:center;gap:4px;text-decoration:none;">
-              OCR 결과 확인 <i data-lucide="external-link" style="width:13px;height:13px;"></i>
-            </a>
-          </div>
-        </div>
-        <!-- 인식 실패 (재시도) — 확인 필요와 분리 -->
-        <div style="border:1px solid #DADADA;border-radius:12px;overflow:hidden;background:#F7F7F7;margin-top:10px;">
-          <div style="padding:10px 16px;display:flex;align-items:center;justify-content:space-between;">
-            <div style="display:flex;align-items:center;gap:8px;">
-              <i data-lucide="circle-x" style="width:14px;height:14px;color:#808080;flex-shrink:0;"></i>
-              <span style="font-size:15px;font-weight:700;color:#333;">10307 한다솜</span>
-              <span style="font-size:12px;font-weight:700;background:#ECECEC;color:#808080;border-radius:100px;padding:2px 8px;">인식 실패</span>
-            </div>
-            <button onclick="retryOcrResult(this)" style="font-size:14px;font-weight:700;color:#7E44FB;background:none;border:none;cursor:pointer;display:flex;align-items:center;gap:4px;font-family:inherit;padding:2px 6px;border-radius:4px;" onmouseover="this.style.background='#F0EAFF'" onmouseout="this.style.background='none'">
-              <i data-lucide="rotate-cw" style="width:13px;height:13px;"></i>다시 시도
-            </button>
-          </div>
-        </div>
-      </div>
-      <!-- 액션 버튼 -->
-      <div style="padding:0 28px 28px;display:flex;gap:10px;">
-        <button onclick="location.href='task_ocr_review_v1.html#list'" style="flex:1;background:white;color:#7E44FB;border:1.5px solid #B28FFD;border-radius:10px;height:48px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;">
-          과제물 확인하러 가기
-        </button>
-        <button onclick="closeOcrFirstModal(); proceedToRunModal('ocrFirstModal')" style="flex:1;background:#7E44FB;color:white;border:none;border-radius:10px;height:48px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;">
-          이대로 채점 진행하기
-        </button>
-      </div>
-    </div>
-
-    <!-- ── 3단계: 결과 (clean) — 전원 정상 ── -->
-    <div id="ocrf-stage3-clean" style="display:none;">
-      <div style="padding:28px 28px 0;position:relative;">
-        <button onclick="closeOcrFirstModal()" style="position:absolute;top:16px;right:16px;width:36px;height:36px;background:none;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;border-radius:6px;" onmouseover="this.style.background='#F0F0F0'" onmouseout="this.style.background='none'">
-          <i data-lucide="x" style="width:20px;height:20px;color:#808080;"></i>
-        </button>
-        <div style="display:flex;flex-direction:column;align-items:center;gap:12px;text-align:center;padding-bottom:20px;">
-          <div style="width:64px;height:64px;border-radius:20px;background:#F0EAFF;display:flex;align-items:center;justify-content:center;">
-            <i data-lucide="circle-check-big" style="width:32px;height:32px;color:#7E44FB;"></i>
-          </div>
-          <div>
-            <div style="font-size:20px;font-weight:800;color:#222;margin-bottom:6px;">OCR 인식 완료</div>
-            <div style="font-size:14px;color:#494949;">모든 학생의 제출물이 정상 인식됐어요</div>
-          </div>
-          <!-- 요약 칩 -->
-          <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center;">
-            <span style="background:#F1F9F3;border:1px solid #B8E8C8;color:#00AF3D;border-radius:100px;padding:4px 14px;font-size:13px;font-weight:800;">9명 모두 정상 인식</span>
-          </div>
-        </div>
-      </div>
-      <!-- 결과 메시지 -->
-      <div style="padding:0 28px 20px;">
-        <div style="border:1px solid #B8E8C8;border-radius:12px;background:#F1F9F3;padding:20px;display:flex;align-items:center;gap:14px;">
-          <i data-lucide="shield-check" style="width:22px;height:22px;color:#00AF3D;flex-shrink:0;"></i>
-          <div style="font-size:14px;color:#1D5A2F;line-height:1.65;">
-            <strong>확인이 필요한 항목이 없어요.</strong><br>
-            AI 채점을 바로 진행할 수 있어요.
-          </div>
-        </div>
-      </div>
-      <!-- 액션 버튼 -->
-      <div style="padding:0 28px 28px;display:flex;gap:10px;">
-        <button onclick="closeOcrFirstModal()" style="flex:1;background:white;color:#494949;border:1.5px solid #D9D9D9;border-radius:10px;height:48px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;display:inline-flex;align-items:center;justify-content:center;gap:6px;">
-          닫기
-        </button>
-        <button onclick="closeOcrFirstModal(); proceedToRunModal('ocrFirstModal')" style="flex:1;background:#7E44FB;color:white;border:none;border-radius:10px;height:48px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;display:inline-flex;align-items:center;justify-content:center;gap:6px;">
-          <i data-lucide="wand-sparkles" style="width:16px;height:16px;"></i>바로 채점 진행
-        </button>
-      </div>
-    </div>
-
   </div>
 </div>
 
@@ -932,85 +778,14 @@
   // ── 업데이트 전(기존) 과제 재채점 안내 모달 ──
 
   // ── OCR 먼저 진행 모달 (B안 1-3반 / 1-4반) ──
-  var ocrFirstTimer = null;
-  var ocrFirstCount = 0;
-  var ocrFirstTotal = 9;
-  var ocrFirstVariant = 'review'; // 'review' | 'clean'
-  var ocrFirstStudents = ['10301 이지후','10302 최민준','10303 서예린','10304 박서준','10305 김도현','10306 오지수','10307 한다솜','10308 임현우','10309 강소율'];
-
-  function openOcrFirstModal(variant) {
-    clearInterval(ocrFirstTimer);
-    ocrFirstCount = 0;
-    ocrFirstVariant = variant === 'clean' ? 'clean' : 'review';
-    document.getElementById('ocrf-stage1').style.display = 'block';
-    document.getElementById('ocrf-stage2').style.display = 'none';
-    document.getElementById('ocrf-stage3-review').style.display = 'none';
-    document.getElementById('ocrf-stage3-clean').style.display = 'none';
+  // 과제 인식 필요 팝업 (전원 인식 전 · 1789:15125) — 구 3단계(안내→OCR 진행→결과) 모달 폐지, 확인형 다이얼로그로 대체
+  function openOcrFirstModal() {
     document.getElementById('ocrFirstModal').classList.add('open');
     lucide.createIcons();
   }
 
   function closeOcrFirstModal() {
-    clearInterval(ocrFirstTimer);
     document.getElementById('ocrFirstModal').classList.remove('open');
-  }
-
-  function startOcrAnalysis() {
-    document.getElementById('ocrf-stage1').style.display = 'none';
-    document.getElementById('ocrf-stage2').style.display = 'block';
-    lucide.createIcons();
-    ocrFirstCount = 0;
-    _updateOcrProgress();
-    var interval = Math.round(5000 / ocrFirstTotal); // 5s total
-    ocrFirstTimer = setInterval(function() {
-      ocrFirstCount++;
-      _updateOcrProgress();
-      if (ocrFirstCount >= ocrFirstTotal) {
-        clearInterval(ocrFirstTimer);
-        setTimeout(function() {
-          document.getElementById('ocrf-stage2').style.display = 'none';
-          var targetId = ocrFirstVariant === 'clean' ? 'ocrf-stage3-clean' : 'ocrf-stage3-review';
-          document.getElementById(targetId).style.display = 'block';
-          lucide.createIcons();
-        }, 500);
-      }
-    }, interval);
-  }
-
-  function _updateOcrProgress() {
-    var pct = Math.round(ocrFirstCount / ocrFirstTotal * 100);
-    document.getElementById('ocrf-prog-bar').style.width = pct + '%';
-    document.getElementById('ocrf-prog-pct').textContent = pct + '%';
-    document.getElementById('ocrf-prog-text').textContent = ocrFirstTotal + '명 중 ' + ocrFirstCount + '명 처리 완료';
-    var stuEl = document.getElementById('ocrf-current-stu');
-    if (stuEl) {
-      stuEl.textContent = ocrFirstCount < ocrFirstTotal
-        ? '처리 중: ' + ocrFirstStudents[ocrFirstCount]
-        : '모든 학생 처리 완료 ✓';
-    }
-  }
-
-  // Modal open/close
-  // OCR 진행 결과(stage3)에서 인식 실패 학생 다시 시도 — 재시도 액션
-  function retryOcrResult(btn) {
-    btn.disabled = true;
-    btn.style.cursor = 'default';
-    btn.style.color = '#808080';
-    btn.onmouseover = null; btn.onmouseout = null; btn.style.background = 'none';
-    btn.innerHTML = '<i data-lucide="loader" class="animate-spin" style="width:13px;height:13px;"></i>다시 진행 중';
-    lucide.createIcons();
-    showToast('loading', 'OCR 인식을 다시 진행하고 있습니다...');
-    setTimeout(function() {
-      // 네트워크 오류 등으로 또 실패 — 다시 시도 가능 상태로 복원
-      btn.disabled = false;
-      btn.style.cursor = 'pointer';
-      btn.style.color = '#7E44FB';
-      btn.onmouseover = function() { this.style.background = '#F0EAFF'; };
-      btn.onmouseout = function() { this.style.background = 'none'; };
-      btn.innerHTML = '<i data-lucide="rotate-cw" style="width:13px;height:13px;"></i>다시 시도';
-      lucide.createIcons();
-      showToast('error', 'OCR 인식에 다시 실패했어요. 잠시 후 다시 시도해 주세요.');
-    }, 1800);
   }
 
   function openRunModal() { document.getElementById('runModal').classList.add('open'); lucide.createIcons(); }
