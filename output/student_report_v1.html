@@ -792,5 +792,51 @@ function App(){
 
 ReactDOM.createRoot(document.getElementById("root")).render(<App/>);
 </script>
+
+<!-- ===== 까망이 목업 내비게이터 (드래그·시연용 · 실제 화면 아님) ===== -->
+<style>
+  #mockpick{position:fixed;left:24px;bottom:24px;z-index:3000;background:#1F2233;border-radius:14px;padding:8px;box-shadow:0 10px 30px rgba(0,0,0,.35);width:max-content;max-width:360px;cursor:move;user-select:none;font-family:'NanumSquareRound',-apple-system,sans-serif}
+  #mockpick .mp-head{font-size:11px;font-weight:800;color:#8A8FB0;letter-spacing:.04em;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:6px 8px;cursor:pointer}
+  #mockpick .mp-body{display:flex;flex-direction:column;gap:6px;margin-top:6px}
+  #mockpick .mp-cap{font-size:10px;font-weight:800;color:#6B6F8C;letter-spacing:.05em;padding:7px 8px 2px}
+  #mockpick .mp-btn{width:100%;text-align:left;white-space:nowrap;padding:9px 12px;border-radius:9px;border:1px solid #3A3F58;background:#2A2E44;color:#C9CCE0;font-size:13px;font-weight:700;font-family:inherit;cursor:pointer;line-height:1.35}
+  #mockpick .mp-btn:hover{background:#33384f}
+  #mockpick .mp-btn.on{background:#7E44FB;color:#fff;border-color:#7E44FB}
+  #mockpick .mp-sub{font-size:11px;font-weight:600;color:#8A8FB0;margin-left:8px}
+  #mockpick .mp-btn.on .mp-sub{color:#E6DBFF}
+</style>
+<div id="mockpick">
+  <div class="mp-head" onclick="mpToggle()">
+    <span style="display:inline-flex;align-items:center;gap:6px;">▦ MOCKUP · 평가 리포트 시안</span>
+    <span id="mp-caret" style="display:inline-block;transform:rotate(180deg)">▾</span>
+  </div>
+  <div id="mp-body" class="mp-body" style="display:none">
+    <div class="mp-cap">안1 · 수정최소화 (현행 기반)</div>
+    <button class="mp-btn" data-k="a2" onclick="location.href='report_v2.html'">리포트 목록 <span class="mp-sub">과제·학생별</span></button>
+    <button class="mp-btn" data-k="a2d" onclick="location.href='report_v2.html?view=detail'">리포트 상세 <span class="mp-sub">관찰기록 제외</span></button>
+    <div class="mp-cap">안2 · 최대버전 (기존 리뉴얼)</div>
+    <button class="mp-btn" data-k="a1" onclick="location.href='class_report_v1.html'">수업·학생 리포트 <span class="mp-sub">서브탭 2종</span></button>
+    <button class="mp-btn on" data-k="a1d" onclick="location.href='student_report_v1.html'">리포트 상세 <span class="mp-sub">학생 개인</span></button>
+  </div>
+</div>
+<script>
+  function mpToggle(){
+    const b=document.getElementById('mp-body'), c=document.getElementById('mp-caret');
+    const open=b.style.display!=='none';
+    if(!open){
+      const el=document.getElementById('mockpick'), r=el.getBoundingClientRect();
+      el.style.top='auto'; el.style.bottom=Math.max(16,window.innerHeight-r.bottom)+'px';
+    }
+    b.style.display=open?'none':'flex';
+    if(c) c.style.transform=open?'rotate(180deg)':'';
+  }
+  (function(){
+    const el=document.getElementById('mockpick'); if(!el) return;
+    let dx=0,dy=0,drag=false;
+    el.addEventListener('mousedown',(e)=>{ if(e.target.closest('button')) return; drag=true; const r=el.getBoundingClientRect(); dx=e.clientX-r.left; dy=e.clientY-r.top; el.style.right='auto'; el.style.bottom='auto'; el.style.left=r.left+'px'; el.style.top=r.top+'px'; e.preventDefault(); });
+    document.addEventListener('mousemove',(e)=>{ if(!drag) return; el.style.left=(e.clientX-dx)+'px'; el.style.top=(e.clientY-dy)+'px'; });
+    document.addEventListener('mouseup',()=>{ drag=false; });
+  })();
+</script>
 </body>
 </html>

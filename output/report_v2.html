@@ -1,0 +1,800 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<link rel="icon" href="../screens/favicon_src.png" type="image/png"/>
+<title>평가 리포트 v2 (현행 재현 · 관찰기록 제외)</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<style>
+  @import url('https://cdn.rawgit.com/moonspam/NanumSquareRound/master/nanumsquareround.min.css');
+  *{font-family:'NanumSquareRound',-apple-system,sans-serif;box-sizing:border-box}
+  body{margin:0;background:#EDF1FC;color:#222}
+
+  /* tabs */
+  .tab-active{flex:1;height:60px;background:white;border-radius:20px 20px 0 0;display:flex;align-items:center;justify-content:center;cursor:default;}
+  .tab-inactive{flex:1;height:60px;background:#CBD6F4;border-radius:20px 20px 0 0;display:flex;align-items:center;justify-content:center;cursor:pointer;}
+  .tab-inactive:hover{background:#b9c8f0}
+
+  /* buttons */
+  .btn-pri{background:#7E44FB;color:#fff;border:0;border-radius:8px;height:36px;padding:0 16px;font-size:13px;font-weight:800;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:6px;line-height:1;vertical-align:middle}
+  .btn-pri:hover{background:#6B35E8}
+  .btn-out{background:#fff;color:#7E44FB;border:1px solid #B28FFD;border-radius:8px;height:36px;padding:0 14px;font-size:13px;font-weight:800;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:6px;line-height:1;vertical-align:middle}
+  .btn-out:hover{background:#F7F4FF}
+
+  .section-title{font-size:18px;font-weight:800;color:#222;display:flex;align-items:center;gap:10px;margin-bottom:16px}
+  .section-title::before{content:'';display:inline-block;width:4px;height:20px;background:#7E44FB;border-radius:2px;flex-shrink:0}
+
+  /* table */
+  .tbl{width:100%;border-collapse:collapse}
+  .tbl th{background:#F8F8F8;font-size:13px;font-weight:800;color:#494949;padding:11px 12px;text-align:center;border-bottom:1px solid #E6E6E6}
+  .tbl th.left{text-align:left;padding-left:20px}
+  .tbl td{font-size:13px;font-weight:700;color:#222;padding:11px 12px;text-align:center;border-bottom:1px solid #F0F0F0;vertical-align:middle}
+  .tbl td.left{text-align:left;padding-left:20px}
+  .tbl tbody tr:last-child td{border-bottom:none}
+  .tbl tbody tr.linkrow{cursor:pointer}
+  .tbl tbody tr.linkrow:hover td{background:#FAFAFF}
+  .group-sep td{border-bottom:1.5px solid #E6E6E6 !important}
+  .avg-val{font-size:15px;font-weight:900;color:#7E44FB}
+  .diff-up{color:#00AF3D;font-weight:800}
+  .diff-dn{color:#DB3E51;font-weight:800}
+  .diff-eq{color:#808080;font-weight:800}
+
+  select.filter-sel{border:1px solid #D9D9D9;border-radius:8px;height:36px;padding:0 12px;font-size:13px;font-weight:700;color:#222;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23808080' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") no-repeat right 10px center;padding-right:32px;cursor:pointer;outline:none;-webkit-appearance:none}
+  .page-btn{width:32px;height:32px;border:1px solid #D9D9D9;border-radius:8px;background:#fff;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#494949;transition:all .15s}
+  .page-btn:hover{border-color:#7E44FB;color:#7E44FB}
+  .page-btn.active{background:#7E44FB;color:#fff;border-color:#7E44FB}
+  .report-link{color:#7E44FB;font-weight:800;text-decoration:none;display:inline-flex;align-items:center;justify-content:flex-end;gap:2px;font-size:13px}
+  .report-link:hover{text-decoration:underline}
+  .gnb-menu span{cursor:pointer;transition:color .15s}
+  .gnb-menu span:hover{color:#7E44FB}
+
+  /* ── 상세 ── */
+  .search-pill{display:inline-flex;align-items:center;gap:8px;height:40px;padding:0 14px;border:1px solid #D9D9D9;border-radius:8px;font-size:14px;font-weight:700;color:#222;background:#fff}
+  .search-pill .lbl{font-size:13px;font-weight:800;color:#7E44FB;padding-right:10px;margin-right:2px;border-right:1px solid #E6E6E6}
+  .card{background:#fff;border:1px solid #E6E6E6;border-radius:12px}
+
+  /* 백분위 비교 차트 (폭 고정 — 과제 수와 무관하게 막대 크기 일정, 넘치면 가로 스크롤) */
+  .chart-scroll{overflow-x:auto;padding-left:30px}
+  .chart-grid{position:relative;height:240px;border-left:1px solid #E6E6E6;border-bottom:1px solid #E6E6E6}
+  .glabel{position:absolute;left:-30px;font-size:11px;color:#B3B3B3;font-weight:700;transform:translateY(-50%)}
+  .gline{position:absolute;left:0;right:0;border-top:1px dashed #F0F0F0}
+  .bars{position:absolute;inset:0;display:flex;align-items:flex-end;justify-content:flex-start;padding:0}
+  .bargroup{display:flex;align-items:flex-end;justify-content:center;gap:10px;height:100%;flex:0 0 auto;width:112px}
+  .bar{width:34px;border-radius:6px 6px 0 0;position:relative;display:flex;justify-content:center}
+  .bar .v{position:absolute;top:-20px;font-size:13px;font-weight:900}
+  .bar.stu{background:#7E44FB}
+  .bar.stu .v{color:#7E44FB}
+  .bar.avg{background:#D8C7FE}
+  .bar.avg .v{color:#B28FFD}
+
+  /* 채점요소 점수 pill */
+  .band{display:inline-flex;align-items:center;justify-content:center;min-width:30px;height:28px;padding:0 8px;border-radius:6px;font-size:13px;font-weight:800;background:#F0F0F0;color:#B3B3B3}
+  .band.on{background:#7E44FB;color:#fff}
+
+  /* ── 출력 오버레이 ── */
+  .pv-overlay{position:fixed;inset:0;background:#494949;z-index:2500;display:none;flex-direction:column}
+  .pv-overlay.show{display:flex}
+  .pv-topbar{background:#F8F8F8;border-bottom:1px solid #D9D9D9;padding:12px 24px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-shrink:0}
+  .pv-btn{height:40px;padding:0 16px;border-radius:8px;font-size:14px;font-weight:800;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:6px;line-height:1;border:1px solid #D9D9D9;background:#fff;color:#494949;font-family:inherit}
+  .pv-btn.pri{background:#7E44FB;color:#fff;border-color:#7E44FB}
+  .pv-btn.pri:hover{background:#6B35E8}
+  .pv-btn:disabled{opacity:.4;cursor:default}
+  .pv-sel{display:inline-flex;align-items:center;gap:10px;height:40px;padding:0 14px;border:1px solid #D9D9D9;border-radius:8px;background:#fff;font-size:14px;font-weight:700;color:#222;cursor:pointer}
+  .pv-drop{position:absolute;top:48px;left:0;min-width:260px;background:#fff;border:1px solid #D9D9D9;border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,.15);z-index:10;display:none;max-height:320px;overflow:auto}
+  .pv-drop.open{display:block}
+  .pv-drop-item{padding:11px 14px;font-size:14px;font-weight:700;color:#222;cursor:pointer;white-space:nowrap}
+  .pv-drop-item:hover{background:#F7F4FF}
+  .pv-drop-item.active{background:#F2ECFF;color:#7E44FB}
+  .pv-scroll{flex:1;overflow:auto;padding:28px 24px}
+  .pv-paper{background:#fff;width:794px;min-height:900px;padding:56px 48px;border:1px solid #D9D9D9;box-shadow:0 5px 15px rgba(0,0,0,.35);margin:0 auto}
+
+  /* 모달 (출력 항목 설정 / 학생 선택) */
+  .pv-mov{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:2600;display:none;align-items:center;justify-content:center}
+  .pv-mov.show{display:flex}
+  .pv-modal{background:#fff;border-radius:16px;width:460px;max-height:82vh;display:flex;flex-direction:column;overflow:hidden}
+  .pv-mhead{padding:20px 24px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #F0F0F0}
+  .pv-mhead h4{margin:0;font-size:18px;font-weight:800;color:#222}
+  .pv-mdesc{padding:14px 24px 0;font-size:14px;color:#808080;font-weight:700}
+  .pv-mbody{padding:8px 24px;overflow:auto}
+  .pv-check{display:flex;align-items:center;gap:12px;padding:10px 0;cursor:pointer;font-size:15px;font-weight:700;color:#222}
+  .pv-check input{width:18px;height:18px;accent-color:#7E44FB;cursor:pointer;flex-shrink:0}
+  .pv-mfoot{padding:14px 24px;display:flex;justify-content:flex-end;gap:10px;border-top:1px solid #F0F0F0}
+  .pv-stu-sub{padding:12px 24px;display:flex;justify-content:space-between;align-items:center;font-size:13px;color:#808080;font-weight:700}
+  .pv-stu-all{margin:0 24px;padding:11px 14px;display:flex;align-items:center;gap:10px;background:#F8F8F8;border-radius:8px;cursor:pointer;font-weight:800;font-size:14px;color:#222}
+  .pv-stu-all input{width:18px;height:18px;accent-color:#7E44FB;cursor:pointer;flex-shrink:0}
+  .pv-stu-list{overflow:auto;padding:8px 16px;flex:1}
+  .pv-stu-row{display:flex;align-items:center;gap:12px;padding:11px 8px;border-radius:8px;cursor:pointer}
+  .pv-stu-row:hover{background:#F7F4FF}
+  .pv-stu-row.dis{opacity:.45;cursor:default}
+  .pv-stu-row input{width:18px;height:18px;accent-color:#7E44FB;cursor:pointer;flex-shrink:0}
+  .pv-stu-badge{margin-left:auto;font-size:12px;font-weight:800;border-radius:100px;padding:2px 10px}
+  .pv-stu-badge.ok{background:#F1F9F3;color:#00AF3D}
+  .pv-stu-badge.no{background:#FFEFEF;color:#DB3E51}
+
+  /* 출력 종이 섹션 */
+  .pp-head{border-bottom:2px solid #341761;padding-bottom:16px;margin-bottom:28px}
+  .pp-sec{margin-bottom:28px}
+  .pp-sec-title{font-size:16px;font-weight:800;color:#341761;margin-bottom:14px;padding-left:10px;border-left:3px solid #7E44FB}
+
+  @media print{
+    body>*:not(#printOverlay){display:none!important}
+    #printOverlay{position:static;background:#fff;display:block}
+    .pv-topbar,.pv-mov{display:none!important}
+    .pv-scroll{overflow:visible;padding:0}
+    .pv-paper{box-shadow:none;border:none;width:auto;padding:0}
+  }
+
+  /* 까망이 목업 내비게이터 (시연용 · 실제 화면 아님) */
+  #mockpick{position:fixed;left:24px;bottom:24px;z-index:3000;background:#1F2233;border-radius:14px;padding:8px;box-shadow:0 10px 30px rgba(0,0,0,.35);width:max-content;max-width:360px;cursor:move;user-select:none}
+  #mockpick .mp-head{font-size:11px;font-weight:800;color:#8A8FB0;letter-spacing:.04em;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:6px 8px;cursor:pointer}
+  #mockpick .mp-body{display:flex;flex-direction:column;gap:6px;margin-top:6px}
+  #mockpick .mp-cap{font-size:10px;font-weight:800;color:#6B6F8C;letter-spacing:.05em;padding:7px 8px 2px}
+  #mockpick .mp-btn{width:100%;text-align:left;white-space:nowrap;padding:9px 12px;border-radius:9px;border:1px solid #3A3F58;background:#2A2E44;color:#C9CCE0;font-size:13px;font-weight:700;font-family:inherit;cursor:pointer;line-height:1.35}
+  #mockpick .mp-btn:hover{background:#33384f}
+  #mockpick .mp-btn.on{background:#7E44FB;color:#fff;border-color:#7E44FB}
+  #mockpick .mp-sub{font-size:11px;font-weight:600;color:#8A8FB0;margin-left:8px}
+  #mockpick .mp-btn.on .mp-sub{color:#E6DBFF}
+</style>
+</head>
+<body>
+
+<!-- ── GNB ── -->
+<div style="background:#fff;height:98px;border-bottom:1px solid #D9D9D9;display:flex;align-items:center;justify-content:center;padding:0 36px">
+  <div style="flex:1;max-width:1200px;min-width:960px;display:flex;align-items:center;justify-content:space-between;padding:0 36px">
+    <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
+      <div style="width:58px;height:42px;overflow:hidden;position:relative;flex-shrink:0">
+        <img src="../screens/logo_icon.png" style="position:absolute;left:50%;transform:translateX(-50%);height:100%;width:auto;object-fit:cover" alt="HIAI 로고">
+      </div>
+      <div style="position:relative;width:150px;height:41px">
+        <img src="../screens/logo_text_top.svg" style="position:absolute;top:0;left:0;width:79.842px;height:16.284px" alt="하이러닝 AI">
+        <img src="../screens/logo_text_bottom.svg" style="position:absolute;top:24.08px;left:0.31px;width:149.692px;height:16.422px" alt="서논술형 평가 서비스">
+      </div>
+    </div>
+    <div class="gnb-menu" style="display:flex;align-items:center;gap:52px;font-size:20px">
+      <span style="color:#7E44FB;font-weight:800">나의 평가</span>
+      <span style="color:#000;font-weight:700">평가 자료실</span>
+      <span style="color:#000;font-weight:700">고객센터</span>
+    </div>
+    <div style="display:flex;align-items:center;gap:12px">
+      <div style="width:36px;height:36px;background:#F0EAFF;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#7E44FB" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 8V4H8"/><rect width="16" height="12" x="4" y="8" rx="2"/><path d="M2 14h2"/><path d="M20 14h2"/><path d="M15 13v2"/><path d="M9 13v2"/>
+        </svg>
+      </div>
+      <span style="font-size:20px;font-weight:700">김동* 님</span>
+    </div>
+  </div>
+</div>
+
+<!-- ── TitleBar ── -->
+<div style="background:linear-gradient(to right,#6562F5 4%,#9B68F3 97.86%);height:86px;display:flex;align-items:center;justify-content:center;padding:0 36px">
+  <div style="flex:1;max-width:1200px;min-width:960px;padding:0 36px;display:flex;align-items:center;gap:16px">
+    <button id="backBtn" onclick="showList()" style="display:none;width:36px;height:36px;background:rgba(255,255,255,0.2);border:none;border-radius:8px;cursor:pointer;align-items:center;justify-content:center;flex-shrink:0">
+      <i data-lucide="arrow-left" style="width:20px;height:20px;color:#fff"></i>
+    </button>
+    <span style="font-size:28px;font-weight:800;color:#fff">1학년 국어</span>
+    <span id="titleSuffix" style="display:none;align-items:center;gap:16px">
+      <span style="width:1px;height:24px;background:rgba(255,255,255,0.5);display:inline-block"></span>
+      <span style="font-size:24px;font-weight:700;color:#fff">리포트 상세</span>
+    </span>
+  </div>
+</div>
+
+<!-- ── Content ── -->
+<div style="display:flex;flex-direction:column;align-items:center;padding:40px 36px;min-height:760px">
+  <div style="width:100%;max-width:1200px;padding:0 36px">
+
+    <!-- Tabs -->
+    <div style="display:flex;gap:12px">
+      <div class="tab-inactive" onclick="location.href='eval_home_v9_260713.html'"><span style="font-size:20px;font-weight:700;color:#000">평가 홈</span></div>
+      <div class="tab-inactive"><span style="font-size:20px;font-weight:700;color:#000">평가 대상</span></div>
+      <div class="tab-inactive" onclick="location.href='evaluation_design_v4_260713.html'"><span style="font-size:20px;font-weight:700;color:#000">평가 설계</span></div>
+      <div class="tab-inactive" onclick="location.href='task_ocr_review_v1.html'"><span style="font-size:20px;font-weight:700;color:#000">과제물 관리</span></div>
+      <div class="tab-inactive" onclick="location.href='scoring_list_v1.html'"><span style="font-size:20px;font-weight:700;color:#000">AI 채점</span></div>
+      <div class="tab-active"><span style="font-size:20px;font-weight:800;color:#341761">평가 리포트</span></div>
+    </div>
+
+    <!-- Panel -->
+    <div style="background:#fff;border-radius:0 0 20px 20px;padding:28px 24px;box-shadow:0 4px 36px rgba(95,102,178,0.16)">
+
+      <!-- ══════════ LIST VIEW ══════════ -->
+      <div id="listView">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:32px">
+          <div>
+            <div style="font-size:24px;font-weight:800;color:#222;margin-bottom:6px">평가 리포트</div>
+            <div style="font-size:14px;color:#808080;font-weight:700">실시된 평가 결과를 확인하고 엑셀로 다운받을 수 있습니다.</div>
+          </div>
+          <div style="display:flex;gap:10px">
+            <button class="btn-out" onclick="openPrintList()"><i data-lucide="printer" style="width:16px;height:16px"></i>리포트 출력</button>
+            <button class="btn-pri"><i data-lucide="download" style="width:16px;height:16px"></i>평가 점수 다운로드</button>
+          </div>
+        </div>
+
+        <!-- Section 1: 과제별 평균 점수 -->
+        <div style="margin-bottom:40px">
+          <div class="section-title">과제별 평균 점수</div>
+          <div style="border:1px solid #E6E6E6;border-radius:12px;overflow:hidden">
+            <table class="tbl">
+              <thead>
+                <tr>
+                  <th class="left" style="width:220px">과제</th>
+                  <th style="width:100px">전체 평균</th>
+                  <th style="width:72px">반</th>
+                  <th style="width:100px">반 평균</th>
+                  <th style="width:110px">평균대비</th>
+                  <th style="width:72px">인원</th>
+                  <th style="width:120px">미응시/미제출</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="left" rowspan="3" style="border-right:1px solid #F0F0F0;font-size:14px;font-weight:800">미래 사회 예측 시나리오</td>
+                  <td rowspan="3" class="avg-val" style="border-right:1px solid #F0F0F0">26.1</td>
+                  <td>1-1</td><td>30.1</td><td><span class="diff-up">▲ 4.0</span></td><td>20</td><td>2</td>
+                </tr>
+                <tr><td>1-2</td><td>26.1</td><td><span class="diff-eq">— 0.0</span></td><td>20</td><td>2</td></tr>
+                <tr class="group-sep"><td>1-3</td><td>24.1</td><td><span class="diff-dn">▼ 2.0</span></td><td>20</td><td>2</td></tr>
+                <tr>
+                  <td class="left" rowspan="3" style="border-right:1px solid #F0F0F0;font-size:14px;font-weight:800">독후감 1차 과제</td>
+                  <td rowspan="3" class="avg-val" style="border-right:1px solid #F0F0F0">26.4</td>
+                  <td>1-1</td><td>27.0</td><td><span class="diff-up">▲ 0.6</span></td><td>20</td><td>2</td>
+                </tr>
+                <tr><td>1-2</td><td>25.0</td><td><span class="diff-dn">▼ 1.4</span></td><td>20</td><td>2</td></tr>
+                <tr class="group-sep"><td>1-3</td><td>27.0</td><td><span class="diff-up">▲ 0.6</span></td><td>20</td><td>2</td></tr>
+                <tr>
+                  <td class="left" rowspan="3" style="border-right:1px solid #F0F0F0;font-size:14px;font-weight:800">독후감 2차 과제</td>
+                  <td rowspan="3" class="avg-val" style="border-right:1px solid #F0F0F0">24.8</td>
+                  <td>1-1</td><td>25.0</td><td><span class="diff-up">▲ 0.2</span></td><td>20</td><td>5</td>
+                </tr>
+                <tr><td>1-2</td><td>23.0</td><td><span class="diff-dn">▼ 1.8</span></td><td>20</td><td>5</td></tr>
+                <tr><td>1-3</td><td>26.0</td><td><span class="diff-up">▲ 1.2</span></td><td>20</td><td>5</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Section 2: 학생별 평가 리포트 -->
+        <div>
+          <div class="section-title">학생별 평가 리포트</div>
+          <div style="display:flex;gap:12px;margin-bottom:16px">
+            <select class="filter-sel" onchange="onListClsChange(this.value)">
+              <option value="1-2">1-2반</option><option value="전체">전체</option><option value="1-1">1-1반</option><option value="1-3">1-3반</option>
+            </select>
+            <select class="filter-sel"><option>학번 순</option><option>이름 순</option><option>총점 높은 순</option><option>총점 낮은 순</option></select>
+          </div>
+          <div style="border:1px solid #E6E6E6;border-radius:12px;overflow:hidden">
+            <table class="tbl">
+              <thead>
+                <tr>
+                  <th style="width:72px">반</th>
+                  <th style="width:88px">학번</th>
+                  <th style="width:90px">이름</th>
+                  <th style="width:72px">총점</th>
+                  <th style="width:80px">과제1</th>
+                  <th style="width:80px">과제2</th>
+                  <th style="width:80px">과제3</th>
+                  <th style="text-align:right;padding-right:20px">평가 리포트</th>
+                </tr>
+              </thead>
+              <tbody id="studentRows"></tbody>
+            </table>
+          </div>
+          <div style="display:flex;justify-content:center;align-items:center;gap:6px;margin-top:20px">
+            <button class="page-btn"><i data-lucide="chevron-left" style="width:14px;height:14px"></i></button>
+            <button class="page-btn active">1</button>
+            <button class="page-btn">2</button>
+            <button class="page-btn">3</button>
+            <button class="page-btn">4</button>
+            <button class="page-btn">5</button>
+            <button class="page-btn"><i data-lucide="chevron-right" style="width:14px;height:14px"></i></button>
+          </div>
+        </div>
+      </div><!-- /listView -->
+
+      <!-- ══════════ DETAIL VIEW ══════════ -->
+      <div id="detailView" style="display:none">
+        <!-- Heading -->
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:24px">
+          <div>
+            <div id="dTitle" style="font-size:24px;font-weight:800;color:#222;margin-bottom:6px"></div>
+            <div style="font-size:14px;color:#808080;font-weight:700">학생별 평가 결과를 정리된 리포트로 조회할 수 있습니다.</div>
+          </div>
+          <button class="btn-pri" style="height:40px;font-size:14px" onclick="openPrint()"><i data-lucide="printer" style="width:16px;height:16px"></i>출력</button>
+        </div>
+
+        <!-- 대상 검색 -->
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:24px">
+          <span style="font-size:13px;font-weight:800;color:#494949;margin-right:2px">대상 검색</span>
+          <div class="search-pill"><span id="dCls">1-2</span> <i data-lucide="chevron-down" style="width:14px;height:14px;color:#808080"></i></div>
+          <div class="search-pill" style="min-width:280px;justify-content:space-between"><span id="dWho">10201 김하나</span> <i data-lucide="chevron-down" style="width:14px;height:14px;color:#808080"></i></div>
+        </div>
+
+        <!-- student_graph: 프로필 + 백분위 비교 (빌더로 렌더 — 출력과 동일 컴포넌트) -->
+        <div id="graphRow" style="display:flex;gap:16px;margin-bottom:32px"></div>
+
+        <!-- 평가 결과 (전체 너비 · 관찰기록 제거됨) -->
+        <div>
+          <div class="section-title">평가 결과</div>
+          <div id="resultCards" style="display:flex;flex-direction:column;gap:14px"></div>
+        </div>
+      </div><!-- /detailView -->
+
+    </div><!-- /panel -->
+  </div>
+</div>
+
+<!-- ── Footer ── -->
+<footer style="background:#fff;border-top:1px solid #E6E6E6;padding:28px 36px">
+  <div style="max-width:1200px;margin:0 auto;padding:0 36px">
+    <div style="display:flex;gap:24px;margin-bottom:12px;flex-wrap:wrap;align-items:center">
+      <span style="font-size:11px;color:#B3B3B3">경기도교육청</span>
+      <span style="font-size:11px;color:#B3B3B3">경기도융합과학교육원</span>
+      <span style="font-size:11px;color:#B3B3B3">EBS 온라인 클래스</span>
+    </div>
+    <div style="display:flex;gap:16px;font-size:12px;color:#808080;font-weight:700;margin-bottom:6px">
+      <span>개인정보처리방침</span><span>이용약관</span><span>오픈소스 라이선스</span>
+    </div>
+    <div style="font-size:12px;color:#B3B3B3">AI 서·논술형 평가 서비스 고객센터 &nbsp;·&nbsp; 공지사항 &nbsp;·&nbsp; 자주 묻는 질문 &nbsp;·&nbsp; 1:1 문의</div>
+  </div>
+</footer>
+
+<!-- ── 출력 오버레이 ── -->
+<div class="pv-overlay" id="printOverlay">
+  <div class="pv-topbar">
+    <div style="display:flex;align-items:center;gap:12px">
+      <div style="position:relative">
+        <div class="pv-sel" onclick="pvToggleDrop()">
+          <span id="pvSelLabel">10201 김하나</span>
+          <i data-lucide="chevron-down" style="width:18px;height:18px;color:#808080"></i>
+        </div>
+        <div class="pv-drop" id="pvDrop"></div>
+      </div>
+      <span style="display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:800;color:#7E44FB;background:#F2ECFF;border-radius:100px;padding:5px 12px"><i data-lucide="users" style="width:14px;height:14px"></i><span id="pvScopeLabel">1-2반</span> 출력</span>
+    </div>
+    <div style="display:flex;align-items:center;gap:10px">
+      <button class="pv-btn" onclick="pvOpenItems()"><i data-lucide="settings" style="width:18px;height:18px"></i>출력 범위 설정</button>
+      <button class="pv-btn pri" onclick="pvOpenStu()"><i data-lucide="printer" style="width:18px;height:18px"></i>출력</button>
+      <button class="pv-btn" onclick="pvClose()"><i data-lucide="x" style="width:18px;height:18px"></i>닫기</button>
+    </div>
+  </div>
+  <div class="pv-scroll">
+    <div class="pv-paper" id="pvPaper"></div>
+  </div>
+</div>
+
+<!-- 학급 선택 팝업 (목록 '리포트 출력' 진입) -->
+<div class="pv-mov" id="pvClsModal">
+  <div class="pv-modal" style="width:420px">
+    <div class="pv-mhead">
+      <h4>출력할 학급 선택</h4>
+      <button style="border:0;background:transparent;cursor:pointer" onclick="pvCloseClsPick()"><i data-lucide="x" style="width:20px;height:20px;color:#494949"></i></button>
+    </div>
+    <div class="pv-mdesc">학급 단위로 리포트를 출력합니다. 한 번에 한 학급을 선택해 주세요.</div>
+    <div class="pv-mbody" id="pvClsList" style="display:flex;flex-direction:column;gap:4px"></div>
+    <div class="pv-mfoot">
+      <button class="pv-btn" onclick="pvCloseClsPick()">취소</button>
+      <button class="pv-btn pri" onclick="pvConfirmClsPick()">다음</button>
+    </div>
+  </div>
+</div>
+
+<!-- 출력 범위 설정 모달 -->
+<div class="pv-mov" id="pvItemsModal">
+  <div class="pv-modal">
+    <div class="pv-mhead">
+      <h4>출력 범위 설정</h4>
+      <button style="border:0;background:transparent;cursor:pointer" onclick="pvCloseItems()"><i data-lucide="x" style="width:20px;height:20px;color:#494949"></i></button>
+    </div>
+    <div class="pv-mdesc">학생에게 배부할 출력물의 점수 공개 범위와 포함 항목을 선택해 주세요.</div>
+    <div class="pv-mbody">
+      <div style="font-size:12px;font-weight:800;color:#B3B3B3;letter-spacing:.04em;margin:8px 0 2px">점수 공개 범위</div>
+      <label class="pv-check"><input type="radio" name="it-score" value="stu" onchange="pvRenderPaper()">학생 점수만 공개</label>
+      <label class="pv-check"><input type="radio" name="it-score" value="both" checked onchange="pvRenderPaper()">학생 점수 · 반 평균 공개</label>
+      <label class="pv-check"><input type="radio" name="it-score" value="none" onchange="pvRenderPaper()">점수 미공개 <span style="font-weight:600;color:#808080;font-size:13px">(피드백만 제공)</span></label>
+      <div style="height:1px;background:#F0F0F0;margin:12px 0"></div>
+      <div style="font-size:12px;font-weight:800;color:#B3B3B3;letter-spacing:.04em;margin:2px 0 2px">포함 항목</div>
+      <label class="pv-check"><input type="checkbox" id="it-chart" checked onchange="pvRenderPaper()">평가 결과 백분위 비교</label>
+      <label class="pv-check"><input type="checkbox" id="it-ai" checked onchange="pvRenderPaper()">과제별 AI 피드백</label>
+      <label class="pv-check"><input type="checkbox" id="it-info" checked onchange="pvRenderPaper()">학생 정보 (총점·미제출)</label>
+    </div>
+    <div class="pv-mfoot">
+      <button class="pv-btn" onclick="pvCloseItems()">취소</button>
+      <button class="pv-btn pri" onclick="pvCloseItems()">적용</button>
+    </div>
+  </div>
+</div>
+
+<!-- 출력할 학생 선택 팝업 -->
+<div class="pv-mov" id="pvStuModal">
+  <div class="pv-modal">
+    <div class="pv-mhead">
+      <h4>출력할 학생 선택</h4>
+      <button style="border:0;background:transparent;cursor:pointer" onclick="pvCloseStu()"><i data-lucide="x" style="width:20px;height:20px;color:#494949"></i></button>
+    </div>
+    <div class="pv-stu-sub"><span><strong id="pvStuScope" style="color:#7E44FB">1-2반</strong> · 선택한 순서대로 인쇄됩니다</span><strong id="pvStuCount" style="color:#7E44FB">1명 선택됨</strong></div>
+    <label class="pv-stu-all"><input type="checkbox" id="pv-all" onchange="pvToggleAll()">전체 선택</label>
+    <div class="pv-stu-list" id="pvStuList"></div>
+    <div class="pv-mfoot">
+      <button class="pv-btn" onclick="pvCloseStu()">취소</button>
+      <button class="pv-btn pri" id="pvStuConfirm" onclick="pvConfirmStu()"><i data-lucide="printer" style="width:18px;height:18px"></i><span id="pvStuBtnLabel">1명 PDF 출력</span></button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 까망이 목업 내비게이터 (드래그·시연용 · 실제 화면 아님) ===== -->
+<div id="mockpick">
+  <div class="mp-head" onclick="mpToggle()">
+    <span style="display:inline-flex;align-items:center;gap:6px;"><i data-lucide="layout-grid" style="width:13px;height:13px;"></i>MOCKUP · 평가 리포트 시안</span>
+    <i id="mp-caret" data-lucide="chevron-down" style="width:14px;height:14px;transform:rotate(180deg);"></i>
+  </div>
+  <div id="mp-body" class="mp-body" style="display:none">
+    <div class="mp-cap">안1 · 수정최소화 (현행 기반)</div>
+    <button class="mp-btn" data-k="a2" onclick="mpGo('a2')">리포트 목록 <span class="mp-sub">과제·학생별</span></button>
+    <button class="mp-btn" data-k="a2d" onclick="mpGo('a2d')">리포트 상세 <span class="mp-sub">관찰기록 제외</span></button>
+    <div class="mp-cap">안2 · 최대버전 (기존 리뉴얼)</div>
+    <button class="mp-btn" data-k="a1" onclick="location.href='class_report_v1.html'">수업·학생 리포트 <span class="mp-sub">서브탭 2종</span></button>
+    <button class="mp-btn" data-k="a1d" onclick="location.href='student_report_v1.html'">리포트 상세 <span class="mp-sub">학생 개인</span></button>
+  </div>
+</div>
+
+<script>
+// ── 학생 데이터 (목록 = 상세 동기화) ──
+const STUDENTS = [
+  {cls:"1-2",id:"10201",name:"김하나",num:1, total:30, s:[30,null,null], miss:2,
+    comp:[85,0,0],
+    results:[
+      {t:"미래 사회 예측 시나리오",score:15,max:15,rows:[["다양한 자료를 활용하였는가",[15,10,5],15],["자신의 경험을 반영하였는가",[15,10,5],15]],
+       ai:"미래 사회에 대한 다양한 관점을 폭넓게 조사하여 자료를 풍부하게 활용하였습니다. 특히 인용한 통계와 사례가 주장을 설득력 있게 뒷받침하며, 도입부 구조가 명확해 읽는 이가 흐름을 쉽게 따라갈 수 있었습니다."}
+    ]},
+  {cls:"1-2",id:"10202",name:"최민지",num:2, total:60, s:[30,20,10], miss:0,
+    comp:[100,82,88],
+    results:[
+      {t:"미래 사회 예측 시나리오",score:30,max:30,rows:[["다양한 자료를 활용하였는가",[15,10,5],15],["자신의 경험을 반영하였는가",[15,10,5],15]],
+       ai:"자료 활용과 경험 반영 모두 우수합니다. 조사한 근거를 자신의 생각과 자연스럽게 연결하여 설득력 있는 글을 완성했습니다."},
+      {t:"독후감 1차 과제",score:20,max:30,rows:[["다양한 자료를 활용하였는가",[15,10,5],10],["자신의 경험을 반영하였는가",[15,10,5],10]],
+       ai:"책의 핵심 메시지를 정확히 파악했습니다. 경험을 조금 더 구체적으로 서술하면 글의 깊이가 한층 살아날 것입니다."},
+      {t:"독후감 2차 과제",score:10,max:30,rows:[["다양한 자료를 활용하였는가",[15,10,5],5],["자신의 경험을 반영하였는가",[15,10,5],5]],
+       ai:"주제를 성실히 다루었으나 근거 제시가 다소 부족합니다. 주장마다 두 줄 이상 근거를 붙이는 연습을 권합니다."}
+    ]},
+  {cls:"1-2",id:"10203",name:"이하린",num:3, total:null, s:[null,null,null], miss:3, noReport:true},
+  {cls:"1-2",id:"10204",name:"한아영",num:4, total:60, s:[30,20,10], miss:0,
+    comp:[92,80,84],
+    results:[
+      {t:"미래 사회 예측 시나리오",score:30,max:30,rows:[["다양한 자료를 활용하였는가",[15,10,5],15],["자신의 경험을 반영하였는가",[15,10,5],15]],
+       ai:"자료를 논리적으로 재구성하는 능력이 돋보입니다. 문단 간 연결이 매끄러워 완성도가 높습니다."},
+      {t:"독후감 1차 과제",score:20,max:30,rows:[["다양한 자료를 활용하였는가",[15,10,5],15],["자신의 경험을 반영하였는가",[15,10,5],5]],
+       ai:"자료 활용은 안정적입니다. 자신의 경험을 한 줄이라도 글에 녹여내면 개성이 더 잘 드러날 것입니다."},
+      {t:"독후감 2차 과제",score:10,max:30,rows:[["다양한 자료를 활용하였는가",[15,10,5],5],["자신의 경험을 반영하였는가",[15,10,5],5]],
+       ai:"성실하게 마무리했습니다. 근거를 사례로 확장하는 연습을 이어가면 좋겠습니다."}
+    ]},
+  {cls:"1-2",id:"10205",name:"김민경",num:5, total:60, s:[30,20,10], miss:0,
+    comp:[88,81,79],
+    results:[
+      {t:"미래 사회 예측 시나리오",score:30,max:30,rows:[["다양한 자료를 활용하였는가",[15,10,5],15],["자신의 경험을 반영하였는가",[15,10,5],15]],
+       ai:"다양한 자료를 균형 있게 활용했습니다. 주장과 근거의 짜임이 탄탄합니다."},
+      {t:"독후감 1차 과제",score:20,max:30,rows:[["다양한 자료를 활용하였는가",[15,10,5],10],["자신의 경험을 반영하였는가",[15,10,5],10]],
+       ai:"핵심 파악이 정확합니다. 문장 호흡을 조금 더 다듬으면 전달력이 높아집니다."},
+      {t:"독후감 2차 과제",score:10,max:30,rows:[["다양한 자료를 활용하였는가",[15,10,5],5],["자신의 경험을 반영하였는가",[15,10,5],5]],
+       ai:"끝까지 성실히 참여했습니다. 근거를 두 가지 이상 제시하는 연습을 권합니다."}
+    ]},
+];
+const TASKS = ["미래 사회 예측 시나리오","독후감 2차 과제","독후감 3차 과제"];
+
+/* ── 1-1 · 1-3 학급 로스터 (반 단위 출력 데모용, 생성기로 결과 채움) ── */
+const _TN=["미래 사회 예측 시나리오","독후감 1차 과제","독후감 2차 과제"];
+const _CRIT=["다양한 자료를 활용하였는가","자신의 경험을 반영하였는가"];
+function _pair(sc){const o=[[15,15,30],[15,10,25],[10,10,20],[15,5,20],[10,5,15],[5,5,10]];let b=o[0],bd=1e9;for(const x of o){const d=Math.abs(x[2]-sc);if(d<bd){bd=d;b=x;}}return[b[0],b[1]];}
+function _ai(sc){if(sc>=25)return"자료 활용과 서술 구성이 모두 우수합니다. 근거와 주장의 연결이 자연스럽습니다.";if(sc>=15)return"핵심은 잘 파악했습니다. 경험을 조금 더 구체적으로 덧붙이면 글의 깊이가 살아납니다.";return"주제를 성실히 다루었으나 근거 제시가 부족합니다. 주장마다 근거를 두 줄 이상 붙이는 연습을 권합니다.";}
+function _genResults(s3){return s3.map((sc,i)=>{if(sc==null)return null;const p=_pair(sc);return{t:_TN[i],score:p[0]+p[1],max:30,rows:[[_CRIT[0],[15,10,5],p[0]],[_CRIT[1],[15,10,5],p[1]]],ai:_ai(sc)};}).filter(Boolean);}
+[
+  ["1-1","10101","강지훈",1,[28,27,26]],["1-1","10102","김서연",2,[26,25,24]],["1-1","10103","박민준",3,[14,13,11]],["1-1","10104","이수정",4,[22,21,20]],["1-1","10105","최유진",5,[29,28,27]],
+  ["1-3","10301","정우성",1,[22,18,15]],["1-3","10302","오수민",2,[28,28,27]],["1-3","10303","윤지호",3,[14,13,13]],["1-3","10304","임채원",4,[26,25,24]],["1-3","10305","류승민",5,[19,18,17]],
+].forEach(([cls,id,name,num,s3])=>{
+  const total=s3.reduce((a,b)=>a+(b||0),0);
+  const comp=s3.map(v=>v==null?0:Math.min(100,Math.round(v/30*100)));
+  STUDENTS.push({cls,id,name,num,total,s:s3.slice(),miss:0,comp,results:_genResults(s3)});
+});
+
+// 한국어 조사
+function hasBatchim(s){const c=s[s.length-1].charCodeAt(0);return (c-0xAC00)%28!==0;}
+function subj(n){return hasBatchim(n)?n+"이의":n+"의";}
+
+// ── 목록 렌더 (반 필터) ──
+let listCls = "1-2";
+function onListClsChange(v){ listCls = v; renderList(); }
+function renderList(){
+  const tb=document.getElementById("studentRows");
+  const rows = listCls==="전체" ? STUDENTS : STUDENTS.filter(s=>s.cls===listCls);
+  tb.innerHTML = rows.map(s=>{
+    const cell=v=>v==null?'<td style="color:#B3B3B3">—</td>':`<td>${v}</td>`;
+    const tot=s.total==null?'<td style="color:#B3B3B3">—</td>':`<td style="font-weight:900;color:#7E44FB">${s.total}</td>`;
+    return `<tr class="linkrow" onclick="showDetail('${s.id}')">
+      <td>${s.cls}</td><td>${s.id}</td><td style="font-weight:800">${s.name}</td>
+      ${tot}${cell(s.s[0])}${cell(s.s[1])}${cell(s.s[2])}
+      <td style="text-align:right;padding-right:20px"><a class="report-link" onclick="event.stopPropagation();showDetail('${s.id}')">리포트 상세 <i data-lucide="chevron-right" style="width:14px;height:14px"></i></a></td>
+    </tr>`;
+  }).join("");
+  lucide.createIcons();
+}
+
+/* ══════════ 리포트 본문 빌더 (화면·출력 공용) ══════════ */
+// 프로필 카드
+function buildProfileCard(s){
+  return `<div class="card" style="width:264px;flex-shrink:0;padding:28px 20px;display:flex;flex-direction:column;align-items:center">
+    <div style="width:96px;height:96px;border-radius:50%;background:radial-gradient(circle at 50% 40%,#B8F1E4,#8FE3D2);display:flex;align-items:center;justify-content:center;font-size:48px">🐤</div>
+    <div style="font-size:18px;font-weight:900;margin-top:14px">${s.name}</div>
+    <div style="font-size:13px;color:#808080;font-weight:700;margin-top:3px">1학년 ${s.cls.split("-")[1]}반 ${s.num}번</div>
+    <div style="width:100%;height:1px;background:#F0F0F0;margin:20px 0"></div>
+    <div style="width:100%;display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+      <span style="font-size:14px;color:#808080;font-weight:700">총점</span>
+      <span><span style="font-size:20px;font-weight:900;color:#7E44FB">${s.total}</span><span style="font-size:14px;color:#808080;font-weight:700">점</span></span>
+    </div>
+    <div style="width:100%;display:flex;justify-content:space-between;align-items:center">
+      <span style="font-size:14px;color:#808080;font-weight:700">미제출/미응시</span>
+      <span><span style="font-size:20px;font-weight:900;color:#222">${s.miss}</span><span style="font-size:14px;color:#808080;font-weight:700">건</span></span>
+    </div>
+  </div>`;
+}
+// 백분위 비교 차트 카드 (가로막대 — 과제를 세로로 쌓아 과제 수와 무관하게 확장)
+function _hbar(label,val,color,textColor){
+  return `<div style="display:flex;align-items:center;gap:10px">
+    <span style="width:52px;font-size:11px;font-weight:700;color:#808080;flex-shrink:0">${label}</span>
+    <div style="flex:1;height:20px;background:#F4F2FB;border-radius:6px;min-width:0"><div style="height:100%;width:${val}%;background:${color};border-radius:6px"></div></div>
+    <span style="width:32px;text-align:right;font-size:14px;font-weight:900;color:${textColor||color}">${val}</span>
+  </div>`;
+}
+function buildChartCard(s,opts){
+  const o=Object.assign({classAvg:true},opts||{});
+  const avg=[82,82,82];
+  const rows=s.comp.map((stu,i)=>{
+    const done = !s.s || s.s[i]!=null;
+    const body = done
+      ? `<div style="flex:1;display:flex;flex-direction:column;gap:8px;min-width:0">${_hbar('학생 점수',stu,'#7E44FB')}${o.classAvg?_hbar('반 평균',avg[i],'#D8C7FE','#B28FFD'):''}</div>`
+      : `<div style="flex:1;font-size:13px;color:#B3B3B3;font-weight:700">미실시</div>`;
+    return `<div style="display:flex;align-items:center;gap:16px">
+      <div style="width:150px;flex-shrink:0;text-align:right;font-size:13px;font-weight:800;color:#341761">${TASKS[i]||('과제 '+(i+1))}</div>
+      ${body}
+    </div>`;
+  }).join('<div style="height:1px;background:#F5F5F5;margin:14px 0"></div>');
+  return `<div class="card" style="flex:1;padding:24px 28px 22px">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
+      <div class="section-title" style="margin-bottom:0">평가 결과 백분위 비교</div>
+      <div style="display:flex;gap:16px">
+        <span style="display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;color:#494949"><span style="width:10px;height:10px;border-radius:3px;background:#7E44FB;display:inline-block"></span>학생 점수</span>
+        ${o.classAvg?`<span style="display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;color:#494949"><span style="width:10px;height:10px;border-radius:3px;background:#D8C7FE;display:inline-block"></span>반 평균</span>`:''}
+      </div>
+    </div>
+    ${rows}
+  </div>`;
+}
+// 과제별 평가결과 카드 (opts로 채점요소/AI 토글 — 출력 범위 설정용)
+function buildResults(s,opts){
+  const o=Object.assign({scores:true,ai:true},opts||{});
+  return s.results.map(r=>`
+    <div class="card" style="padding:22px 24px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:${o.scores?'16px':(o.ai?'14px':'0')}">
+        <span style="font-size:16px;font-weight:800;color:#341761">[${r.t}]</span>
+        ${o.scores?`<span style="font-size:14px;font-weight:900;color:#7E44FB">${r.score}<span style="color:#B3B3B3;font-weight:700;font-size:12px"> / ${r.max}점</span></span>`:''}
+      </div>
+      ${o.scores?`<div style="display:flex;flex-direction:column;gap:10px;${o.ai?'margin-bottom:16px':''}">
+        ${r.rows.map(([name,bands,got])=>`
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <span style="font-size:14px;font-weight:700;color:#222">${name}</span>
+            <span style="display:flex;gap:6px">${bands.map(b=>`<span class="band ${b===got?'on':''}">${b}</span>`).join("")}</span>
+          </div>`).join("")}
+      </div>`:''}
+      ${o.ai?`<div style="background:#F8F8F8;border-radius:10px;padding:14px 16px;font-size:14px;line-height:1.7;color:#494949">${r.ai}</div>`:''}
+    </div>`).join("");
+}
+
+function showDetail(id){
+  const s=STUDENTS.find(x=>x.id===id);
+  if(!s) return;
+  if(s.noReport){ alert("미제출·미채점 과제가 있어 리포트를 생성할 수 없습니다."); return; }
+  window.__detailId = id;
+  pvScopeCls = s.cls;                 // 상세 진입 = 그 학생의 학급으로 출력 범위 고정
+  document.getElementById("dTitle").textContent=`${s.id} ${s.name} 평가 리포트`;
+  document.getElementById("dCls").textContent=s.cls;
+  document.getElementById("dWho").textContent=`${s.id} ${s.name}`;
+  document.getElementById("graphRow").innerHTML = buildProfileCard(s) + buildChartCard(s);
+  document.getElementById("resultCards").innerHTML = buildResults(s);
+  document.getElementById("listView").style.display="none";
+  document.getElementById("detailView").style.display="block";
+  document.getElementById("backBtn").style.display="flex";
+  document.getElementById("titleSuffix").style.display="inline-flex";
+  window.scrollTo(0,0);
+  mpSyncActive("a2d");
+  lucide.createIcons();
+}
+function showList(){
+  document.getElementById("detailView").style.display="none";
+  document.getElementById("listView").style.display="block";
+  document.getElementById("backBtn").style.display="none";
+  document.getElementById("titleSuffix").style.display="none";
+  window.scrollTo(0,0);
+  mpSyncActive("a2");
+}
+
+/* ══════════ 출력 (반 단위 · 범위 설정 · 개별/전체) ══════════ */
+const PV_LIST = STUDENTS;
+let pvPreviewId = "10201";                      // 오버레이 미리보기 대상
+let pvMode = "one";                             // "one"=개별(현재 학생만) · "all"=배부(반 전체 프리체크)
+let pvScopeCls = "1-2";                         // 출력 대상 학급 (이 반 학생만 노출)
+const PV_CLASSES = [...new Set(STUDENTS.map(s=>s.cls))].sort();   // 반 목록
+function pvClsStudents(cls){ return PV_LIST.filter(s=>s.cls===cls); }
+function pvClsPrintable(cls){ return pvClsStudents(cls).filter(s=>!s.noReport); }
+
+function openPrint(){                            // 상세 '출력' — 개별 중심 (그 학생의 반으로 고정)
+  pvMode = "one";
+  pvScopeCls = (STUDENTS.find(s=>s.id===window.__detailId)||{}).cls || pvScopeCls;
+  pvPreviewId = window.__detailId || pvClsPrintable(pvScopeCls)[0]?.id;
+  pvOpenOverlay();
+}
+function openPrintList(){                        // 목록 '리포트 출력' — 먼저 학급 선택
+  pvOpenClsPick();
+}
+/* 학급 선택 팝업 */
+function pvOpenClsPick(){
+  const wrap=document.getElementById("pvClsList");
+  const def = listCls==="전체" ? PV_CLASSES[0] : listCls;
+  wrap.innerHTML = PV_CLASSES.map(cls=>{
+    const n=pvClsPrintable(cls).length;
+    return `<label class="pv-stu-row" style="justify-content:flex-start">
+      <input type="radio" name="pvcls" value="${cls}" ${cls===def?'checked':''} style="width:18px;height:18px;accent-color:#7E44FB">
+      <span style="font-weight:800">${cls}반</span>
+      <span style="margin-left:auto;font-size:13px;font-weight:700;color:#808080">${n}명</span></label>`;
+  }).join("");
+  document.getElementById("pvClsModal").classList.add("show");
+}
+function pvCloseClsPick(){ document.getElementById("pvClsModal").classList.remove("show"); }
+function pvConfirmClsPick(){
+  const sel=document.querySelector('input[name=pvcls]:checked');
+  if(!sel) return;
+  pvCloseClsPick();
+  pvMode="all";
+  pvScopeCls=sel.value;
+  pvPreviewId=pvClsPrintable(pvScopeCls)[0]?.id;
+  pvOpenOverlay();
+}
+function pvOpenOverlay(){
+  document.getElementById("pvScopeLabel").textContent = pvScopeCls+"반";
+  pvRenderDrop();
+  pvRenderPaper();
+  document.getElementById("printOverlay").classList.add("show");
+  lucide.createIcons();
+}
+function pvClose(){
+  document.getElementById("printOverlay").classList.remove("show");
+  document.getElementById("pvDrop").classList.remove("open");
+}
+function pvToggleDrop(){ document.getElementById("pvDrop").classList.toggle("open"); }
+function pvRenderDrop(){
+  const d=document.getElementById("pvDrop");
+  d.innerHTML = pvClsPrintable(pvScopeCls).map(s=>
+    `<div class="pv-drop-item ${s.id===pvPreviewId?'active':''}" onclick="pvSelect('${s.id}')">${s.id} ${s.name}</div>`).join("");
+  const cur=PV_LIST.find(s=>s.id===pvPreviewId);
+  document.getElementById("pvSelLabel").textContent = cur?`${cur.id} ${cur.name}`:"";
+}
+function pvSelect(id){
+  pvPreviewId=id;
+  document.getElementById("pvDrop").classList.remove("open");
+  pvRenderDrop();
+  pvRenderPaper();
+  lucide.createIcons();
+}
+
+// 출력 종이 = 화면 리포트 본문(buildProfileCard·buildChartCard·buildResults) 재사용 + 문서 헤더 + 범위 필터
+function pvRenderPaper(){
+  const s=PV_LIST.find(x=>x.id===pvPreviewId); if(!s) return;
+  const on=id=>{const el=document.getElementById(id);return el?el.checked:true;};
+  // 점수 공개 범위 (radio): stu=학생만 · both=학생+반평균 · none=미공개
+  const scoreMode=(document.querySelector('input[name=it-score]:checked')||{}).value||"both";
+  const pubStu=scoreMode!=="none";        // 학생 점수 공개 여부
+  const pubAvg=scoreMode==="both";        // 반 평균까지 공개 여부
+  const showInfo=on("it-info"), showAi=on("it-ai");
+  const showChart=on("it-chart")&&pubStu; // 점수 미공개면 백분위 차트도 숨김
+  // 문서 헤더 — 이름·학급은 여기서만(프로필 카드 중복 제거). 총점(점수)은 미공개 시 숨김, 미제출은 유지
+  const headStats = showInfo ? `<div style="display:flex;gap:28px;flex-shrink:0;padding-bottom:2px">
+      ${pubStu?`<div style="text-align:right"><div style="font-size:12px;color:#808080;font-weight:700;margin-bottom:2px">총점</div><div><span style="font-size:22px;font-weight:900;color:#7E44FB">${s.total}</span><span style="font-size:13px;color:#808080">점</span></div></div>`:''}
+      <div style="text-align:right"><div style="font-size:12px;color:#808080;font-weight:700;margin-bottom:2px">미제출/미응시</div><div><span style="font-size:22px;font-weight:900;color:#222">${s.miss}</span><span style="font-size:13px;color:#808080">건</span></div></div>
+    </div>` : '';
+  let html=`
+    <div class="pp-head" style="display:flex;justify-content:space-between;align-items:flex-end;gap:24px">
+      <div>
+        <div style="font-size:13px;color:#808080;font-weight:700;margin-bottom:8px">2026학년도 1학기 · 1학년 국어</div>
+        <div style="font-size:26px;font-weight:900;color:#341761">${s.name} 평가 리포트</div>
+        <div style="font-size:13px;color:#808080;margin-top:8px">경기도테스트중학교 · 1학년 ${s.cls.split("-")[1]}반 ${s.num}번 · 학번 ${s.id}</div>
+      </div>
+      ${headStats}
+    </div>`;
+  // 백분위 비교 (프로필 카드 없이 전체 너비, 반 평균은 공개 설정에 따라)
+  if(showChart){
+    html+=`<div class="pp-sec">${buildChartCard(s,{classAvg:pubAvg})}</div>`;
+  }
+  // 과제별 평가결과 — 점수 미공개면 점수 숨기고 피드백만
+  if(pubStu||showAi){
+    html+=`<div class="pp-sec"><div class="pp-sec-title">평가 결과</div><div style="display:flex;flex-direction:column;gap:14px">${buildResults(s,{scores:pubStu,ai:showAi})}</div></div>`;
+  }
+  document.getElementById("pvPaper").innerHTML=html;
+}
+
+/* 출력 범위 설정 */
+function pvOpenItems(){ document.getElementById("pvItemsModal").classList.add("show"); lucide.createIcons(); }
+function pvCloseItems(){ document.getElementById("pvItemsModal").classList.remove("show"); }
+
+/* 출력할 학생 선택 (해당 학급만 · 개별/전체) */
+function pvOpenStu(){
+  const list=document.getElementById("pvStuList");
+  document.getElementById("pvStuScope").textContent = pvScopeCls+"반";
+  list.innerHTML = pvClsStudents(pvScopeCls).map((s,i)=>{
+    if(s.noReport) return `<div class="pv-stu-row dis"><input type="checkbox" disabled><span style="font-weight:800">${s.id}</span><span>${s.name}</span><span class="pv-stu-badge no">리포트 없음</span></div>`;
+    const pre = pvMode==="all" ? true : (s.id===pvPreviewId);
+    return `<div class="pv-stu-row" onclick="pvToggleRow(${i})">
+      <input type="checkbox" id="pv-chk-${i}" ${pre?'checked':''} onclick="event.stopPropagation();pvToggleRow(${i})">
+      <span style="font-weight:800">${s.id}</span><span>${s.name}</span><span class="pv-stu-badge ok">총점 ${s.total}점</span></div>`;
+  }).join("");
+  pvUpdateCount();
+  document.getElementById("pvStuModal").classList.add("show");
+  lucide.createIcons();
+}
+function pvCloseStu(){ document.getElementById("pvStuModal").classList.remove("show"); }
+function pvToggleRow(i){ const c=document.getElementById("pv-chk-"+i); if(c){ c.checked=!c.checked; pvUpdateCount(); } }
+function pvToggleAll(){
+  const all=document.getElementById("pv-all").checked;
+  document.querySelectorAll("#pvStuList input[type=checkbox]:not([disabled])").forEach(c=>c.checked=all);
+  pvUpdateCount();
+}
+function pvUpdateCount(){
+  const chks=[...document.querySelectorAll("#pvStuList input[type=checkbox]:not([disabled])")];
+  const n=chks.filter(c=>c.checked).length;
+  document.getElementById("pvStuCount").textContent=n+"명 선택됨";
+  document.getElementById("pvStuBtnLabel").textContent=n>0?n+"명 PDF 출력":"PDF 출력";
+  document.getElementById("pvStuConfirm").disabled=n===0;
+  const all=document.getElementById("pv-all"); if(all) all.checked=n===chks.length&&chks.length>0;
+}
+function pvConfirmStu(){ pvCloseStu(); window.print(); }
+
+document.addEventListener("click",e=>{
+  if(!e.target.closest(".pv-sel")&&!e.target.closest("#pvDrop")) document.getElementById("pvDrop").classList.remove("open");
+});
+
+/* ===== 까망이 목업 내비게이터 (시연용) ===== */
+function mpToggle(){
+  const b=document.getElementById('mp-body'), c=document.getElementById('mp-caret');
+  const open=b.style.display!=='none';
+  if(!open){
+    const el=document.getElementById('mockpick'), r=el.getBoundingClientRect();
+    el.style.top='auto'; el.style.bottom=Math.max(16,window.innerHeight-r.bottom)+'px';
+  }
+  b.style.display=open?'none':'flex';
+  if(c) c.style.transform=open?'rotate(180deg)':'';
+}
+function mpGo(k){
+  if(k==='a2') showList();
+  else if(k==='a2d') showDetail('10202');
+}
+function mpSyncActive(key){
+  document.querySelectorAll('#mockpick .mp-btn').forEach(b=>b.classList.toggle('on',b.dataset.k===key));
+}
+(function(){
+  const el=document.getElementById('mockpick'); if(!el) return;
+  let dx=0,dy=0,drag=false;
+  el.addEventListener('mousedown',(e)=>{ if(e.target.closest('button')) return; drag=true; const r=el.getBoundingClientRect(); dx=e.clientX-r.left; dy=e.clientY-r.top; el.style.right='auto'; el.style.bottom='auto'; el.style.left=r.left+'px'; el.style.top=r.top+'px'; e.preventDefault(); });
+  document.addEventListener('mousemove',(e)=>{ if(!drag) return; el.style.left=(e.clientX-dx)+'px'; el.style.top=(e.clientY-dy)+'px'; });
+  document.addEventListener('mouseup',()=>{ drag=false; });
+})();
+
+renderList();
+mpSyncActive("a2");
+
+/* URL 파라미터: ?view=detail&id=10202 → 상세 직행 */
+(function(){
+  const q=new URLSearchParams(location.search);
+  if(q.get('view')==='detail') showDetail(q.get('id')||'10202');
+})();
+lucide.createIcons();
+</script>
+</body>
+</html>
