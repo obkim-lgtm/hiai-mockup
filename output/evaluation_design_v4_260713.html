@@ -435,7 +435,7 @@ body { margin: 0; background: #EDF1FC; min-width: 1280px; }
             </div>
             <div style="font-size:18px;font-weight:800;color:#000;margin-bottom:2px;">간편한 평가</div>
             <div style="font-size:15px;color:#494949;font-weight:700;margin-bottom:10px;">1단계 · 빠른 시작</div>
-            <div style="font-size:14px;color:#494949;font-weight:400;line-height:1.55;margin-bottom:14px;">활동지 없이 바로 시작합니다. 학생 답안에 채점기준 전체를 적용해 채점합니다.</div>
+            <div style="font-size:14px;color:#494949;font-weight:400;line-height:1.55;margin-bottom:14px;">별도 준비 없이 바로 시작합니다. 설계하신 채점기준으로 답안 전체를 채점해, 어떤 과제에도 두루 쓸 수 있습니다.</div>
             <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:14px;">
               <div class="t0-step-row"><span class="t0-step-num">1</span>설계 기본 정보</div>
             </div>
@@ -453,7 +453,7 @@ body { margin: 0; background: #EDF1FC; min-width: 1280px; }
             </div>
             <div style="font-size:18px;font-weight:800;color:#000;margin-bottom:2px;">정교한 평가</div>
             <div style="font-size:15px;color:#494949;font-weight:700;margin-bottom:10px;">4단계 · 문항별 정밀 채점</div>
-            <div style="font-size:14px;color:#494949;font-weight:400;line-height:1.55;margin-bottom:14px;">활동지를 올려 문항을 나눕니다. 문항마다 채점기준을 연결하고 모범답안을 알려주면 선생님 기준에 더 가깝게 채점합니다.</div>
+            <div style="font-size:14px;color:#494949;font-weight:400;line-height:1.55;margin-bottom:14px;">빈 활동지를 올려 문항마다 채점기준을 연결하고 모범답안을 입력합니다. 문항별로 선생님 기준에 더 가깝게 채점합니다.</div>
             <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:14px;">
               <div class="t0-step-row"><span class="t0-step-num">1</span>설계 기본 정보</div>
               <div class="t0-step-row"><span class="t0-step-num">2</span>활동지 문항 구분</div>
@@ -2936,7 +2936,7 @@ function renderS3Detail(q) {
 
   var warnFooter = '<div id="s3-detail-warn" style="display:' + (hasLinked ? 'none' : 'flex') + ';align-items:flex-start;gap:7px;margin-top:14px;">'
     + '<i data-lucide="info" style="width:14px;height:14px;color:#B3B3B3;flex-shrink:0;margin-top:3px;"></i>'
-    + '<span style="font-size:14px;color:#808080;line-height:1.6;">연결하지 않아도 다음 단계로 넘어갈 수 있어요. 연결해 두면 AI가 이 문항에 맞는 기준으로 채점해 정확도가 올라갑니다.</span>'
+    + '<span style="font-size:14px;color:#808080;line-height:1.6;">연결하지 않아도 다음 단계로 넘어갈 수 있어요. 이 경우 채점기준 전체로 채점되며, 연결해 두면 맞는 기준만 적용해 더 정확해집니다.</span>'
     + '</div>';
 
   var html = headerHtml + reasonHtml + controlsHtml + rubricsHtml + warnFooter;
