@@ -1953,9 +1953,32 @@ function showListForClass(classNum, evalType) {
 }
 
 // ── 화면 전환 ──
+// ── 화면 ↔ URL 해시 매핑 (실제 서비스처럼 화면마다 고유 URL) ──
+var SCREEN_HASH = {
+  'screen-task':   '#task',
+  'screen-list':   '#list',
+  'screen-upload': '#upload',
+  'screen-ocr':    '#ocr',
+  'screen-ocr-b':  '#ocr-b'
+};
+var _suppressHash = false;   // 해시로 들어온 라우팅 중에는 되쓰기 방지
+function setHash(h) {
+  if (_suppressHash) return;
+  if (location.hash === h) return;
+  history.replaceState(null, '', location.pathname + location.search + h);
+}
+// 학생 상세는 학생 id까지 URL에 담는다 (#ocr-b=10102)
+function setOcrHash() {
+  var b = STUDENTS_B1[currentOcrBStudentIdx];
+  setHash(b ? '#ocr-b=' + b.id : '#ocr-b');
+}
+
 function showScreen(id) {
   document.querySelectorAll('.screen').forEach(function(s){ s.classList.remove('active'); });
   document.getElementById(id).classList.add('active');
+  // 화면마다 고유 URL 유지 → 링크 공유·새로고침·뒤로가기에서 같은 화면 복원
+  if (id === 'screen-ocr-b') { setOcrHash(); }
+  else if (SCREEN_HASH[id]) { setHash(SCREEN_HASH[id]); }
   var gnb = document.getElementById('gnb');
   if (gnb) gnb.style.display = (id === 'screen-ocr' || id === 'screen-ocr-b') ? 'none' : 'flex';
   window.scrollTo(0,0);
@@ -2017,6 +2040,8 @@ function renderOcrBDropdown() {
 
 // ── B안 OCR 화면 렌더 ──
 function renderOCRView_B() {
+  // 학생 이동 시에도 URL이 따라가게 (이 화면이 떠 있을 때만)
+  if (document.getElementById('screen-ocr-b').classList.contains('active')) setOcrHash();
   var students = STUDENTS_B1;
   var student = students[currentOcrBStudentIdx];
   if (!student) return;
@@ -3541,21 +3566,27 @@ var ocrBFromUrl = null; // 외부에서 진입 시 돌아갈 URL
 // 해시 기반 라우팅 — 초기 진입 + 이미 열린 탭에서 해시 변경(공유 링크) 모두 처리
 function routeHash(hash) {
   if (!hash) return;
-  if (hash.startsWith('#case=')) {
-    // 데모 케이스 직접 진입 — 까망이 선택기(mpGo)와 동일한 상태 세팅 포함
-    mpGo(hash.replace('#case=', ''));
-  } else if (hash.startsWith('#ocr-b=')) {
-    // B안 학생 채점 상세 직접 진입
-    var sid = hash.replace('#ocr-b=', '');
-    var idx = STUDENTS_B1.findIndex(function(s){ return s.id === sid; });
-    goToOCR_B(idx !== -1 ? idx : 0);
-  } else if (hash.startsWith('#ocr=')) {
-    // A안(구버전) 해시도 B안 과제물 인식 확인·수정으로 통일 라우팅
-    var sid = hash.replace('#ocr=', '');
-    var bIdx = STUDENTS_B1.findIndex(function(s){ return s.id === sid; });
-    if (bIdx !== -1) goToOCR_B(bIdx); else goToList();
-  } else if (hash === '#list') {
-    showScreen('screen-list');
+  _suppressHash = true;   // 라우팅 중 해시 되쓰기 방지 (주소창 값 보존)
+  try {
+    if (hash.startsWith('#case=')) {
+      // 데모 케이스 직접 진입 — 까망이 선택기(mpGo)와 동일한 상태 세팅 포함
+      mpGo(hash.replace('#case=', ''));
+    } else if (hash.startsWith('#ocr-b')) {
+      // B안 학생 채점 상세 직접 진입
+      var sid = hash.indexOf('=') > -1 ? hash.split('=')[1] : '';
+      var idx = STUDENTS_B1.findIndex(function(s){ return s.id === sid; });
+      goToOCR_B(idx !== -1 ? idx : 0);
+    } else if (hash.startsWith('#ocr=')) {
+      // A안(구버전) 해시도 B안 과제물 인식 확인·수정으로 통일 라우팅
+      var sidA = hash.replace('#ocr=', '');
+      var bIdx = STUDENTS_B1.findIndex(function(s){ return s.id === sidA; });
+      if (bIdx !== -1) goToOCR_B(bIdx); else goToList();
+    }
+    else if (hash === '#list')   { goToList(); }
+    else if (hash === '#upload') { resetUpload(); showScreen('screen-upload'); }
+    else if (hash === '#task')   { showScreen('screen-task'); }
+  } finally {
+    _suppressHash = false;
   }
 }
 window.addEventListener('hashchange', function(){ routeHash(window.location.hash); });
@@ -3586,6 +3617,8 @@ function mpGo(which) {
   else if (which === 'ocrExclude'){ var _xi=STUDENTS_B1.findIndex(function(s){return s.id==='10110';}); if(!ocrBExcludeMap['10110'])ocrBExcludeMap['10110']={}; ocrBExcludeMap['10110'][0]=true; persistOcrBExclude(); goToOCR_B(_xi!==-1?_xi:0); }  // 문항 단위 직접 채점(AI 제외) — 그래프 문항 (10110)
   else if (which === 'ocrLegacy'){ resetLegacyDemo(); var _lgi=STUDENTS_B1.findIndex(function(s){return s.id==='10113';}); goToOCR_B(_lgi!==-1?_lgi:0); }  // 업데이트 전 · 전체 미인식 (10113)
   else if (which === 'ocrFormula'){ var _fmi=STUDENTS_B1.findIndex(function(s){return s.id==='10115';}); if(OCR_DATA_B['10115']){ OCR_DATA_B['10115'].questions.forEach(function(q){ if(q.formulaBroken) q.formulaReported=false; }); } goToOCR_B(_fmi!==-1?_fmi:0); }  // 수식 렌더링 깨짐 → 별도 표시·제보 (10115)
+  // 데모 케이스도 고유 URL을 갖는다 (#case=ocrFew) — 위 화면 전환이 쓴 해시를 덮어씀
+  if (!_suppressHash) history.replaceState(null, '', location.pathname + location.search + '#case=' + which);
   // 현재 표시 버튼 강조
   document.querySelectorAll('.mp-btn').forEach(function(b){ b.classList.toggle('on', b.dataset.k === which); });
   lucide.createIcons();

@@ -171,6 +171,39 @@ align-items: center;   /* ← 반드시 center. flex-start 금지 */
 
 ---
 
+## 화면마다 고유 URL (해시 라우팅) — 필수
+
+> 실제 서비스처럼 **화면·탭·스텝이 바뀌면 URL도 바뀌어야** 한다. 한 파일에 여러 화면을 담는 목업 구조상 URL이 전부 같아지기 쉬운데, 그러면 특정 화면을 링크로 공유할 수 없고 새로고침 시 첫 화면으로 튄다. (2026-07-28 올립 지적)
+
+**규칙**
+1. 모든 씬·탭·스텝·주요 모달에 고유 해시 부여 (`#task` `#list` `#upload` `#design` …). 상세 화면은 대상 id까지: `#ocr-b=10102`. 데모 케이스는 `#case=ocrFew`.
+2. **양방향 필수** — 화면 전환 시 해시를 쓰고(write), 그 URL로 진입하면 화면이 복원돼야(read) 한다.
+3. **`hashchange` 리스너 필수** — 이미 열린 탭에 링크를 붙여넣어도 이동해야 한다.
+4. 되쓰기 방지 가드(`_suppressHash`) — 해시로 라우팅하는 동안 화면 전환 코드가 주소창 값을 덮어쓰지 않게.
+5. `history.replaceState` 사용 (목업 화면 전환으로 뒤로가기 히스토리를 오염시키지 않음).
+6. 기존 `?id=`·`?screen=` 쿼리 진입점은 호환 유지하되, 새 진입점은 해시로 통일.
+
+```js
+var SCREEN_HASH = { 'screen-task':'#task', 'screen-list':'#list', /* … */ };
+var _suppressHash = false;
+function setHash(h){ if(_suppressHash || location.hash===h) return;
+  history.replaceState(null,'',location.pathname+location.search+h); }
+
+function showScreen(id){ /* …화면 전환… */ if(SCREEN_HASH[id]) setHash(SCREEN_HASH[id]); }
+
+function routeHash(hash){
+  if(!hash) return; _suppressHash = true;
+  try { if(hash==='#list') goToList(); /* … */ }
+  finally { _suppressHash = false; }
+}
+window.addEventListener('hashchange', function(){ routeHash(location.hash); });
+```
+
+**권위 소스**: `output/task_ocr_review_v2.html`(5화면 + 13 데모 케이스), `output/evaluation_design_v4_260713.html`(`_syncHash` + `routeFromUrl`, `?screen=` 호환).
+**미적용 잔여**(발견 시 보강): `evaluation_design_v2/v3_260403`(8화면 무URL) · `scoring_list_v1`·`scoring_student_v1`(쿼리 기반이라 같은 폴더 해시 관례와 불일치).
+
+---
+
 ## 버튼 스타일
 
 > Figma: `vOYXokKNMGec80BpDbIiJI` node `2474:1703` / `344b7XVs8E9KaFBhgAEhtW` node `3271:25003`
