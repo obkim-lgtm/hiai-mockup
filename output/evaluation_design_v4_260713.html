@@ -24,6 +24,8 @@ body { margin: 0; background: #EDF1FC; min-width: 1280px; }
 #mockpick .mp-btn.on{background:#7E44FB;color:#fff;border-color:#7E44FB}
 #mockpick .mp-sub{font-size:11px;font-weight:600;color:#8A8FB0;margin-left:8px}
 #mockpick .mp-btn.on .mp-sub{color:#E6DBFF}
+.fbtn{ height:32px;min-width:40px;padding:0 10px;background:white;border:1px solid #D9D9D9;border-radius:6px;color:#494949;font-family:inherit;font-size:14px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;line-height:1; }
+.fbtn:hover{ background:#F8F8F8;border-color:#B3B3B3; }
 /* 세부 기준 td flex 처리 */
 #rubric-list td:last-child { display:flex; align-items:center; gap:6px; }
 #rubric-list td:last-child input[type=text] { flex:1; min-width:0; }
@@ -33,7 +35,6 @@ body { margin: 0; background: #EDF1FC; min-width: 1280px; }
 .rubric-textarea-wrap textarea { flex:1; min-height:80px; height:auto; }
 /* 수식 툴팁 (fixed — overflow:hidden 우회) */
 /* 툴팁 스킨: Figma MM23…FVJpB 1900:20405 (화이트 · 14px Bold #341761 · 화살표 14px) */
-#sym-tooltip { position:fixed; background:#fff; color:#341761; font-size:14px; font-weight:700; line-height:18px; border-radius:8px; padding:10px 20px; white-space:nowrap; z-index:9000; pointer-events:none; display:none; box-shadow:0 4px 36px rgba(95,102,178,.16); }
 #sym-tooltip::after { content:''; position:absolute; top:calc(100% - 7px); left:50%; transform:translateX(-50%) rotate(45deg); width:14px; height:14px; background:#fff; }
 /* 수식 입력 모달 */
 #formula-modal { display:none; position:fixed; inset:0; z-index:600; background:rgba(0,0,0,0.45); align-items:center; justify-content:center; }
@@ -168,8 +169,22 @@ body { margin: 0; background: #EDF1FC; min-width: 1280px; }
           </div>
         </div>
 
+        <!-- 빈 상태: 생성된 설계 없음 -->
+        <div id="list-empty" style="display:none;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:80px 24px 90px;">
+          <div style="width:64px;height:64px;border-radius:50%;background:#F2ECFF;display:flex;align-items:center;justify-content:center;">
+            <i data-lucide="clipboard-pen-line" style="width:30px;height:30px;color:#7E44FB;"></i>
+          </div>
+          <div style="text-align:center;">
+            <p style="font-size:18px;font-weight:800;color:#341761;margin:0 0 6px;">아직 만든 평가 설계가 없어요</p>
+            <p style="font-size:14px;color:#808080;margin:0;line-height:1.65;font-weight:400;">평가할 내용과 채점기준을 설계하면 과제 제출과 AI 채점을 시작할 수 있습니다.</p>
+          </div>
+          <button onclick="toggleAddDropdown(event)" style="display:inline-flex;align-items:center;justify-content:center;line-height:1;vertical-align:middle;gap:8px;background:#7E44FB;color:white;border:none;border-radius:8px;height:40px;padding:0 18px;font-size:16px;font-weight:700;cursor:pointer;font-family:inherit;margin-top:4px;">
+            <i data-lucide="plus" style="width:18px;height:18px;"></i>설계 추가
+          </button>
+        </div>
+
         <!-- 카드 그리드 영역 -->
-        <div>
+        <div id="list-cards">
           <div style="display:flex;flex-wrap:wrap;gap:20px;">
 
             <!-- 카드: 정교한 평가 · 1단계 작성 중 (26.04.01) -->
@@ -752,15 +767,15 @@ body { margin: 0; background: #EDF1FC; min-width: 1280px; }
                             <tbody>
                               <tr>
                                 <td style="width:52px;border-right:1px solid #D9D9D9;border-bottom:1px solid #D9D9D9;padding:9px 4px;text-align:center;"><input type="number" value="5" style="width:44px;border:none;text-align:center;font-size:16px;font-weight:700;font-family:inherit;outline:none;color:#333;background:transparent;"></td>
-                                <td style="border-bottom:1px solid #D9D9D9;padding:9px 12px;"><input type="text" value="내용이 타당하고 근거가 구체적이며 충실하게 제시됨" style="width:100%;border:none;font-size:16px;font-family:inherit;outline:none;color:#333;background:transparent;"><button onmouseenter="showSymTooltip(this)" onmouseleave="hideSymTooltip()" style="display:inline-flex;align-items:center;justify-content:center;border:1px solid #E6E6E6;background:#F8F8F8;border-radius:5px;width:26px;height:26px;font-size:14px;color:#B3B3B3;font-family:inherit;cursor:not-allowed;flex-shrink:0;">∑</button></td>
+                                <td style="border-bottom:1px solid #D9D9D9;padding:9px 12px;"><input type="text" value="내용이 타당하고 근거가 구체적이며 충실하게 제시됨" style="width:100%;border:none;font-size:16px;font-family:inherit;outline:none;color:#333;background:transparent;"><button onclick="openFormula(this)" title="수식 입력" style="display:inline-flex;align-items:center;justify-content:center;border:1px solid #D9D9D9;background:white;border-radius:5px;width:28px;height:28px;font-size:15px;color:#494949;font-family:inherit;cursor:pointer;flex-shrink:0;">∑</button></td>
                               </tr>
                               <tr>
                                 <td style="width:52px;border-right:1px solid #D9D9D9;border-bottom:1px solid #D9D9D9;padding:9px 4px;text-align:center;"><input type="number" value="3" style="width:44px;border:none;text-align:center;font-size:16px;font-weight:700;font-family:inherit;outline:none;color:#333;background:transparent;"></td>
-                                <td style="border-bottom:1px solid #D9D9D9;padding:9px 12px;"><input type="text" value="내용은 적절하나 근거 제시가 불충분함" style="width:100%;border:none;font-size:16px;font-family:inherit;outline:none;color:#333;background:transparent;"><button onmouseenter="showSymTooltip(this)" onmouseleave="hideSymTooltip()" style="display:inline-flex;align-items:center;justify-content:center;border:1px solid #E6E6E6;background:#F8F8F8;border-radius:5px;width:26px;height:26px;font-size:14px;color:#B3B3B3;font-family:inherit;cursor:not-allowed;flex-shrink:0;">∑</button></td>
+                                <td style="border-bottom:1px solid #D9D9D9;padding:9px 12px;"><input type="text" value="내용은 적절하나 근거 제시가 불충분함" style="width:100%;border:none;font-size:16px;font-family:inherit;outline:none;color:#333;background:transparent;"><button onclick="openFormula(this)" title="수식 입력" style="display:inline-flex;align-items:center;justify-content:center;border:1px solid #D9D9D9;background:white;border-radius:5px;width:28px;height:28px;font-size:15px;color:#494949;font-family:inherit;cursor:pointer;flex-shrink:0;">∑</button></td>
                               </tr>
                               <tr>
                                 <td style="width:52px;border-right:1px solid #D9D9D9;padding:9px 4px;text-align:center;"><input type="number" value="1" style="width:44px;border:none;text-align:center;font-size:16px;font-weight:700;font-family:inherit;outline:none;color:#333;background:transparent;"></td>
-                                <td style="padding:9px 12px;"><input type="text" value="내용이 주제와 관련성이 낮고 근거가 없음" style="width:100%;border:none;font-size:16px;font-family:inherit;outline:none;color:#333;background:transparent;"><button onmouseenter="showSymTooltip(this)" onmouseleave="hideSymTooltip()" style="display:inline-flex;align-items:center;justify-content:center;border:1px solid #E6E6E6;background:#F8F8F8;border-radius:5px;width:26px;height:26px;font-size:14px;color:#B3B3B3;font-family:inherit;cursor:not-allowed;flex-shrink:0;">∑</button></td>
+                                <td style="padding:9px 12px;"><input type="text" value="내용이 주제와 관련성이 낮고 근거가 없음" style="width:100%;border:none;font-size:16px;font-family:inherit;outline:none;color:#333;background:transparent;"><button onclick="openFormula(this)" title="수식 입력" style="display:inline-flex;align-items:center;justify-content:center;border:1px solid #D9D9D9;background:white;border-radius:5px;width:28px;height:28px;font-size:15px;color:#494949;font-family:inherit;cursor:pointer;flex-shrink:0;">∑</button></td>
                               </tr>
                             </tbody>
                           </table>
@@ -802,15 +817,15 @@ body { margin: 0; background: #EDF1FC; min-width: 1280px; }
                             <tbody>
                               <tr>
                                 <td style="width:52px;border-right:1px solid #D9D9D9;border-bottom:1px solid #D9D9D9;padding:9px 4px;text-align:center;"><input type="number" value="5" style="width:44px;border:none;text-align:center;font-size:16px;font-weight:700;font-family:inherit;outline:none;color:#333;background:transparent;"></td>
-                                <td style="border-bottom:1px solid #D9D9D9;padding:9px 12px;"><input type="text" value="논리 구조가 명확하고 문단 연결이 자연스러움" style="width:100%;border:none;font-size:16px;font-family:inherit;outline:none;color:#333;background:transparent;"><button onmouseenter="showSymTooltip(this)" onmouseleave="hideSymTooltip()" style="display:inline-flex;align-items:center;justify-content:center;border:1px solid #E6E6E6;background:#F8F8F8;border-radius:5px;width:26px;height:26px;font-size:14px;color:#B3B3B3;font-family:inherit;cursor:not-allowed;flex-shrink:0;">∑</button></td>
+                                <td style="border-bottom:1px solid #D9D9D9;padding:9px 12px;"><input type="text" value="논리 구조가 명확하고 문단 연결이 자연스러움" style="width:100%;border:none;font-size:16px;font-family:inherit;outline:none;color:#333;background:transparent;"><button onclick="openFormula(this)" title="수식 입력" style="display:inline-flex;align-items:center;justify-content:center;border:1px solid #D9D9D9;background:white;border-radius:5px;width:28px;height:28px;font-size:15px;color:#494949;font-family:inherit;cursor:pointer;flex-shrink:0;">∑</button></td>
                               </tr>
                               <tr>
                                 <td style="width:52px;border-right:1px solid #D9D9D9;border-bottom:1px solid #D9D9D9;padding:9px 4px;text-align:center;"><input type="number" value="3" style="width:44px;border:none;text-align:center;font-size:16px;font-weight:700;font-family:inherit;outline:none;color:#333;background:transparent;"></td>
-                                <td style="border-bottom:1px solid #D9D9D9;padding:9px 12px;"><input type="text" value="논리 구조는 있으나 연결이 다소 어색함" style="width:100%;border:none;font-size:16px;font-family:inherit;outline:none;color:#333;background:transparent;"><button onmouseenter="showSymTooltip(this)" onmouseleave="hideSymTooltip()" style="display:inline-flex;align-items:center;justify-content:center;border:1px solid #E6E6E6;background:#F8F8F8;border-radius:5px;width:26px;height:26px;font-size:14px;color:#B3B3B3;font-family:inherit;cursor:not-allowed;flex-shrink:0;">∑</button></td>
+                                <td style="border-bottom:1px solid #D9D9D9;padding:9px 12px;"><input type="text" value="논리 구조는 있으나 연결이 다소 어색함" style="width:100%;border:none;font-size:16px;font-family:inherit;outline:none;color:#333;background:transparent;"><button onclick="openFormula(this)" title="수식 입력" style="display:inline-flex;align-items:center;justify-content:center;border:1px solid #D9D9D9;background:white;border-radius:5px;width:28px;height:28px;font-size:15px;color:#494949;font-family:inherit;cursor:pointer;flex-shrink:0;">∑</button></td>
                               </tr>
                               <tr>
                                 <td style="width:52px;border-right:1px solid #D9D9D9;padding:9px 4px;text-align:center;"><input type="number" value="1" style="width:44px;border:none;text-align:center;font-size:16px;font-weight:700;font-family:inherit;outline:none;color:#333;background:transparent;"></td>
-                                <td style="padding:9px 12px;"><input type="text" value="문단 구분 없이 나열되거나 논리적 흐름 없음" style="width:100%;border:none;font-size:16px;font-family:inherit;outline:none;color:#333;background:transparent;"><button onmouseenter="showSymTooltip(this)" onmouseleave="hideSymTooltip()" style="display:inline-flex;align-items:center;justify-content:center;border:1px solid #E6E6E6;background:#F8F8F8;border-radius:5px;width:26px;height:26px;font-size:14px;color:#B3B3B3;font-family:inherit;cursor:not-allowed;flex-shrink:0;">∑</button></td>
+                                <td style="padding:9px 12px;"><input type="text" value="문단 구분 없이 나열되거나 논리적 흐름 없음" style="width:100%;border:none;font-size:16px;font-family:inherit;outline:none;color:#333;background:transparent;"><button onclick="openFormula(this)" title="수식 입력" style="display:inline-flex;align-items:center;justify-content:center;border:1px solid #D9D9D9;background:white;border-radius:5px;width:28px;height:28px;font-size:15px;color:#494949;font-family:inherit;cursor:pointer;flex-shrink:0;">∑</button></td>
                               </tr>
                             </tbody>
                           </table>
@@ -852,15 +867,15 @@ body { margin: 0; background: #EDF1FC; min-width: 1280px; }
                             <tbody>
                               <tr>
                                 <td style="width:52px;border-right:1px solid #D9D9D9;border-bottom:1px solid #D9D9D9;padding:9px 4px;text-align:center;"><input type="number" value="3" style="width:44px;border:none;text-align:center;font-size:16px;font-weight:700;font-family:inherit;outline:none;color:#333;background:transparent;"></td>
-                                <td style="border-bottom:1px solid #D9D9D9;padding:9px 12px;"><input type="text" value="어휘가 적절하고 문장 표현이 정확함" style="width:100%;border:none;font-size:16px;font-family:inherit;outline:none;color:#333;background:transparent;"><button onmouseenter="showSymTooltip(this)" onmouseleave="hideSymTooltip()" style="display:inline-flex;align-items:center;justify-content:center;border:1px solid #E6E6E6;background:#F8F8F8;border-radius:5px;width:26px;height:26px;font-size:14px;color:#B3B3B3;font-family:inherit;cursor:not-allowed;flex-shrink:0;">∑</button></td>
+                                <td style="border-bottom:1px solid #D9D9D9;padding:9px 12px;"><input type="text" value="어휘가 적절하고 문장 표현이 정확함" style="width:100%;border:none;font-size:16px;font-family:inherit;outline:none;color:#333;background:transparent;"><button onclick="openFormula(this)" title="수식 입력" style="display:inline-flex;align-items:center;justify-content:center;border:1px solid #D9D9D9;background:white;border-radius:5px;width:28px;height:28px;font-size:15px;color:#494949;font-family:inherit;cursor:pointer;flex-shrink:0;">∑</button></td>
                               </tr>
                               <tr>
                                 <td style="width:52px;border-right:1px solid #D9D9D9;border-bottom:1px solid #D9D9D9;padding:9px 4px;text-align:center;"><input type="number" value="2" style="width:44px;border:none;text-align:center;font-size:16px;font-weight:700;font-family:inherit;outline:none;color:#333;background:transparent;"></td>
-                                <td style="border-bottom:1px solid #D9D9D9;padding:9px 12px;"><input type="text" value="일부 어휘가 부적절하거나 표현 오류가 있음" style="width:100%;border:none;font-size:16px;font-family:inherit;outline:none;color:#333;background:transparent;"><button onmouseenter="showSymTooltip(this)" onmouseleave="hideSymTooltip()" style="display:inline-flex;align-items:center;justify-content:center;border:1px solid #E6E6E6;background:#F8F8F8;border-radius:5px;width:26px;height:26px;font-size:14px;color:#B3B3B3;font-family:inherit;cursor:not-allowed;flex-shrink:0;">∑</button></td>
+                                <td style="border-bottom:1px solid #D9D9D9;padding:9px 12px;"><input type="text" value="일부 어휘가 부적절하거나 표현 오류가 있음" style="width:100%;border:none;font-size:16px;font-family:inherit;outline:none;color:#333;background:transparent;"><button onclick="openFormula(this)" title="수식 입력" style="display:inline-flex;align-items:center;justify-content:center;border:1px solid #D9D9D9;background:white;border-radius:5px;width:28px;height:28px;font-size:15px;color:#494949;font-family:inherit;cursor:pointer;flex-shrink:0;">∑</button></td>
                               </tr>
                               <tr>
                                 <td style="width:52px;border-right:1px solid #D9D9D9;padding:9px 4px;text-align:center;"><input type="number" value="1" style="width:44px;border:none;text-align:center;font-size:16px;font-weight:700;font-family:inherit;outline:none;color:#333;background:transparent;"></td>
-                                <td style="padding:9px 12px;"><input type="text" value="어휘 선택이 부적절하고 표현 오류가 빈번함" style="width:100%;border:none;font-size:16px;font-family:inherit;outline:none;color:#333;background:transparent;"><button onmouseenter="showSymTooltip(this)" onmouseleave="hideSymTooltip()" style="display:inline-flex;align-items:center;justify-content:center;border:1px solid #E6E6E6;background:#F8F8F8;border-radius:5px;width:26px;height:26px;font-size:14px;color:#B3B3B3;font-family:inherit;cursor:not-allowed;flex-shrink:0;">∑</button></td>
+                                <td style="padding:9px 12px;"><input type="text" value="어휘 선택이 부적절하고 표현 오류가 빈번함" style="width:100%;border:none;font-size:16px;font-family:inherit;outline:none;color:#333;background:transparent;"><button onclick="openFormula(this)" title="수식 입력" style="display:inline-flex;align-items:center;justify-content:center;border:1px solid #D9D9D9;background:white;border-radius:5px;width:28px;height:28px;font-size:15px;color:#494949;font-family:inherit;cursor:pointer;flex-shrink:0;">∑</button></td>
                               </tr>
                             </tbody>
                           </table>
@@ -2122,6 +2137,7 @@ function showScreen(name) {
     document.getElementById('s2-result').style.display = 'none';
     document.getElementById('s2-fail').style.display = 'none';
   }
+  if (name === 'list') { setListCase('cards'); }
   if (name === 'step2') {
     _maxReached = Math.max(_maxReached, 2);
   }
@@ -2676,6 +2692,53 @@ function s4DelAnswer(btn) {
   _step3Dirty = true;
 }
 
+/* ── 수식 입력 (OCR 목업과 동일 사양) ── */
+var _formulaTargetTa = null;
+// btn: ∑ 버튼. 같은 영역 안의 textarea(또는 input)를 대상으로 잡는다.
+function openFormula(btn) {
+  var wrap = btn.closest('.formula-wrap') || btn;
+  var host = wrap.parentElement;
+  _formulaTargetTa = host ? (host.querySelector('textarea') || host.querySelector('input[type="text"]')) : null;
+  if (!_formulaTargetTa) {
+    var row = btn.closest('.q-row, .s4-card, td, tr');
+    if (row) _formulaTargetTa = row.querySelector('textarea') || row.querySelector('input[type="text"]');
+  }
+  var inp = document.getElementById('formula-input');
+  if (inp) inp.value = '';
+  document.getElementById('formulaModal').style.display = 'flex';
+  lucide.createIcons();
+  if (inp) setTimeout(function() { inp.focus(); }, 50);
+}
+function fSym(sym) {
+  var inp = document.getElementById('formula-input');
+  if (inp) { inp.value += sym; inp.focus(); }
+}
+function closeFormulaModal() {
+  document.getElementById('formulaModal').style.display = 'none';
+  _formulaTargetTa = null;
+}
+function applyFormula() {
+  var ta = _formulaTargetTa;
+  var fm = (document.getElementById('formula-input').value || '').trim();
+  if (ta && fm) {
+    var sep = (ta.value && !/\s$/.test(ta.value)) ? ' ' : '';
+    ta.value += sep + '$' + fm + '$';
+    if (ta.tagName === 'TEXTAREA') { ta.style.height = 'auto'; ta.style.height = ta.scrollHeight + 'px'; }
+    markDesignDirty();
+  }
+  closeFormulaModal();
+}
+
+/* ── 설계 목록: 케이스 전환 (있음 / 빈 상태) ── */
+function setListCase(mode) {
+  var empty = document.getElementById('list-empty');
+  var cards = document.getElementById('list-cards');
+  var isEmpty = (mode === 'empty');
+  if (empty) empty.style.display = isEmpty ? 'flex' : 'none';
+  if (cards) cards.style.display = isEmpty ? 'none' : 'block';
+  lucide.createIcons();
+}
+
 // 4단계 설계 완료 → 목록 이동 + 성공 토스트
 function completeDesign() {
   clearDesignDirty();
@@ -3103,19 +3166,6 @@ function updateRubricNumbers() {
 }
 
 // 수식 버튼 툴팁
-function showSymTooltip(btn) {
-  const tt = document.getElementById('sym-tooltip');
-  if (!tt) return;
-  const r = btn.getBoundingClientRect();
-  tt.style.left = (r.left + r.width / 2) + 'px';
-  tt.style.top = (r.top - 10) + 'px';
-  tt.style.transform = 'translateX(-50%) translateY(-100%)';
-  tt.style.display = 'block';
-}
-function hideSymTooltip() {
-  const tt = document.getElementById('sym-tooltip');
-  if (tt) tt.style.display = 'none';
-}
 
 function showReorderToast(msg) {
   const toast = document.getElementById('reorder-toast');
@@ -3143,26 +3193,7 @@ function copyRubricCard(btn) {
   showReorderToast('복사되었습니다');
 }
 
-// ── 수식 입력 모달 ──
-let _formulaTargetTextarea = null;
 
-function openFormulaModal(btn) {
-  _formulaTargetTextarea = btn.closest('div[style*="width:190px"]').querySelector('textarea');
-  const modal = document.getElementById('formula-modal');
-  const input = document.getElementById('formula-input');
-  const preview = document.getElementById('formula-preview');
-  input.value = '';
-  preview.textContent = '';
-  modal.classList.add('open');
-  lucide.createIcons();
-  setTimeout(() => input.focus(), 50);
-  input.oninput = () => { preview.textContent = input.value; };
-}
-
-function closeFormulaModal() {
-  document.getElementById('formula-modal').classList.remove('open');
-  _formulaTargetTextarea = null;
-}
 
 function insertSym(sym) {
   const input = document.getElementById('formula-input');
@@ -3232,32 +3263,7 @@ function restoreResultGuide() {
   if (el) el.style.display = 'flex';
 }
 
-// ── 수식 입력기 (준비 중) ──
-var formulaTarget = null;
 
-function openFormula(ta) {}
-
-function closeFormula() {
-  document.getElementById('formula-panel').style.display = 'none';
-  formulaTarget = null;
-}
-function switchFormulaTab(tab) {
-  ['basic','fraction','greek','logic'].forEach(function(t) {
-    document.getElementById('fgroup-' + t).style.display = t === tab ? 'block' : 'none';
-    var btn = document.getElementById('ftab-' + t);
-    btn.style.color = t === tab ? '#7E44FB' : '#808080';
-    btn.style.borderBottomColor = t === tab ? '#7E44FB' : 'transparent';
-  });
-}
-function insertSymbol(sym) {
-  if (!formulaTarget) return;
-  var ta = formulaTarget;
-  var start = ta.selectionStart, end = ta.selectionEnd;
-  var val = ta.value;
-  ta.value = val.substring(0, start) + sym + val.substring(end);
-  ta.selectionStart = ta.selectionEnd = start + sym.length;
-  ta.focus();
-}
 function insertCustom() {
   var val = document.getElementById('formula-custom-input').value;
   if (val) { insertSymbol(val); document.getElementById('formula-custom-input').value = ''; }
@@ -3402,166 +3408,6 @@ function closeRubricResetModal() { document.getElementById('modal-rubric-reset')
 </div>
 
 
-<!-- ═══════════════════════════════════════
-     수식 입력기 패널
-═══════════════════════════════════════ -->
-<div id="formula-panel" style="display:none;position:fixed;bottom:24px;right:24px;z-index:500;width:400px;background:white;border-radius:16px;box-shadow:0 8px 32px rgba(0,0,0,0.18);border:1px solid #E6E6E6;font-family:inherit;">
-  <!-- 헤더 -->
-  <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 16px 10px;border-bottom:1px solid #F0F0F0;">
-    <div style="display:flex;align-items:center;gap:8px;">
-      <span style="font-size:18px;">∑</span>
-      <span style="font-size:15px;font-weight:800;color:#000;">수식 입력기</span>
-    </div>
-    <button onclick="closeFormula()" style="width:28px;height:28px;border:none;background:transparent;cursor:pointer;border-radius:6px;display:flex;align-items:center;justify-content:center;color:#808080;" onmouseover="this.style.background='#F0F0F0'" onmouseout="this.style.background='transparent'"><i data-lucide="x" style="width:16px;height:16px;"></i></button>
-  </div>
-  <!-- 탭 -->
-  <div style="display:flex;border-bottom:1px solid #F0F0F0;padding:0 12px;">
-    <button onclick="switchFormulaTab('basic')" id="ftab-basic" class="ftab active-ftab" style="border:none;background:transparent;cursor:pointer;font-family:inherit;font-size:13px;font-weight:700;color:#7E44FB;padding:10px 10px 9px;border-bottom:2px solid #7E44FB;margin-bottom:-1px;">기본 기호</button>
-    <button onclick="switchFormulaTab('fraction')" id="ftab-fraction" class="ftab" style="border:none;background:transparent;cursor:pointer;font-family:inherit;font-size:13px;font-weight:700;color:#808080;padding:10px 10px 9px;border-bottom:2px solid transparent;margin-bottom:-1px;">분수·지수</button>
-    <button onclick="switchFormulaTab('greek')" id="ftab-greek" class="ftab" style="border:none;background:transparent;cursor:pointer;font-family:inherit;font-size:13px;font-weight:700;color:#808080;padding:10px 10px 9px;border-bottom:2px solid transparent;margin-bottom:-1px;">그리스 문자</button>
-    <button onclick="switchFormulaTab('logic')" id="ftab-logic" class="ftab" style="border:none;background:transparent;cursor:pointer;font-family:inherit;font-size:13px;font-weight:700;color:#808080;padding:10px 10px 9px;border-bottom:2px solid transparent;margin-bottom:-1px;">집합·논리</button>
-  </div>
-  <!-- 기호 패드 -->
-  <div id="formula-body" style="padding:12px 14px;">
-    <!-- 탭: 기본 기호 -->
-    <div id="fgroup-basic">
-      <p style="font-size:11px;color:#B3B3B3;font-weight:700;margin:0 0 8px;">연산</p>
-      <div style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:12px;">
-        <button onclick="insertSymbol('×')" class="sym-btn">×</button>
-        <button onclick="insertSymbol('÷')" class="sym-btn">÷</button>
-        <button onclick="insertSymbol('±')" class="sym-btn">±</button>
-        <button onclick="insertSymbol('∓')" class="sym-btn">∓</button>
-        <button onclick="insertSymbol('=')" class="sym-btn">=</button>
-        <button onclick="insertSymbol('≠')" class="sym-btn">≠</button>
-        <button onclick="insertSymbol('≈')" class="sym-btn">≈</button>
-        <button onclick="insertSymbol('∝')" class="sym-btn">∝</button>
-      </div>
-      <p style="font-size:11px;color:#B3B3B3;font-weight:700;margin:0 0 8px;">비교</p>
-      <div style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:12px;">
-        <button onclick="insertSymbol('<')" class="sym-btn">&lt;</button>
-        <button onclick="insertSymbol('>')" class="sym-btn">&gt;</button>
-        <button onclick="insertSymbol('≤')" class="sym-btn">≤</button>
-        <button onclick="insertSymbol('≥')" class="sym-btn">≥</button>
-        <button onclick="insertSymbol('≪')" class="sym-btn">≪</button>
-        <button onclick="insertSymbol('≫')" class="sym-btn">≫</button>
-      </div>
-      <p style="font-size:11px;color:#B3B3B3;font-weight:700;margin:0 0 8px;">기타</p>
-      <div style="display:flex;flex-wrap:wrap;gap:10px;">
-        <button onclick="insertSymbol('∞')" class="sym-btn">∞</button>
-        <button onclick="insertSymbol('∑')" class="sym-btn">∑</button>
-        <button onclick="insertSymbol('∏')" class="sym-btn">∏</button>
-        <button onclick="insertSymbol('∫')" class="sym-btn">∫</button>
-        <button onclick="insertSymbol('∂')" class="sym-btn">∂</button>
-        <button onclick="insertSymbol('∇')" class="sym-btn">∇</button>
-        <button onclick="insertSymbol('√')" class="sym-btn">√</button>
-        <button onclick="insertSymbol('∛')" class="sym-btn">∛</button>
-      </div>
-    </div>
-    <!-- 탭: 분수·지수 -->
-    <div id="fgroup-fraction" style="display:none;">
-      <p style="font-size:11px;color:#B3B3B3;font-weight:700;margin:0 0 8px;">지수·아래첨자</p>
-      <div style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:12px;">
-        <button onclick="insertSymbol('²')" class="sym-btn">x²</button>
-        <button onclick="insertSymbol('³')" class="sym-btn">x³</button>
-        <button onclick="insertSymbol('⁴')" class="sym-btn">x⁴</button>
-        <button onclick="insertSymbol('ⁿ')" class="sym-btn">xⁿ</button>
-        <button onclick="insertSymbol('₀')" class="sym-btn">x₀</button>
-        <button onclick="insertSymbol('₁')" class="sym-btn">x₁</button>
-        <button onclick="insertSymbol('₂')" class="sym-btn">x₂</button>
-        <button onclick="insertSymbol('ₙ')" class="sym-btn">xₙ</button>
-      </div>
-      <p style="font-size:11px;color:#B3B3B3;font-weight:700;margin:0 0 8px;">분수 (텍스트 형식)</p>
-      <div style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:12px;">
-        <button onclick="insertSymbol('½')" class="sym-btn">½</button>
-        <button onclick="insertSymbol('⅓')" class="sym-btn">⅓</button>
-        <button onclick="insertSymbol('¼')" class="sym-btn">¼</button>
-        <button onclick="insertSymbol('¾')" class="sym-btn">¾</button>
-        <button onclick="insertSymbol('⅔')" class="sym-btn">⅔</button>
-        <button onclick="insertSymbol('⅛')" class="sym-btn">⅛</button>
-      </div>
-      <p style="font-size:11px;color:#B3B3B3;font-weight:700;margin:0 0 8px;">분수 템플릿 삽입</p>
-      <div style="display:flex;flex-wrap:wrap;gap:10px;">
-        <button onclick="insertSymbol('( / )')" class="sym-btn" style="font-size:14px;padding:0 10px;">( □/□ )</button>
-        <button onclick="insertSymbol('√( )')" class="sym-btn" style="font-size:14px;padding:0 10px;">√( )</button>
-        <button onclick="insertSymbol('^{ }')" class="sym-btn" style="font-size:14px;padding:0 10px;">x^{ }</button>
-        <button onclick="insertSymbol('log_{ }( )')" class="sym-btn" style="font-size:14px;padding:0 10px;">log</button>
-      </div>
-    </div>
-    <!-- 탭: 그리스 문자 -->
-    <div id="fgroup-greek" style="display:none;">
-      <p style="font-size:11px;color:#B3B3B3;font-weight:700;margin:0 0 8px;">소문자</p>
-      <div style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:12px;">
-        <button onclick="insertSymbol('α')" class="sym-btn">α</button>
-        <button onclick="insertSymbol('β')" class="sym-btn">β</button>
-        <button onclick="insertSymbol('γ')" class="sym-btn">γ</button>
-        <button onclick="insertSymbol('δ')" class="sym-btn">δ</button>
-        <button onclick="insertSymbol('ε')" class="sym-btn">ε</button>
-        <button onclick="insertSymbol('ζ')" class="sym-btn">ζ</button>
-        <button onclick="insertSymbol('η')" class="sym-btn">η</button>
-        <button onclick="insertSymbol('θ')" class="sym-btn">θ</button>
-        <button onclick="insertSymbol('λ')" class="sym-btn">λ</button>
-        <button onclick="insertSymbol('μ')" class="sym-btn">μ</button>
-        <button onclick="insertSymbol('π')" class="sym-btn">π</button>
-        <button onclick="insertSymbol('ρ')" class="sym-btn">ρ</button>
-        <button onclick="insertSymbol('σ')" class="sym-btn">σ</button>
-        <button onclick="insertSymbol('τ')" class="sym-btn">τ</button>
-        <button onclick="insertSymbol('φ')" class="sym-btn">φ</button>
-        <button onclick="insertSymbol('χ')" class="sym-btn">χ</button>
-        <button onclick="insertSymbol('ψ')" class="sym-btn">ψ</button>
-        <button onclick="insertSymbol('ω')" class="sym-btn">ω</button>
-      </div>
-      <p style="font-size:11px;color:#B3B3B3;font-weight:700;margin:0 0 8px;">대문자</p>
-      <div style="display:flex;flex-wrap:wrap;gap:10px;">
-        <button onclick="insertSymbol('Α')" class="sym-btn">Α</button>
-        <button onclick="insertSymbol('Β')" class="sym-btn">Β</button>
-        <button onclick="insertSymbol('Γ')" class="sym-btn">Γ</button>
-        <button onclick="insertSymbol('Δ')" class="sym-btn">Δ</button>
-        <button onclick="insertSymbol('Θ')" class="sym-btn">Θ</button>
-        <button onclick="insertSymbol('Λ')" class="sym-btn">Λ</button>
-        <button onclick="insertSymbol('Π')" class="sym-btn">Π</button>
-        <button onclick="insertSymbol('Σ')" class="sym-btn">Σ</button>
-        <button onclick="insertSymbol('Φ')" class="sym-btn">Φ</button>
-        <button onclick="insertSymbol('Ψ')" class="sym-btn">Ψ</button>
-        <button onclick="insertSymbol('Ω')" class="sym-btn">Ω</button>
-      </div>
-    </div>
-    <!-- 탭: 집합·논리 -->
-    <div id="fgroup-logic" style="display:none;">
-      <p style="font-size:11px;color:#B3B3B3;font-weight:700;margin:0 0 8px;">집합</p>
-      <div style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:12px;">
-        <button onclick="insertSymbol('∈')" class="sym-btn">∈</button>
-        <button onclick="insertSymbol('∉')" class="sym-btn">∉</button>
-        <button onclick="insertSymbol('⊂')" class="sym-btn">⊂</button>
-        <button onclick="insertSymbol('⊃')" class="sym-btn">⊃</button>
-        <button onclick="insertSymbol('⊆')" class="sym-btn">⊆</button>
-        <button onclick="insertSymbol('⊇')" class="sym-btn">⊇</button>
-        <button onclick="insertSymbol('∩')" class="sym-btn">∩</button>
-        <button onclick="insertSymbol('∪')" class="sym-btn">∪</button>
-        <button onclick="insertSymbol('∅')" class="sym-btn">∅</button>
-      </div>
-      <p style="font-size:11px;color:#B3B3B3;font-weight:700;margin:0 0 8px;">논리</p>
-      <div style="display:flex;flex-wrap:wrap;gap:10px;">
-        <button onclick="insertSymbol('∧')" class="sym-btn">∧</button>
-        <button onclick="insertSymbol('∨')" class="sym-btn">∨</button>
-        <button onclick="insertSymbol('¬')" class="sym-btn">¬</button>
-        <button onclick="insertSymbol('→')" class="sym-btn">→</button>
-        <button onclick="insertSymbol('↔')" class="sym-btn">↔</button>
-        <button onclick="insertSymbol('∀')" class="sym-btn">∀</button>
-        <button onclick="insertSymbol('∃')" class="sym-btn">∃</button>
-        <button onclick="insertSymbol('∴')" class="sym-btn">∴</button>
-        <button onclick="insertSymbol('∵')" class="sym-btn">∵</button>
-      </div>
-    </div>
-  </div>
-  <!-- 직접 입력 -->
-  <div style="padding:0 14px 14px;border-top:1px solid #F0F0F0;padding-top:10px;">
-    <p style="font-size:11px;color:#B3B3B3;font-weight:700;margin:0 0 6px;">직접 입력</p>
-    <div style="display:flex;gap:8px;">
-      <input id="formula-custom-input" type="text" placeholder="기호 또는 수식 텍스트 입력" style="flex:1;height:36px;border:1px solid #D9D9D9;border-radius:8px;padding:0 10px;font-size:14px;font-family:inherit;outline:none;" onfocus="this.style.borderColor='#7E44FB'" onblur="this.style.borderColor='#D9D9D9'">
-      <button onclick="insertCustom()" style="height:36px;padding:0 14px;background:#7E44FB;color:white;border:none;border-radius:8px;cursor:pointer;font-size:13px;font-weight:700;font-family:inherit;">삽입</button>
-    </div>
-  </div>
-</div>
 <!-- sym-btn 공통 스타일 -->
 <style>
 .sym-btn { min-width:36px;height:36px;padding:0 8px;border:1px solid #E6E6E6;border-radius:8px;background:white;cursor:pointer;font-size:16px;font-family:inherit;color:#000;display:inline-flex;align-items:center;justify-content:center;transition:background 0.1s,border-color 0.1s; }
@@ -3675,63 +3521,6 @@ function closeRubricResetModal() { document.getElementById('modal-rubric-reset')
 <!-- 순서 변경 토스트 -->
 <div id="reorder-toast">✓ 순서가 변경되었습니다</div>
 
-<!-- 수식 버튼 툴팁 -->
-<div id="sym-tooltip">수식 입력은 준비 중입니다.</div>
-
-<!-- ── 수식 입력 모달 ── -->
-<div id="formula-modal" onclick="if(event.target===this)closeFormulaModal()">
-  <div style="background:white;border-radius:16px;width:480px;box-shadow:0 8px 32px rgba(0,0,0,0.18);overflow:hidden;">
-    <!-- 헤더 -->
-    <div style="padding:18px 20px 14px;border-bottom:1px solid #F0F0F0;display:flex;align-items:center;justify-content:space-between;">
-      <div>
-        <div style="font-size:16px;font-weight:800;color:#000;">수식 입력</div>
-        <div style="font-size:12px;color:#808080;margin-top:2px;">기호를 선택하거나 직접 입력하세요</div>
-      </div>
-      <button onclick="closeFormulaModal()" style="width:32px;height:32px;border:none;background:transparent;cursor:pointer;border-radius:8px;display:flex;align-items:center;justify-content:center;color:#808080;" onmouseover="this.style.background='#F0F0F0'" onmouseout="this.style.background='transparent'">
-        <i data-lucide="x" style="width:18px;height:18px;"></i>
-      </button>
-    </div>
-    <!-- 기호 팔레트 -->
-    <div style="padding:16px 20px 12px;">
-      <div style="font-size:12px;font-weight:700;color:#808080;margin-bottom:8px;">자주 쓰는 기호</div>
-      <div style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:14px;">
-        <button class="sym-btn" onclick="insertSym('+')" title="더하기">+</button>
-        <button class="sym-btn" onclick="insertSym('−')" title="빼기">−</button>
-        <button class="sym-btn" onclick="insertSym('×')" title="곱하기">×</button>
-        <button class="sym-btn" onclick="insertSym('÷')" title="나누기">÷</button>
-        <button class="sym-btn" onclick="insertSym('=')" title="등호">=</button>
-        <button class="sym-btn" onclick="insertSym('≠')" title="부등호">≠</button>
-        <button class="sym-btn" onclick="insertSym('≥')" title="크거나 같음">≥</button>
-        <button class="sym-btn" onclick="insertSym('≤')" title="작거나 같음">≤</button>
-        <button class="sym-btn" onclick="insertSym('>')" title="초과">&gt;</button>
-        <button class="sym-btn" onclick="insertSym('<')" title="미만">&lt;</button>
-        <button class="sym-btn" onclick="insertSym('±')" title="플러스마이너스">±</button>
-        <button class="sym-btn" onclick="insertSym('√')" title="루트">√</button>
-        <button class="sym-btn" onclick="insertSym('²')" title="제곱">x²</button>
-        <button class="sym-btn" onclick="insertSym('³')" title="세제곱">x³</button>
-        <button class="sym-btn" onclick="insertSym('∑')" title="시그마">∑</button>
-        <button class="sym-btn" onclick="insertSym('∞')" title="무한">∞</button>
-        <button class="sym-btn" onclick="insertSym('π')" title="파이">π</button>
-        <button class="sym-btn" onclick="insertSym('°')" title="도">°</button>
-        <button class="sym-btn" onclick="insertSym('%')" title="퍼센트">%</button>
-        <button class="sym-btn" onclick="insertSym('/')" title="분수 구분">/</button>
-      </div>
-      <!-- 직접 입력 -->
-      <div style="font-size:12px;font-weight:700;color:#808080;margin-bottom:8px;">수식 직접 입력</div>
-      <input id="formula-input" type="text" placeholder="예: 5×3÷2 = 7.5" style="width:100%;height:44px;border:1px solid #D9D9D9;border-radius:8px;padding:0 14px;font-size:16px;font-family:inherit;outline:none;color:#333;" onfocus="this.style.borderColor='#7E44FB'" onblur="this.style.borderColor='#D9D9D9'">
-      <!-- 미리보기 -->
-      <div style="margin-top:10px;min-height:40px;background:#F8F8F8;border-radius:8px;padding:10px 14px;display:flex;align-items:center;">
-        <span style="font-size:12px;color:#B3B3B3;margin-right:8px;">미리보기</span>
-        <span id="formula-preview" style="font-size:16px;color:#333;font-weight:700;letter-spacing:0.5px;"></span>
-      </div>
-    </div>
-    <!-- 푸터 -->
-    <div style="padding:12px 20px 18px;display:flex;justify-content:flex-end;gap:10px;">
-      <button onclick="closeFormulaModal()" style="height:36px;padding:0 16px;border:1px solid #D9D9D9;background:white;border-radius:8px;font-size:14px;font-weight:700;font-family:inherit;cursor:pointer;color:#494949;">취소</button>
-      <button onclick="confirmFormula()" style="height:36px;padding:0 16px;border:none;background:#7E44FB;border-radius:8px;font-size:14px;font-weight:700;font-family:inherit;cursor:pointer;color:white;">삽입</button>
-    </div>
-  </div>
-</div>
 
 <!-- ===== Step 0: 복사해서 만들기 모달 ===== -->
 <div id="modal-copy" style="display:none; position:fixed; inset:0; z-index:1000; background:rgba(0,0,0,0.4); align-items:center; justify-content:center; padding:24px 0;" onclick="closeCopyModal(event)">
@@ -3903,8 +3692,12 @@ function closeRubricResetModal() { document.getElementById('modal-rubric-reset')
   <div id="mp-body" class="mp-body" style="display:none">
     <div class="mp-cap">설계 시작</div>
     <button class="mp-btn" data-k="list" onclick="mpGo('list')">설계 목록</button>
-    <button class="mp-btn" data-k="type" onclick="mpGo('type')">평가 유형 선택 <span class="mp-sub">간편 / 정교</span></button>
-    <button class="mp-btn" data-k="detail" onclick="mpGo('detail')">1단계 · 설계 기본 정보</button>
+    <button class="mp-btn" data-k="list-empty" onclick="mpGo('list-empty')">설계 목록 <span class="mp-sub">빈 상태</span></button>
+    <button class="mp-btn" data-k="type" onclick="mpGo('type')">설계 방식 선택 <span class="mp-sub">간편 / 정교</span></button>
+    <button class="mp-btn" data-k="simple" onclick="mpGo('simple')">간편한 평가 <span class="mp-sub">1단계로 완료</span></button>
+
+    <div class="mp-cap">정교한 평가 · 1단계</div>
+    <button class="mp-btn" data-k="detail" onclick="mpGo('detail')">설계 기본 정보</button>
 
     <div class="mp-cap">2단계 · 활동지 문항 구분</div>
     <button class="mp-btn" data-k="s2-upload" onclick="mpGo('s2-upload')">업로드 대기 <span class="mp-sub">빈 상태</span></button>
@@ -3953,8 +3746,10 @@ function mpSyncActive(key){
   document.querySelectorAll('#mockpick .mp-btn').forEach(b=>b.classList.toggle('on',b.dataset.k===key));
 }
 function mpGo(k){
-  if(k==='list'){ showScreen('list'); }
+  if(k==='list'){ showScreen('list'); setListCase('cards'); }
+  else if(k==='list-empty'){ showScreen('list'); setListCase('empty'); }
   else if(k==='type'){ showScreen('type'); }
+  else if(k==='simple'){ showScreen('simple'); }
   else if(k==='detail'){ showScreen('detail'); }
   else if(k.indexOf('s2-')===0){
     showScreen('step2');
@@ -3979,6 +3774,38 @@ function mpGo(k){
 })();
 lucide.createIcons();
 </script>
+
+<!-- ── 수식 입력 모달 (OCR 목업과 동일 사양) ── -->
+<div id="formulaModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:1200;align-items:center;justify-content:center;" onclick="if(event.target===this)closeFormulaModal()">
+  <div style="background:white;border-radius:16px;box-shadow:0 4px 12px rgba(95,102,178,0.16);width:420px;max-width:92vw;position:relative;">
+    <div style="padding:20px 20px 12px;display:flex;align-items:center;gap:8px;">
+      <i data-lucide="sigma" style="width:18px;height:18px;color:#7E44FB;"></i>
+      <h3 style="font-size:16px;font-weight:800;color:#222631;margin:0;">수식 입력</h3>
+    </div>
+    <div style="padding:0 20px 16px;display:flex;flex-direction:column;gap:10px;">
+      <input id="formula-input" type="text" placeholder="예: x^2 + y^2 = r^2" style="height:42px;border:1px solid #D9D9D9;border-radius:8px;padding:0 12px;font-family:inherit;font-size:15px;color:#333;outline:none;" onfocus="this.style.borderColor='#7E44FB'" onblur="this.style.borderColor='#D9D9D9'">
+      <div style="display:flex;flex-wrap:wrap;gap:6px;">
+        <button onclick="fSym('x^2')" class="fbtn">x²</button>
+        <button onclick="fSym('x^n')" class="fbtn">xⁿ</button>
+        <button onclick="fSym('x_n')" class="fbtn">xₙ</button>
+        <button onclick="fSym('\\frac{a}{b}')" class="fbtn">a/b</button>
+        <button onclick="fSym('\\sqrt{x}')" class="fbtn">√x</button>
+        <button onclick="fSym('\\pi')" class="fbtn">π</button>
+        <button onclick="fSym('\\times')" class="fbtn">×</button>
+        <button onclick="fSym('\\div')" class="fbtn">÷</button>
+        <button onclick="fSym('\\pm')" class="fbtn">±</button>
+        <button onclick="fSym('\\leq')" class="fbtn">≤</button>
+        <button onclick="fSym('\\geq')" class="fbtn">≥</button>
+        <button onclick="fSym('\\neq')" class="fbtn">≠</button>
+      </div>
+      <span style="font-size:14px;color:#808080;line-height:1.5;">자주 쓰는 기호를 누르거나 직접 입력하세요. 입력한 수식은 <strong>$수식$</strong> 형태로 삽입됩니다.</span>
+    </div>
+    <div style="padding:8px 20px 16px;display:flex;justify-content:flex-end;gap:10px;">
+      <button onclick="closeFormulaModal()" style="display:inline-flex;align-items:center;justify-content:center;line-height:1;height:38px;background:white;color:#494949;border:1.5px solid #D9D9D9;border-radius:8px;padding:0 18px;font-size:14px;font-weight:700;font-family:inherit;cursor:pointer;">취소</button>
+      <button onclick="applyFormula()" style="display:inline-flex;align-items:center;justify-content:center;line-height:1;height:38px;background:#7E44FB;color:white;border:none;border-radius:8px;padding:0 18px;font-size:14px;font-weight:800;font-family:inherit;cursor:pointer;">삽입</button>
+    </div>
+  </div>
+</div>
 
 </body>
 </html>
