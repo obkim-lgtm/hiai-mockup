@@ -838,5 +838,59 @@ ReactDOM.createRoot(document.getElementById("root")).render(<App/>);
     document.addEventListener('mouseup',()=>{ drag=false; });
   })();
 </script>
+<!-- ===== 까망이 공통 보정 (mp-fix-v2) — 화면 밖 이탈 방지 · 접힌 채 드래그 ===== -->
+<script>
+(function(){
+  var el = document.getElementById('mockpick');
+  if (!el) return;
+  var down = false, moved = false, swallow = false, sx = 0, sy = 0;
+
+  // 패널이 항상 화면 안에 남도록 보정 (범위 안이면 아무것도 바꾸지 않음)
+  function clamp(){
+    if (!window.innerWidth || !window.innerHeight) return;   // 렌더 전/숨김 탭 보호
+    var r = el.getBoundingClientRect();
+    if (!r.width || !r.height) return;
+    var maxL = Math.max(8, window.innerWidth  - r.width  - 8);
+    var maxT = Math.max(8, window.innerHeight - r.height - 8);
+    var l = Math.min(Math.max(8, r.left), maxL);
+    var t = Math.min(Math.max(8, r.top),  maxT);
+    if (Math.abs(l - r.left) > 0.5 || Math.abs(t - r.top) > 0.5) {
+      el.style.right = 'auto'; el.style.bottom = 'auto';
+      el.style.left = l + 'px'; el.style.top = t + 'px';
+    }
+  }
+
+  document.addEventListener('mousedown', function(e){
+    if (!el.contains(e.target) || e.target.closest('button')) return;
+    down = true; moved = false; sx = e.clientX; sy = e.clientY;
+  }, true);
+
+  document.addEventListener('mousemove', function(e){
+    if (!down) return;
+    if (Math.abs(e.clientX - sx) > 3 || Math.abs(e.clientY - sy) > 3) moved = true;
+    if (moved) clamp();
+  });
+
+  document.addEventListener('mouseup', function(){
+    if (!down) return;
+    down = false; swallow = moved;
+    if (moved) clamp();
+  });
+
+  // 끌고 난 직후의 click은 펼치기/접기로 취급하지 않는다
+  // (접은 채로 끌면 mouseup 뒤 click이 mpToggle을 호출해 위치가 되돌아가던 문제)
+  document.addEventListener('click', function(e){
+    if (swallow && el.contains(e.target)) { e.stopPropagation(); e.preventDefault(); }
+    swallow = false;
+  }, true);
+
+  // 펼치기/접기로 높이가 바뀐 뒤 화면 밖으로 나가면 되돌린다
+  el.addEventListener('click', function(){
+    requestAnimationFrame(function(){ requestAnimationFrame(clamp); });
+  });
+
+  window.addEventListener('resize', clamp);
+})();
+</script>
 </body>
 </html>
