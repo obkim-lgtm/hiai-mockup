@@ -150,7 +150,7 @@ body { margin: 0; background: #EDF1FC; min-width: 1280px; }
             <p style="font-size:16px;color:#333;margin:0;font-weight:400;line-height:1.55;">진행할 평가를 설계해 주세요. 설계한 내용은 과제 제출 방식과 AI 채점의 기준이 됩니다.</p>
           </div>
           <!-- 설계 추가 → 시작 방법 선택 드롭다운 -->
-          <div style="position:relative;flex-shrink:0;">
+          <div id="add-btn-wrap" style="position:relative;flex-shrink:0;">
             <button onclick="toggleAddDropdown(event)" style="display:inline-flex;align-items:center;justify-content:center;line-height:1;vertical-align:middle;gap:8px;background:#7E44FB;color:white;border:none;border-radius:8px;height:36px;padding:0 16px;font-size:16px;font-weight:700;cursor:pointer;font-family:inherit;">
               <i data-lucide="plus" style="width:18px;height:18px;"></i>
               설계 추가
@@ -178,9 +178,22 @@ body { margin: 0; background: #EDF1FC; min-width: 1280px; }
             <p style="font-size:18px;font-weight:800;color:#341761;margin:0 0 6px;">아직 만든 평가 설계가 없어요</p>
             <p style="font-size:14px;color:#808080;margin:0;line-height:1.65;font-weight:400;">평가할 내용과 채점기준을 설계하면 과제 제출과 AI 채점을 시작할 수 있습니다.</p>
           </div>
-          <button onclick="toggleAddDropdown(event)" style="display:inline-flex;align-items:center;justify-content:center;line-height:1;vertical-align:middle;gap:8px;background:#7E44FB;color:white;border:none;border-radius:8px;height:40px;padding:0 18px;font-size:16px;font-weight:700;cursor:pointer;font-family:inherit;margin-top:4px;">
-            <i data-lucide="plus" style="width:18px;height:18px;"></i>설계 추가
-          </button>
+          <div style="position:relative;margin-top:4px;">
+            <button onclick="toggleEmptyDropdown(event)" style="display:inline-flex;align-items:center;justify-content:center;line-height:1;vertical-align:middle;gap:8px;background:#7E44FB;color:white;border:none;border-radius:8px;height:40px;padding:0 18px;font-size:16px;font-weight:700;cursor:pointer;font-family:inherit;">
+              <i data-lucide="plus" style="width:18px;height:18px;"></i>설계 추가
+            </button>
+            <div id="add-dropdown-empty" style="display:none;position:absolute;left:50%;transform:translateX(-50%);top:48px;background:white;border:1px solid #D9D9D9;border-radius:10px;padding:6px;z-index:200;width:250px;box-shadow:0 6px 24px rgba(0,0,0,0.10);">
+              <button onclick="showScreen('type')" style="display:flex;width:100%;align-items:center;gap:9px;height:40px;padding:0 12px;background:none;border:none;border-radius:6px;font-size:15px;font-weight:700;color:#333;cursor:pointer;font-family:inherit;text-align:left;white-space:nowrap;" onmouseover="this.style.background='#F7F4FF'" onmouseout="this.style.background='none'">
+                <i data-lucide="file-plus-2" style="width:16px;height:16px;color:#7E44FB;"></i>새로 만들기
+              </button>
+              <button onclick="openCopyModal()" style="display:flex;width:100%;align-items:center;gap:9px;height:40px;padding:0 12px;background:none;border:none;border-radius:6px;font-size:15px;font-weight:700;color:#333;cursor:pointer;font-family:inherit;text-align:left;white-space:nowrap;" onmouseover="this.style.background='#F7F4FF'" onmouseout="this.style.background='none'">
+                <i data-lucide="copy" style="width:16px;height:16px;color:#7E44FB;"></i>복사해서 만들기
+              </button>
+              <button onclick="openLibraryModal()" style="display:flex;width:100%;align-items:center;gap:9px;height:40px;padding:0 12px;background:none;border:none;border-radius:6px;font-size:15px;font-weight:700;color:#333;cursor:pointer;font-family:inherit;text-align:left;white-space:nowrap;" onmouseover="this.style.background='#F7F4FF'" onmouseout="this.style.background='none'">
+                <i data-lucide="library" style="width:16px;height:16px;color:#7E44FB;"></i>평가 자료실에서 가져오기
+              </button>
+            </div>
+          </div>
         </div>
 
         <!-- 카드 그리드 영역 -->
@@ -2153,13 +2166,18 @@ function toggleAddDropdown(e) {
   const d = document.getElementById('add-dropdown');
   d.style.display = d.style.display === 'none' ? 'block' : 'none';
 }
+function toggleEmptyDropdown(e) {
+  e.stopPropagation();
+  const d = document.getElementById('add-dropdown-empty');
+  d.style.display = d.style.display === 'none' ? 'block' : 'none';
+}
 function toggleCardDropdown(e, id) {
   closeAllDropdowns();
   const d = document.getElementById(id);
   d.style.display = 'block';
 }
 function closeAllDropdowns() {
-  document.querySelectorAll('[id^="drop"], #add-dropdown').forEach(d => d.style.display = 'none');
+  document.querySelectorAll('[id^="drop"], #add-dropdown, #add-dropdown-empty').forEach(d => d.style.display = 'none');
 }
 document.addEventListener('click', closeAllDropdowns);
 
@@ -2733,9 +2751,13 @@ function applyFormula() {
 function setListCase(mode) {
   var empty = document.getElementById('list-empty');
   var cards = document.getElementById('list-cards');
+  var addBtn = document.getElementById('add-btn-wrap');
   var isEmpty = (mode === 'empty');
   if (empty) empty.style.display = isEmpty ? 'flex' : 'none';
   if (cards) cards.style.display = isEmpty ? 'none' : 'block';
+  // 빈 상태에서는 중앙 CTA 하나만 남긴다 (같은 동작의 버튼 중복 방지)
+  if (addBtn) addBtn.style.display = isEmpty ? 'none' : 'block';
+  closeAllDropdowns();
   lucide.createIcons();
 }
 
