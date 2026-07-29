@@ -338,15 +338,26 @@ function go(hash){
 window.addEventListener('hashchange', render);
 
 /* ── 복잡한 채점기준 감지 + textarea 자동 높이 ──
-   길이가 아니라 "한 칸에 여러 판단이 뭉쳤는지"를 본다 (루카스·줄리 피드백 2026-07-28):
-   배점 표기 2개 이상 / 항목 나열 마커(①② 등·요소N·첫째둘째) 2개 이상이면 복잡, 아주 긴 입력은 보조 신호 */
+   길이가 아니라 "한 칸에 여러 판단이 뭉쳤는지"를 본다 (루카스·줄리 피드백 2026-07-28)
+   R1 배점 표기 2회 이상  R2 나열 마커 2회 이상  R3 배점은 적혔는데 세부 기준 표가 비어 있음(구조 비교)
+   판정에 쓰지 않는 것: 글자 수 · 줄바꿈 */
+var RE_SCORE = /\d+\s*점/g;
+var RE_ENUM  = /[①②③④⑤⑥⑦⑧⑨⑩]|요소\s*\d|첫째|둘째|셋째|\d\s*\)|^\s*[가나다]\./gm;
 function checkRubricLen(ta){
   ta.style.height = 'auto';
   ta.style.height = ta.scrollHeight + 'px';
   var v = ta.value;
-  var scoreMarks = (v.match(/\d+\s*점/g) || []).length;
-  var enumMarks  = (v.match(/[①②③④⑤⑥]|요소\s*\d|첫째|둘째|셋째/g) || []).length;
-  var complex = scoreMarks >= 2 || enumMarks >= 2 || v.length >= 150;
+  var r1 = (v.match(RE_SCORE) || []).length >= 2;
+  var r2 = (v.match(RE_ENUM)  || []).length >= 2;
+  var r3 = false;
+  if (!r1 && RE_SCORE.test(v)) {
+    RE_SCORE.lastIndex = 0;
+    var card = ta.closest('.rubric-card');
+    var cells = card ? card.querySelectorAll('.rubric-tbl input[type="text"]') : [];
+    if (cells.length) r3 = Array.prototype.every.call(cells, function(c){ return !c.value.trim(); });
+  }
+  RE_SCORE.lastIndex = 0; RE_ENUM.lastIndex = 0;
+  var complex = r1 || r2 || r3;
   ta.classList.toggle('warn', complex);
   var warn = ta.parentElement.querySelector('.rubric-warn');
   if (warn) warn.classList.toggle('show', complex);
