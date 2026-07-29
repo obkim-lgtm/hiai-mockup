@@ -4000,9 +4000,10 @@ document.addEventListener('input', function(e){
 });
 </script>
 
-<!-- ===== 까망이 현재 위치 동기화 (mp-sync-v1) =====
-     목업 내부 조작(다음 단계·목록 진입 등)으로 화면이 바뀌어도
-     내비게이터 활성 버튼이 따라오게 한다. 기존에는 mpGo()로 눌렀을 때만 갱신됐음 -->
+<!-- ===== 까망이 현재 위치 동기화 (mp-sync-v2) =====
+     목업 내부 조작(다음 단계·목록 진입·자동 전환)으로 화면이 바뀌어도
+     내비게이터 활성 버튼이 따라오게 한다. 기존에는 mpGo()로 눌렀을 때만 갱신됐음.
+     v2: 함수 래핑 + MutationObserver 병행 (display를 직접 바꾸는 경로까지 포착) -->
 <script>
 (function(){
   function shown(id){
@@ -4039,20 +4040,42 @@ document.addEventListener('input', function(e){
     if (btn && body && body.style.display !== 'none') btn.scrollIntoView({ block: 'nearest' });
   }
   window.mpSync = mpSync;
-  // 화면·케이스를 바꾸는 함수들을 감싸 호출 직후 동기화 (내부 버튼·자동 전환 모두 포함)
-  ['showScreen','setListCase','s2ShowState','s3SetCase','demoRubricWarn',
-   'openScoringGuide','closeScoringGuide'].forEach(function(fn){
+  var _t = null;
+  function schedule(){ clearTimeout(_t); _t = setTimeout(mpSync, 0); }
+
+  // (1) 화면·케이스를 바꾸는 함수들을 감싸 호출 직후 동기화
+  ['showScreen','showScreenBack','setListCase','s2ShowState','s3SetCase','showStep3Result',
+   'demoRubricWarn','openScoringGuide','closeScoringGuide'].forEach(function(fn){
     var orig = window[fn];
     if (typeof orig !== 'function') return;
     window[fn] = function(){
       var r = orig.apply(this, arguments);
-      setTimeout(mpSync, 0);
+      schedule();
       return r;
     };
   });
-  window.addEventListener('hashchange', function(){ setTimeout(mpSync, 0); });
+
+  // (2) 감시자 — 목업 곳곳에서 display를 직접 바꾸는 경로(업로드 시뮬레이션·로딩 타이머·
+  //     이전 단계 복귀 등)가 많아 함수 래핑만으로는 놓친다. 상태 컨테이너를 직접 관찰한다.
+  if (window.MutationObserver) {
+    var mo = new MutationObserver(schedule);
+    var opt = { attributes: true, attributeFilter: ['style','class'] };
+    document.querySelectorAll('.screen').forEach(function(el){ mo.observe(el, opt); });
+    ['s2-upload','s2-loading','s2-result','s2-fail','s3-loading','s3-content',
+     'list-empty','list-cards','sg-overlay'].forEach(function(id){
+      var el = document.getElementById(id);
+      if (el) mo.observe(el, opt);
+    });
+    // 준비 팁 모달은 처음 열 때 body에 붙으므로, 붙는 시점에 관찰 대상에 추가
+    new MutationObserver(function(){
+      var sg = document.getElementById('sg-overlay');
+      if (sg && !sg._mpWatched) { sg._mpWatched = true; mo.observe(sg, opt); schedule(); }
+    }).observe(document.body, { childList: true });
+  }
+
+  window.addEventListener('hashchange', schedule);
   mpSync();                                              // 최초 로드(#detail 등 직접 진입) 반영
-  window.addEventListener('load', function(){ mpSync(); });
+  window.addEventListener('load', mpSync);
 })();
 </script>
 </body>
