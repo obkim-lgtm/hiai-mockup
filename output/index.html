@@ -197,29 +197,6 @@ const SECTIONS = [
     ]
   },
   {
-    title:'AI 채점 안내 — 채점 정확도를 높이는 준비 팁', color:'#5890FF', note:'QA 케이스 기반 · 신규',
-    cards:[
-      { name:'안내 컨셉 (단독 목업)', file:'scoring_guidance_v1.html', desc:'QA에서 확인된 <b>채점이 어려운 유형을, 행동 가능한 시점에 맞춰 배치</b> (7/29 정책 확정)<br>① 평가 설계(활동지 업로드) = 한 단 구성·답란 넉넉·그림 답란 분리 ② 업로드(수합) = 첨삭 전 원본 스캔 ③ 채점 결과 = 인식 결과 수정 우선 회복 안내<br>전체 안내 모달은 공용 컴포넌트(scoring_guide_modal.js) 하나로 세 지점에서 팝업 (※ 회전 스캔 제외 — 8월 자동 회전 보정 탑재 예정)',
-        states:[
-          {label:'업로드 안내', hash:'#upload', def:true},
-          {label:'안내 모달', hash:'#upload-guide'},
-          {label:'채점기준 입력', hash:'#rubric'},
-          {label:'복잡한 기준 경고', hash:'#rubric-long'},
-        ]},
-      { name:'과제물 관리 통합본 (v2)', file:'task_ocr_review_v2.html', desc:'기존 과제물 관리(OCR) 목업에 <b>업로드 안내 스트립·모달을 얹은 통합본</b> — 기존 v1 목업·URL은 그대로 보존',
-        states:[
-          {label:'일괄 업로드 + 안내', hash:'#case=bulk', def:true},
-          {label:'안내 모달 딥링크', hash:'#guide'},
-        ]},
-      { name:'채점 결과 시점 안내', file:'scoring_student_v1.html', desc:'예방(업로드 전)과 짝을 이루는 <b>회복 경로</b> — 인식 품질에 문제가 있었던 학생에게만 "다시 올리면 더 정확하게 채점된다" 안내 + 재업로드 동선 (7/28 루카스 피드백 3번)<br>정상 인식 학생에게는 노출하지 않음',
-        states:[
-          {label:'정확도 낮음 (안내 노출)', file:'scoring_student_v1.html', query:'?id=10103&name=박지민', def:true},
-          {label:'확인 필요 (안내 노출)', file:'scoring_student_v1.html', query:'?id=10102&name=이준호'},
-          {label:'정상 인식 (안내 없음)', file:'scoring_student_v1.html', query:'?id=10101&name=김서윤'},
-        ]},
-    ]
-  },
-  {
     title:'평가 설계', color:'#EC4899', note:'10월',
     cards:[
       { name:'평가 설계', file:'evaluation_design_v4_260713.html', desc:'기존 평가 설계는 「간편한 평가」로 유지, <b>채점 정확도 향상을 위해 「정교한 평가」 단계 추가</b><br>— ② 빈 활동지 업로드(필수), ③ 채점기준·문항 연결(선택 · AI가 관련 기준을 매칭해 기본값 표시), ④ 모범답안 입력(선택).',
