@@ -108,7 +108,7 @@
     .deid-mini .undo{ color:#9869fc; cursor:pointer; margin-left:4px; }
     .deid-mini .undo:hover{ text-decoration:underline; }
 
-    /* ── AI 채점 안내 (잘 채점되는 과제물) — v2 추가 ── */
+    /* ── AI 채점 안내 (채점 정확도를 높이는 준비 팁) — v2 추가 ── */
     .guide-strip{ background:#F2F5FF; border-radius:10px; padding:14px 16px; display:flex; align-items:center; gap:12px; margin-bottom:16px; }
     .guide-strip-ico{ width:36px; height:36px; border-radius:9px; background:#E3ECFF; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
     .guide-strip-ico i{ width:20px; height:20px; color:#5890FF; }
@@ -970,9 +970,9 @@
           <li>제출 가능한 파일 형식 : PDF, PNG, JPG</li>
         </ul>
       </div>
-      <!-- ★ v2: 잘 채점되는 과제물 안내 링크 -->
+      <!-- ★ v2: 채점 정확도를 높이는 준비 팁 링크 -->
       <button onclick="openScoringGuide()" style="align-self:flex-start;background:none;border:none;padding:0;cursor:pointer;font-family:inherit;font-size:14px;font-weight:700;color:#5890FF;display:inline-flex;align-items:center;justify-content:center;line-height:1;vertical-align:middle;gap:5px;margin-top:-12px;">
-        <i data-lucide="scan-text" style="width:15px;height:15px;"></i>잘 채점되는 과제물 안내 보기
+        <i data-lucide="scan-text" style="width:15px;height:15px;"></i>채점 정확도를 높이는 준비 팁
       </button>
       <!-- 파일 업로드 (드래그앤드롭 · 최대 1개. 학생 로그인이 없어 선생님 업로드 단일) -->
       <div style="display:flex;flex-direction:column;gap:8px;">
@@ -3559,7 +3559,7 @@ function routeHash(hash) {
     else if (hash === '#list')   { goToList(); }
     else if (hash === '#upload') { resetUpload(); showScreen('screen-upload'); }
     else if (hash === '#task')   { showScreen('screen-task'); }
-    // 채점 상세에서 '준비 안내 보기'로 들어오는 딥링크 — 일괄 업로드 화면 + 안내 모달
+    // 채점 상세에서 '준비 팁 보기'로 들어오는 딥링크 — 일괄 업로드 화면 + 안내 모달
     // openScoringGuide는 뒤쪽 script 블록 정의 → 최초 진입 시엔 문서 파싱 완료 후 실행
     else if (hash === '#guide')  {
       resetUpload(); showScreen('screen-upload');
@@ -3704,7 +3704,7 @@ else mpInitAll();
   </div>
 </div>
 
-<!-- 잘 채점되는 과제물 안내 모달 — 공용 컴포넌트 (scoring_guide_modal.js 하나만 수정) -->
+<!-- 채점 정확도를 높이는 준비 팁 모달 — 공용 컴포넌트 (scoring_guide_modal.js 하나만 수정) -->
 <script src="scoring_guide_modal.js"></script>
 
 <!-- ===== 까망이 목업 화면 선택기 (드래그 가능 · 실제 화면 아님) ===== -->
@@ -3718,7 +3718,7 @@ else mpInitAll();
     <button class="mp-btn" data-k="list"  onclick="mpGo('list')">학급 제출 상세 <span class="mp-sub">제출·미제출·과제물 인식 상태</span></button>
     <button class="mp-btn" data-k="bulk"  onclick="mpGo('bulk')">일괄 업로드 <span class="mp-sub">비식별화 안내</span></button>
     <button class="mp-btn" data-k="indiv" onclick="mpGo('indiv')">개별 파일 업로드 <span class="mp-sub">비식별화 안내</span></button>
-    <button class="mp-btn" onclick="openScoringGuide()">잘 채점되는 과제물 안내 <span class="mp-sub">v2 신규 · 모달</span></button>
+    <button class="mp-btn" onclick="openScoringGuide()">채점 정확도를 높이는 준비 팁 <span class="mp-sub">v2 신규 · 모달</span></button>
     <div class="mp-cap">과제물 인식 확인·수정 · 케이스별</div>
     <button class="mp-btn" data-k="ocrOk"  onclick="mpGo('ocrOk')">정상 인식 완료 <span class="mp-sub">확인할 것 없음</span></button>
     <button class="mp-btn" data-k="ocrFew" onclick="mpGo('ocrFew')">확인 필요 <span class="mp-sub">일부 문항 불확실</span></button>

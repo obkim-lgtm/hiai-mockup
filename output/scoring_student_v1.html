@@ -213,7 +213,7 @@
     <strong style="color:#333;font-weight:700;">인식 결과를 확인하면 더 정확하게 채점할 수 있어요.</strong>&nbsp;
     잘못 읽힌 부분을 수정한 뒤 다시 채점해 주세요. 첨삭 전 원본이 있다면 과제물을 다시 올려도 돼요.
   </span>
-  <button onclick="openScoringGuide()" style="flex-shrink:0;height:32px;padding:0 10px;background:none;border:none;color:#494949;font-family:inherit;font-size:14px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;line-height:1;vertical-align:middle;gap:5px;border-radius:8px;" onmouseover="this.style.background='#EFEFEF'" onmouseout="this.style.background='none'">준비 안내 보기</button>
+  <button onclick="openScoringGuide()" style="flex-shrink:0;height:32px;padding:0 10px;background:none;border:none;color:#494949;font-family:inherit;font-size:14px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;line-height:1;vertical-align:middle;gap:5px;border-radius:8px;" onmouseover="this.style.background='#EFEFEF'" onmouseout="this.style.background='none'">준비 팁 보기</button>
   <a id="quality-tip-ocr" href="task_ocr_review_v2.html" style="flex-shrink:0;height:32px;padding:0 12px;background:white;color:#7E44FB;border:1px solid #B28FFD;border-radius:8px;font-size:14px;font-weight:700;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;line-height:1;vertical-align:middle;gap:5px;"><i data-lucide="scan-line" style="width:15px;height:15px;"></i>인식 결과 확인</a>
 </div>
 
@@ -1740,7 +1740,7 @@
   window.addEventListener('resize', clamp);
 })();
 </script>
-<!-- 잘 채점되는 과제물 안내 모달 — 공용 컴포넌트 (scoring_guide_modal.js 하나만 수정) -->
+<!-- 채점 정확도를 높이는 준비 팁 모달 — 공용 컴포넌트 (scoring_guide_modal.js 하나만 수정) -->
 <script src="scoring_guide_modal.js"></script>
 </body>
 </html>
