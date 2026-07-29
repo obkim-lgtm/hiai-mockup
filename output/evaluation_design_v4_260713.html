@@ -1121,10 +1121,15 @@ body { margin: 0; background: #EDF1FC; min-width: 1280px; }
         <!-- ── 상태 A: 업로드 대기 ── -->
         <div id="s2-upload">
           <div>
-            <!-- 안내: 업로드 전 확인 (드롭존 앞 — 행동 전에 이유 먼저) -->
+            <!-- 안내: 업로드 전 확인 (드롭존 앞 — 행동 전에 이유 먼저 · 안내 여러 개는 단일 박스로 합침) -->
             <div style="margin-bottom:16px;padding:14px 16px;background:#F2ECFF;border-radius:8px;display:flex;gap:10px;align-items:flex-start;">
               <i data-lucide="info" style="width:16px;height:16px;color:#7E44FB;flex-shrink:0;margin-top:2px;"></i>
-              <p style="font-size:14px;color:#494949;margin:0;line-height:1.6;">학생 답안이 없는 <strong>빈 활동지</strong>를 업로드해 주세요. 학생 답안이 포함돼 있으면 AI가 문항을 잘못 인식할 수 있습니다.</p>
+              <div style="flex:1;min-width:0;">
+                <p style="font-size:14px;color:#494949;margin:0 0 4px;line-height:1.6;">학생 답안이 없는 <strong>빈 활동지</strong>를 업로드해 주세요. 학생 답안이 포함돼 있으면 AI가 문항을 잘못 인식할 수 있습니다.</p>
+                <p style="font-size:14px;color:#494949;margin:0;line-height:1.6;">활동지는 <strong>위에서 아래로 한 단</strong>으로, 답란은 넉넉하게 구성하면 정확하게 채점돼요. 페이지가 늘어도 채점에는 문제가 없어요.
+                  <button onclick="openScoringGuide()" style="background:none;border:none;padding:0;margin-left:2px;cursor:pointer;font-family:inherit;font-size:14px;font-weight:700;color:#7E44FB;text-decoration:underline;text-underline-offset:2px;display:inline;line-height:1.6;vertical-align:baseline;">잘 채점되는 활동지·과제물 안내</button>
+                </p>
+              </div>
             </div>
             <!-- 드롭존 -->
             <div onclick="simulateUpload()" style="border:2px dashed #C4AAFD;border-radius:12px;padding:56px 24px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;cursor:pointer;background:#FDFCFF;transition:background .15s;"
@@ -3882,5 +3887,7 @@ lucide.createIcons();
   window.addEventListener('resize', clamp);
 })();
 </script>
+<!-- 잘 채점되는 과제물 안내 모달 — 공용 컴포넌트 (scoring_guide_modal.js 하나만 수정) -->
+<script src="scoring_guide_modal.js"></script>
 </body>
 </html>

@@ -210,11 +210,11 @@
 <div id="student-quality-tip" style="display:none;align-items:center;gap:10px;padding:10px 24px;background:#F8F8F8;border-bottom:1px solid #E6E6E6;">
   <i data-lucide="scan-text" style="width:16px;height:16px;color:#808080;flex-shrink:0;"></i>
   <span style="font-size:14px;color:#494949;font-weight:400;line-height:1.5;flex:1;">
-    <strong style="color:#333;font-weight:700;">과제물을 다시 올리면 더 정확하게 채점할 수 있어요.</strong>&nbsp;
-    글씨가 그림에 겹치지 않고 첨삭 표시가 없는 원본이면 인식이 잘 돼요.
+    <strong style="color:#333;font-weight:700;">인식 결과를 확인하면 더 정확하게 채점할 수 있어요.</strong>&nbsp;
+    잘못 읽힌 부분을 수정한 뒤 다시 채점해 주세요. 첨삭 전 원본이 있다면 과제물을 다시 올려도 돼요.
   </span>
-  <a href="task_ocr_review_v2.html#guide" style="flex-shrink:0;height:32px;padding:0 10px;color:#494949;font-size:14px;font-weight:700;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;line-height:1;vertical-align:middle;gap:5px;border-radius:8px;" onmouseover="this.style.background='#EFEFEF'" onmouseout="this.style.background='none'">준비 안내 보기</a>
-  <a id="quality-tip-reupload" href="task_ocr_review_v2.html" style="flex-shrink:0;height:32px;padding:0 12px;background:white;color:#7E44FB;border:1px solid #B28FFD;border-radius:8px;font-size:14px;font-weight:700;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;line-height:1;vertical-align:middle;gap:5px;"><i data-lucide="upload" style="width:15px;height:15px;"></i>과제물 다시 올리기</a>
+  <button onclick="openScoringGuide()" style="flex-shrink:0;height:32px;padding:0 10px;background:none;border:none;color:#494949;font-family:inherit;font-size:14px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;line-height:1;vertical-align:middle;gap:5px;border-radius:8px;" onmouseover="this.style.background='#EFEFEF'" onmouseout="this.style.background='none'">준비 안내 보기</button>
+  <a id="quality-tip-ocr" href="task_ocr_review_v2.html" style="flex-shrink:0;height:32px;padding:0 12px;background:white;color:#7E44FB;border:1px solid #B28FFD;border-radius:8px;font-size:14px;font-weight:700;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;line-height:1;vertical-align:middle;gap:5px;"><i data-lucide="scan-line" style="width:15px;height:15px;"></i>인식 결과 확인</a>
 </div>
 
 <!-- 메인 컨텐츠 -->
@@ -802,7 +802,7 @@
       if (!tip) return;
       var show = (data.ocrCase === 'failed') || isLowAcc || _lowU > 0;
       tip.style.display = show ? 'flex' : 'none';
-      var re = document.getElementById('quality-tip-reupload');
+      var re = document.getElementById('quality-tip-ocr');
       if (re) re.href = 'task_ocr_review_v2.html#ocr-b=' + studentId;
     })();
     // 우측 채점 패널 기본 복원
@@ -1740,5 +1740,7 @@
   window.addEventListener('resize', clamp);
 })();
 </script>
+<!-- 잘 채점되는 과제물 안내 모달 — 공용 컴포넌트 (scoring_guide_modal.js 하나만 수정) -->
+<script src="scoring_guide_modal.js"></script>
 </body>
 </html>
