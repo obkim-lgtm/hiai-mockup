@@ -3364,12 +3364,12 @@ function closeRubricResetModal() { document.getElementById('modal-rubric-reset')
 (function() {
   function routeFromUrl() {
     var name = location.hash.slice(1);
-    // 데모 케이스 해시 (#rubric-warn / #rubric-ok) — 1단계 채점기준 섹션으로 진입 + 예시 주입
-    if (name === 'rubric-warn' || name === 'rubric-ok') {
+    // 데모 케이스 해시 (#rubric-warn) — 1단계 채점기준 섹션으로 진입 + 예시 주입
+    if (name === 'rubric-warn') {
       showScreen('detail');
       // demoRubricWarn은 뒤쪽 script 블록 정의 → 최초 로드 시엔 파싱 완료 후 실행
       var runDemo = function(){
-        demoRubricWarn(name === 'rubric-warn');
+        demoRubricWarn(true);
         _keepDemoHash(name);
         if (typeof mpSyncActive === 'function') mpSyncActive(name);
       };
@@ -3756,13 +3756,13 @@ function closeRubricResetModal() { document.getElementById('modal-rubric-reset')
     <div class="mp-cap">정교한 평가 · 1단계</div>
     <button class="mp-btn" data-k="detail" onclick="mpGo('detail')">설계 기본 정보</button>
     <button class="mp-btn" data-k="rubric-warn" onclick="mpGo('rubric-warn')">채점기준 복잡 <span class="mp-sub">여러 판단 뭉침 경고</span></button>
-    <button class="mp-btn" data-k="rubric-ok" onclick="mpGo('rubric-ok')">채점기준 정상 <span class="mp-sub">경고 해제</span></button>
 
     <div class="mp-cap">2단계 · 활동지 문항 구분</div>
     <button class="mp-btn" data-k="s2-upload" onclick="mpGo('s2-upload')">업로드 대기 <span class="mp-sub">빈 상태</span></button>
     <button class="mp-btn" data-k="s2-loading" onclick="mpGo('s2-loading')">문항 나누는 중 <span class="mp-sub">로딩</span></button>
     <button class="mp-btn" data-k="s2-result" onclick="mpGo('s2-result')">문항 구분 완료 <span class="mp-sub">기본</span></button>
     <button class="mp-btn" data-k="s2-fail" onclick="mpGo('s2-fail')">문항 구분 실패 <span class="mp-sub">재시도 · 교체</span></button>
+    <button class="mp-btn" data-k="s2-guide" onclick="mpGo('s2-guide')">채점 정확도 안내 <span class="mp-sub">준비 팁 모달</span></button>
 
     <div class="mp-cap">3단계 · 채점기준 연결</div>
     <button class="mp-btn" data-k="s3-loading" onclick="mpGo('s3-loading')">연결하는 중 <span class="mp-sub">로딩</span></button>
@@ -3812,6 +3812,12 @@ function mpGo(k){
   else if(k==='type'){ showScreen('type'); }
   else if(k==='simple'){ showScreen('simple'); }
   else if(k==='detail'){ showScreen('detail'); }
+  // 채점 정확도 준비 팁 — 업로드 화면 위에 그 자리 팝업으로 연다
+  else if(k==='s2-guide'){
+    showScreen('step2');
+    s2ShowState('upload');
+    if (typeof openScoringGuide === 'function') openScoringGuide();
+  }
   else if(k.indexOf('s2-')===0){
     showScreen('step2');
     const st=k.slice(3);
@@ -3823,9 +3829,9 @@ function mpGo(k){
   else if(k==='s3-fail'){ showScreen('step3'); s3SetCase('fail'); }
   else if(k==='step4'){ showScreen('step4'); }
   // 채점기준 복잡도 경고 데모 — 1단계 화면의 채점기준 섹션으로 스크롤 + 복잡한 예시 주입
-  else if(k==='rubric-warn' || k==='rubric-ok'){
+  else if(k==='rubric-warn'){
     showScreen('detail');
-    demoRubricWarn(k==='rubric-warn');
+    demoRubricWarn(true);
     _keepDemoHash(k);   // showScreen이 쓴 #detail 대신 데모 케이스 URL 유지
   }
   mpSyncActive(k);
@@ -4006,12 +4012,14 @@ document.addEventListener('input', function(e){
   // 지금 보이는 화면·케이스에 해당하는 내비게이터 key를 DOM 상태에서 역산한다
   function currentKey(){
     var h = location.hash.slice(1);
-    if (h === 'rubric-warn' || h === 'rubric-ok') return h;   // 데모 케이스는 해시가 진실
+    if (h === 'rubric-warn') return h;                        // 데모 케이스는 해시가 진실
     var act = document.querySelector('.screen.active');
     if (!act) return '';
     var name = act.id.replace(/^screen-/, '');
     if (name === 'list')  return shown('list-empty') ? 'list-empty' : 'list';
     if (name === 'step2') {
+      var sg = document.getElementById('sg-overlay');
+      if (sg && sg.classList.contains('sg-open')) return 's2-guide';   // 준비 팁 모달이 떠 있는 상태
       var st = ['upload','loading','result','fail'].filter(function(k){ return shown('s2-' + k); })[0];
       return st ? 's2-' + st : 's2-upload';
     }
@@ -4032,7 +4040,8 @@ document.addEventListener('input', function(e){
   }
   window.mpSync = mpSync;
   // 화면·케이스를 바꾸는 함수들을 감싸 호출 직후 동기화 (내부 버튼·자동 전환 모두 포함)
-  ['showScreen','setListCase','s2ShowState','s3SetCase','demoRubricWarn'].forEach(function(fn){
+  ['showScreen','setListCase','s2ShowState','s3SetCase','demoRubricWarn',
+   'openScoringGuide','closeScoringGuide'].forEach(function(fn){
     var orig = window[fn];
     if (typeof orig !== 'function') return;
     window[fn] = function(){
