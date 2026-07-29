@@ -205,6 +205,18 @@
   </span>
 </div>
 
+<!-- 채점 결과 시점 회복 안내 — 인식 품질에 문제가 있었던 경우에만 노출 (루카스 피드백 2026-07-28)
+     예방(업로드 전 안내)과 짝을 이루는 회복 경로: 자료를 다시 올려 재채점하면 정확도가 올라간다는 정보 -->
+<div id="student-quality-tip" style="display:none;align-items:center;gap:10px;padding:10px 24px;background:#F8F8F8;border-bottom:1px solid #E6E6E6;">
+  <i data-lucide="scan-text" style="width:16px;height:16px;color:#808080;flex-shrink:0;"></i>
+  <span style="font-size:14px;color:#494949;font-weight:400;line-height:1.5;flex:1;">
+    <strong style="color:#333;font-weight:700;">과제물을 다시 올리면 더 정확하게 채점할 수 있어요.</strong>&nbsp;
+    글씨가 그림에 겹치지 않고 첨삭 표시가 없는 원본이면 인식이 잘 돼요.
+  </span>
+  <a href="task_ocr_review_v2.html#guide" style="flex-shrink:0;height:32px;padding:0 10px;color:#494949;font-size:14px;font-weight:700;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;line-height:1;vertical-align:middle;gap:5px;border-radius:8px;" onmouseover="this.style.background='#EFEFEF'" onmouseout="this.style.background='none'">준비 안내 보기</a>
+  <a id="quality-tip-reupload" href="task_ocr_review_v2.html" style="flex-shrink:0;height:32px;padding:0 12px;background:white;color:#7E44FB;border:1px solid #B28FFD;border-radius:8px;font-size:14px;font-weight:700;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;line-height:1;vertical-align:middle;gap:5px;"><i data-lucide="upload" style="width:15px;height:15px;"></i>과제물 다시 올리기</a>
+</div>
+
 <!-- 메인 컨텐츠 -->
 <div class="main-content">
 
@@ -783,6 +795,16 @@
     var _lowT = (data.questions || []).length;
     var _lowU = (data.questions || []).filter(function(q){ return q.uncertain || (q.spans && q.spans.some(function(s){ return s.uncertain; })); }).length;
     var isLowAcc = (_lowT > 0 && _lowU / _lowT >= 0.7);
+    // 채점 결과 시점 회복 안내 — 시스템이 실제로 아는 상태(불확실 문항 있음/정확도 낮음/인식 실패)에서만.
+    // 원인은 추정하지 않고, 다시 올리면 정확해진다는 회복 경로만 제시한다.
+    (function(){
+      var tip = document.getElementById('student-quality-tip');
+      if (!tip) return;
+      var show = (data.ocrCase === 'failed') || isLowAcc || _lowU > 0;
+      tip.style.display = show ? 'flex' : 'none';
+      var re = document.getElementById('quality-tip-reupload');
+      if (re) re.href = 'task_ocr_review_v2.html#ocr-b=' + studentId;
+    })();
     // 우측 채점 패널 기본 복원
     var _rGrade = document.getElementById('right-grading-content');
     var _rEmpty = document.getElementById('right-grading-empty');

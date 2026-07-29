@@ -3585,6 +3585,13 @@ function routeHash(hash) {
     else if (hash === '#list')   { goToList(); }
     else if (hash === '#upload') { resetUpload(); showScreen('screen-upload'); }
     else if (hash === '#task')   { showScreen('screen-task'); }
+    // 채점 상세에서 '준비 안내 보기'로 들어오는 딥링크 — 일괄 업로드 화면 + 안내 모달
+    // openScoringGuide는 뒤쪽 script 블록 정의 → 최초 진입 시엔 문서 파싱 완료 후 실행
+    else if (hash === '#guide')  {
+      resetUpload(); showScreen('screen-upload');
+      if (typeof openScoringGuide === 'function') openScoringGuide();
+      else window.addEventListener('load', function(){ openScoringGuide(); });
+    }
   } finally {
     _suppressHash = false;
   }
