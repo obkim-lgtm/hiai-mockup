@@ -3993,5 +3993,58 @@ document.addEventListener('input', function(e){
   if (isRubricTa) checkRubricComplex(ta);
 });
 </script>
+
+<!-- ===== 까망이 현재 위치 동기화 (mp-sync-v1) =====
+     목업 내부 조작(다음 단계·목록 진입 등)으로 화면이 바뀌어도
+     내비게이터 활성 버튼이 따라오게 한다. 기존에는 mpGo()로 눌렀을 때만 갱신됐음 -->
+<script>
+(function(){
+  function shown(id){
+    var el = document.getElementById(id);
+    return !!(el && el.style.display !== 'none' && el.offsetParent !== null);
+  }
+  // 지금 보이는 화면·케이스에 해당하는 내비게이터 key를 DOM 상태에서 역산한다
+  function currentKey(){
+    var h = location.hash.slice(1);
+    if (h === 'rubric-warn' || h === 'rubric-ok') return h;   // 데모 케이스는 해시가 진실
+    var act = document.querySelector('.screen.active');
+    if (!act) return '';
+    var name = act.id.replace(/^screen-/, '');
+    if (name === 'list')  return shown('list-empty') ? 'list-empty' : 'list';
+    if (name === 'step2') {
+      var st = ['upload','loading','result','fail'].filter(function(k){ return shown('s2-' + k); })[0];
+      return st ? 's2-' + st : 's2-upload';
+    }
+    if (name === 'step3') {
+      if (shown('s3-loading')) return 's3-loading';
+      return (typeof _s3AllFailed !== 'undefined' && _s3AllFailed) ? 's3-fail' : 's3-ai';
+    }
+    return name;   // detail · type · simple · step4
+  }
+  function mpSync(){
+    if (typeof mpSyncActive !== 'function') return;
+    var k = currentKey();
+    mpSyncActive(k);
+    // 펼쳐져 있으면 활성 버튼이 패널 안에서 보이도록 (긴 목록에서 아래쪽 케이스 대응)
+    var body = document.getElementById('mp-body');
+    var btn = document.querySelector('#mockpick .mp-btn[data-k="' + k + '"]');
+    if (btn && body && body.style.display !== 'none') btn.scrollIntoView({ block: 'nearest' });
+  }
+  window.mpSync = mpSync;
+  // 화면·케이스를 바꾸는 함수들을 감싸 호출 직후 동기화 (내부 버튼·자동 전환 모두 포함)
+  ['showScreen','setListCase','s2ShowState','s3SetCase','demoRubricWarn'].forEach(function(fn){
+    var orig = window[fn];
+    if (typeof orig !== 'function') return;
+    window[fn] = function(){
+      var r = orig.apply(this, arguments);
+      setTimeout(mpSync, 0);
+      return r;
+    };
+  });
+  window.addEventListener('hashchange', function(){ setTimeout(mpSync, 0); });
+  mpSync();                                              // 최초 로드(#detail 등 직접 진입) 반영
+  window.addEventListener('load', function(){ mpSync(); });
+})();
+</script>
 </body>
 </html>
