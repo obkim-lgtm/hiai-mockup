@@ -3805,6 +3805,8 @@ function mpSyncActive(key){
   document.querySelectorAll('#mockpick .mp-btn').forEach(b=>b.classList.toggle('on',b.dataset.k===key));
 }
 function mpGo(k){
+  // 준비 팁 모달이 열려 있으면 먼저 닫는다 (안 닫으면 다른 케이스로 옮겨도 계속 떠 있음)
+  if (typeof closeScoringGuide === 'function') closeScoringGuide();
   if(k==='list'){ showScreen('list'); setListCase('cards'); }
   else if(k==='list-empty'){ showScreen('list'); setListCase('empty'); }
   else if(k==='type'){ showScreen('type'); }
