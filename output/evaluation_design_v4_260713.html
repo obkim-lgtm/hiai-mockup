@@ -33,6 +33,12 @@ body { margin: 0; background: #EDF1FC; min-width: 1280px; }
 .rubric-card-body { display:flex; gap:12px; align-items:stretch; }
 .rubric-textarea-wrap { width:190px; flex-shrink:0; display:flex; flex-direction:column; }
 .rubric-textarea-wrap textarea { flex:1; min-height:80px; height:auto; }
+/* 복잡한 채점기준 인라인 경고 (QA: 한 칸에 여러 판단·배점 뭉침 → 채점 실패) */
+.rubric-warn { display:none; background:#FFF3EA; border-radius:8px; padding:12px 14px; align-items:flex-start; gap:8px; }
+.rubric-warn.show { display:flex; }
+.rubric-warn i { width:17px; height:17px; color:#E4631C; flex-shrink:0; margin-top:2px; }
+.rubric-warn p { font-size:14px; color:#494949; line-height:1.6; margin:0; }
+.rubric-warn b { color:#B34700; }
 /* 수식 툴팁 (fixed — overflow:hidden 우회) */
 /* 툴팁 스킨: Figma MM23…FVJpB 1900:20405 (화이트 · 14px Bold #341761 · 화살표 14px) */
 #sym-tooltip::after { content:''; position:absolute; top:calc(100% - 7px); left:50%; transform:translateX(-50%) rotate(45deg); width:14px; height:14px; background:#fff; }
@@ -736,6 +742,12 @@ body { margin: 0; background: #EDF1FC; min-width: 1280px; }
                 </div>
               </div>
               <div style="position:relative;">
+
+                <!-- 간결 작성 안내 (QA: 한 칸에 여러 판단·배점이 뭉치면 채점 실패) -->
+                <p style="font-size:14px;color:#808080;margin:0 0 12px;line-height:1.65;">
+                  채점기준 하나에는 <b style="color:#494949;">판단 하나만</b> 담아주세요. 배점·예시는 세부 기준 칸에 나눠 적고,
+                  감점하고 싶은 내용은 채점기준에 적어야 AI가 채점에 반영해요.
+                </p>
 
                 <!-- 순서 변경 안내 + 입력 예시 -->
                 <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
@@ -2034,6 +2046,11 @@ body { margin: 0; background: #EDF1FC; min-width: 1280px; }
                 </div>
               </div>
               <div style="position:relative;">
+                <!-- 간결 작성 안내 (QA: 한 칸에 여러 판단·배점이 뭉치면 채점 실패) -->
+                <p style="font-size:14px;color:#808080;margin:0 0 12px;line-height:1.65;">
+                  채점기준 하나에는 <b style="color:#494949;">판단 하나만</b> 담아주세요. 배점·예시는 세부 기준 칸에 나눠 적고,
+                  감점하고 싶은 내용은 채점기준에 적어야 AI가 채점에 반영해요.
+                </p>
                 <div style="display:flex;gap:20px;margin-bottom:12px;">
                   <label style="display:flex;align-items:center;gap:12px;cursor:pointer;">
                     <div style="width:24px;height:24px;border-radius:50%;border:2px solid #7E44FB;background:#7E44FB;display:flex;align-items:center;justify-content:center;">
@@ -3889,5 +3906,34 @@ lucide.createIcons();
 </script>
 <!-- 잘 채점되는 과제물 안내 모달 — 공용 컴포넌트 (scoring_guide_modal.js 하나만 수정) -->
 <script src="scoring_guide_modal.js"></script>
+<script>
+// ── 복잡한 채점기준 감지 (길이가 아니라 "한 칸에 여러 판단이 뭉쳤는지" — 루카스·줄리 피드백 7/28) ──
+// 정교(.rubric-textarea-wrap)·간편(placeholder 기준) 채점기준 입력칸 모두에 위임 리스너로 적용
+function checkRubricComplex(ta){
+  var v = ta.value;
+  var scoreMarks = (v.match(/\d+\s*점/g) || []).length;
+  var enumMarks  = (v.match(/[①②③④⑤⑥]|요소\s*\d|첫째|둘째|셋째/g) || []).length;
+  var complex = scoreMarks >= 2 || enumMarks >= 2 || v.length >= 150;
+  var host = ta.parentElement.parentElement;   // 정교: .rubric-card-body / 간편: 좌우 flex 행
+  var warn = host.nextElementSibling;
+  if (!(warn && warn.classList && warn.classList.contains('rubric-warn'))) {
+    if (!complex) return;
+    warn = document.createElement('div');
+    warn.className = 'rubric-warn';
+    warn.style.margin = ta.closest('.rubric-dnd-card') ? '0 14px 16px 34px' : '12px 0 0';
+    warn.innerHTML = '<i data-lucide="triangle-alert"></i><p><b>한 채점기준에 여러 판단이 섞여 있어요.</b> 기준·배점·예시가 한 칸에 뭉쳐 있으면 채점에 실패할 수 있어요. 판단 하나씩 채점기준을 나누고, 배점별 판단은 세부 기준에 적어주세요.</p>';
+    host.insertAdjacentElement('afterend', warn);
+    if (window.lucide) lucide.createIcons();
+  }
+  warn.classList.toggle('show', complex);
+}
+document.addEventListener('input', function(e){
+  var ta = e.target;
+  if (ta.tagName !== 'TEXTAREA') return;
+  var isRubricTa = (ta.parentElement && ta.parentElement.classList.contains('rubric-textarea-wrap'))
+                || ta.placeholder === '채점기준을 직접 입력해 주세요.';
+  if (isRubricTa) checkRubricComplex(ta);
+});
+</script>
 </body>
 </html>
