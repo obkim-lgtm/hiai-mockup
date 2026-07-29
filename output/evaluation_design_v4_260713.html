@@ -3364,6 +3364,19 @@ function closeRubricResetModal() { document.getElementById('modal-rubric-reset')
 (function() {
   function routeFromUrl() {
     var name = location.hash.slice(1);
+    // 데모 케이스 해시 (#rubric-warn / #rubric-ok) — 1단계 채점기준 섹션으로 진입 + 예시 주입
+    if (name === 'rubric-warn' || name === 'rubric-ok') {
+      showScreen('detail');
+      // demoRubricWarn은 뒤쪽 script 블록 정의 → 최초 로드 시엔 파싱 완료 후 실행
+      var runDemo = function(){
+        demoRubricWarn(name === 'rubric-warn');
+        _keepDemoHash(name);
+        if (typeof mpSyncActive === 'function') mpSyncActive(name);
+      };
+      if (typeof demoRubricWarn === 'function') runDemo();
+      else window.addEventListener('load', runDemo);
+      return;
+    }
     if (name) {
       // 존재하는 화면만 전환 (오타/잘못된 해시는 무시 → 오류 방지)
       if (document.getElementById('screen-' + name)) showScreen(name);
@@ -3742,6 +3755,8 @@ function closeRubricResetModal() { document.getElementById('modal-rubric-reset')
 
     <div class="mp-cap">정교한 평가 · 1단계</div>
     <button class="mp-btn" data-k="detail" onclick="mpGo('detail')">설계 기본 정보</button>
+    <button class="mp-btn" data-k="rubric-warn" onclick="mpGo('rubric-warn')">채점기준 복잡 <span class="mp-sub">여러 판단 뭉침 경고</span></button>
+    <button class="mp-btn" data-k="rubric-ok" onclick="mpGo('rubric-ok')">채점기준 정상 <span class="mp-sub">경고 해제</span></button>
 
     <div class="mp-cap">2단계 · 활동지 문항 구분</div>
     <button class="mp-btn" data-k="s2-upload" onclick="mpGo('s2-upload')">업로드 대기 <span class="mp-sub">빈 상태</span></button>
@@ -3805,8 +3820,33 @@ function mpGo(k){
   else if(k==='s3-ai'){ showScreen('step3'); s3SetCase('ai'); }
   else if(k==='s3-fail'){ showScreen('step3'); s3SetCase('fail'); }
   else if(k==='step4'){ showScreen('step4'); }
+  // 채점기준 복잡도 경고 데모 — 1단계 화면의 채점기준 섹션으로 스크롤 + 복잡한 예시 주입
+  else if(k==='rubric-warn' || k==='rubric-ok'){
+    showScreen('detail');
+    demoRubricWarn(k==='rubric-warn');
+    _keepDemoHash(k);   // showScreen이 쓴 #detail 대신 데모 케이스 URL 유지
+  }
   mpSyncActive(k);
   lucide.createIcons();
+}
+
+// 데모 케이스는 화면 해시(#detail) 대신 자기 URL을 유지한다 (replaceState는 hashchange 미발생)
+function _keepDemoHash(k){
+  history.replaceState(null, '', location.pathname + location.search + '#' + k);
+}
+// 채점기준 복잡도 경고 시연 — 해당 섹션까지 스크롤해서 바로 보이게 한다
+var DEMO_RUBRIC_COMPLEX = '요소① 배치 원리: 양성자 수가 원자 번호와 같으며 그 순서대로 배열됨을 설명함. 3점  요소② 유사 원소 찾기: 나트륨과 성질이 유사한 원소로 리튬 또는 칼륨을 제시함. 2점';
+var DEMO_RUBRIC_SIMPLE  = '내용의 타당성과 근거 제시의 충실성을 평가한다.';
+function demoRubricWarn(complex){
+  var ta = document.querySelector('#screen-detail .rubric-textarea-wrap textarea');
+  if (!ta) return;
+  ta.value = complex ? DEMO_RUBRIC_COMPLEX : DEMO_RUBRIC_SIMPLE;
+  ta.dispatchEvent(new Event('input', { bubbles: true }));
+  // 로드 직후 smooth 스크롤은 취소되는 경우가 있어 즉시 스크롤로 확실히 이동시킨다
+  setTimeout(function(){
+    var card = ta.closest('.rubric-dnd-card') || ta;
+    card.scrollIntoView({ block: 'center' });
+  }, 120);
 }
 (function(){
   const el=document.getElementById('mockpick'); if(!el) return;
