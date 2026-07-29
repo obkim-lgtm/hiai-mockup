@@ -182,7 +182,7 @@
           <div class="guide-strip-ico"><i data-lucide="scan-text"></i></div>
           <div style="flex:1;min-width:0;">
             <p class="guide-strip-title">업로드 전에 확인하면 더 정확하게 채점돼요</p>
-            <p class="guide-strip-desc">페이지 방향 바르게 &nbsp;·&nbsp; 그림·지도 위에 겹친 글씨 주의 &nbsp;·&nbsp; 빨간펜 첨삭 전 원본으로</p>
+            <p class="guide-strip-desc">그림·지도 위에 겹친 글씨 주의 &nbsp;·&nbsp; 빨간펜 첨삭 전 원본으로</p>
           </div>
           <button class="guide-strip-btn" onclick="go('#upload-guide')">자세히 보기 <i data-lucide="chevron-right" style="width:15px;height:15px;"></i></button>
         </div>
@@ -212,61 +212,14 @@
     <button class="dialog-x" onclick="closeGuide()"><i data-lucide="x" style="width:20px;height:20px;"></i></button>
     <div class="dialog-head">
       <h3 class="dialog-title">잘 채점되는 과제물 안내</h3>
-      <p class="dialog-sub">아래 세 가지만 확인하면 AI가 학생 답안을 훨씬 정확하게 읽고 채점해요.</p>
+      <p class="dialog-sub">아래 두 가지만 확인하면 AI가 학생 답안을 훨씬 정확하게 읽고 채점해요.</p>
     </div>
     <div class="dialog-body">
 
       <!-- 케이스 1: 회전·기울어진 스캔 -->
       <div class="gcase">
         <div class="gcase-txt">
-          <p class="gcase-title">1. 페이지 방향을 바르게 스캔해 주세요</p>
-          <p class="gcase-desc">옆으로 돌아가거나 기울어진 스캔은 글씨를 잘못 읽어, <b>학생이 쓴 내용과 다르게 채점될 수 있어요.</b> 업로드 전에 페이지가 바로 서 있는지 확인해 주세요.</p>
-        </div>
-        <div class="gcase-figs">
-          <div class="gfig">
-            <div class="gfig-frame">
-              <div class="gfig-mark bad"><i data-lucide="x"></i></div>
-              <!-- 돌아간 원고지 도식 -->
-              <svg width="76" height="76" viewBox="0 0 76 76">
-                <g transform="rotate(90 38 38)">
-                  <rect x="14" y="8" width="48" height="60" rx="3" fill="white" stroke="#D9D9D9"/>
-                  <g stroke="#E6E6E6" stroke-width="1">
-                    <line x1="20" y1="16" x2="56" y2="16"/><line x1="20" y1="24" x2="56" y2="24"/><line x1="20" y1="32" x2="56" y2="32"/><line x1="20" y1="40" x2="56" y2="40"/><line x1="20" y1="48" x2="56" y2="48"/><line x1="20" y1="56" x2="56" y2="56"/>
-                    <line x1="26" y1="12" x2="26" y2="60"/><line x1="32" y1="12" x2="32" y2="60"/><line x1="38" y1="12" x2="38" y2="60"/><line x1="44" y1="12" x2="44" y2="60"/><line x1="50" y1="12" x2="50" y2="60"/>
-                  </g>
-                  <g stroke="#808080" stroke-width="1.6" stroke-linecap="round">
-                    <path d="M22 20 q2 -2 4 0"/><path d="M28 20 q2 2 4 0"/><path d="M34 19 l3 2"/><path d="M40 21 q2 -3 4 -1"/>
-                    <path d="M22 28 q3 2 5 0"/><path d="M29 27 l3 3"/><path d="M35 29 q2 -2 4 0"/>
-                  </g>
-                </g>
-              </svg>
-            </div>
-            <span class="gfig-cap bad">돌아간 스캔</span>
-          </div>
-          <div class="gfig">
-            <div class="gfig-frame">
-              <div class="gfig-mark good"><i data-lucide="check"></i></div>
-              <svg width="76" height="76" viewBox="0 0 76 76">
-                <rect x="14" y="8" width="48" height="60" rx="3" fill="white" stroke="#D9D9D9"/>
-                <g stroke="#E6E6E6" stroke-width="1">
-                  <line x1="20" y1="16" x2="56" y2="16"/><line x1="20" y1="24" x2="56" y2="24"/><line x1="20" y1="32" x2="56" y2="32"/><line x1="20" y1="40" x2="56" y2="40"/><line x1="20" y1="48" x2="56" y2="48"/><line x1="20" y1="56" x2="56" y2="56"/>
-                  <line x1="26" y1="12" x2="26" y2="60"/><line x1="32" y1="12" x2="32" y2="60"/><line x1="38" y1="12" x2="38" y2="60"/><line x1="44" y1="12" x2="44" y2="60"/><line x1="50" y1="12" x2="50" y2="60"/>
-                </g>
-                <g stroke="#808080" stroke-width="1.6" stroke-linecap="round">
-                  <path d="M22 20 q2 -2 4 0"/><path d="M28 20 q2 2 4 0"/><path d="M34 19 l3 2"/><path d="M40 21 q2 -3 4 -1"/>
-                  <path d="M22 28 q3 2 5 0"/><path d="M29 27 l3 3"/><path d="M35 29 q2 -2 4 0"/>
-                </g>
-              </svg>
-            </div>
-            <span class="gfig-cap good">바른 방향</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- 케이스 2: 그림·지도 위 글씨 -->
-      <div class="gcase">
-        <div class="gcase-txt">
-          <p class="gcase-title">2. 그림·지도 위에 겹쳐 쓴 글씨는 인식이 어려워요</p>
+          <p class="gcase-title">1. 그림·지도 위에 겹쳐 쓴 글씨는 인식이 어려워요</p>
           <p class="gcase-desc">그림 위에 쓴 글씨는 <b>인식 정확도가 낮아질 수 있어요.</b> 글씨는 그림 밖 여백에 쓰도록 안내해 주시고, 이런 과제는 채점 후 <b>[과제물 인식 결과]</b>를 꼭 확인해 주세요.</p>
         </div>
         <div class="gcase-figs">
@@ -309,7 +262,7 @@
       <!-- 케이스 3: 빨간펜 첨삭 -->
       <div class="gcase">
         <div class="gcase-txt">
-          <p class="gcase-title">3. 첨삭하기 전 원본으로 올려주세요</p>
+          <p class="gcase-title">2. 첨삭하기 전 원본으로 올려주세요</p>
           <p class="gcase-desc">답안에 빨간펜 첨삭이 남아 있으면 <b>고쳐 쓴 내용을 학생 답으로 읽을 수 있어요.</b> 채점 표시나 첨삭을 하기 전의 원본을 업로드해 주세요.</p>
         </div>
         <div class="gcase-figs">
@@ -395,7 +348,7 @@
 
           <!-- ★ 간결 작성 안내 (영향 필드 앞) -->
           <p style="font-size:14px;color:#808080;margin:0 0 14px;line-height:1.65;">
-            채점기준은 <b style="color:#494949;">한 문장으로 간결하게</b> 쓰고, 배점별 판단은 세부 기준 칸에 나눠 적어주세요.
+            채점기준 하나에는 <b style="color:#494949;">판단 하나만</b> 담아주세요. 배점·예시는 세부 기준 칸에 나눠 적고,
             감점하고 싶은 내용은 채점기준에 적어야 AI가 채점에 반영해요.
           </p>
 
@@ -419,7 +372,7 @@
               </div>
               <div class="rubric-body">
                 <textarea class="rubric-ta" rows="1" oninput="checkRubricLen(this)">주기율표에서 원소의 배치 원리를 설명하였다.</textarea>
-                <div class="rubric-warn"><i data-lucide="triangle-alert"></i><p><b>채점기준이 너무 길어요.</b> 여러 판단과 배점이 한 칸에 있으면 채점에 실패할 수 있어요. 기준은 한 문장으로 쓰고, 배점별 판단은 아래 세부 기준에 나눠 적어주세요.</p></div>
+                <div class="rubric-warn"><i data-lucide="triangle-alert"></i><p><b>한 채점기준에 여러 판단이 섞여 있어요.</b> 기준·배점·예시가 한 칸에 뭉쳐 있으면 채점에 실패할 수 있어요. 판단 하나씩 채점기준을 나누고, 배점별 판단은 아래 세부 기준에 적어주세요.</p></div>
                 <div class="rubric-tbl">
                   <table>
                     <thead><tr><th>배점</th><th>세부 기준</th></tr></thead>
@@ -443,7 +396,7 @@
               </div>
               <div class="rubric-body">
                 <textarea id="rubric-ta-2" class="rubric-ta" rows="1" oninput="checkRubricLen(this)">성질이 유사한 원소를 찾고 이유를 서술하였다.</textarea>
-                <div class="rubric-warn"><i data-lucide="triangle-alert"></i><p><b>채점기준이 너무 길어요.</b> 여러 판단과 배점이 한 칸에 있으면 채점에 실패할 수 있어요. 기준은 한 문장으로 쓰고, 배점별 판단은 아래 세부 기준에 나눠 적어주세요.</p></div>
+                <div class="rubric-warn"><i data-lucide="triangle-alert"></i><p><b>한 채점기준에 여러 판단이 섞여 있어요.</b> 기준·배점·예시가 한 칸에 뭉쳐 있으면 채점에 실패할 수 있어요. 판단 하나씩 채점기준을 나누고, 배점별 판단은 아래 세부 기준에 적어주세요.</p></div>
                 <div class="rubric-tbl">
                   <table>
                     <thead><tr><th>배점</th><th>세부 기준</th></tr></thead>
@@ -479,7 +432,7 @@
     <button class="mp-btn" data-route="#upload-guide" onclick="go('#upload-guide')">안내 모달 열기<span class="mp-sub">❌/✅ 카드 3장</span></button>
     <div class="mp-cap">평가 설계 (케이스 ④⑤)</div>
     <button class="mp-btn" data-route="#rubric" onclick="go('#rubric')">채점기준 입력<span class="mp-sub">간결 작성 안내</span></button>
-    <button class="mp-btn" data-route="#rubric-long" onclick="go('#rubric-long')">긴 기준 입력됨<span class="mp-sub">인라인 경고</span></button>
+    <button class="mp-btn" data-route="#rubric-long" onclick="go('#rubric-long')">복잡한 기준 입력됨<span class="mp-sub">여러 판단 뭉침 경고</span></button>
   </div>
 </div>
 
@@ -513,14 +466,19 @@ function go(hash){
 function closeGuide(){ go('#upload'); }
 window.addEventListener('hashchange', render);
 
-/* ── 긴 채점기준 감지 + textarea 자동 높이 ── */
+/* ── 복잡한 채점기준 감지 + textarea 자동 높이 ──
+   길이가 아니라 "한 칸에 여러 판단이 뭉쳤는지"를 본다 (루카스·줄리 피드백 2026-07-28):
+   배점 표기 2개 이상 / 항목 나열 마커(①② 등·요소N·첫째둘째) 2개 이상이면 복잡, 아주 긴 입력은 보조 신호 */
 function checkRubricLen(ta){
   ta.style.height = 'auto';
   ta.style.height = ta.scrollHeight + 'px';
-  var long = ta.value.length >= 80;
-  ta.classList.toggle('warn', long);
+  var v = ta.value;
+  var scoreMarks = (v.match(/\d+\s*점/g) || []).length;
+  var enumMarks  = (v.match(/[①②③④⑤⑥]|요소\s*\d|첫째|둘째|셋째/g) || []).length;
+  var complex = scoreMarks >= 2 || enumMarks >= 2 || v.length >= 150;
+  ta.classList.toggle('warn', complex);
   var warn = ta.parentElement.querySelector('.rubric-warn');
-  if (warn) warn.classList.toggle('show', long);
+  if (warn) warn.classList.toggle('show', complex);
 }
 
 /* ── 까망이 드래그 이동 ── */

@@ -199,12 +199,12 @@ const SECTIONS = [
   {
     title:'AI 채점 안내 — 잘 채점되는 과제물·채점기준', color:'#5890FF', note:'QA 케이스 기반 · 신규',
     cards:[
-      { name:'안내 컨셉 (단독 목업)', file:'scoring_guidance_v1.html', desc:'QA에서 확인된 <b>채점이 어려운 5개 유형을 사용자 사전 안내로 제공</b><br>과제물 유형(회전 스캔·그림 위 글씨·빨간펜 첨삭)은 업로드 화면 인라인 안내+모달로, 채점기준 유형(긴 기준·모호한 기준)은 평가 설계 인라인 경고로 분리 제공',
+      { name:'안내 컨셉 (단독 목업)', file:'scoring_guidance_v1.html', desc:'QA에서 확인된 <b>채점이 어려운 유형을 사용자 사전 안내로 제공</b><br>과제물 유형(그림·지도 위 글씨, 빨간펜 첨삭)은 업로드 화면 인라인 안내+모달로, 채점기준 유형(여러 판단 뭉침·모호한 기준)은 평가 설계 인라인 경고로 분리 제공<br>※ 회전 스캔 안내는 제외 — 8월 자동 회전 보정 탑재 예정 (7/28 피드백 반영)',
         states:[
           {label:'업로드 안내', hash:'#upload', def:true},
           {label:'안내 모달', hash:'#upload-guide'},
           {label:'채점기준 입력', hash:'#rubric'},
-          {label:'긴 기준 경고', hash:'#rubric-long'},
+          {label:'복잡한 기준 경고', hash:'#rubric-long'},
         ]},
       { name:'과제물 관리 통합본 (v2)', file:'task_ocr_review_v2.html', desc:'기존 과제물 관리(OCR) 목업에 <b>업로드 안내 스트립·모달을 얹은 통합본</b> — 기존 v1 목업·URL은 그대로 보존',
         states:[
