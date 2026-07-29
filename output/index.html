@@ -199,14 +199,15 @@ const SECTIONS = [
   {
     title:'평가 설계', color:'#EC4899', note:'10월',
     cards:[
-      { name:'평가 설계', file:'evaluation_design_v4_260713.html', desc:'기존 평가 설계는 「간편한 평가」로 유지, <b>채점 정확도 향상을 위해 「정교한 평가」 단계 추가</b><br>— ② 빈 활동지 업로드(필수), ③ 채점기준·문항 연결(선택 · AI가 관련 기준을 매칭해 기본값 표시), ④ 모범답안 입력(선택).',
+      { name:'평가 설계', file:'evaluation_design_v4_260713.html', desc:'기존 평가 설계는 「간편한 평가」로 유지, <b>채점 정확도 향상을 위해 「정교한 평가」 단계 추가</b><br>— ② 활동지 문항 구분(빈 활동지 업로드 → AI가 문항 단위로 나눔), ③ 채점기준 연결(문항마다 AI가 고른 기준을 확인·수정), ④ 모범답안 입력(선택 · 정답형은 인정 답안 최대 3개).<br>실패 케이스 포함 — 화면 좌측 하단 목업 내비게이터에서 13종 확인.',
         states:[
           {label:'설계 목록', hash:'', def:true},
-          {label:'평가 유형 선택', hash:'#type'},
-          {label:'상세 1단계 (간편)', hash:'#detail'},
-          {label:'상세 2단계 (정교)', hash:'#step2'},
-          {label:'상세 3단계 (정교)', hash:'#step3'},
-          {label:'상세 4단계 (정교)', hash:'#step4'},
+          {label:'설계 방식 선택', hash:'#type'},
+          {label:'간편한 평가 (1단계)', hash:'#simple'},
+          {label:'정교 1단계', hash:'#detail'},
+          {label:'정교 2단계 · 문항 구분', hash:'#step2'},
+          {label:'정교 3단계 · 채점기준 연결', hash:'#step3'},
+          {label:'정교 4단계 · 모범답안', hash:'#step4'},
         ]},
     ]
   },
