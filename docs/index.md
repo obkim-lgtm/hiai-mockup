@@ -12,6 +12,7 @@
 - 목업 작업 규칙·작업 방식·산출물 구성 → ../CLAUDE.md
 - **새 화면/컴포넌트 그리기 전(GNB·로고·파비콘·Dialog·Toast·패널·버튼·Input·Badge·토큰·타이포) → [design-system.md](design-system.md)**
 - **컴포넌트 구현 전 실제 수치(색·radius·spacing·폰트) → [design-system.md](design-system.md)의 Figma 파일키로 get_design_context** (육안 추정 금지)
+- **목업 내비게이터(까망이)에 화면·케이스 추가하거나 케이스 선택기 만들기 전 → [mockup-navigator.md](mockup-navigator.md)** (전용 패널 금지·진입 항목→케이스 그룹·딥링크·파일 간 동기화, CLIPO 목업과 공통 규칙)
 - 서비스 배경·컬러 팔레트 상세·스크린 인덱스 → ../context.md
 - 디자인 토큰(PPT 정리본) → ../HIAI_design_tokens_PPT.md
 - 실행·미리보기 방법 → ../manual.md
