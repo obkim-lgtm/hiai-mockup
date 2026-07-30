@@ -230,7 +230,7 @@
     <div class="ocr-b-tab-wrap">
       <div class="ocr-b-switch">
         <button class="ocr-b-tab" id="left-tab-original" onclick="switchLeftTab('original')">
-          <i data-lucide="file-image" style="width:14px;height:14px;"></i>원본 제출물
+          <i data-lucide="file-image" style="width:14px;height:14px;"></i>원본 과제물
         </button>
         <button class="ocr-b-tab active" id="left-tab-text" onclick="switchLeftTab('text')">
           <i data-lucide="align-left" style="width:14px;height:14px;"></i>인식 결과
@@ -257,7 +257,7 @@
       <div id="left-ocr-content" style="display:flex;flex-direction:column;gap:28px;background:white;border-radius:12px;padding:32px 36px;min-height:100%;"></div>
     </div>
 
-    <!-- 원본 제출물 패널 -->
+    <!-- 원본 과제물 패널 -->
     <div id="left-original-panel" style="display:none;flex:1;flex-direction:column;min-height:0;">
       <!-- 원본에서는 하이라이트 미제공 안내 -->
       <div style="display:flex;align-items:center;gap:8px;padding:10px 20px;background:#F2F5FF;flex-shrink:0;">
@@ -273,7 +273,7 @@
         </div>
       </div>
       <div style="flex:1;overflow:auto;background:#EBEBEA;padding:24px;">
-        <img src="../screens/student_submission.png" style="width:100%;max-width:540px;height:auto;display:block;margin:0 auto;" alt="학생 원본 제출물">
+        <img src="../screens/student_submission.png" style="width:100%;max-width:540px;height:auto;display:block;margin:0 auto;" alt="학생 원본 과제물">
       </div>
     </div>
   </div>
@@ -291,7 +291,7 @@
       </div>
       <div style="display:flex;gap:20px;align-items:center;">
         <label class="radio-item" onclick="selectStatus(this)"><div class="radio-circle selected"></div>채점 진행</label>
-        <label class="radio-item" onclick="selectStatus(this)"><div class="radio-circle"></div>미제출</label>
+        <label class="radio-item" onclick="selectStatus(this)"><div class="radio-circle"></div>미업로드</label>
         <label class="radio-item" onclick="selectStatus(this)"><div class="radio-circle"></div>미응시</label>
       </div>
     </div>

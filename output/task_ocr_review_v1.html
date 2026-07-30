@@ -73,10 +73,10 @@
     /* 뱃지 */
     .badge{ display:inline-flex; align-items:center; justify-content:center; border-radius:100px; padding:3px 10px; font-size:12px; font-weight:800; white-space:nowrap; }
     .badge-green{ background:#F1F9F3; color:#00AF3D; }   /* OCR 완료 / 확인 완료 */
-    .badge-red{ background:#FFEFEF; color:#DB3E51; }     /* 과제물 인식 확인 필요 / 미제출 */
+    .badge-red{ background:#FFEFEF; color:#DB3E51; }     /* 과제물 인식 확인 필요 / 미업로드 */
     .badge-orange{ background:#FFEDD5; color:#FF8C4C; }  /* 과제물 인식 미진행 */
     .badge-purple{ background:#F7F4FF; color:#7E44FB; }
-    .badge-gray{ background:#F8F8F8; color:#808080; }    /* OCR 미확인 / 제출 완료 */
+    .badge-gray{ background:#F8F8F8; color:#808080; }    /* OCR 미확인 / 업로드 완료 */
     .badge-blue{ background:#F2F5FF; color:#5890FF; }    /* 과제물 인식 진행 중 */
     /* 과제물 인식 결과 셀 — 클릭 가능 affordance */
     .tbl td span[onclick]{ padding:3px 6px; border-radius:6px; transition:background .15s; }
@@ -287,7 +287,7 @@
   <div style="max-width:1200px;margin:0 auto;padding:0 36px;">
     <div style="padding-top:40px;">
       <div class="tabs">
-        <div class="tab" onclick="location.href='eval_home_v9_260713.html'">평가 홈</div>
+        <div class="tab" onclick="location.href='eval_home_v10.html'">평가 홈</div>
         <div class="tab">평가 대상</div>
         <div class="tab" onclick="location.href='evaluation_design_v4_260713.html'">평가 설계</div>
         <div class="tab on">과제물 관리</div>
@@ -310,10 +310,10 @@
             <table class="tbl-dev">
               <thead><tr>
                 <th style="width:128px;">반</th>
-                <th>제출 현황</th>
-                <th style="width:128px;">미제출</th>
+                <th>업로드 현황</th>
+                <th style="width:128px;">미업로드</th>
                 <th style="width:164px;">과제물 인식</th>
-                <th style="width:176px;">과제 제출 관리</th>
+                <th style="width:176px;">과제 업로드 관리</th>
               </tr></thead>
               <tbody>
                 <tr>
@@ -321,21 +321,21 @@
                   <td><div style="display:flex;align-items:center;gap:12px;"><div style="flex:1;height:16px;background:#E9E0FE;border-radius:4px;overflow:hidden;"><div style="width:0%;height:100%;background:#8751FA;opacity:0.72;"></div></div><span style="font-size:16px;color:#333;min-width:45px;text-align:right;">0%</span></div></td>
                   <td>14</td>
                   <td><span class="ob ob-gray">-</span></td>
-                  <td><button onclick="showListForClass(1,'C')" style="background:none;border:none;cursor:pointer;font-family:inherit;font-size:16px;font-weight:700;color:#6C2DF4;display:inline-flex;align-items:center;justify-content:center;gap:6px;height:36px;padding:0 12px;border-radius:8px;line-height:1;vertical-align:middle;" onmouseover="this.style.background='#F7F4FF'" onmouseout="this.style.background='none'">과제 제출 상세 <i data-lucide="chevron-right" style="width:20px;height:20px;"></i></button></td>
+                  <td><button onclick="showListForClass(1,'C')" style="background:none;border:none;cursor:pointer;font-family:inherit;font-size:16px;font-weight:700;color:#6C2DF4;display:inline-flex;align-items:center;justify-content:center;gap:6px;height:36px;padding:0 12px;border-radius:8px;line-height:1;vertical-align:middle;" onmouseover="this.style.background='#F7F4FF'" onmouseout="this.style.background='none'">과제 업로드 상세 <i data-lucide="chevron-right" style="width:20px;height:20px;"></i></button></td>
                 </tr>
                 <tr>
                   <td>1-2</td>
                   <td><div style="display:flex;align-items:center;gap:12px;"><div style="flex:1;height:16px;background:#E9E0FE;border-radius:4px;overflow:hidden;"><div style="width:100%;height:100%;background:#8751FA;opacity:0.72;"></div></div><span style="font-size:16px;color:#333;min-width:45px;text-align:right;">100%</span></div></td>
                   <td>0</td>
                   <td><span class="ob ob-green">완료</span></td>
-                  <td><button onclick="showListForClass(2,'C')" style="background:none;border:none;cursor:pointer;font-family:inherit;font-size:16px;font-weight:700;color:#6C2DF4;display:inline-flex;align-items:center;justify-content:center;gap:6px;height:36px;padding:0 12px;border-radius:8px;line-height:1;vertical-align:middle;" onmouseover="this.style.background='#F7F4FF'" onmouseout="this.style.background='none'">과제 제출 상세 <i data-lucide="chevron-right" style="width:20px;height:20px;"></i></button></td>
+                  <td><button onclick="showListForClass(2,'C')" style="background:none;border:none;cursor:pointer;font-family:inherit;font-size:16px;font-weight:700;color:#6C2DF4;display:inline-flex;align-items:center;justify-content:center;gap:6px;height:36px;padding:0 12px;border-radius:8px;line-height:1;vertical-align:middle;" onmouseover="this.style.background='#F7F4FF'" onmouseout="this.style.background='none'">과제 업로드 상세 <i data-lucide="chevron-right" style="width:20px;height:20px;"></i></button></td>
                 </tr>
                 <tr>
                   <td>1-3</td>
                   <td><div style="display:flex;align-items:center;gap:12px;"><div style="flex:1;height:16px;background:#E9E0FE;border-radius:4px;overflow:hidden;"><div style="width:100%;height:100%;background:#8751FA;opacity:0.72;"></div></div><span style="font-size:16px;color:#333;min-width:45px;text-align:right;">100%</span></div></td>
                   <td>0</td>
                   <td><span class="ob ob-gray">미진행</span></td>
-                  <td><button onclick="showListForClass(3,'C')" style="background:none;border:none;cursor:pointer;font-family:inherit;font-size:16px;font-weight:700;color:#6C2DF4;display:inline-flex;align-items:center;justify-content:center;gap:6px;height:36px;padding:0 12px;border-radius:8px;line-height:1;vertical-align:middle;" onmouseover="this.style.background='#F7F4FF'" onmouseout="this.style.background='none'">과제 제출 상세 <i data-lucide="chevron-right" style="width:20px;height:20px;"></i></button></td>
+                  <td><button onclick="showListForClass(3,'C')" style="background:none;border:none;cursor:pointer;font-family:inherit;font-size:16px;font-weight:700;color:#6C2DF4;display:inline-flex;align-items:center;justify-content:center;gap:6px;height:36px;padding:0 12px;border-radius:8px;line-height:1;vertical-align:middle;" onmouseover="this.style.background='#F7F4FF'" onmouseout="this.style.background='none'">과제 업로드 상세 <i data-lucide="chevron-right" style="width:20px;height:20px;"></i></button></td>
                 </tr>
               </tbody>
             </table>
@@ -348,14 +348,14 @@
               <thead>
                 <tr>
                   <th style="width:128px;">반</th>
-                  <th>제출 현황</th>
-                  <th style="width:128px;">미제출</th>
+                  <th>업로드 현황</th>
+                  <th style="width:128px;">미업로드</th>
                   <th style="width:164px;">과제물 인식</th>
-                  <th style="width:176px;">과제 제출 관리</th>
+                  <th style="width:176px;">과제 업로드 관리</th>
                 </tr>
               </thead>
               <tbody>
-                <!-- 1-1반: 제출자 전원 인식 완료 + 확인 필요 학생 있음 -->
+                <!-- 1-1반: 전원 업로드 인식 완료 + 확인 필요 학생 있음 -->
                 <tr>
                   <td>1-1</td>
                   <td>
@@ -368,11 +368,11 @@
                   <td><span class="ob ob-red">확인 필요</span></td>
                   <td>
                     <button onclick="showListForClass(1)" style="background:none;border:none;cursor:pointer;font-family:inherit;font-size:16px;font-weight:700;color:#6C2DF4;display:inline-flex;align-items:center;justify-content:center;gap:6px;height:36px;padding:0 12px;border-radius:8px;line-height:1;vertical-align:middle;" onmouseover="this.style.background='#F7F4FF'" onmouseout="this.style.background='none'">
-                      과제 제출 상세 <i data-lucide="chevron-right" style="width:20px;height:20px;"></i>
+                      과제 업로드 상세 <i data-lucide="chevron-right" style="width:20px;height:20px;"></i>
                     </button>
                   </td>
                 </tr>
-                <!-- 1-2반: 제출 0명 -->
+                <!-- 1-2반: 업로드 0명 -->
                 <tr>
                   <td>1-2</td>
                   <td>
@@ -385,11 +385,11 @@
                   <td><span class="ob ob-gray">-</span></td>
                   <td>
                     <button onclick="showListForClass(2)" style="background:none;border:none;cursor:pointer;font-family:inherit;font-size:16px;font-weight:700;color:#6C2DF4;display:inline-flex;align-items:center;justify-content:center;gap:6px;height:36px;padding:0 12px;border-radius:8px;line-height:1;vertical-align:middle;" onmouseover="this.style.background='#F7F4FF'" onmouseout="this.style.background='none'">
-                      과제 제출 상세 <i data-lucide="chevron-right" style="width:20px;height:20px;"></i>
+                      과제 업로드 상세 <i data-lucide="chevron-right" style="width:20px;height:20px;"></i>
                     </button>
                   </td>
                 </tr>
-                <!-- 1-3반: 제출 0명 -->
+                <!-- 1-3반: 업로드 0명 -->
                 <tr>
                   <td>1-3</td>
                   <td>
@@ -402,7 +402,7 @@
                   <td><span class="ob ob-gray">-</span></td>
                   <td>
                     <button onclick="showListForClass(3)" style="background:none;border:none;cursor:pointer;font-family:inherit;font-size:16px;font-weight:700;color:#6C2DF4;display:inline-flex;align-items:center;justify-content:center;gap:6px;height:36px;padding:0 12px;border-radius:8px;line-height:1;vertical-align:middle;" onmouseover="this.style.background='#F7F4FF'" onmouseout="this.style.background='none'">
-                      과제 제출 상세 <i data-lucide="chevron-right" style="width:20px;height:20px;"></i>
+                      과제 업로드 상세 <i data-lucide="chevron-right" style="width:20px;height:20px;"></i>
                     </button>
                   </td>
                 </tr>
@@ -417,7 +417,7 @@
   </div>
 </div>
 
-<!-- ===== 화면 1: 학급 제출 상세 (과제물 인식 상태 포함) ===== -->
+<!-- ===== 화면 1: 학급 업로드 상세 (과제물 인식 상태 포함) ===== -->
 <div id="screen-list" class="screen">
 
   <!-- 타이틀 바 -->
@@ -426,7 +426,7 @@
       <i data-lucide="arrow-left" style="width:28px; height:28px; color:white; cursor:pointer; flex-shrink:0;" onclick="showScreen('screen-task')"></i>
       <span style="font-size:28px; font-weight:800; color:white; line-height:1.35;">1학년 국어</span>
       <div style="width:1px; height:28px; background:rgba(255,255,255,.4); margin:0 4px;"></div>
-      <span style="font-size:20px; font-weight:700; color:rgba(255,255,255,.85);">과제 제출 상세</span>
+      <span style="font-size:20px; font-weight:700; color:rgba(255,255,255,.85);">과제 업로드 상세</span>
     </div>
   </div>
 
@@ -434,7 +434,7 @@
   <div style="max-width:1200px; margin:0 auto; padding:0 36px;">
     <div style="padding-top:40px;">
       <div class="tabs">
-        <div class="tab" onclick="location.href='eval_home_v9_260713.html'">평가 홈</div>
+        <div class="tab" onclick="location.href='eval_home_v10.html'">평가 홈</div>
         <div class="tab">평가 대상</div>
         <div class="tab" onclick="location.href='evaluation_design_v4_260713.html'">평가 설계</div>
         <div class="tab on">과제물 관리</div>
@@ -444,7 +444,7 @@
       <div class="panel" style="min-height:500px;">
         <!-- 헤더 -->
         <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:8px;">
-          <h2 id="list-class-title" style="font-size:24px; font-weight:800; color:#222; margin:0;">1-1반 과제 제출 상세</h2>
+          <h2 id="list-class-title" style="font-size:24px; font-weight:800; color:#222; margin:0;">1-1반 과제 업로드 상세</h2>
           <div style="display:flex; gap:10px;">
             <span id="btn-ocr-confirm-wrap">
               <button id="btn-ocr-confirm" class="btn btn-sm" style="background:white;color:#E4631C;border:1px solid #FF9960;" onclick="goToOCR(0)">
@@ -493,10 +493,10 @@
               <th style="width:90px; text-align:center;">상태</th>
               <th style="width:80px;">학번</th>
               <th style="width:90px;">이름</th>
-              <th>제출 일시</th>
+              <th>업로드 일시</th>
               <th style="width:80px; text-align:center; white-space:nowrap;">파일 수</th>
               <th style="width:180px; text-align:center;">과제물 인식</th>
-              <th style="width:150px; text-align:center; white-space:nowrap;">과제 제출 관리</th>
+              <th style="width:150px; text-align:center; white-space:nowrap;">과제 업로드 관리</th>
             </tr>
           </thead>
           <tbody id="student-table-body">
@@ -528,7 +528,7 @@
     <div style="max-width:1200px;margin:0 auto;padding:0 36px;">
       <div style="padding-top:40px;">
         <div class="tabs">
-          <div class="tab" onclick="location.href='eval_home_v9_260713.html'">평가 홈</div>
+          <div class="tab" onclick="location.href='eval_home_v10.html'">평가 홈</div>
           <div class="tab">평가 대상</div>
           <div class="tab" onclick="location.href='evaluation_design_v4_260713.html'">평가 설계</div>
           <div class="tab on">과제물 관리</div>
@@ -690,7 +690,7 @@
                 <div style="width:102px;flex-shrink:0;height:40px;background:#F8F8F8;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:800;color:#333;">이름</div>
                 <div style="width:86px;flex-shrink:0;height:40px;background:#F8F8F8;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:800;color:#333;">페이지 수</div>
                 <div style="flex:1;height:40px;background:#F8F8F8;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:800;color:#333;">페이지 번호</div>
-                <div style="width:68px;flex-shrink:0;height:40px;background:#F8F8F8;border-radius:0 8px 8px 0;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:800;color:#333;">미제출</div>
+                <div style="width:68px;flex-shrink:0;height:40px;background:#F8F8F8;border-radius:0 8px 8px 0;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:800;color:#333;">미업로드</div>
               </div>
               <!-- 데이터 행 -->
               <div id="done-result-tbody"></div>
@@ -900,7 +900,7 @@
       </div>
       <!-- 스캔 이미지 본문 -->
       <div id="ocr-b-scan-viewport" style="flex:1;overflow:auto;padding:24px;display:flex;flex-direction:column;gap:20px;align-items:center;">
-        <img id="ocr-b-scan-image" src="../screens/student_submission.png" style="background:white;box-shadow:0 2px 12px rgba(0,0,0,.18);width:100%;max-width:540px;height:auto;display:block;transform-origin:top center;transition:transform .15s;" alt="학생 원본 제출물">
+        <img id="ocr-b-scan-image" src="../screens/student_submission.png" style="background:white;box-shadow:0 2px 12px rgba(0,0,0,.18);width:100%;max-width:540px;height:auto;display:block;transform-origin:top center;transition:transform .15s;" alt="학생 원본 과제물">
       </div>
     </div>
 
@@ -920,7 +920,7 @@
       </div>
       <!-- OCR 결과 카드 영역 -->
       <div id="ocr-b-text-panel" class="ocr-b-font" style="padding:0 24px 48px;display:flex;flex-direction:column;gap:20px;"></div>
-      <!-- (숨김 유지) 원본 제출물 탭 레거시 DOM — 기존 switchOcrBTab 호출 호환 -->
+      <!-- (숨김 유지) 원본 과제물 탭 레거시 DOM — 기존 switchOcrBTab 호출 호환 -->
       <div id="ocr-b-original-panel" style="display:none;"></div>
       <!-- (숨김 유지) 루브릭 레거시 DOM — renderRubric 호출 호환 -->
       <div id="ocr-b-rubric-items" style="display:none;"></div>
@@ -947,8 +947,8 @@
       <!-- 파일 규격 안내 (purple/subtle) -->
       <div style="background:#F7F4FF;border:1px solid #F2ECFF;border-radius:8px;padding:14px 16px;">
         <ul style="list-style:disc;padding-left:22px;margin:0;font-size:15px;font-weight:400;line-height:1.6;color:#494949;">
-          <li>제출 가능한 최대 파일 수 : 1</li>
-          <li>제출 가능한 파일 형식 : PDF, PNG, JPG</li>
+          <li>업로드 가능한 최대 파일 수 : 1</li>
+          <li>업로드 가능한 파일 형식 : PDF, PNG, JPG</li>
         </ul>
       </div>
       <!-- 파일 업로드 (드래그앤드롭 · 최대 1개. 학생 로그인이 없어 선생님 업로드 단일) -->
@@ -1127,15 +1127,15 @@
 <script>
 // ── 데이터 ──
 const STUDENTS = [
-  { id:'10101', name:'김서윤', status:'제출', date:'26/07/21 14:31', files:1, ocrStatus:'confirmed', needsReview:false, pages:[3,4] },
-  { id:'10102', name:'이준호', status:'제출', date:'26/07/21 14:31', files:1, ocrStatus:'unconfirmed', needsReview:true, pages:[5,6] },
-  { id:'10103', name:'박지민', status:'제출', date:'26/07/21 14:31', files:1, ocrStatus:'unconfirmed', needsReview:true, pages:[7,8] },
-  { id:'10104', name:'최유진', status:'제출', date:'26/07/21 14:31', files:1, ocrStatus:'failed', needsReview:false, pages:[9,10] },
-  { id:'10105', name:'정현우', status:'제출', date:'26/07/21 14:31', files:1, ocrStatus:'pending', needsReview:false, pages:[11,12] },
-  { id:'10106', name:'한지우', status:'미제출', date:'-', files:0, ocrStatus:null, pages:[] },
-  { id:'10107', name:'조민재', status:'미제출', date:'-', files:0, ocrStatus:null, pages:[] },
-  { id:'10108', name:'윤하은', status:'미제출', date:'-', files:0, ocrStatus:null, pages:[] },
-  { id:'10109', name:'임도윤', status:'제출', date:'26/07/21 14:31', files:1, ocrStatus:'unconfirmed', needsReview:false, pages:[13,14] }
+  { id:'10101', name:'김서윤', status:'업로드', date:'26/07/21 14:31', files:1, ocrStatus:'confirmed', needsReview:false, pages:[3,4] },
+  { id:'10102', name:'이준호', status:'업로드', date:'26/07/21 14:31', files:1, ocrStatus:'unconfirmed', needsReview:true, pages:[5,6] },
+  { id:'10103', name:'박지민', status:'업로드', date:'26/07/21 14:31', files:1, ocrStatus:'unconfirmed', needsReview:true, pages:[7,8] },
+  { id:'10104', name:'최유진', status:'업로드', date:'26/07/21 14:31', files:1, ocrStatus:'failed', needsReview:false, pages:[9,10] },
+  { id:'10105', name:'정현우', status:'업로드', date:'26/07/21 14:31', files:1, ocrStatus:'pending', needsReview:false, pages:[11,12] },
+  { id:'10106', name:'한지우', status:'미업로드', date:'-', files:0, ocrStatus:null, pages:[] },
+  { id:'10107', name:'조민재', status:'미업로드', date:'-', files:0, ocrStatus:null, pages:[] },
+  { id:'10108', name:'윤하은', status:'미업로드', date:'-', files:0, ocrStatus:null, pages:[] },
+  { id:'10109', name:'임도윤', status:'업로드', date:'26/07/21 14:31', files:1, ocrStatus:'unconfirmed', needsReview:false, pages:[13,14] }
 ];
 
 // OCR 텍스트 데이터 (학생별)
@@ -1299,13 +1299,13 @@ function buildFormPageHTML(page) {
 // 구형 SCAN_PAGES (페이지 번호 → 폴백용)
 const SCAN_PAGES = {};
 
-var ocrStudents = STUDENTS.filter(function(s){ return s.status === '제출' && s.ocrStatus !== null && s.ocrStatus !== 'processing' && s.ocrStatus !== 'pending' && s.ocrStatus !== 'failed'; });
+var ocrStudents = STUDENTS.filter(function(s){ return s.status === '업로드' && s.ocrStatus !== null && s.ocrStatus !== 'processing' && s.ocrStatus !== 'pending' && s.ocrStatus !== 'failed'; });
 var currentStudentIdx = 0;
 var currentPageIdx = 0;
 
 // ── A안 주황 배너 "일괄 과제물 인식" — 미인식 학생 전체 일괄 인식 (진행 표시는 행별 스피너) ──
 function startOcrPendingA() {
-  var pending = STUDENTS.filter(function(s){ return s.status === '제출' && s.ocrStatus === 'pending'; });
+  var pending = STUDENTS.filter(function(s){ return s.status === '업로드' && s.ocrStatus === 'pending'; });
   if (!pending.length) return;
   var bannerB2 = document.getElementById('list-b-ocr-pending-banner');
   if (bannerB2) bannerB2.style.display = 'none';
@@ -1329,7 +1329,7 @@ function goToFirstReview() {
     return;
   }
   for (var i = 0; i < STUDENTS.length; i++) {
-    if (STUDENTS[i].status === '제출' && STUDENTS[i].needsReview) { goToOCR(i); return; }
+    if (STUDENTS[i].status === '업로드' && STUDENTS[i].needsReview) { goToOCR(i); return; }
   }
 }
 
@@ -1358,21 +1358,21 @@ function retryOcr(id) {
   }, 2500);
 }
 
-// ── 학급 제출 상세 테이블 렌더 ──
+// ── 학급 업로드 상세 테이블 렌더 ──
 function renderTable() {
   if (currentEvalType === 'B') { renderTableB(); return; }
   var tbody = document.getElementById('student-table-body');
   var html = '';
-  var allAbsent = currentListClass !== 1; // 2~5반: 전체 미제출 상태
+  var allAbsent = currentListClass !== 1; // 2~5반: 전체 미업로드 상태
   STUDENTS.forEach(function(s, i) {
-    var effectiveStatus = allAbsent ? '미제출' : s.status;
-    var statusBadge = effectiveStatus === '제출'
-      ? '<span class="badge badge-green">제출</span>'
-      : '<span class="badge badge-red">미제출</span>';
+    var effectiveStatus = allAbsent ? '미업로드' : s.status;
+    var statusBadge = effectiveStatus === '업로드'
+      ? '<span class="badge badge-green">업로드</span>'
+      : '<span class="badge badge-red">미업로드</span>';
 
-    // 과제물 인식 결과 셀 — 미제출(2~5반 포함)이면 '-'
+    // 과제물 인식 결과 셀 — 미업로드(2~5반 포함)이면 '-'
     var ocrCell = '-';
-    if (!allAbsent && effectiveStatus === '제출') {
+    if (!allAbsent && effectiveStatus === '업로드') {
       if (ocrProcessing || s.ocrStatus === 'processing') ocrCell = ocrCellHtml('진행중');
       else if (s.ocrStatus === 'pending') ocrCell = ocrCellHtml('미진행');
       else if (s.ocrStatus === 'failed') ocrCell = ocrCellHtml('실패', null, s.id);
@@ -1390,7 +1390,7 @@ function renderTable() {
     html += '<td style="color:' + (displayDate === '-' ? '#B3B3B3' : '#333') + ';">' + displayDate + '</td>';
     html += '<td style="text-align:center;">' + displayFiles + '</td>';
     html += '<td style="text-align:center;">' + ocrCell + '</td>';
-    html += fileMgmtCell(s.id, s.name, effectiveStatus === '제출'); // 과제물 인식 진행 중이면 제출 학생만 비활성
+    html += fileMgmtCell(s.id, s.name, effectiveStatus === '업로드'); // 과제물 인식 진행 중이면 업로드 학생만 비활성
     html += '</tr>';
   });
   tbody.innerHTML = html;
@@ -1783,7 +1783,7 @@ function markAutoSaved() {
   if (window.lucide) lucide.createIcons();
 }
 
-// ── 학급 제출 상세: 반별 상태 ──
+// ── 학급 업로드 상세: 반별 상태 ──
 var currentListClass = 1;
 var currentStateClass = 1; // B안 상태 매핑용 (C안은 반 번호와 상태가 다름)
 var currentEvalType = 'A';
@@ -1827,7 +1827,7 @@ function showListForClass(classNum, evalType) {
 
   // 타이틀
   var titleEl = document.getElementById('list-class-title');
-  if (titleEl) titleEl.textContent = '1-' + classNum + '반 과제 제출 상세';
+  if (titleEl) titleEl.textContent = '1-' + classNum + '반 과제 업로드 상세';
 
   // 배너 · 버튼 상태
   var bannerB1 = document.getElementById('list-b1-ocr-banner');
@@ -1876,8 +1876,8 @@ function showListForClass(classNum, evalType) {
   } else {
     // A안 — 개발 디자인: 미인식(주황) + 확인 필요(빨강) 배너 2개 분리 노출
     if (classNum === 1) {
-      var pendingA = STUDENTS.filter(function(s){ return s.status === '제출' && s.ocrStatus === 'pending'; });
-      var reviewA = STUDENTS.filter(function(s){ return s.status === '제출' && s.needsReview; });
+      var pendingA = STUDENTS.filter(function(s){ return s.status === '업로드' && s.ocrStatus === 'pending'; });
+      var reviewA = STUDENTS.filter(function(s){ return s.status === '업로드' && s.needsReview; });
       if (bannerB2 && pendingA.length > 0) {
         var pendNamesEl = document.getElementById('list-b-ocr-pending-names');
         if (pendNamesEl) pendNamesEl.textContent = pendingA.map(function(s){ return s.id + ' ' + s.name; }).join(' · ');
@@ -1951,7 +1951,7 @@ function goToList() {
 function goToOCR(studentTableIdx) {
   // A안(구버전) OCR 화면 폐지 — 같은 학생을 B안 과제물 인식 확인·수정(screen-ocr-b)으로 통일 라우팅
   var student = STUDENTS[studentTableIdx];
-  if (!student || student.status === '미제출') return;
+  if (!student || student.status === '미업로드') return;
   var bIdx = STUDENTS_B1.findIndex(function(s){ return s.id === student.id; });
   goToOCR_B(bIdx !== -1 ? bIdx : 0);
 }
@@ -1980,10 +1980,10 @@ function renderOcrBDropdown() {
     var hover = isCurrent ? '' : ' onmouseover="this.style.background=\'#F8F8F8\'" onmouseout="this.style.background=\'transparent\'"';
     ddHtml += '<div onclick="jumpToOcrBStudent(' + i + ')" style="padding:10px 12px;cursor:pointer;border-radius:4px;font-size:16px;line-height:1.25;color:#333;background:' + bg + ';"' + hover + '>' + row + '</div>';
   });
-  // 과제 미제출 학생 — 선택 불가(과제물 없음만 비활성화, Figma 주석). 미진행은 선택 가능하므로 목록 유지
+  // 과제 미업로드 학생 — 선택 불가(과제물 없음만 비활성화, Figma 주석). 미진행은 선택 가능하므로 목록 유지
   [{id:'10112',name:'문서아'}].forEach(function(s){
-    ddHtml += '<div title="과제 미제출이라 선택할 수 없어요" style="padding:10px 12px;cursor:not-allowed;opacity:0.5;border-radius:4px;font-size:16px;line-height:1.25;color:#333;">'
-      + s.id + ' ' + s.name + ' <span>(미제출)</span></div>';
+    ddHtml += '<div title="과제 미업로드라 선택할 수 없어요" style="padding:10px 12px;cursor:not-allowed;opacity:0.5;border-radius:4px;font-size:16px;line-height:1.25;color:#333;">'
+      + s.id + ' ' + s.name + ' <span>(미업로드)</span></div>';
   });
   listEl.innerHTML = ddHtml;
   lucide.createIcons();
@@ -2618,14 +2618,14 @@ function renderOCRView() {
   // 네비게이터
   document.getElementById('nav-student-name').textContent = student.name + ' (' + student.id + ')';
 
-  // 드롭다운 리스트 갱신 — 전체 학생을 케이스별로 표시 (미진행·미제출은 선택 불가)
+  // 드롭다운 리스트 갱신 — 전체 학생을 케이스별로 표시 (미진행·미업로드는 선택 불가)
   var reviewCount = 0;
   var listHtml = '';
   var currentId = (ocrStudents[currentStudentIdx] || {}).id;
   STUDENTS.forEach(function(s) {
     var icon, note = '', clickable = false, ocrIdx = -1;
-    if (s.status === '미제출') {
-      icon = '<span style="color:#C9C9C9;font-size:13px;flex-shrink:0;">—</span>'; note = '과제 미제출';
+    if (s.status === '미업로드') {
+      icon = '<span style="color:#C9C9C9;font-size:13px;flex-shrink:0;">—</span>'; note = '과제 미업로드';
     } else if (s.ocrStatus === 'pending') {
       icon = '<span style="color:#C9C9C9;font-size:13px;flex-shrink:0;">○</span>'; note = '과제물 인식 전';
     } else if (s.ocrStatus === 'processing') {
@@ -3025,9 +3025,9 @@ function startSplit() {
   var modeEl = document.querySelector('input[name="splitEditMode"]:checked');
   splitEditMode = modeEl ? modeEl.value : 'count';
   var per = parseInt((document.getElementById('split-pages-per') || {}).value) || 2;
-  // 학생별 행 데이터 구성 — 미제출 학생은 0장
+  // 학생별 행 데이터 구성 — 미업로드 학생은 0장
   doneRows = STUDENTS.map(function(s) {
-    var absent = s.status === '미제출';
+    var absent = s.status === '미업로드';
     return { id: s.id, name: s.name, absent: absent, count: absent ? 0 : per };
   });
   document.getElementById('upload-state-processing').style.display = 'flex';
@@ -3071,7 +3071,7 @@ function renderDoneTable() {
       countCell = splitEditMode === 'count'
         ? '<input type="number" value="0" disabled style="' + inputStyle + 'background:#F8F8F8;color:#B3B3B3;cursor:not-allowed;">'
         : '0';
-      pageNoCell = '<span style="font-size:16px;color:#333;">(미제출)</span>';
+      pageNoCell = '<span style="font-size:16px;color:#333;">(미업로드)</span>';
     } else {
       var pageEnd = pageStart + r.count - 1;
       if (splitEditMode === 'count') {
@@ -3117,7 +3117,7 @@ function updateRowRange(i, startV, endV) {
   renderDoneTable();
 }
 
-// 미제출 체크 토글 — 체크 시 해당 학생 분량 제외, 해제 시 기본 장수로 복원
+// 미업로드 체크 토글 — 체크 시 해당 학생 분량 제외, 해제 시 기본 장수로 복원
 function toggleAbsent(i, checked) {
   if (!doneRows[i]) return;
   doneRows[i].absent = checked;
@@ -3136,7 +3136,7 @@ function renderTableB() {
   var isUploaded = isB1 || isB2;
 
   // B2도 항상 과제물 인식 결과 컬럼 표시 (상태만 다름)
-  var theadRow = '<tr><th style="width:90px;text-align:center;">상태</th><th style="width:80px;">학번</th><th style="width:90px;">이름</th><th>제출 일시</th><th style="width:80px;text-align:center;white-space:nowrap;">파일 수</th><th style="width:180px;text-align:center;">과제물 인식</th><th style="width:150px;text-align:center;white-space:nowrap;">과제 제출 관리</th></tr>';
+  var theadRow = '<tr><th style="width:90px;text-align:center;">상태</th><th style="width:80px;">학번</th><th style="width:90px;">이름</th><th>업로드 일시</th><th style="width:80px;text-align:center;white-space:nowrap;">파일 수</th><th style="width:180px;text-align:center;">과제물 인식</th><th style="width:150px;text-align:center;white-space:nowrap;">과제 업로드 관리</th></tr>';
   if (thead) thead.innerHTML = theadRow;
 
   var students = isB1 ? STUDENTS_B1 : (isB2 ? STUDENTS_B2 : []);
@@ -3150,7 +3150,7 @@ function renderTableB() {
       var ocrStarted = isB2OcrStartedFor(s.id) || (bulkUploaded && b2OcrStartedIds === 'all');
       var statusCell, dateCell, filesCell, ocrCell;
       if (uploaded) {
-        statusCell = '<span class="badge badge-green">제출</span>';
+        statusCell = '<span class="badge badge-green">업로드</span>';
         if (ocrStarted && ocrProcessing) ocrCell = ocrCellHtml('진행중');
         else if (ocrStarted && s.needsReview) ocrCell = ocrCellHtml('확인필요', 'goToOCR_B(' + idx + ')');
         else if (ocrStarted) ocrCell = ocrCellHtml('완료', 'goToOCR_B(' + idx + ')');
@@ -3158,7 +3158,7 @@ function renderTableB() {
         dateCell = '<td>26/04/24 14:31</td>';
         filesCell = '<td style="text-align:center;">1</td>';
       } else {
-        statusCell = '<span class="badge badge-red">미제출</span>';
+        statusCell = '<span class="badge badge-red">미업로드</span>';
         dateCell = '<td style="color:#B3B3B3;">-</td>';
         filesCell = '<td style="text-align:center;">0</td>';
         ocrCell = '-';
@@ -3174,8 +3174,8 @@ function renderTableB() {
     });
   } else {
     students.forEach(function(s, i) {
-      // 상태 컬럼은 제출 축으로만 표시 — 과제물 인식 상태는 과제물 인식 컬럼이 담당
-      var statusBadge = '<span class="badge badge-green">제출</span>';
+      // 상태 컬럼은 업로드 축으로만 표시 — 과제물 인식 상태는 과제물 인식 컬럼이 담당
+      var statusBadge = '<span class="badge badge-green">업로드</span>';
       var cols = '<td style="text-align:center;">' + statusBadge + '</td>';
       cols += '<td style="font-weight:700;">' + s.id + '</td>';
       cols += '<td>' + s.name + '</td>';
@@ -3255,8 +3255,8 @@ function ocrCellHtml(kind, nav, sid) {
   }
 }
 
-// 과제 제출 관리 셀 — 미제출='파일 추가'/제출='파일 수정' 보라 아웃라인 버튼 (개발 디자인)
-// 과제물 인식 중에는 제출 학생의 '파일 수정'만 비활성(미제출 '파일 추가'는 계속 가능)
+// 과제 업로드 관리 셀 — 미업로드='파일 추가'/업로드='파일 수정' 보라 아웃라인 버튼 (개발 디자인)
+// 과제물 인식 중에는 업로드 학생의 '파일 수정'만 비활성(미업로드 '파일 추가'는 계속 가능)
 function fileMgmtCell(id, name, submitted) {
   var label = submitted ? '파일 수정' : '파일 추가';
   var icon = submitted ? 'paperclip' : 'plus';
@@ -3269,7 +3269,7 @@ function fileMgmtCell(id, name, submitted) {
 function uploadAndGoList() {
   pendingUploadMode = 'bulk';
   pendingUploadStudentId = null;
-  // 현재 반을 일괄 업로드 완료 상태로 표시 → 목록에서 전원 제출·파일 수 1로 반영
+  // 현재 반을 일괄 업로드 완료 상태로 표시 → 목록에서 전원 업로드·파일 수 1로 반영
   if (currentListClass) bulkUploadedClasses[currentListClass] = true;
   // '업로드 후 과제물 인식 바로 진행하기' 체크 여부 — 팝업 대체 (Figma 1841:18015)
   var ocrNow = document.getElementById('ocr-now-check');
@@ -3411,7 +3411,7 @@ function pickStudentUploadFile() {
   var chipName = document.getElementById('student-upload-chip-name');
   var drop = document.getElementById('student-upload-drop');
   var saveBtn = document.getElementById('student-upload-save');
-  if (chipName) chipName.textContent = '과제_제출본.pdf';
+  if (chipName) chipName.textContent = '과제_업로드본.pdf';
   if (chip) chip.style.display = 'flex';
   if (drop) drop.style.display = 'none';
   var warn = document.getElementById('student-upload-warn');
@@ -3682,7 +3682,7 @@ else mpInitAll();
   </div>
   <div id="mp-body" class="mp-body" style="display:none">
     <button class="mp-btn" data-k="task"  onclick="mpGo('task')">과제물 관리 목록</button>
-    <button class="mp-btn" data-k="list"  onclick="mpGo('list')">학급 제출 상세 <span class="mp-sub">제출·미제출·과제물 인식 상태</span></button>
+    <button class="mp-btn" data-k="list"  onclick="mpGo('list')">학급 업로드 상세 <span class="mp-sub">업로드·미업로드·과제물 인식 상태</span></button>
     <button class="mp-btn" data-k="bulk"  onclick="mpGo('bulk')">일괄 업로드 <span class="mp-sub">비식별화 안내</span></button>
     <button class="mp-btn" data-k="indiv" onclick="mpGo('indiv')">개별 파일 업로드 <span class="mp-sub">비식별화 안내</span></button>
     <div class="mp-cap">과제물 인식 확인·수정 · 케이스별</div>

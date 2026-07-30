@@ -1359,7 +1359,7 @@
     {ts:'2026-04-28 18:33:45', school:'경기도고등학교', teacher:'임지안', course:'사회', name:'전공을 향한 교과 탐색'},
     {ts:'2026-04-28 18:17:23', school:'경기도고등학교', teacher:'김민호', course:'영어', name:'1학기 1차 논술형'},
     {ts:'2026-04-28 18:09:12', school:'경기도고등학교', teacher:'안태민', course:'과학', name:'인공지능과 진로탐구'},
-    {ts:'2026-04-28 17:48:04', school:'경기도초등학교', teacher:'신도윤', course:'국어', name:'관용표현을 사용하여 견학기록문 쓰고 제출하기'},
+    {ts:'2026-04-28 17:48:04', school:'경기도초등학교', teacher:'신도윤', course:'국어', name:'관용표현을 사용하여 견학기록문 쓰고 업로드하기'},
     {ts:'2026-04-28 17:46:32', school:'경기도중학교',   teacher:'권하린', course:'사회', name:'지속가능한 도시를 만들기 위한 유럽 도시들의 다양한 노력'},
     {ts:'2026-04-28 17:38:14', school:'경기도고등학교', teacher:'옥시현', course:'수학', name:'AP 미적분학 8-10번'},
     {ts:'2026-04-28 17:36:48', school:'경기도중학교',   teacher:'전수아', course:'과학', name:'26 3학년 1학기 1차 정기시험'},
@@ -2467,14 +2467,14 @@
     $('#k'+key+'S').textContent = sub;
   }
   function setKpiTitles(a){ ['Deid','Ocr','Score','Qa'].forEach((k,i)=> $('#k'+k+'H').textContent = a[i]); }
-  // 비식별화 검수 정체성 — 안정성(실패) + 품질(QA 점검) 중심, OCR·채점은 묶어 부차. 제출물(과제물) 단위
+  // 비식별화 검수 정체성 — 안정성(실패) + 품질(QA 점검) 중심, OCR·채점은 묶어 부차. 과제물(과제물) 단위
   function renderDeidKpi(){
     setKpiTitles(['비식별화 실패','OCR·채점 실패','QA 검수 진행','마스킹 품질 이슈']);
     const total = deidRows.length;
     const deidFail  = deidRows.filter(r=>!r.deid.ok).length;
     const reviewed  = deidRows.filter(r=>r.qa.verdicts.length).length;
     const maskIssue = deidRows.filter(r=>r.qa.verdicts.includes('mask_miss') || r.qa.verdicts.includes('mask_over')).length;
-    // OCR·채점 실패: OCR 실패 OR (OCR 성공인데 채점 실패) — 한 제출물당 최대 1회, 중복 없음
+    // OCR·채점 실패: OCR 실패 OR (OCR 성공인데 채점 실패) — 한 과제물당 최대 1회, 중복 없음
     const backFail  = deidRows.filter(r=>!r.ocr.ok || (r.ocr.ok && !r.score.ok)).length;
     setKpi('Deid',  deidFail,  pct(deidFail,total),     deidFail?'bad':'good',    `전체 ${total}건 · 개인정보 노출 위험`);
     setKpi('Ocr',   backFail,  pct(backFail,total),     backFail?'bad':'good',    `전체 ${total}건 · OCR+채점`);

@@ -1,0 +1,1664 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" href="../screens/favicon_src.png" type="image/png">
+  <title>평가 홈 v10</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+  <style>
+    @import url('https://cdn.rawgit.com/moonspam/NanumSquareRound/master/nanumsquareround.min.css');
+    * { font-family: 'NanumSquareRound', -apple-system, sans-serif; box-sizing: border-box; }
+    body { margin: 0; background: #EDF1FC; }
+
+    /* Step bar */
+    .step-done  { background:#F7F4FF; border:1px solid #B28FFD; color:#7E44FB; border-radius:9999px; height:32px; display:inline-flex; align-items:center; justify-content:center; padding:0 16px; font-size:13px; font-weight:700; white-space:nowrap; flex-shrink:0; }
+    .step-now   { background:#7E44FB; border:1px solid #7E44FB; color:white; border-radius:9999px; height:32px; display:inline-flex; align-items:center; justify-content:center; padding:0 16px; font-size:13px; font-weight:700; white-space:nowrap; flex-shrink:0; }
+    .step-todo  { background:#F0F0F0; border:1px solid #CCCCCC; color:#808080; border-radius:9999px; height:32px; display:inline-flex; align-items:center; justify-content:center; padding:0 16px; font-size:13px; font-weight:700; white-space:nowrap; flex-shrink:0; }
+    .step-line-done { flex:1; height:1px; background:#B28FFD; min-width:12px; }
+    .step-line-todo { flex:1; height:1px; background:#CCCCCC; min-width:12px; }
+
+    /* Status badges */
+    .badge-ing   { background:#F1F9F3; color:#00AF3D; border-radius:100px; padding:3px 10px; font-size:12px; font-weight:700; white-space:nowrap; }
+    .badge-done  { background:#E0E0E0; color:#222222; border-radius:100px; padding:3px 10px; font-size:12px; font-weight:700; white-space:nowrap; }
+    .badge-draft { background:#FFEFEF; color:#DB3E51; border-radius:100px; padding:3px 10px; font-size:12px; font-weight:700; white-space:nowrap; }
+
+    /* Buttons */
+    .btn-primary   { background:#7E44FB; color:white; border:none; border-radius:8px; height:36px; padding:0 16px; font-size:14px; font-weight:700; cursor:pointer; font-family:inherit; display:inline-flex; align-items:center; justify-content:center; line-height:1; vertical-align:middle; gap:6px; white-space:nowrap; }
+    .btn-secondary { background:white; color:#7E44FB; border:1.5px solid #7E44FB; border-radius:8px; height:36px; padding:0 16px; font-size:14px; font-weight:700; cursor:pointer; font-family:inherit; display:inline-flex; align-items:center; justify-content:center; line-height:1; vertical-align:middle; gap:6px; white-space:nowrap; }
+    .btn-outline   { background:white; color:#494949; border:1px solid #D9D9D9; border-radius:8px; height:36px; padding:0 16px; font-size:14px; font-weight:700; cursor:pointer; font-family:inherit; display:inline-flex; align-items:center; justify-content:center; line-height:1; vertical-align:middle; gap:6px; white-space:nowrap; }
+    .btn-danger-outline { background:white; color:#DB3E51; border:1.5px solid #DB3E51; border-radius:8px; height:36px; padding:0 16px; font-size:14px; font-weight:700; cursor:pointer; font-family:inherit; display:inline-flex; align-items:center; justify-content:center; line-height:1; vertical-align:middle; gap:6px; white-space:nowrap; }
+    .btn-warn-outline  { background:white; color:#FF8C4C; border:1.5px solid #FF8C4C; border-radius:8px; height:36px; padding:0 16px; font-size:14px; font-weight:700; cursor:pointer; font-family:inherit; display:inline-flex; align-items:center; justify-content:center; line-height:1; vertical-align:middle; gap:6px; white-space:nowrap; }
+    .btn-warn      { background:#FF8C4C; color:white; border:none; border-radius:8px; height:34px; padding:0 14px; font-size:14px; font-weight:700; cursor:pointer; font-family:inherit; display:inline-flex; align-items:center; justify-content:center; line-height:1; vertical-align:middle; gap:6px; white-space:nowrap; }
+    .btn-warn:hover { background:#F07E3D; }
+    .btn-ghost { background:transparent; color:#7E44FB; border:none; padding:0; font-size:14px; font-weight:700; cursor:pointer; font-family:inherit; display:inline-flex; align-items:center; justify-content:center; line-height:1; vertical-align:middle; gap:4px; white-space:nowrap; }
+    .btn-ghost:hover { text-decoration:underline; }
+
+    /* Tab */
+    .tab-active   { flex:1; height:60px; background:white; border-radius:20px 20px 0 0; display:flex; align-items:center; justify-content:center; cursor:pointer; }
+    .tab-inactive { flex:1; height:60px; background:#CBD6F4; border-radius:20px 20px 0 0; display:flex; align-items:center; justify-content:center; cursor:pointer; }
+
+    /* Todo chips */
+    .chip-red    { background:#FFEFEF; color:#DB3E51; border-radius:6px; padding:3px 10px; font-size:13px; font-weight:700; display:inline-flex; align-items:center; gap:4px; }
+    .chip-orange { background:#FFEDD5; color:#FF8C4C; border-radius:6px; padding:3px 10px; font-size:13px; font-weight:700; display:inline-flex; align-items:center; gap:4px; }
+    .chip-gray   { background:#F0F0F0; color:#808080; border-radius:6px; padding:3px 10px; font-size:13px; font-weight:700; display:inline-flex; align-items:center; gap:4px; }
+    .chip-green  { background:#F1F9F3; color:#00AF3D; border-radius:6px; padding:3px 10px; font-size:13px; font-weight:700; display:inline-flex; align-items:center; gap:4px; }
+
+    /* Eval card */
+    .eval-card {
+      background: white;
+      border-radius: 14px;
+      border: 1px solid #E6E6E6;
+      overflow: hidden;
+    }
+    .eval-card:hover { box-shadow: 0 4px 20px rgba(95,102,178,0.12); }
+    .eval-card-body  { padding: 22px 24px; }
+    .eval-card-footer { padding: 14px 24px; background: #F8F8F8; border-top: 1px solid #F0F0F0; display:flex; align-items:center; justify-content:space-between; }
+  /* Modal */
+  .modal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.4); z-index:1000; align-items:center; justify-content:center; }
+  .modal-overlay.open { display:flex; }
+  .modal-box { background:white; border-radius:24px; box-shadow:0 4px 12px rgba(95,102,178,0.16); width:520px; max-width:90vw; overflow:hidden; }
+  .field-label { font-size:16px; font-weight:700; color:#333; margin-bottom:6px; display:flex; align-items:center; gap:6px; }
+  .field-label .lock-badge { font-size:11px; font-weight:700; color:#B3B3B3; background:#F0F0F0; border-radius:4px; padding:1px 6px; }
+  .field-input { width:100%; height:40px; border:1px solid #D9D9D9; border-radius:8px; padding:0 12px; font-size:16px; font-family:inherit; color:#333; background:white; }
+  .field-input:focus { outline:none; border-color:#7E44FB; }
+  .field-input.disabled { background:#F8F8F8; border-color:#E6E6E6; color:#B3B3B3; cursor:not-allowed; }
+  .field-select { width:100%; height:40px; border:1px solid #D9D9D9; border-radius:8px; padding:0 12px; font-size:16px; font-family:inherit; color:#333; background:white; appearance:none; cursor:pointer; background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23808080' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E"); background-repeat:no-repeat; background-position:right 10px center; }
+  .field-select.disabled { background-color:#F8F8F8; border-color:#E6E6E6; color:#B3B3B3; cursor:not-allowed; pointer-events:none; }
+  .radio-group { display:flex; gap:24px; }
+  .radio-item { display:flex; align-items:center; gap:8px; font-size:16px; color:#333; cursor:pointer; }
+  .radio-item.disabled { color:#B3B3B3; cursor:not-allowed; }
+  .radio-item input[type=radio] { accent-color:#7E44FB; width:18px; height:18px; }
+  .radio-item.disabled input[type=radio] { accent-color:#B3B3B3; cursor:not-allowed; }
+
+  /* Toast */
+  .toast {
+    position:fixed; bottom:80px; left:50%; transform:translateX(-50%) translateY(12px);
+    font-size:16px; font-weight:700; font-family:inherit;
+    padding:16px 24px 16px 16px; border-radius:8px; z-index:9999;
+    width:384px; max-width:90vw;
+    display:flex; align-items:center; gap:12px;
+    opacity:0; transition:opacity 0.2s ease, transform 0.2s ease;
+    pointer-events:none;
+    box-shadow:0 0 1px #494949, 0 8px 32px rgba(95,102,178,0.16);
+    line-height:1.55;
+  }
+  .toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+  .toast.toast-success { background:#00AF3D; color:white; }
+  .toast.toast-error   { background:#DB3E51; color:#F8F8F8; }
+
+  /* 진행 지표 — 모든 카드 푸터 좌측의 단일 스캔 축 */
+  .pbar { width:120px; height:5px; background:#F0F0F0; border-radius:9999px; overflow:hidden; flex-shrink:0; }
+  .pbar-fill { height:100%; background:#B28FFD; border-radius:9999px; }
+  .pbar-label { font-size:13px; color:#808080; font-weight:700; white-space:nowrap; }
+
+  /* 완료 카드 — 진행 중 카드와 시각적 무게 구분 (스텝바·지표를 회색으로) */
+  .eval-card.is-done .step-done      { background:#F5F5F5; border-color:#E0E0E0; color:#9A9A9A; }
+  .eval-card.is-done .step-line-done { background:#E0E0E0; }
+  .eval-card.is-done .pbar-fill      { background:#CFCFCF; }
+  .eval-card.is-done .pbar-label     { color:#B3B3B3; font-weight:400; }
+
+  /* 상태 필터 — 활성 시 굵기·폭이 바뀌지 않게 색으로만 구분 */
+  .fchip { height:32px; padding:0 14px; border-radius:8px; border:1px solid #D9D9D9; background:white; color:#494949; font-size:14px; font-weight:700; font-family:inherit; cursor:pointer; display:inline-flex; align-items:center; justify-content:center; line-height:1; vertical-align:middle; gap:6px; white-space:nowrap; }
+  .fchip:hover { background:#F8F8F8; }
+  .fchip.on { background:#F2ECFF; border-color:#B28FFD; color:#7E44FB; }
+  .fchip .fcnt { font-size:13px; font-weight:700; color:#B3B3B3; }
+  .fchip.on .fcnt { color:#9A6BFC; }
+
+    /* 설문 유도 — 푸터를 가리지 않는 얇은 줄 (목록 스캔을 방해하지 않게 절제) */
+    .fb-bar { padding: 9px 24px; background:#FFFBF5; border-top:1px solid #F5EADB; display:flex; align-items:center; justify-content:space-between; gap:16px; }
+    .fb-bar.done { background:#FCFCFC; border-top:1px solid #F0F0F0; }
+    .fb-bar-label { font-size:13px; font-weight:700; color:#A4560A; display:flex; align-items:center; gap:7px; }
+    .fb-bar.done .fb-bar-label { color:#808080; font-weight:400; }
+    .fb-invite-btn { height:28px; padding:0 10px; background:white; color:#C4701A; border:1px solid #F0D6B4; border-radius:6px; font-size:13px; font-weight:700; font-family:inherit; cursor:pointer; display:inline-flex; align-items:center; justify-content:center; line-height:1; vertical-align:middle; gap:5px; white-space:nowrap; }
+    .fb-invite-btn:hover { background:#FFF7EC; border-color:#E8C398; }
+    .fb-summary-banner { background:linear-gradient(to right,#FFFBF5,#FFF8EE); border:1px solid #FCE9CC; border-radius:10px; padding:13px 16px; display:flex; align-items:flex-start; gap:10px; margin-bottom:4px; }
+    .fb-emoji-card { flex:1; height:72px; border-radius:12px; border:1.5px solid #E6E6E6; background:white; cursor:pointer; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; font-family:inherit; transition:border-color .15s,background .15s; }
+    .fb-emoji-card:hover { border-color:#B28FFD; background:#FAF7FF; }
+    .fb-emoji-card.selected { border-color:#7E44FB; background:#F7F4FF; }
+    .fb-type-row { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:11px 0; border-bottom:1px solid #F0F0F0; }
+    .fb-type-row:last-child { border-bottom:none; }
+    .fb-type-name { font-size:14px; font-weight:700; color:#222631; }
+    .fb-type-desc { font-size:12px; color:#808080; margin-top:2px; }
+    .fb-stars { display:flex; gap:2px; flex-shrink:0; }
+    .fb-star { background:none; border:none; cursor:pointer; font-size:22px; color:#D9D9D9; padding:0 1px; line-height:1; transition:color .1s; }
+    .fb-star.on { color:#FFBF00; }
+    .fb-star.hv { color:#FFD966; }
+    .fb-chips { display:flex; flex-wrap:wrap; gap:8px; margin-top:8px; }
+    .fb-chip { display:inline-flex; align-items:center; justify-content:center; line-height:1; vertical-align:middle; gap:6px; padding:9px 14px; border-radius:8px; border:1.5px solid #E6E6E6; background:white; cursor:pointer; font-family:inherit; font-size:14px; font-weight:700; color:#494949; transition:border-color .15s,background .15s,color .15s; }
+    .fb-chip:hover { border-color:#B28FFD; background:#FAF7FF; }
+    .fb-chip.selected { border-color:#7E44FB; background:#F7F4FF; color:#7E44FB; }
+
+  /* 평가 현황 묶음 컨테이너 (좌측 정보는 플랫, 작업 영역에 면을 준다) */
+  #eval-wrap.grouped { background:#F8F8F8; border-radius:16px; padding:20px; }
+  #eval-wrap.grouped .eval-card { border-color:#EBEBEB; }
+  #eval-wrap.grouped .eval-card-footer { background:#FCFCFC; }
+
+  /* 까망이 목업 내비게이터 (시연용 · 실제 화면 아님) */
+  #mockpick{position:fixed;left:24px;bottom:24px;z-index:3000;background:#1F2233;border-radius:14px;padding:8px;box-shadow:0 10px 30px rgba(0,0,0,.35);width:max-content;max-width:360px;cursor:move;user-select:none}
+  #mockpick .mp-head{font-size:11px;font-weight:800;color:#8A8FB0;letter-spacing:.04em;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:6px 8px;cursor:pointer}
+  #mockpick .mp-body{display:flex;flex-direction:column;gap:6px;margin-top:6px;max-height:70vh;overflow-y:auto}
+  #mockpick .mp-cap{font-size:10px;font-weight:800;color:#6B6F8C;letter-spacing:.05em;padding:7px 8px 2px}
+  #mockpick .mp-btn{width:100%;text-align:left;white-space:nowrap;padding:9px 12px;border-radius:9px;border:1px solid #3A3F58;background:#2A2E44;color:#C9CCE0;font-size:13px;font-weight:700;font-family:inherit;cursor:pointer;line-height:1.35}
+  #mockpick .mp-btn:hover{background:#33384f}
+  #mockpick .mp-btn.on{background:#7E44FB;color:#fff;border-color:#7E44FB}
+  #mockpick .mp-sub{font-size:11px;font-weight:600;color:#8A8FB0;margin-left:8px}
+  #mockpick .mp-btn.on .mp-sub{color:#E6DBFF}
+  </style>
+</head>
+<body>
+
+<!-- ===== GNB ===== -->
+<div style="background:white; height:98px; border-bottom:1px solid #D9D9D9; display:flex; align-items:center; justify-content:center; padding:0 36px;">
+  <div style="display:flex; align-items:center; justify-content:space-between; width:100%; max-width:1200px; padding:0 36px;">
+    <div style="display:flex; align-items:center; gap:8px; flex-shrink:0;">
+      <div style="width:58px; height:42px; overflow:hidden; position:relative; flex-shrink:0;">
+        <img src="../screens/logo_icon.png"
+             style="position:absolute; left:50%; transform:translateX(-50%); height:100%; width:auto; object-fit:cover;" alt="HIAI 로고">
+      </div>
+      <div style="position:relative; width:150px; height:41px; flex-shrink:0;">
+        <img src="../screens/logo_text_top.svg"
+             style="position:absolute; top:0; left:0; width:79.842px; height:16.284px;" alt="하이러닝 AI">
+        <img src="../screens/logo_text_bottom.svg"
+             style="position:absolute; top:24.08px; left:0.31px; width:149.692px; height:16.422px;" alt="서논술형 평가 서비스">
+      </div>
+    </div>
+    <nav style="display:flex; gap:52px; align-items:center;">
+      <span style="font-size:20px; font-weight:800; color:#7E44FB; cursor:pointer;">나의 평가</span>
+      <span style="font-size:20px; font-weight:700; color:#000; cursor:pointer;">평가 자료실</span>
+      <span style="font-size:20px; font-weight:700; color:#000; cursor:pointer;">고객센터</span>
+    </nav>
+    <div style="display:flex; align-items:center; gap:12px; flex-shrink:0;">
+      <div style="width:36px;height:36px;border-radius:50%;background:#F7F4FF;display:inline-flex;align-items:center;justify-content:center;"><i data-lucide="user" style="width:20px;height:20px;color:#7E44FB;"></i></div>
+      <span style="font-size:20px; font-weight:700; color:#000;">김동* 님</span>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 타이틀 바 ===== -->
+<div style="background:linear-gradient(to right, #6562f5 4%, #9b68f3 97.86%); height:86px; display:flex; align-items:center; justify-content:center; padding:0 36px;">
+  <div style="width:100%; max-width:1200px; padding:0 36px;">
+    <span style="font-size:28px; font-weight:800; color:white; line-height:1.35;">1학년 국어</span>
+  </div>
+</div>
+
+<!-- ===== 본문 ===== -->
+<div style="display:flex; flex-direction:column; align-items:center; padding:40px 36px; min-height:760px;">
+  <div style="width:100%; max-width:1200px; padding:0 36px;">
+
+    <!-- 탭 -->
+    <div style="display:flex; gap:12px;">
+      <div class="tab-active"><span style="font-size:20px; font-weight:800; color:#341761;">평가 홈</span></div>
+      <div class="tab-inactive"><span style="font-size:20px; font-weight:700; color:#000;">평가 대상</span></div>
+      <div class="tab-inactive" onclick="location.href='evaluation_design_v4_260713.html'" style="cursor:pointer;"><span style="font-size:20px; font-weight:700; color:#000;">평가 설계</span></div>
+      <div class="tab-inactive" onclick="location.href='task_ocr_review_v1.html'" style="cursor:pointer;"><span style="font-size:20px; font-weight:700; color:#000;">과제물 관리</span></div>
+      <div class="tab-inactive" onclick="location.href='scoring_list_v1.html'" style="cursor:pointer;"><span style="font-size:20px; font-weight:700; color:#000;">AI 채점</span></div>
+      <div class="tab-inactive" onclick="location.href='report_v2.html'" style="cursor:pointer;"><span style="font-size:20px; font-weight:700; color:#000;">평가 리포트</span></div>
+    </div>
+
+    <!-- 패널 전체 -->
+    <div style="background:white; border-radius:0 0 24px 24px; padding:28px 24px; box-shadow:0 4px 36px 0 rgba(95,102,178,0.16); display:flex; flex-direction:column; gap:20px;">
+
+      <!-- ====== 레이아웃 행: 좌측 정보 컬럼 + 평가 현황 ====== -->
+      <div style="display:flex; gap:20px; align-items:flex-start;">
+
+        <!-- 좌측 정보 컬럼 — 수업 정보(위) · 평가 대상(아래) -->
+        <div id="info-col" style="display:flex; width:300px; flex-shrink:0; flex-direction:column; gap:16px; position:sticky; top:16px;">
+
+          <!-- 수업 정보 블록 (플랫) -->
+          <div style="padding:8px 4px 24px; border-bottom:1px solid #F0F0F0; display:flex; flex-direction:column; gap:20px;">
+            <div style="display:flex; align-items:center; justify-content:space-between;">
+              <span style="font-size:20px; font-weight:700; color:#333;">수업 정보</span>
+              <button class="btn-outline" style="height:32px; font-size:13px; padding:0 12px;" onclick="document.getElementById('editClassModal').classList.add('open')">
+                <i data-lucide="pencil" style="width:13px; height:13px;"></i>
+                수업 수정
+              </button>
+            </div>
+            <div style="display:flex; flex-direction:column; gap:12px;">
+              <div style="display:flex; align-items:center; gap:12px;">
+                <i data-lucide="book-open" style="width:16px; height:16px; color:#808080; flex-shrink:0;"></i>
+                <span style="font-size:14px; color:#808080; width:40px; flex-shrink:0;">과목</span>
+                <span style="font-size:14px; font-weight:700; color:#333;">국어</span>
+              </div>
+              <div style="display:flex; align-items:center; gap:12px;">
+                <i data-lucide="graduation-cap" style="width:16px; height:16px; color:#808080; flex-shrink:0;"></i>
+                <span style="font-size:14px; color:#808080; width:40px; flex-shrink:0;">학년</span>
+                <span style="font-size:14px; font-weight:700; color:#333;">1학년</span>
+              </div>
+              <div style="display:flex; align-items:center; gap:12px;">
+                <i data-lucide="calendar" style="width:16px; height:16px; color:#808080; flex-shrink:0;"></i>
+                <span style="font-size:14px; color:#808080; width:40px; flex-shrink:0;">학기</span>
+                <span style="font-size:14px; font-weight:700; color:#333;">2026학년도 1학기</span>
+              </div>
+              <div style="height:1px; background:#E6E6E6;"></div>
+              <div style="display:flex; align-items:center; gap:12px;">
+                <i data-lucide="layout-grid" style="width:16px; height:16px; color:#808080; flex-shrink:0;"></i>
+                <span style="font-size:14px; color:#808080; width:40px; flex-shrink:0;">수업반</span>
+                <span style="font-size:14px; font-weight:700; color:#333;">이동수업반</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 평가 대상 카드 — 데이터 있는 뷰 -->
+          <div id="target-filled" style="padding:8px 4px; display:flex; flex-direction:column; gap:16px;">
+            <span style="font-size:20px; font-weight:700; color:#333;">평가 대상</span>
+            <div style="display:flex; flex-direction:column; gap:8px;">
+              <div style="display:flex; align-items:center; justify-content:space-between;">
+                <span style="font-size:14px; color:#808080;">총 학생</span>
+                <span style="font-size:20px; font-weight:800; color:#7E44FB;">87명</span>
+              </div>
+              <div style="height:1px; background:#E6E6E6;"></div>
+              <div style="display:flex; align-items:center; justify-content:space-between;">
+                <span style="font-size:14px; color:#808080;">등록 학급</span>
+                <span style="font-size:20px; font-weight:800; color:#7E44FB;">3개</span>
+              </div>
+            </div>
+            <button class="btn-secondary" style="width:100%; justify-content:center;">
+              <i data-lucide="users" style="width:16px; height:16px;"></i>
+              평가 대상 관리
+            </button>
+          </div>
+
+          <!-- 평가 대상 카드 — 빈 화면 뷰 -->
+          <div id="target-empty" style="display:none; padding:8px 4px; flex-direction:column; gap:16px;">
+            <span style="font-size:20px; font-weight:700; color:#333;">평가 대상</span>
+            <div style="display:flex; flex-direction:column; gap:8px;">
+              <div style="display:flex; align-items:center; justify-content:space-between;">
+                <span style="font-size:14px; color:#808080;">총 학생</span>
+                <span style="font-size:20px; font-weight:800; color:#B3B3B3;">0명</span>
+              </div>
+              <div style="height:1px; background:#E6E6E6;"></div>
+              <div style="display:flex; align-items:center; justify-content:space-between;">
+                <span style="font-size:14px; color:#808080;">등록 학급</span>
+                <span style="font-size:20px; font-weight:800; color:#B3B3B3;">0개</span>
+              </div>
+            </div>
+            <button class="btn-secondary" style="width:100%; justify-content:center;">
+              <i data-lucide="users" style="width:16px; height:16px;"></i>
+              평가 대상 관리
+            </button>
+          </div>
+
+        </div>
+
+      <!-- ====== 평가 목록 ====== -->
+      <div id="eval-wrap" class="grouped" style="flex:1; min-width:0;">
+        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:16px;">
+          <div style="display:flex; align-items:baseline; gap:8px;">
+            <span style="font-size:20px; font-weight:700; color:#333;">평가 현황</span>
+            <span style="font-size:13px; color:#B3B3B3; font-weight:400;">최근 수정 순</span>
+          </div>
+          <div style="position:relative;" id="new-eval-btn-wrap">
+            <button class="btn-primary" style="font-size:16px;" onclick="toggleNewEvalDropdown(event)">
+              <i data-lucide="plus" style="width:18px; height:18px;"></i>
+              설계 추가
+            </button>
+            <div id="new-eval-dropdown" style="display:none;position:absolute;right:0;top:44px;background:white;border:1px solid #D9D9D9;border-radius:10px;padding:6px;z-index:200;width:250px;box-shadow:0 6px 24px rgba(0,0,0,0.10);">
+              <button onclick="location.href='evaluation_design_v4_260713.html?screen=type'" style="display:flex;width:100%;align-items:center;gap:9px;height:40px;padding:0 12px;background:none;border:none;border-radius:6px;font-size:15px;font-weight:700;color:#333;cursor:pointer;font-family:inherit;text-align:left;white-space:nowrap;" onmouseover="this.style.background='#F7F4FF'" onmouseout="this.style.background='none'">
+                <i data-lucide="file-plus-2" style="width:16px;height:16px;color:#7E44FB;"></i>새로 만들기
+              </button>
+              <button onclick="openCopyModal()" style="display:flex;width:100%;align-items:center;gap:9px;height:40px;padding:0 12px;background:none;border:none;border-radius:6px;font-size:15px;font-weight:700;color:#333;cursor:pointer;font-family:inherit;text-align:left;white-space:nowrap;" onmouseover="this.style.background='#F7F4FF'" onmouseout="this.style.background='none'">
+                <i data-lucide="copy" style="width:16px;height:16px;color:#7E44FB;"></i>복사해서 만들기
+              </button>
+              <button onclick="openLibraryModal()" style="display:flex;width:100%;align-items:center;gap:9px;height:40px;padding:0 12px;background:none;border:none;border-radius:6px;font-size:15px;font-weight:700;color:#333;cursor:pointer;font-family:inherit;text-align:left;white-space:nowrap;" onmouseover="this.style.background='#F7F4FF'" onmouseout="this.style.background='none'">
+                <i data-lucide="library" style="width:16px;height:16px;color:#7E44FB;"></i>평가 자료실에서 가져오기
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 빈 화면 empty state -->
+        <div id="evals-empty" style="display:none; flex-direction:column; align-items:center; justify-content:center; padding:72px 24px; gap:20px; background:#FAFAFA; border-radius:16px; border:1.5px dashed #E0D9FF;">
+          <div style="width:72px; height:72px; background:#F0EBFF; border-radius:50%; display:flex; align-items:center; justify-content:center;">
+            <i data-lucide="clipboard-list" style="width:34px; height:34px; color:#B28FFD;"></i>
+          </div>
+          <div style="text-align:center; display:flex; flex-direction:column; gap:8px;">
+            <p style="margin:0; font-size:18px; font-weight:700; color:#333;">아직 만들어진 평가가 없어요</p>
+            <p style="margin:0; font-size:14px; color:#808080; line-height:1.6;">새 평가를 만들어 학생들의 서·논술형 답변을<br>AI로 채점해 보세요</p>
+          </div>
+          <div style="position:relative;">
+            <button class="btn-primary" style="height:36px; padding:0 16px; font-size:15px;" onclick="toggleEmptyDropdown(event)">
+              <i data-lucide="plus" style="width:17px; height:17px;"></i>
+              설계 추가
+            </button>
+            <div id="empty-eval-dropdown" style="display:none;position:absolute;left:50%;transform:translateX(-50%);top:48px;background:white;border:1px solid #D9D9D9;border-radius:10px;padding:6px;z-index:200;width:250px;box-shadow:0 6px 24px rgba(0,0,0,0.10);">
+              <button onclick="location.href='evaluation_design_v4_260713.html?screen=type'" style="display:flex;width:100%;align-items:center;gap:9px;height:40px;padding:0 12px;background:none;border:none;border-radius:6px;font-size:15px;font-weight:700;color:#333;cursor:pointer;font-family:inherit;text-align:left;white-space:nowrap;" onmouseover="this.style.background='#F7F4FF'" onmouseout="this.style.background='none'">
+                <i data-lucide="file-plus-2" style="width:16px;height:16px;color:#7E44FB;"></i>새로 만들기
+              </button>
+              <button onclick="openCopyModal()" style="display:flex;width:100%;align-items:center;gap:9px;height:40px;padding:0 12px;background:none;border:none;border-radius:6px;font-size:15px;font-weight:700;color:#333;cursor:pointer;font-family:inherit;text-align:left;white-space:nowrap;" onmouseover="this.style.background='#F7F4FF'" onmouseout="this.style.background='none'">
+                <i data-lucide="copy" style="width:16px;height:16px;color:#7E44FB;"></i>복사해서 만들기
+              </button>
+              <button onclick="openLibraryModal()" style="display:flex;width:100%;align-items:center;gap:9px;height:40px;padding:0 12px;background:none;border:none;border-radius:6px;font-size:15px;font-weight:700;color:#333;cursor:pointer;font-family:inherit;text-align:left;white-space:nowrap;" onmouseover="this.style.background='#F7F4FF'" onmouseout="this.style.background='none'">
+                <i data-lucide="library" style="width:16px;height:16px;color:#7E44FB;"></i>평가 자료실에서 가져오기
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 상태 필터 — 평가가 쌓여도 필요한 상태만 보게 한다 -->
+        <div id="eval-filter" style="display:flex; align-items:center; gap:6px; margin-bottom:14px;">
+          <button class="fchip on" data-f="all" onclick="setEvalFilter('all')">전체 <span class="fcnt">16</span></button>
+          <button class="fchip" data-f="ing" onclick="setEvalFilter('ing')">진행 중 <span class="fcnt">12</span></button>
+          <button class="fchip" data-f="draft" onclick="setEvalFilter('draft')">임시저장 <span class="fcnt">2</span></button>
+          <button class="fchip" data-f="done" onclick="setEvalFilter('done')">완료 <span class="fcnt">2</span></button>
+        </div>
+
+        <div id="evals-filled" style="display:flex; flex-direction:column; gap:10px;">
+
+          <!-- 채점 만족도 요약 배너 (설문 모드 전용 · 기본 숨김) -->
+          <div id="fb-banner" class="fb-summary-banner" style="display:none;">
+            <i data-lucide="message-square-heart" style="width:18px; height:18px; color:#FF8C4C; flex-shrink:0; margin-top:2px;"></i>
+            <div style="display:flex; flex-direction:column; gap:4px; min-width:0;">
+              <span style="font-size:14px; font-weight:700; color:#333; line-height:1.45;">채점 만족도 의견을 남길 수 있는 평가 <span style="color:#FF8C4C;">6건 중 1건</span>에 남겨주셨어요</span>
+              <span style="font-size:13px; color:#808080; line-height:1.45;">학급 채점 점수를 한 번이라도 저장하면 남길 수 있어요</span>
+            </div>
+          </div>
+
+          <!-- 케이스: 설계 중 · 정교한 평가 -->
+          <div class="eval-card" data-status="draft" data-case="설계 중 · 정교한 평가">
+            <div class="eval-card-body">
+              <div style="display:flex; flex-direction:column; gap:16px;">
+                <div style="display:flex; align-items:center; justify-content:space-between;">
+                  <div style="display:flex; align-items:center; gap:8px;">
+                    <span class="badge-draft">임시저장</span>
+                    <span style="font-size:16px; font-weight:700; color:#222;">2학기 국어 서술형 평가 2회</span>
+                  </div>
+                  <span style="font-size:12px; color:#B3B3B3;">오늘 수정</span>
+                </div>
+                <div style="display:flex; align-items:center; gap:0; max-width:600px;">
+                  <div class="step-now">평가 설계</div>
+                  <div class="step-line-todo"></div>
+                  <div class="step-todo">과제물 업로드</div>
+                  <div class="step-line-todo"></div>
+                  <div class="step-todo">과제물 인식</div>
+                  <div class="step-line-todo"></div>
+                  <div class="step-todo">AI 채점</div>
+                </div>
+              </div>
+            </div>
+            <div class="eval-card-footer">
+              <div style="display:flex; align-items:center; gap:16px;">
+                <span style="font-size:13px; color:#808080;">문항 구분까지 완료 · 채점기준 연결부터</span>
+              </div>
+              <button class="btn-ghost">평가 설계 완료하기 <i data-lucide="arrow-right" style="width:14px;height:14px;"></i></button>
+            </div>
+          </div>
+
+          <!-- 케이스: 설계 중 · 간편한 평가 -->
+          <div class="eval-card" data-status="draft" data-case="설계 중 · 간편한 평가">
+            <div class="eval-card-body">
+              <div style="display:flex; flex-direction:column; gap:16px;">
+                <div style="display:flex; align-items:center; justify-content:space-between;">
+                  <div style="display:flex; align-items:center; gap:8px;">
+                    <span class="badge-draft">임시저장</span>
+                    <span style="font-size:16px; font-weight:700; color:#222;">2학기 국어 시 감상 평가</span>
+                  </div>
+                  <span style="font-size:12px; color:#B3B3B3;">오늘 수정</span>
+                </div>
+                <div style="display:flex; align-items:center; gap:0; max-width:600px;">
+                  <div class="step-now">평가 설계</div>
+                  <div class="step-line-todo"></div>
+                  <div class="step-todo">과제물 업로드</div>
+                  <div class="step-line-todo"></div>
+                  <div class="step-todo">과제물 인식</div>
+                  <div class="step-line-todo"></div>
+                  <div class="step-todo">AI 채점</div>
+                </div>
+              </div>
+            </div>
+            <div class="eval-card-footer">
+              <div style="display:flex; align-items:center; gap:16px;">
+                <span style="font-size:13px; color:#808080;">아직 입력 없음 · 성취기준·채점기준부터</span>
+              </div>
+              <button class="btn-ghost">평가 설계 완료하기 <i data-lucide="arrow-right" style="width:14px;height:14px;"></i></button>
+            </div>
+          </div>
+
+          <!-- 케이스: 과제물 업로드 전 -->
+          <div class="eval-card" data-status="ing" data-case="과제물 업로드 전">
+            <div class="eval-card-body">
+              <div style="display:flex; flex-direction:column; gap:16px;">
+                <div style="display:flex; align-items:center; justify-content:space-between;">
+                  <div style="display:flex; align-items:center; gap:8px;">
+                    <span class="badge-ing">진행 중</span>
+                    <span style="font-size:16px; font-weight:700; color:#222;">2학기 국어 설명문 쓰기 평가</span>
+                  </div>
+                  <span style="font-size:12px; color:#B3B3B3;">1일 전 수정</span>
+                </div>
+                <div style="display:flex; align-items:center; gap:0; max-width:600px;">
+                  <div class="step-done">평가 설계</div>
+                  <div class="step-line-done"></div>
+                  <div class="step-now">과제물 업로드</div>
+                  <div class="step-line-todo"></div>
+                  <div class="step-todo">과제물 인식</div>
+                  <div class="step-line-todo"></div>
+                  <div class="step-todo">AI 채점</div>
+                </div>
+              </div>
+            </div>
+            <div class="eval-card-footer">
+              <div style="display:flex; align-items:center; gap:16px;">
+                <div style="display:flex; align-items:center; gap:8px;">
+                  <div class="pbar"><div class="pbar-fill" style="width:0%;"></div></div>
+                  <span class="pbar-label">업로드 0/82명</span>
+                </div>
+              </div>
+              <button class="btn-ghost">과제물 업로드하기 <i data-lucide="arrow-right" style="width:14px;height:14px;"></i></button>
+            </div>
+          </div>
+
+          <!-- 케이스: 일부 미업로드 -->
+          <div class="eval-card" data-status="ing" data-case="일부 미업로드">
+            <div class="eval-card-body">
+              <div style="display:flex; flex-direction:column; gap:16px;">
+                <div style="display:flex; align-items:center; justify-content:space-between;">
+                  <div style="display:flex; align-items:center; gap:8px;">
+                    <span class="badge-ing">진행 중</span>
+                    <span style="font-size:16px; font-weight:700; color:#222;">2학기 국어 논술 평가</span>
+                  </div>
+                  <span style="font-size:12px; color:#B3B3B3;">2일 전 수정</span>
+                </div>
+                <div style="display:flex; align-items:center; gap:0; max-width:600px;">
+                  <div class="step-done">평가 설계</div>
+                  <div class="step-line-done"></div>
+                  <div class="step-now">과제물 업로드</div>
+                  <div class="step-line-todo"></div>
+                  <div class="step-todo">과제물 인식</div>
+                  <div class="step-line-todo"></div>
+                  <div class="step-todo">AI 채점</div>
+                </div>
+              </div>
+            </div>
+            <div class="eval-card-footer">
+              <div style="display:flex; align-items:center; gap:16px;">
+                <div style="display:flex; align-items:center; gap:8px;">
+                  <div class="pbar"><div class="pbar-fill" style="width:93.9%;"></div></div>
+                  <span class="pbar-label">업로드 77/82명</span>
+                </div>
+                <span class="chip-orange"><i data-lucide="alert-circle" style="width:13px;height:13px;"></i> 미업로드 5명</span>
+              </div>
+              <button class="btn-ghost">업로드 현황 보기 <i data-lucide="arrow-right" style="width:14px;height:14px;"></i></button>
+            </div>
+          </div>
+
+          <!-- 케이스: 인식 미진행 -->
+          <div class="eval-card" data-status="ing" data-case="인식 미진행">
+            <div class="eval-card-body">
+              <div style="display:flex; flex-direction:column; gap:16px;">
+                <div style="display:flex; align-items:center; justify-content:space-between;">
+                  <div style="display:flex; align-items:center; gap:8px;">
+                    <span class="badge-ing">진행 중</span>
+                    <span style="font-size:16px; font-weight:700; color:#222;">2학기 국어 토론 논술 평가</span>
+                  </div>
+                  <span style="font-size:12px; color:#B3B3B3;">4일 전 수정</span>
+                </div>
+                <div style="display:flex; align-items:center; gap:0; max-width:600px;">
+                  <div class="step-done">평가 설계</div>
+                  <div class="step-line-done"></div>
+                  <div class="step-done">과제물 업로드</div>
+                  <div class="step-line-done"></div>
+                  <div class="step-now">과제물 인식</div>
+                  <div class="step-line-todo"></div>
+                  <div class="step-todo">AI 채점</div>
+                </div>
+              </div>
+            </div>
+            <div class="eval-card-footer">
+              <div style="display:flex; align-items:center; gap:16px;">
+                <div style="display:flex; align-items:center; gap:8px;">
+                  <div class="pbar"><div class="pbar-fill" style="width:0%;"></div></div>
+                  <span class="pbar-label">인식 0/82건</span>
+                </div>
+                <span class="chip-orange"><i data-lucide="scan-line" style="width:13px;height:13px;"></i> 과제물 인식 미진행</span>
+              </div>
+              <button class="btn-ghost">과제물 인식하기 <i data-lucide="arrow-right" style="width:14px;height:14px;"></i></button>
+            </div>
+          </div>
+
+          <!-- 케이스: 인식 진행 중 -->
+          <div class="eval-card" data-status="ing" data-case="인식 진행 중">
+            <div class="eval-card-body">
+              <div style="display:flex; flex-direction:column; gap:16px;">
+                <div style="display:flex; align-items:center; justify-content:space-between;">
+                  <div style="display:flex; align-items:center; gap:8px;">
+                    <span class="badge-ing">진행 중</span>
+                    <span style="font-size:16px; font-weight:700; color:#222;">2학기 국어 매체 자료 분석 평가</span>
+                  </div>
+                  <span style="font-size:12px; color:#B3B3B3;">5일 전 수정</span>
+                </div>
+                <div style="display:flex; align-items:center; gap:0; max-width:600px;">
+                  <div class="step-done">평가 설계</div>
+                  <div class="step-line-done"></div>
+                  <div class="step-done">과제물 업로드</div>
+                  <div class="step-line-done"></div>
+                  <div class="step-now">과제물 인식</div>
+                  <div class="step-line-todo"></div>
+                  <div class="step-todo">AI 채점</div>
+                </div>
+              </div>
+            </div>
+            <div class="eval-card-footer">
+              <div style="display:flex; align-items:center; gap:16px;">
+                <div style="display:flex; align-items:center; gap:8px;">
+                  <div class="pbar"><div class="pbar-fill" style="width:48.8%;"></div></div>
+                  <span class="pbar-label">인식 40/82건</span>
+                </div>
+              </div>
+              <button class="btn-ghost">인식 현황 보기 <i data-lucide="arrow-right" style="width:14px;height:14px;"></i></button>
+            </div>
+          </div>
+
+          <!-- 케이스: 인식 확인 필요 -->
+          <div class="eval-card" data-status="ing" data-case="인식 확인 필요">
+            <div class="eval-card-body">
+              <div style="display:flex; flex-direction:column; gap:16px;">
+                <div style="display:flex; align-items:center; justify-content:space-between;">
+                  <div style="display:flex; align-items:center; gap:8px;">
+                    <span class="badge-ing">진행 중</span>
+                    <span style="font-size:16px; font-weight:700; color:#222;">2학기 국어 서술형 평가 1회</span>
+                  </div>
+                  <span style="font-size:12px; color:#B3B3B3;">6일 전 수정</span>
+                </div>
+                <div style="display:flex; align-items:center; gap:0; max-width:600px;">
+                  <div class="step-done">평가 설계</div>
+                  <div class="step-line-done"></div>
+                  <div class="step-done">과제물 업로드</div>
+                  <div class="step-line-done"></div>
+                  <div class="step-now">과제물 인식</div>
+                  <div class="step-line-todo"></div>
+                  <div class="step-todo">AI 채점</div>
+                </div>
+              </div>
+            </div>
+            <div class="eval-card-footer">
+              <div style="display:flex; align-items:center; gap:16px;">
+                <div style="display:flex; align-items:center; gap:8px;">
+                  <div class="pbar"><div class="pbar-fill" style="width:85.4%;"></div></div>
+                  <span class="pbar-label">인식 확인 70/82건</span>
+                </div>
+                <span class="chip-orange"><i data-lucide="scan-text" style="width:13px;height:13px;"></i> 확인 필요 12건</span>
+              </div>
+              <button class="btn-ghost">인식 확인하기 <i data-lucide="arrow-right" style="width:14px;height:14px;"></i></button>
+            </div>
+          </div>
+
+          <!-- 케이스: 인식 정확도 낮음 -->
+          <div class="eval-card" data-status="ing" data-case="인식 정확도 낮음">
+            <div class="eval-card-body">
+              <div style="display:flex; flex-direction:column; gap:16px;">
+                <div style="display:flex; align-items:center; justify-content:space-between;">
+                  <div style="display:flex; align-items:center; gap:8px;">
+                    <span class="badge-ing">진행 중</span>
+                    <span style="font-size:16px; font-weight:700; color:#222;">2학기 국어 문학 감상 평가</span>
+                  </div>
+                  <span style="font-size:12px; color:#B3B3B3;">1주 전 수정</span>
+                </div>
+                <div style="display:flex; align-items:center; gap:0; max-width:600px;">
+                  <div class="step-done">평가 설계</div>
+                  <div class="step-line-done"></div>
+                  <div class="step-done">과제물 업로드</div>
+                  <div class="step-line-done"></div>
+                  <div class="step-now">과제물 인식</div>
+                  <div class="step-line-todo"></div>
+                  <div class="step-todo">AI 채점</div>
+                </div>
+              </div>
+            </div>
+            <div class="eval-card-footer">
+              <div style="display:flex; align-items:center; gap:16px;">
+                <div style="display:flex; align-items:center; gap:8px;">
+                  <div class="pbar"><div class="pbar-fill" style="width:96.3%;"></div></div>
+                  <span class="pbar-label">인식 확인 79/82건</span>
+                </div>
+                <span class="chip-red"><i data-lucide="triangle-alert" style="width:13px;height:13px;"></i> 정확도 낮음 3건</span>
+              </div>
+              <button class="btn-ghost">인식 확인하기 <i data-lucide="arrow-right" style="width:14px;height:14px;"></i></button>
+            </div>
+          </div>
+
+          <!-- 케이스: 인식 실패 -->
+          <div class="eval-card" data-status="ing" data-case="인식 실패">
+            <div class="eval-card-body">
+              <div style="display:flex; flex-direction:column; gap:16px;">
+                <div style="display:flex; align-items:center; justify-content:space-between;">
+                  <div style="display:flex; align-items:center; gap:8px;">
+                    <span class="badge-ing">진행 중</span>
+                    <span style="font-size:16px; font-weight:700; color:#222;">2학기 국어 주장하는 글쓰기 평가</span>
+                  </div>
+                  <span style="font-size:12px; color:#B3B3B3;">10일 전 수정</span>
+                </div>
+                <div style="display:flex; align-items:center; gap:0; max-width:600px;">
+                  <div class="step-done">평가 설계</div>
+                  <div class="step-line-done"></div>
+                  <div class="step-done">과제물 업로드</div>
+                  <div class="step-line-done"></div>
+                  <div class="step-now">과제물 인식</div>
+                  <div class="step-line-todo"></div>
+                  <div class="step-todo">AI 채점</div>
+                </div>
+              </div>
+            </div>
+            <div class="eval-card-footer">
+              <div style="display:flex; align-items:center; gap:16px;">
+                <div style="display:flex; align-items:center; gap:8px;">
+                  <div class="pbar"><div class="pbar-fill" style="width:97.6%;"></div></div>
+                  <span class="pbar-label">인식 확인 80/82건</span>
+                </div>
+                <span class="chip-red"><i data-lucide="file-x" style="width:13px;height:13px;"></i> 인식 실패 2건</span>
+              </div>
+              <button class="btn-ghost">다시 인식하기 <i data-lucide="arrow-right" style="width:14px;height:14px;"></i></button>
+            </div>
+          </div>
+
+          <!-- 케이스: 채점 대기 -->
+          <div class="eval-card" data-status="ing" data-case="채점 대기">
+            <div class="eval-card-body">
+              <div style="display:flex; flex-direction:column; gap:16px;">
+                <div style="display:flex; align-items:center; justify-content:space-between;">
+                  <div style="display:flex; align-items:center; gap:8px;">
+                    <span class="badge-ing">진행 중</span>
+                    <span style="font-size:16px; font-weight:700; color:#222;">2학기 국어 어휘·문법 평가</span>
+                  </div>
+                  <span style="font-size:12px; color:#B3B3B3;">2주 전 수정</span>
+                </div>
+                <div style="display:flex; align-items:center; gap:0; max-width:600px;">
+                  <div class="step-done">평가 설계</div>
+                  <div class="step-line-done"></div>
+                  <div class="step-done">과제물 업로드</div>
+                  <div class="step-line-done"></div>
+                  <div class="step-done">과제물 인식</div>
+                  <div class="step-line-done"></div>
+                  <div class="step-now">AI 채점</div>
+                </div>
+              </div>
+            </div>
+            <div class="eval-card-footer">
+              <div style="display:flex; align-items:center; gap:16px;">
+                <div style="display:flex; align-items:center; gap:8px;">
+                  <div class="pbar"><div class="pbar-fill" style="width:0%;"></div></div>
+                  <span class="pbar-label">채점 0/82건</span>
+                </div>
+              </div>
+              <button class="btn-ghost">AI 채점 시작하기 <i data-lucide="arrow-right" style="width:14px;height:14px;"></i></button>
+            </div>
+          </div>
+
+          <!-- 케이스: 채점 진행 중 -->
+          <div class="eval-card" data-status="ing" data-case="채점 진행 중" data-fb="invite">
+            <div class="eval-card-body">
+              <div style="display:flex; flex-direction:column; gap:16px;">
+                <div style="display:flex; align-items:center; justify-content:space-between;">
+                  <div style="display:flex; align-items:center; gap:8px;">
+                    <span class="badge-ing">진행 중</span>
+                    <span style="font-size:16px; font-weight:700; color:#222;">1학기 국어 수행평가</span>
+                  </div>
+                  <span style="font-size:12px; color:#B3B3B3;">3주 전 수정</span>
+                </div>
+                <div style="display:flex; align-items:center; gap:0; max-width:600px;">
+                  <div class="step-done">평가 설계</div>
+                  <div class="step-line-done"></div>
+                  <div class="step-done">과제물 업로드</div>
+                  <div class="step-line-done"></div>
+                  <div class="step-done">과제물 인식</div>
+                  <div class="step-line-done"></div>
+                  <div class="step-now">AI 채점</div>
+                </div>
+              </div>
+            </div>
+            <div class="eval-card-footer">
+              <div style="display:flex; align-items:center; gap:16px;">
+                <div style="display:flex; align-items:center; gap:8px;">
+                  <div class="pbar"><div class="pbar-fill" style="width:65.8%;"></div></div>
+                  <span class="pbar-label">채점 54/82건</span>
+                </div>
+              </div>
+              <button class="btn-ghost">채점 현황 보기 <i data-lucide="arrow-right" style="width:14px;height:14px;"></i></button>
+            </div>
+          </div>
+
+          <!-- 케이스: 채점 결과 확인 중 -->
+          <div class="eval-card" data-status="ing" data-case="채점 결과 확인 중" data-fb="invite">
+            <div class="eval-card-body">
+              <div style="display:flex; flex-direction:column; gap:16px;">
+                <div style="display:flex; align-items:center; justify-content:space-between;">
+                  <div style="display:flex; align-items:center; gap:8px;">
+                    <span class="badge-ing">진행 중</span>
+                    <span style="font-size:16px; font-weight:700; color:#222;">1학기 국어 서술형 평가 2회</span>
+                  </div>
+                  <span style="font-size:12px; color:#B3B3B3;">1달 전 수정</span>
+                </div>
+                <div style="display:flex; align-items:center; gap:0; max-width:600px;">
+                  <div class="step-done">평가 설계</div>
+                  <div class="step-line-done"></div>
+                  <div class="step-done">과제물 업로드</div>
+                  <div class="step-line-done"></div>
+                  <div class="step-done">과제물 인식</div>
+                  <div class="step-line-done"></div>
+                  <div class="step-now">AI 채점</div>
+                </div>
+              </div>
+            </div>
+            <div class="eval-card-footer">
+              <div style="display:flex; align-items:center; gap:16px;">
+                <div style="display:flex; align-items:center; gap:8px;">
+                  <div class="pbar"><div class="pbar-fill" style="width:73.2%;"></div></div>
+                  <span class="pbar-label">결과 확인 60/82명</span>
+                </div>
+              </div>
+              <button class="btn-ghost">채점 결과 확인하기 <i data-lucide="arrow-right" style="width:14px;height:14px;"></i></button>
+            </div>
+          </div>
+
+          <!-- 케이스: 재채점 필요 -->
+          <div class="eval-card" data-status="ing" data-case="재채점 필요" data-fb="invite">
+            <div class="eval-card-body">
+              <div style="display:flex; flex-direction:column; gap:16px;">
+                <div style="display:flex; align-items:center; justify-content:space-between;">
+                  <div style="display:flex; align-items:center; gap:8px;">
+                    <span class="badge-ing">진행 중</span>
+                    <span style="font-size:16px; font-weight:700; color:#222;">1학기 국어 독서 논술 평가</span>
+                  </div>
+                  <span style="font-size:12px; color:#B3B3B3;">5주 전 수정</span>
+                </div>
+                <div style="display:flex; align-items:center; gap:0; max-width:600px;">
+                  <div class="step-done">평가 설계</div>
+                  <div class="step-line-done"></div>
+                  <div class="step-done">과제물 업로드</div>
+                  <div class="step-line-done"></div>
+                  <div class="step-done">과제물 인식</div>
+                  <div class="step-line-done"></div>
+                  <div class="step-now">AI 채점</div>
+                </div>
+              </div>
+            </div>
+            <div class="eval-card-footer">
+              <div style="display:flex; align-items:center; gap:16px;">
+                <div style="display:flex; align-items:center; gap:8px;">
+                  <div class="pbar"><div class="pbar-fill" style="width:100%;"></div></div>
+                  <span class="pbar-label">채점 82/82건</span>
+                </div>
+                <span class="chip-orange"><i data-lucide="refresh-cw" style="width:13px;height:13px;"></i> 재채점 필요 7명</span>
+              </div>
+              <button class="btn-ghost">재채점 실행하기 <i data-lucide="arrow-right" style="width:14px;height:14px;"></i></button>
+            </div>
+          </div>
+
+          <!-- 케이스: 채점 실패 -->
+          <div class="eval-card" data-status="ing" data-case="채점 실패" data-fb="invite">
+            <div class="eval-card-body">
+              <div style="display:flex; flex-direction:column; gap:16px;">
+                <div style="display:flex; align-items:center; justify-content:space-between;">
+                  <div style="display:flex; align-items:center; gap:8px;">
+                    <span class="badge-ing">진행 중</span>
+                    <span style="font-size:16px; font-weight:700; color:#222;">1학기 국어 논설문 쓰기 평가</span>
+                  </div>
+                  <span style="font-size:12px; color:#B3B3B3;">2달 전 수정</span>
+                </div>
+                <div style="display:flex; align-items:center; gap:0; max-width:600px;">
+                  <div class="step-done">평가 설계</div>
+                  <div class="step-line-done"></div>
+                  <div class="step-done">과제물 업로드</div>
+                  <div class="step-line-done"></div>
+                  <div class="step-done">과제물 인식</div>
+                  <div class="step-line-done"></div>
+                  <div class="step-now">AI 채점</div>
+                </div>
+              </div>
+            </div>
+            <div class="eval-card-footer">
+              <div style="display:flex; align-items:center; gap:16px;">
+                <div style="display:flex; align-items:center; gap:8px;">
+                  <div class="pbar"><div class="pbar-fill" style="width:97.6%;"></div></div>
+                  <span class="pbar-label">채점 80/82건</span>
+                </div>
+                <span class="chip-red"><i data-lucide="circle-alert" style="width:13px;height:13px;"></i> 채점 실패 2건</span>
+              </div>
+              <button class="btn-ghost">다시 채점하기 <i data-lucide="arrow-right" style="width:14px;height:14px;"></i></button>
+            </div>
+          </div>
+
+          <!-- 케이스: 완료 -->
+          <div class="eval-card is-done" data-status="done" data-case="완료" data-fb="invite">
+            <div class="eval-card-body">
+              <div style="display:flex; flex-direction:column; gap:16px;">
+                <div style="display:flex; align-items:center; justify-content:space-between;">
+                  <div style="display:flex; align-items:center; gap:8px;">
+                    <span class="badge-done">완료</span>
+                    <span style="font-size:16px; font-weight:700; color:#494949;">1학기 국어 서술형 평가 1회</span>
+                  </div>
+                  <span style="font-size:12px; color:#B3B3B3;">3달 전 수정</span>
+                </div>
+                <div style="display:flex; align-items:center; gap:0; max-width:600px;">
+                  <div class="step-done">평가 설계</div>
+                  <div class="step-line-done"></div>
+                  <div class="step-done">과제물 업로드</div>
+                  <div class="step-line-done"></div>
+                  <div class="step-done">과제물 인식</div>
+                  <div class="step-line-done"></div>
+                  <div class="step-done">AI 채점</div>
+                </div>
+              </div>
+            </div>
+            <div class="eval-card-footer">
+              <div style="display:flex; align-items:center; gap:16px;">
+                <div style="display:flex; align-items:center; gap:8px;">
+                  <div class="pbar"><div class="pbar-fill" style="width:100%;"></div></div>
+                  <span class="pbar-label">채점 82/82건</span>
+                </div>
+              </div>
+              <button class="btn-ghost">평가 리포트 보기 <i data-lucide="arrow-right" style="width:14px;height:14px;"></i></button>
+            </div>
+          </div>
+
+          <!-- 케이스: 완료 · 업데이트 전 과제물 -->
+          <div class="eval-card is-done" data-status="done" data-case="완료 · 업데이트 전 과제물" data-fb="done">
+            <div class="eval-card-body">
+              <div style="display:flex; flex-direction:column; gap:16px;">
+                <div style="display:flex; align-items:center; justify-content:space-between;">
+                  <div style="display:flex; align-items:center; gap:8px;">
+                    <span class="badge-done">완료</span>
+                    <span style="font-size:16px; font-weight:700; color:#494949;">1학기 국어 진단 평가</span>
+                  </div>
+                  <span style="font-size:12px; color:#B3B3B3;">4달 전 수정</span>
+                </div>
+                <div style="display:flex; align-items:center; gap:0; max-width:600px;">
+                  <div class="step-done">평가 설계</div>
+                  <div class="step-line-done"></div>
+                  <div class="step-done">과제물 업로드</div>
+                  <div class="step-line-done"></div>
+                  <div class="step-done">과제물 인식</div>
+                  <div class="step-line-done"></div>
+                  <div class="step-done">AI 채점</div>
+                </div>
+              </div>
+            </div>
+            <div class="eval-card-footer">
+              <div style="display:flex; align-items:center; gap:16px;">
+                <div style="display:flex; align-items:center; gap:8px;">
+                  <div class="pbar"><div class="pbar-fill" style="width:100%;"></div></div>
+                  <span class="pbar-label">채점 82/82건</span>
+                </div>
+                <span class="chip-gray"><i data-lucide="file-question" style="width:13px;height:13px;"></i> 인식 결과 없음</span>
+              </div>
+              <button class="btn-ghost">평가 리포트 보기 <i data-lucide="arrow-right" style="width:14px;height:14px;"></i></button>
+            </div>
+          </div>
+
+          <!-- 더 보기 — 필터에 걸린 나머지 건수만큼 -->
+          <div id="load-more-wrap" style="display:flex; justify-content:center; padding:4px 0;">
+            <button onclick="loadMore()" style="height:36px; padding:0 16px; font-size:14px; font-weight:700; font-family:inherit; border:none; background:transparent; color:#808080; cursor:pointer; display:inline-flex; align-items:center; justify-content:center; line-height:1; vertical-align:middle; gap:5px;"
+              onmouseover="this.style.color='#7E44FB';"
+              onmouseout="this.style.color='#808080';">
+              <i data-lucide="chevron-down" style="width:15px; height:15px;"></i>
+              더 보기 <span id="load-more-count">2</span>건
+            </button>
+          </div>
+
+        </div><!-- /evals-filled -->
+      </div>
+
+      </div><!-- /레이아웃 행 -->
+
+    </div>
+    <!-- /패널 전체 -->
+
+  </div>
+</div>
+
+<!-- ===== 수업 수정 모달 ===== -->
+<div id="editClassModal" class="modal-overlay" onclick="if(event.target===this)this.classList.remove('open')">
+  <div class="modal-box">
+
+    <!-- 헤더 -->
+    <div style="position:relative; padding:24px 24px 16px 24px;">
+      <span style="font-size:18px; font-weight:700; color:#222631;">수업 수정</span>
+      <button onclick="document.getElementById('editClassModal').classList.remove('open')"
+        style="position:absolute; top:11px; right:11px; width:36px; height:36px; border:none; background:transparent; border-radius:6px; cursor:pointer; display:flex; align-items:center; justify-content:center; color:#808080;"
+        onmouseover="this.style.background='#F0F0F0'" onmouseout="this.style.background='transparent'">
+        <i data-lucide="x" style="width:20px; height:20px;"></i>
+      </button>
+    </div>
+
+    <!-- 바디 -->
+    <div style="padding:0 24px 24px 24px; display:flex; flex-direction:column; gap:20px;">
+
+      <!-- 학기 + 학년 (row) -->
+      <div style="display:flex; gap:12px;">
+        <!-- 학기: 수정 가능 -->
+        <div style="flex:1;">
+          <div class="field-label">학기</div>
+          <select class="field-select">
+            <option selected>2026학년도 1학기</option>
+            <option>2026학년도 2학기</option>
+            <option>27학년도 1학기</option>
+            <option>27학년도 2학기</option>
+          </select>
+        </div>
+        <!-- 학년: 수정 불가 -->
+        <div style="flex:1;">
+          <div class="field-label">학년 <span class="lock-badge">수정 불가</span></div>
+          <select class="field-select disabled" disabled>
+            <option>1학년</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- 과목명: 수정 불가 -->
+      <div>
+        <div class="field-label">과목명 <span class="lock-badge">수정 불가</span></div>
+        <div class="radio-group" style="margin-bottom:8px;">
+          <label class="radio-item disabled">
+            <input type="radio" name="curriculum_edit" checked disabled> 2015 개정 교육과정
+          </label>
+          <label class="radio-item disabled">
+            <input type="radio" name="curriculum_edit" disabled> 2022 개정 교육과정
+          </label>
+        </div>
+        <select class="field-select disabled" disabled>
+          <option>국어</option>
+        </select>
+      </div>
+
+      <!-- 수업명: 수정 가능 -->
+      <div>
+        <div class="field-label">수업명</div>
+        <input class="field-input" type="text" value="1학년 국어">
+      </div>
+
+      <!-- 반 편성: 수정 불가 -->
+      <div>
+        <div class="field-label">반 편성 <span class="lock-badge">수정 불가</span></div>
+        <div class="radio-group">
+          <label class="radio-item disabled">
+            <input type="radio" name="class_type_edit" disabled> 학적 기준반
+          </label>
+          <label class="radio-item disabled">
+            <input type="radio" name="class_type_edit" checked disabled> 이동수업반
+          </label>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- 푸터 -->
+    <div style="padding:8px 24px 16px 24px; display:flex; justify-content:flex-end; gap:12px;">
+      <button style="height:40px; padding:0 16px; font-size:16px; font-weight:700; font-family:inherit; border:1px solid #B28FFD; background:transparent; color:#7E44FB; border-radius:8px; cursor:pointer;"
+        onclick="document.getElementById('editClassModal').classList.remove('open')">취소</button>
+      <button class="btn-primary" style="height:40px; font-size:16px;"
+        onclick="document.getElementById('editClassModal').classList.remove('open'); showToast('success', '수업 정보가 수정되었습니다.')">저장</button>
+    </div>
+
+  </div>
+</div>
+
+<!-- ===== 복사해서 만들기 모달 ===== -->
+<div id="modal-copy" style="display:none; position:fixed; inset:0; z-index:1000; background:rgba(0,0,0,0.4); align-items:center; justify-content:center; padding:24px 0;" onclick="closeCopyModal(event)">
+  <div style="background:white; border-radius:24px; box-shadow:0 4px 12px rgba(95,102,178,0.16); width:800px; max-width:95vw; max-height:calc(100vh - 48px); display:flex; flex-direction:column; position:relative;" onclick="event.stopPropagation()">
+
+    <!-- 헤더 -->
+    <div style="padding:24px 24px 16px; flex-shrink:0; border-bottom:1px solid #F0F0F0; position:relative;">
+      <span style="font-size:18px; font-weight:700; color:#222631;">복사해서 만들기</span>
+      <button onclick="closeCopyModal()" style="position:absolute; top:11px; right:11px; width:36px; height:36px; border:none; background:transparent; border-radius:6px; cursor:pointer; display:flex; align-items:center; justify-content:center; color:#808080;"
+        onmouseover="this.style.background='#F0F0F0'" onmouseout="this.style.background='transparent'">
+        <i data-lucide="x" style="width:20px; height:20px;"></i>
+      </button>
+    </div>
+
+    <!-- 바디 -->
+    <div style="padding:20px 24px 24px; overflow-y:auto; flex:1; display:flex; flex-direction:column; gap:14px;">
+      <!-- 검색 -->
+      <div style="position:relative;">
+        <i data-lucide="search" style="position:absolute; left:12px; top:50%; transform:translateY(-50%); width:16px; height:16px; color:#B3B3B3;"></i>
+        <input type="text" placeholder="평가명으로 검색" style="width:100%; height:40px; border:1px solid #D9D9D9; border-radius:8px; padding:0 12px 0 38px; font-size:14px; font-family:inherit; color:#333; background:white; outline:none;" onfocus="this.style.borderColor='#7E44FB'" onblur="this.style.borderColor='#D9D9D9'">
+      </div>
+      <!-- 안내 문구 -->
+      <p style="margin:0; font-size:13px; color:#808080;">복사할 평가를 선택하면 동일한 설계 내용을 복사해 새 평가가 생성됩니다.</p>
+      <!-- 테이블 -->
+      <div style="border:1px solid #E6E6E6; border-radius:12px; overflow:hidden;">
+        <table style="width:100%; border-collapse:collapse;">
+          <thead>
+            <tr style="background:#F8F8F8; border-bottom:1px solid #E6E6E6;">
+              <th style="width:40px; padding:10px 12px; text-align:center;"><input type="radio" name="copy-select" disabled style="accent-color:#7E44FB;"></th>
+              <th style="padding:10px 12px; text-align:left; font-size:13px; font-weight:700; color:#808080; white-space:nowrap;">선생님</th>
+              <th style="padding:10px 12px; text-align:left; font-size:13px; font-weight:700; color:#808080; white-space:nowrap;">교육과정</th>
+              <th style="padding:10px 12px; text-align:left; font-size:13px; font-weight:700; color:#808080; white-space:nowrap;">과목</th>
+              <th style="padding:10px 12px; text-align:left; font-size:13px; font-weight:700; color:#808080; white-space:nowrap;">평가방식</th>
+              <th style="padding:10px 12px; text-align:left; font-size:13px; font-weight:700; color:#808080;">평가명</th>
+              <th style="padding:10px 12px; text-align:left; font-size:13px; font-weight:700; color:#808080; white-space:nowrap;">최근 수정일</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr style="border-bottom:1px solid #F0F0F0; cursor:pointer;" onmouseover="this.style.background='#FAF8FF'" onmouseout="this.style.background='white'" onclick="this.querySelector('input').checked=true">
+              <td style="padding:12px; text-align:center;"><input type="radio" name="copy-select" value="1" style="accent-color:#7E44FB;"></td>
+              <td style="padding:12px; font-size:14px; color:#333; white-space:nowrap;">김*민</td>
+              <td style="padding:12px; font-size:14px; color:#333; white-space:nowrap;">2022 개정</td>
+              <td style="padding:12px; font-size:14px; color:#333; white-space:nowrap;">국어</td>
+              <td style="padding:12px;">
+                <span style="background:#F7F4FF; color:#7E44FB; font-size:12px; font-weight:700; border-radius:100px; padding:3px 10px; white-space:nowrap;">간편한 평가</span>
+              </td>
+              <td style="padding:12px; font-size:14px; color:#333;">1학기 국어 서술형 평가 1회</td>
+              <td style="padding:12px; font-size:14px; color:#808080; white-space:nowrap;">2025.03.15</td>
+            </tr>
+            <tr style="cursor:pointer;" onmouseover="this.style.background='#FAF8FF'" onmouseout="this.style.background='white'" onclick="this.querySelector('input').checked=true">
+              <td style="padding:12px; text-align:center;"><input type="radio" name="copy-select" value="2" style="accent-color:#7E44FB;"></td>
+              <td style="padding:12px; font-size:14px; color:#333; white-space:nowrap;">박*희</td>
+              <td style="padding:12px; font-size:14px; color:#333; white-space:nowrap;">2015 개정</td>
+              <td style="padding:12px; font-size:14px; color:#333; white-space:nowrap;">국어</td>
+              <td style="padding:12px;">
+                <span style="background:#F7F4FF; color:#7E44FB; font-size:12px; font-weight:700; border-radius:100px; padding:3px 10px; white-space:nowrap;">간편한 평가</span>
+              </td>
+              <td style="padding:12px; font-size:14px; color:#333;">2학기 국어 논술 평가</td>
+              <td style="padding:12px; font-size:14px; color:#808080; white-space:nowrap;">2025.02.28</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- 푸터 -->
+    <div style="padding:8px 24px 16px; display:flex; justify-content:flex-end; gap:12px; border-top:1px solid #F0F0F0; flex-shrink:0;">
+      <button onclick="closeCopyModal()" style="height:36px; padding:0 16px; font-size:14px; font-weight:700; font-family:inherit; border:1px solid #B28FFD; background:transparent; color:#7E44FB; border-radius:8px; cursor:pointer;">취소</button>
+      <button class="btn-primary" style="height:40px;" onclick="closeCopyModal()">복사 생성</button>
+    </div>
+
+  </div>
+</div>
+
+<!-- ===== 평가 자료실에서 가져오기 모달 ===== -->
+<div id="modal-library" style="display:none; position:fixed; inset:0; z-index:1000; background:rgba(0,0,0,0.4); align-items:center; justify-content:center; padding:24px 0;" onclick="closeLibraryModal(event)">
+  <div style="background:white; border-radius:24px; box-shadow:0 4px 12px rgba(95,102,178,0.16); width:800px; max-width:95vw; max-height:calc(100vh - 48px); display:flex; flex-direction:column; position:relative;" onclick="event.stopPropagation()">
+
+    <!-- 헤더 -->
+    <div style="padding:24px 24px 16px; flex-shrink:0; border-bottom:1px solid #F0F0F0; position:relative;">
+      <span style="font-size:18px; font-weight:700; color:#222631;">평가 자료실에서 가져오기</span>
+      <button onclick="closeLibraryModal()" style="position:absolute; top:11px; right:11px; width:36px; height:36px; border:none; background:transparent; border-radius:6px; cursor:pointer; display:flex; align-items:center; justify-content:center; color:#808080;"
+        onmouseover="this.style.background='#F0F0F0'" onmouseout="this.style.background='transparent'">
+        <i data-lucide="x" style="width:20px; height:20px;"></i>
+      </button>
+    </div>
+
+    <!-- 바디 -->
+    <div style="padding:20px 24px 24px; overflow-y:auto; flex:1; display:flex; flex-direction:column; gap:14px;">
+      <!-- 검색 -->
+      <div style="position:relative;">
+        <i data-lucide="search" style="position:absolute; left:12px; top:50%; transform:translateY(-50%); width:16px; height:16px; color:#B3B3B3;"></i>
+        <input type="text" placeholder="설계명으로 검색" style="width:100%; height:40px; border:1px solid #D9D9D9; border-radius:8px; padding:0 12px 0 38px; font-size:14px; font-family:inherit; color:#333; background:white; outline:none;" onfocus="this.style.borderColor='#7E44FB'" onblur="this.style.borderColor='#D9D9D9'">
+      </div>
+      <!-- 안내 문구 -->
+      <p style="margin:0; font-size:13px; color:#808080;">평가 자료실의 설계를 불러와 현재 수업의 평가로 적용합니다.</p>
+      <!-- 테이블 -->
+      <div style="border:1px solid #E6E6E6; border-radius:12px; overflow:hidden;">
+        <table style="width:100%; border-collapse:collapse;">
+          <thead>
+            <tr style="background:#F8F8F8; border-bottom:1px solid #E6E6E6;">
+              <th style="width:40px; padding:10px 12px; text-align:center;"><input type="radio" name="lib-select" disabled style="accent-color:#7E44FB;"></th>
+              <th style="padding:10px 12px; text-align:left; font-size:13px; font-weight:700; color:#808080; white-space:nowrap;">선생님</th>
+              <th style="padding:10px 12px; text-align:left; font-size:13px; font-weight:700; color:#808080;">설계명</th>
+              <th style="padding:10px 12px; text-align:left; font-size:13px; font-weight:700; color:#808080; white-space:nowrap;">평가방식</th>
+              <th style="padding:10px 12px; text-align:left; font-size:13px; font-weight:700; color:#808080; white-space:nowrap;">최근 수정일</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr style="border-bottom:1px solid #F0F0F0; cursor:pointer;" onmouseover="this.style.background='#FAF8FF'" onmouseout="this.style.background='white'" onclick="this.querySelector('input').checked=true">
+              <td style="padding:12px; text-align:center;"><input type="radio" name="lib-select" value="1" style="accent-color:#7E44FB;"></td>
+              <td style="padding:12px; font-size:14px; color:#333; white-space:nowrap;">김*민</td>
+              <td style="padding:12px; font-size:14px; color:#333;">1학기 국어 서술형 평가 설계</td>
+              <td style="padding:12px;">
+                <span style="background:#F7F4FF; color:#7E44FB; font-size:12px; font-weight:700; border-radius:100px; padding:3px 10px; white-space:nowrap;">간편한 평가</span>
+              </td>
+              <td style="padding:12px; font-size:14px; color:#808080; white-space:nowrap;">2025.03.15</td>
+            </tr>
+            <tr style="border-bottom:1px solid #F0F0F0; cursor:pointer;" onmouseover="this.style.background='#FAF8FF'" onmouseout="this.style.background='white'" onclick="this.querySelector('input').checked=true">
+              <td style="padding:12px; text-align:center;"><input type="radio" name="lib-select" value="2" style="accent-color:#7E44FB;"></td>
+              <td style="padding:12px; font-size:14px; color:#333; white-space:nowrap;">박*희</td>
+              <td style="padding:12px; font-size:14px; color:#333;">2학기 국어 논술 평가 설계</td>
+              <td style="padding:12px;">
+                <span style="background:#F7F4FF; color:#7E44FB; font-size:12px; font-weight:700; border-radius:100px; padding:3px 10px; white-space:nowrap;">간편한 평가</span>
+              </td>
+              <td style="padding:12px; font-size:14px; color:#808080; white-space:nowrap;">2025.02.28</td>
+            </tr>
+            <tr style="border-bottom:1px solid #F0F0F0; cursor:pointer;" onmouseover="this.style.background='#FAF8FF'" onmouseout="this.style.background='white'" onclick="this.querySelector('input').checked=true">
+              <td style="padding:12px; text-align:center;"><input type="radio" name="lib-select" value="3" style="accent-color:#7E44FB;"></td>
+              <td style="padding:12px; font-size:14px; color:#333; white-space:nowrap;">이*수</td>
+              <td style="padding:12px; font-size:14px; color:#333;">1학기 국어 서술형 평가 A형</td>
+              <td style="padding:12px;">
+                <span style="background:#F7F4FF; color:#7E44FB; font-size:12px; font-weight:700; border-radius:100px; padding:3px 10px; white-space:nowrap;">간편한 평가</span>
+              </td>
+              <td style="padding:12px; font-size:14px; color:#808080; white-space:nowrap;">2025.02.10</td>
+            </tr>
+            <tr style="border-bottom:1px solid #F0F0F0; cursor:pointer;" onmouseover="this.style.background='#FAF8FF'" onmouseout="this.style.background='white'" onclick="this.querySelector('input').checked=true">
+              <td style="padding:12px; text-align:center;"><input type="radio" name="lib-select" value="4" style="accent-color:#7E44FB;"></td>
+              <td style="padding:12px; font-size:14px; color:#333; white-space:nowrap;">최*진</td>
+              <td style="padding:12px; font-size:14px; color:#333;">국어 독서 논술 평가</td>
+              <td style="padding:12px;">
+                <span style="background:#F2F5FF; color:#5890FF; font-size:12px; font-weight:700; border-radius:100px; padding:3px 10px; white-space:nowrap;">정교한 평가</span>
+              </td>
+              <td style="padding:12px; font-size:14px; color:#808080; white-space:nowrap;">2025.01.25</td>
+            </tr>
+            <tr style="cursor:pointer;" onmouseover="this.style.background='#FAF8FF'" onmouseout="this.style.background='white'" onclick="this.querySelector('input').checked=true">
+              <td style="padding:12px; text-align:center;"><input type="radio" name="lib-select" value="5" style="accent-color:#7E44FB;"></td>
+              <td style="padding:12px; font-size:14px; color:#333; white-space:nowrap;">김*민</td>
+              <td style="padding:12px; font-size:14px; color:#333;">2학기 국어 서술형 중간 평가</td>
+              <td style="padding:12px;">
+                <span style="background:#F7F4FF; color:#7E44FB; font-size:12px; font-weight:700; border-radius:100px; padding:3px 10px; white-space:nowrap;">간편한 평가</span>
+              </td>
+              <td style="padding:12px; font-size:14px; color:#808080; white-space:nowrap;">2024.12.05</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- 푸터 -->
+    <div style="padding:8px 24px 16px; display:flex; justify-content:flex-end; gap:12px; border-top:1px solid #F0F0F0; flex-shrink:0;">
+      <button onclick="closeLibraryModal()" style="height:36px; padding:0 16px; font-size:14px; font-weight:700; font-family:inherit; border:1px solid #B28FFD; background:transparent; color:#7E44FB; border-radius:8px; cursor:pointer;">취소</button>
+      <button class="btn-primary" style="height:40px;" onclick="closeLibraryModal()">적용</button>
+    </div>
+
+  </div>
+</div>
+
+<!-- ===== 평가 대상 관리 안내 모달 ===== -->
+<!-- ===== 토스트 ===== -->
+<div id="toast" class="toast toast-success">
+  <i id="toast-icon" data-lucide="circle-check-big" style="width:20px; height:20px; color:white; flex-shrink:0;"></i>
+  <span id="toast-msg">수업 정보가 수정되었습니다.</span>
+</div>
+
+<!-- ===== 채점 만족도 피드백 모달 ===== -->
+<div id="modal-feedback" class="modal-overlay" onclick="closeFeedbackModal(event)">
+  <div class="modal-box" style="width:560px; display:flex; flex-direction:column; max-height:min(88vh, 860px);">
+    <div style="padding:24px 24px 16px; position:relative; flex-shrink:0;">
+      <div style="font-size:18px; font-weight:800; color:#222631;">AI 채점 만족도 의견</div>
+      <div id="fb-modal-sub" style="font-size:13px; color:#808080; margin-top:6px;">1학기 국어 서술형 평가 1회 · 좋았던 점도, 아쉬웠던 점도 모두 도움이 됩니다</div>
+      <button onclick="document.getElementById('modal-feedback').classList.remove('open')" style="position:absolute;top:11px;right:11px;width:36px;height:36px;border-radius:6px;background:transparent;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;">
+        <i data-lucide="x" style="width:18px; height:18px; color:#808080;"></i>
+      </button>
+    </div>
+    <div style="padding:0 24px 24px; display:flex; flex-direction:column; gap:20px; overflow-y:auto;">
+      <div>
+        <div class="field-label">전반적인 만족도</div>
+        <div style="display:flex; gap:8px; margin-top:8px;">
+          <button class="fb-emoji-card" onclick="selectFbEmoji(this)">
+            <span style="font-size:26px;">😍</span><span style="font-size:12px; font-weight:700; color:#494949;">매우 만족</span>
+          </button>
+          <button class="fb-emoji-card" onclick="selectFbEmoji(this)">
+            <span style="font-size:26px;">😀</span><span style="font-size:12px; font-weight:700; color:#494949;">만족</span>
+          </button>
+          <button class="fb-emoji-card" onclick="selectFbEmoji(this)">
+            <span style="font-size:26px;">😐</span><span style="font-size:12px; font-weight:700; color:#494949;">보통</span>
+          </button>
+          <button class="fb-emoji-card" onclick="selectFbEmoji(this)">
+            <span style="font-size:26px;">😕</span><span style="font-size:12px; font-weight:700; color:#494949;">불만</span>
+          </button>
+          <button class="fb-emoji-card" onclick="selectFbEmoji(this)">
+            <span style="font-size:26px;">😞</span><span style="font-size:12px; font-weight:700; color:#494949;">매우 불만</span>
+          </button>
+        </div>
+      </div>
+      <div>
+        <div class="field-label">문항 유형별 만족도</div>
+        <div style="margin-top:8px; background:#FAFAFA; border:1px solid #EFEFEF; border-radius:12px; padding:4px 16px;">
+          <div class="fb-type-row">
+            <div><div class="fb-type-name">논술형</div><div class="fb-type-desc">자유 서술 기반의 긴 분량 답안</div></div>
+            <div class="fb-stars" onmouseleave="leaveFbStars(this)">
+              <button type="button" class="fb-star" onclick="setFbStar(this,1)" onmouseover="hoverFbStar(this,1)">★</button>
+              <button type="button" class="fb-star" onclick="setFbStar(this,2)" onmouseover="hoverFbStar(this,2)">★</button>
+              <button type="button" class="fb-star" onclick="setFbStar(this,3)" onmouseover="hoverFbStar(this,3)">★</button>
+              <button type="button" class="fb-star" onclick="setFbStar(this,4)" onmouseover="hoverFbStar(this,4)">★</button>
+              <button type="button" class="fb-star" onclick="setFbStar(this,5)" onmouseover="hoverFbStar(this,5)">★</button>
+            </div>
+          </div>
+          <div class="fb-type-row">
+            <div><div class="fb-type-name">서술형</div><div class="fb-type-desc">특정 내용 설명·기술 중심의 중간 분량</div></div>
+            <div class="fb-stars" onmouseleave="leaveFbStars(this)">
+              <button type="button" class="fb-star" onclick="setFbStar(this,1)" onmouseover="hoverFbStar(this,1)">★</button>
+              <button type="button" class="fb-star" onclick="setFbStar(this,2)" onmouseover="hoverFbStar(this,2)">★</button>
+              <button type="button" class="fb-star" onclick="setFbStar(this,3)" onmouseover="hoverFbStar(this,3)">★</button>
+              <button type="button" class="fb-star" onclick="setFbStar(this,4)" onmouseover="hoverFbStar(this,4)">★</button>
+              <button type="button" class="fb-star" onclick="setFbStar(this,5)" onmouseover="hoverFbStar(this,5)">★</button>
+            </div>
+          </div>
+          <div class="fb-type-row">
+            <div><div class="fb-type-name">단답/목록형</div><div class="fb-type-desc">단어 또는 단문 수준의 짧은 답안</div></div>
+            <div class="fb-stars" onmouseleave="leaveFbStars(this)">
+              <button type="button" class="fb-star" onclick="setFbStar(this,1)" onmouseover="hoverFbStar(this,1)">★</button>
+              <button type="button" class="fb-star" onclick="setFbStar(this,2)" onmouseover="hoverFbStar(this,2)">★</button>
+              <button type="button" class="fb-star" onclick="setFbStar(this,3)" onmouseover="hoverFbStar(this,3)">★</button>
+              <button type="button" class="fb-star" onclick="setFbStar(this,4)" onmouseover="hoverFbStar(this,4)">★</button>
+              <button type="button" class="fb-star" onclick="setFbStar(this,5)" onmouseover="hoverFbStar(this,5)">★</button>
+            </div>
+          </div>
+          <div class="fb-type-row">
+            <div><div class="fb-type-name">보고서형</div><div class="fb-type-desc">구조화된 양식 기반 (제목·본문·결론 등)</div></div>
+            <div class="fb-stars" onmouseleave="leaveFbStars(this)">
+              <button type="button" class="fb-star" onclick="setFbStar(this,1)" onmouseover="hoverFbStar(this,1)">★</button>
+              <button type="button" class="fb-star" onclick="setFbStar(this,2)" onmouseover="hoverFbStar(this,2)">★</button>
+              <button type="button" class="fb-star" onclick="setFbStar(this,3)" onmouseover="hoverFbStar(this,3)">★</button>
+              <button type="button" class="fb-star" onclick="setFbStar(this,4)" onmouseover="hoverFbStar(this,4)">★</button>
+              <button type="button" class="fb-star" onclick="setFbStar(this,5)" onmouseover="hoverFbStar(this,5)">★</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="field-label">좋았던 점 <span style="font-size:12px; color:#B3B3B3; font-weight:400;">(복수 선택 가능)</span></div>
+        <div class="fb-chips">
+          <button type="button" class="fb-chip" onclick="toggleFbChip(this)">채점 결과가 내 판단과 비슷함</button>
+          <button type="button" class="fb-chip" onclick="toggleFbChip(this)">채점 기준이 답안에 잘 적용됨</button>
+          <button type="button" class="fb-chip" onclick="toggleFbChip(this)">채점 근거 설명이 구체적임</button>
+          <button type="button" class="fb-chip" onclick="toggleFbChip(this)">손글씨 인식이 정확함</button>
+          <button type="button" class="fb-chip" onclick="toggleFbChip(this)">채점 시간이 크게 절약됨</button>
+          <button type="button" class="fb-chip" onclick="toggleFbChip(this)">학생 피드백 자료로 유용함</button>
+        </div>
+      </div>
+      <div>
+        <div class="field-label">아쉬웠던 점 <span style="font-size:12px; color:#B3B3B3; font-weight:400;">(복수 선택 가능)</span></div>
+        <div class="fb-chips">
+          <button type="button" class="fb-chip" onclick="toggleFbChip(this)">채점 결과가 내 판단과 다름</button>
+          <button type="button" class="fb-chip" onclick="toggleFbChip(this)">채점 기준과 다르게 채점됨</button>
+          <button type="button" class="fb-chip" onclick="toggleFbChip(this)">채점 근거 설명이 부족함</button>
+          <button type="button" class="fb-chip" onclick="toggleFbChip(this)">손글씨 인식이 부정확함</button>
+          <button type="button" class="fb-chip" onclick="toggleFbChip(this)">점수가 실제보다 후함</button>
+          <button type="button" class="fb-chip" onclick="toggleFbChip(this)">점수가 실제보다 짬</button>
+          <button type="button" class="fb-chip" onclick="toggleFbChip(this)">비슷한 답안의 점수가 서로 다름</button>
+        </div>
+      </div>
+      <div>
+        <div class="field-label">다음 평가에서의 AI 채점 사용 의향</div>
+        <div class="fb-chips">
+          <button type="button" class="fb-chip" onclick="selectFbOne(this)">사용할래요</button>
+          <button type="button" class="fb-chip" onclick="selectFbOne(this)">고민돼요</button>
+          <button type="button" class="fb-chip" onclick="selectFbOne(this)">사용하지 않을래요</button>
+        </div>
+      </div>
+      <div>
+        <div class="field-label">자세한 의견</div>
+        <textarea placeholder="선택지에 없는 좋았던 점이나 아쉬웠던 점을 자유롭게 적어주세요." style="margin-top:8px; width:100%; min-height:120px; border:1px solid #D9D9D9; border-radius:8px; padding:12px; font-size:15px; font-family:inherit; color:#333; resize:vertical; line-height:1.55;"></textarea>
+      </div>
+    </div>
+    <div style="padding:8px 24px 16px; display:flex; justify-content:flex-end; align-items:center; border-top:1px solid #F0F0F0; flex-shrink:0;">
+      <div style="display:flex; gap:12px;">
+        <button class="btn-secondary" style="height:40px;" onclick="document.getElementById('modal-feedback').classList.remove('open')">취소</button>
+        <button class="btn-primary" style="height:40px;" onclick="submitFeedback()">의견 보내기</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 까망이 목업 내비게이터 (드래그·시연용 · 실제 화면 아님) ===== -->
+<div id="mockpick">
+  <div class="mp-head" onclick="mpToggle()">
+    <span style="display:inline-flex;align-items:center;gap:6px;"><i data-lucide="layout-grid" style="width:13px;height:13px;"></i>MOCKUP · 평가 홈</span>
+    <i id="mp-caret" data-lucide="chevron-down" style="width:14px;height:14px;transform:rotate(180deg);"></i>
+  </div>
+  <div id="mp-body" class="mp-body" style="display:none">
+    <div class="mp-cap">평가 홈</div>
+    <button class="mp-btn" data-k="filled" onclick="mpGo('filled')">평가 현황 목록 <span class="mp-sub">기본</span></button>
+    <button class="mp-btn" data-k="empty" onclick="mpGo('empty')">평가 없는 상태 <span class="mp-sub">첫 진입 · 학생 0명</span></button>
+    <div class="mp-cap">채점 만족도 설문 · 문항 확정 전 가안</div>
+    <button class="mp-btn" data-k="survey-home" onclick="mpGo('survey-home')">설문 유도 노출 <span class="mp-sub">완료 평가 배너 · 의견 남기기</span></button>
+    <button class="mp-btn" data-k="survey" onclick="mpGo('survey')">설문 팝업 <span class="mp-sub">척도 · 유형별 별점 · 의견</span></button>
+
+    <div class="mp-cap">평가 대상</div>
+    <button class="mp-btn" data-k="class-edit" onclick="mpGo('class-edit')">수업 정보 수정 <span class="mp-sub">학년 · 과목 · 학기</span></button>
+  </div>
+</div>
+
+<script>
+  lucide.createIcons();
+
+  function toggleNewEvalDropdown(e) {
+    e.stopPropagation();
+    const d = document.getElementById('new-eval-dropdown');
+    d.style.display = d.style.display === 'none' ? 'block' : 'none';
+  }
+  document.addEventListener('click', () => {
+    document.getElementById('new-eval-dropdown').style.display = 'none';
+  });
+
+  /* ── 빈 화면 드롭다운 ── */
+  function toggleEmptyDropdown(e) {
+    e.stopPropagation();
+    var d = document.getElementById('empty-eval-dropdown');
+    d.style.display = d.style.display === 'none' ? 'block' : 'none';
+  }
+  document.addEventListener('click', function() {
+    var d = document.getElementById('empty-eval-dropdown');
+    if (d) d.style.display = 'none';
+  });
+
+  /* ── 평가 현황 목록: 상태 필터 + 더 보기 ── */
+  var EVAL_PAGE = 5;              // 처음 보여주는 건수
+  var evalFilter = 'all';
+  var evalExpanded = false;
+
+  function setEvalFilter(f) {
+    evalFilter = f;
+    evalExpanded = false;         // 필터를 바꾸면 다시 접어서 보여준다
+    document.querySelectorAll('#eval-filter .fchip').forEach(function(b){
+      b.classList.toggle('on', b.dataset.f === f);
+    });
+    renderEvalList();
+  }
+
+  function loadMore() {
+    evalExpanded = true;
+    renderEvalList();
+  }
+
+  function renderEvalList() {
+    var cards = [].slice.call(document.querySelectorAll('#evals-filled .eval-card'));
+    var match = cards.filter(function(c){ return evalFilter === 'all' || c.dataset.status === evalFilter; });
+    var shown = evalExpanded ? match : match.slice(0, EVAL_PAGE);
+    cards.forEach(function(c){ c.style.display = 'none'; });
+    shown.forEach(function(c){ c.style.display = ''; });
+
+    var rest = match.length - shown.length;
+    document.getElementById('load-more-wrap').style.display = rest > 0 ? 'flex' : 'none';
+    document.getElementById('load-more-count').textContent = rest;
+    lucide.createIcons();
+  }
+
+  /* ── 토스트 ── */
+  var toastTimer;
+  function showToast(type, msg) {
+    var t = document.getElementById('toast');
+    var icon = document.getElementById('toast-icon');
+    var msgEl = document.getElementById('toast-msg');
+    type = type || 'success';
+    msg = msg || (type === 'success' ? '저장되었습니다.' : '오류가 발생했습니다.');
+    t.className = 'toast toast-' + type;
+    icon.setAttribute('data-lucide', type === 'success' ? 'circle-check-big' : 'circle-alert');
+    msgEl.textContent = msg;
+    lucide.createIcons();
+    clearTimeout(toastTimer);
+    t.classList.add('show');
+    toastTimer = setTimeout(function(){ t.classList.remove('show'); }, 2500);
+  }
+
+  /* ── 뷰 토글 ── */
+  function setView(mode) {
+    var isFilled = mode === 'filled';
+
+    // 평가 대상 카드
+    document.getElementById('target-filled').style.display = isFilled ? 'flex' : 'none';
+    document.getElementById('target-empty').style.display = isFilled ? 'none' : 'flex';
+
+    // 평가 현황
+    document.getElementById('evals-filled').style.display = isFilled ? 'flex' : 'none';
+    document.getElementById('evals-empty').style.display = isFilled ? 'none' : 'flex';
+
+    // 평가가 없으면 필터·헤딩 CTA는 의미가 없다 (빈 상태 안내의 CTA 하나만 남긴다)
+    document.getElementById('eval-filter').style.display = isFilled ? 'flex' : 'none';
+    document.getElementById('new-eval-btn-wrap').style.display = isFilled ? 'block' : 'none';
+    if (isFilled) renderEvalList();
+
+    lucide.createIcons();
+  }
+
+  /* ── 복사해서 만들기 모달 ── */
+  function openCopyModal() {
+    document.getElementById('modal-copy').style.display = 'flex';
+    lucide.createIcons();
+  }
+  function closeCopyModal(e) {
+    if (!e || e.target === document.getElementById('modal-copy')) {
+      document.getElementById('modal-copy').style.display = 'none';
+    }
+  }
+
+  /* ── 평가 자료실에서 가져오기 모달 ── */
+  function openLibraryModal() {
+    document.getElementById('modal-library').style.display = 'flex';
+    lucide.createIcons();
+  }
+  function closeLibraryModal(e) {
+    if (!e || e.target === document.getElementById('modal-library')) {
+      document.getElementById('modal-library').style.display = 'none';
+    }
+  }
+
+  /* ── 채점 만족도 피드백 모달 ── */
+  function openFeedbackModal(evalName) {
+    var sub = document.getElementById('fb-modal-sub');
+    if (sub) sub.textContent = (evalName || '1학기 국어 서술형 평가 1회') + ' · 좋았던 점도, 아쉬웠던 점도 모두 도움이 됩니다';
+    document.getElementById('modal-feedback').classList.add('open');
+    lucide.createIcons();
+  }
+  function closeFeedbackModal(e) {
+    if (!e || e.target === document.getElementById('modal-feedback')) {
+      document.getElementById('modal-feedback').classList.remove('open');
+    }
+  }
+  function selectFbEmoji(el) {
+    document.querySelectorAll('#modal-feedback .fb-emoji-card').forEach(b => b.classList.remove('selected'));
+    el.classList.add('selected');
+  }
+  function toggleFbChip(el) {
+    el.classList.toggle('selected');
+  }
+  function selectFbOne(el) {
+    el.parentElement.querySelectorAll('.fb-chip').forEach(c => c.classList.remove('selected'));
+    el.classList.add('selected');
+  }
+  function setFbStar(btn, val) {
+    btn.closest('.fb-stars').querySelectorAll('.fb-star').forEach((s, i) => {
+      s.classList.toggle('on', i < val); s.classList.remove('hv');
+    });
+  }
+  function hoverFbStar(btn, val) {
+    btn.closest('.fb-stars').querySelectorAll('.fb-star').forEach((s, i) => {
+      s.classList.toggle('hv', i < val && !s.classList.contains('on'));
+    });
+  }
+  function leaveFbStars(el) {
+    el.querySelectorAll('.fb-star').forEach(s => s.classList.remove('hv'));
+  }
+  function submitFeedback() {
+    document.getElementById('modal-feedback').classList.remove('open');
+    showToast('success', '의견이 전송되었습니다. 감사합니다!');
+  }
+
+  /* ── 설문 모드 전환 (문항 확정 전 가안 · 까망이 전용) ──
+     정책(26-07-30): 평가 완료가 아니어도 학급 채점을 1개 반 이상 완료하면 의견을 남길 수 있다.
+     설문 바는 data-fb 카드에 JS로 생성 — 카드 원래 액션 버튼(재채점 실행 등)은 바 우측에 그대로 옮겨 보존 */
+  function ensureFbBar(c) {
+    if (c.querySelector('.fb-bar')) return;
+    var done  = c.dataset.fb === 'done';
+    var title = c.querySelector('.eval-card-body span[style*="font-size:16px"]').textContent;
+    var bar = document.createElement('div');
+    bar.className = 'fb-bar' + (done ? ' done' : '');
+    bar.style.display = 'none';
+    if (done) {
+      bar.innerHTML = '<span class="fb-bar-label">'
+        + '<i data-lucide="check-circle-2" style="width:14px; height:14px; color:#00AF3D;"></i>'
+        + '의견 주셔서 감사합니다 😀 · 채점 시간이 크게 절약됨</span>';
+    } else {
+      bar.innerHTML = '<span class="fb-bar-label">'
+        + '<i data-lucide="sparkles" style="width:14px; height:14px;"></i>AI 채점은 어떠셨나요?</span>'
+        + '<button class="fb-invite-btn" onclick="openFeedbackModal(\'' + title + '\')">'
+        + '<i data-lucide="message-square-text" style="width:13px;height:13px;"></i> 의견 남기기</button>';
+    }
+    c.appendChild(bar);
+  }
+  // 유도 줄은 푸터를 대체하지 않고 아래에 덧붙는다 — 카드의 '다음 할 일'을 가리지 않기 위해
+  function setSurveyMode(on) {
+    var b = document.getElementById('fb-banner');
+    if (b) b.style.display = on ? 'flex' : 'none';
+    document.querySelectorAll('.eval-card[data-fb]').forEach(function(c){
+      if (on) ensureFbBar(c);
+      var fb = c.querySelector('.fb-bar');
+      if (fb) fb.style.display = on ? 'flex' : 'none';
+    });
+    if (on) lucide.createIcons();
+  }
+
+  /* ── 해시 기반 케이스 라우팅 (까망이 key = 그대로 딥링크)
+     #filled 평가 현황 · #empty 빈 상태 · #survey-home 설문 유도 노출 · #survey 설문 팝업
+     · #class-edit 수업 정보 수정 (설계 추가 3경로·상태 필터·더 보기는 화면에서 직접 조작) */
+  var MP_CASES = ['filled', 'empty', 'survey-home', 'survey', 'class-edit'];
+
+  // 케이스 진입 전 열려 있는 모달·드롭다운을 닫는다 (케이스가 겹쳐 보이는 것 방지)
+  function closeAllCases() {
+    ['modal-copy', 'modal-library', 'new-eval-dropdown', 'empty-eval-dropdown']
+      .forEach(function(id){ var el = document.getElementById(id); if (el) el.style.display = 'none'; });
+    document.getElementById('editClassModal').classList.remove('open');
+    document.getElementById('modal-feedback').classList.remove('open');
+  }
+
+  function applyViewFromHash() {
+    var k = location.hash.slice(1);
+    if (MP_CASES.indexOf(k) === -1) k = 'filled';
+    closeAllCases();
+    var sv = (k === 'survey-home' || k === 'survey');
+    setView(k === 'empty' ? 'empty' : 'filled');
+    setSurveyMode(sv);
+    // 설문 유도는 채점 단계~완료에 걸쳐 있으므로 전체를 펼치고 첫 유도 카드로 이동한다
+    if (k !== 'empty') setEvalFilter('all');
+    if (sv) {
+      loadMore();
+      if (k === 'survey-home') setTimeout(function(){
+        var el = document.querySelector('.eval-card[data-fb]');
+        if (el) el.scrollIntoView({ block: 'center', behavior: 'smooth' });
+      }, 60);
+    }
+    if (k === 'class-edit') document.getElementById('editClassModal').classList.add('open');
+    else if (k === 'survey') openFeedbackModal();
+    mpSyncActive(k);
+  }
+  window.addEventListener('hashchange', applyViewFromHash);
+  applyViewFromHash();
+</script>
+
+<!-- ===== 까망이 목업 내비게이터 (시연용) ===== -->
+<script>
+function mpToggle(){
+  const el0=document.getElementById('mockpick');
+  // 드래그로 옮긴 직후 발생하는 click은 접기/펼치기로 보지 않는다
+  if(el0 && el0._dragMoved){ el0._dragMoved=false; return; }
+  const b=document.getElementById('mp-body'), c=document.getElementById('mp-caret');
+  const open=b.style.display!=='none';
+  if(!open){
+    const el=document.getElementById('mockpick'), r=el.getBoundingClientRect();
+    el.style.top='auto'; el.style.bottom=Math.max(16,window.innerHeight-r.bottom)+'px';
+  }
+  b.style.display=open?'none':'flex';
+  if(c) c.style.transform=open?'rotate(180deg)':'';
+  if(!open) mpClamp();
+}
+// 패널이 화면 밖으로 나가지 않게 보정 (위로 펼쳐 헤더가 잘리는 것 방지)
+function mpClamp(){
+  const el=document.getElementById('mockpick'); if(!el) return;
+  const r=el.getBoundingClientRect();
+  if(r.top<8){ el.style.bottom='auto'; el.style.top='8px'; }
+  if(r.bottom>window.innerHeight-8 && r.height<window.innerHeight-16){ el.style.top='auto'; el.style.bottom='8px'; }
+  const r2=el.getBoundingClientRect();
+  const maxL=Math.max(8, window.innerWidth-r2.width-8);
+  if(r2.left<8) el.style.left='8px';
+  else if(r2.left>maxL) el.style.left=maxL+'px';
+}
+function mpSyncActive(key){
+  document.querySelectorAll('#mockpick .mp-btn[data-k]').forEach(b=>b.classList.toggle('on',b.dataset.k===key));
+  const body=document.getElementById('mp-body');
+  const btn=document.querySelector('#mockpick .mp-btn[data-k="'+key+'"]');
+  if(btn && body && body.style.display!=='none') btn.scrollIntoView({block:'nearest'});
+}
+// 케이스 전환은 해시를 진실로 둔다 (새로고침·링크 공유로 같은 화면 복원)
+function mpGo(k){
+  if(location.hash.slice(1)===k) applyViewFromHash();   // 같은 해시면 hashchange가 안 뜬다
+  else location.hash = k;
+  lucide.createIcons();
+}
+(function(){
+  const el=document.getElementById('mockpick'); if(!el) return;
+  let dx=0,dy=0,drag=false,sx=0,sy=0;
+  el.addEventListener('mousedown',(e)=>{ if(e.target.closest('button')) return; drag=true; el._dragMoved=false; sx=e.clientX; sy=e.clientY; const r=el.getBoundingClientRect(); dx=e.clientX-r.left; dy=e.clientY-r.top; el.style.right='auto'; el.style.bottom='auto'; el.style.left=r.left+'px'; el.style.top=r.top+'px'; e.preventDefault(); });
+  document.addEventListener('mousemove',(e)=>{ if(!drag) return; if(Math.abs(e.clientX-sx)>3||Math.abs(e.clientY-sy)>3) el._dragMoved=true; const nx=Math.min(Math.max(8,e.clientX-dx), Math.max(8,window.innerWidth-el.offsetWidth-8)); const ny=Math.min(Math.max(8,e.clientY-dy), Math.max(8,window.innerHeight-el.offsetHeight-8)); el.style.left=nx+'px'; el.style.top=ny+'px'; });
+  document.addEventListener('mouseup',()=>{ drag=false; });
+})();
+lucide.createIcons();
+</script>
+
+<!-- ===== 까망이 공통 보정 (mp-fix-v2) — 화면 밖 이탈 방지 · 접힌 채 드래그 ===== -->
+<script>
+(function(){
+  var el = document.getElementById('mockpick');
+  if (!el) return;
+  var down = false, moved = false, swallow = false, sx = 0, sy = 0;
+
+  function clamp(){
+    if (!window.innerWidth || !window.innerHeight) return;
+    var r = el.getBoundingClientRect();
+    if (!r.width || !r.height) return;
+    var maxL = Math.max(8, window.innerWidth  - r.width  - 8);
+    var maxT = Math.max(8, window.innerHeight - r.height - 8);
+    var l = Math.min(Math.max(8, r.left), maxL);
+    var t = Math.min(Math.max(8, r.top),  maxT);
+    if (Math.abs(l - r.left) > 0.5 || Math.abs(t - r.top) > 0.5) {
+      el.style.right = 'auto'; el.style.bottom = 'auto';
+      el.style.left = l + 'px'; el.style.top = t + 'px';
+    }
+  }
+
+  document.addEventListener('mousedown', function(e){
+    if (!el.contains(e.target) || e.target.closest('button')) return;
+    down = true; moved = false; sx = e.clientX; sy = e.clientY;
+  }, true);
+
+  document.addEventListener('mousemove', function(e){
+    if (!down) return;
+    if (Math.abs(e.clientX - sx) > 3 || Math.abs(e.clientY - sy) > 3) moved = true;
+    if (moved) clamp();
+  });
+
+  document.addEventListener('mouseup', function(){
+    if (!down) return;
+    down = false; swallow = moved;
+    if (moved) clamp();
+  });
+
+  // 끌고 난 직후의 click은 펼치기/접기로 취급하지 않는다
+  document.addEventListener('click', function(e){
+    if (swallow && el.contains(e.target)) { e.stopPropagation(); e.preventDefault(); }
+    swallow = false;
+  }, true);
+
+  el.addEventListener('click', function(){
+    requestAnimationFrame(function(){ requestAnimationFrame(clamp); });
+  });
+
+  window.addEventListener('resize', clamp);
+})();
+</script>
+
+<!-- ===== 까망이 현재 위치 동기화 (mp-sync) =====
+     목업 내부 조작(모달 X 닫기·필터 클릭 등)으로 상태가 바뀌어도 활성 표시가
+     따라오게 한다. 해시가 아니라 DOM 상태를 진실로 역산한다. -->
+<script>
+(function(){
+  function shown(id){
+    var el = document.getElementById(id);
+    return !!(el && el.style.display !== 'none');
+  }
+  function currentKey(){
+    if (document.getElementById('editClassModal').classList.contains('open')) return 'class-edit';
+    if (document.getElementById('modal-feedback').classList.contains('open')) return 'survey';
+    if (shown('fb-banner')) return 'survey-home';
+    if (shown('evals-empty')) return 'empty';
+    return 'filled';
+  }
+  var t = null;
+  function schedule(){ clearTimeout(t); t = setTimeout(function(){ mpSyncActive(currentKey()); }, 0); }
+
+  ['editClassModal', 'evals-empty', 'modal-feedback', 'fb-banner'].forEach(function(id){
+    var el = document.getElementById(id);
+    if (!el) return;
+    new MutationObserver(schedule).observe(el, { attributes:true, attributeFilter:['style','class'] });
+  });
+})();
+</script>
+
+</body>
+</html>

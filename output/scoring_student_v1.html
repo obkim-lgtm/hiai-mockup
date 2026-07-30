@@ -259,7 +259,7 @@
     <div class="ocr-b-tab-wrap">
       <div class="ocr-b-switch">
         <button class="ocr-b-tab active" id="left-tab-original" onclick="switchLeftTab('original')">
-          <i data-lucide="file-image" style="width:14px;height:14px;"></i>원본 제출물
+          <i data-lucide="file-image" style="width:14px;height:14px;"></i>원본 과제물
         </button>
         <button class="ocr-b-tab" id="left-tab-text" onclick="switchLeftTab('text')">
           <i data-lucide="align-left" style="width:14px;height:14px;"></i>인식 결과
@@ -284,7 +284,7 @@
     <div id="left-text-panel" style="display:none;flex:1;overflow-y:auto;padding:24px;background:#F0F0F0;">
       <div id="left-ocr-content" style="display:flex;flex-direction:column;gap:24px;background:white;border-radius:12px;padding:32px 36px;min-height:calc(100% - 0px);"></div>
     </div>
-    <!-- 원본 제출물 패널 (기존 이미지 뷰어) -->
+    <!-- 원본 과제물 패널 (기존 이미지 뷰어) -->
     <div id="left-original-panel" style="display:flex;flex:1;flex-direction:column;">
       <!-- 툴바 (Figma 2087:51336) -->
       <div style="background:#494949;display:flex;align-items:center;gap:20px;padding:4px 20px;flex-shrink:0;min-height:44px;">
@@ -307,7 +307,7 @@
         </div>
       </div>
       <div style="flex:1;overflow:auto;background:#EBEBEA;padding:24px;">
-        <img id="stu-orig-scan-image" src="../screens/student_submission.png" style="width:100%;max-width:540px;height:auto;display:block;margin:0 auto;transform-origin:top center;transition:transform .15s;" alt="학생 원본 제출물">
+        <img id="stu-orig-scan-image" src="../screens/student_submission.png" style="width:100%;max-width:540px;height:auto;display:block;margin:0 auto;transform-origin:top center;transition:transform .15s;" alt="학생 원본 과제물">
       </div>
     </div>
   </div>
@@ -328,7 +328,7 @@
     <!-- 인식 실패 → 직접 채점 안내 (배경+아이콘, 좌측 띠 없음) -->
     <div id="failed-direct-note" style="display:none;align-items:center;gap:10px;padding:10px 20px;background:#FFF5F5;">
       <i data-lucide="circle-x" style="width:15px;height:15px;color:#DB3E51;flex-shrink:0;"></i>
-      <span style="font-size:13px;color:#494949;font-weight:700;"><strong style="color:#DB3E51;">AI 채점 불가 · 인식 실패</strong> — 원본 제출물을 보고 점수를 직접 선택해 채점해 주세요.</span>
+      <span style="font-size:13px;color:#494949;font-weight:700;"><strong style="color:#DB3E51;">AI 채점 불가 · 인식 실패</strong> — 원본 과제물을 보고 점수를 직접 선택해 채점해 주세요.</span>
     </div>
 
     <!-- OCR 미확인 경고 배너 -->
@@ -354,7 +354,7 @@
         </label>
         <label class="radio-item" onclick="selectStatus(this)">
           <div class="radio-circle"></div>
-          미제출
+          미업로드
         </label>
         <label class="radio-item" onclick="selectStatus(this)">
           <div class="radio-circle"></div>
@@ -611,14 +611,14 @@
               <div style="width:20px;height:20px;border:1px solid #B3B3B3;border-radius:2px;flex-shrink:0;"></div>
               <span style="font-size:16px;font-weight:700;color:#333;">10102 이지은</span>
             </div>
-            <span style="font-size:14px;color:#333;">과제 미제출</span>
+            <span style="font-size:14px;color:#333;">과제 미업로드</span>
           </div>
           <div style="display:flex;align-items:center;justify-content:space-between;opacity:0.4;">
             <div style="display:flex;align-items:center;gap:10px;">
               <div style="width:20px;height:20px;border:1px solid #B3B3B3;border-radius:2px;flex-shrink:0;"></div>
               <span style="font-size:16px;font-weight:700;color:#333;">10103 박수진</span>
             </div>
-            <span style="font-size:14px;color:#333;">과제 미제출</span>
+            <span style="font-size:14px;color:#333;">과제 미업로드</span>
           </div>
         </div>
       </div>
@@ -861,7 +861,7 @@
           _cont.innerHTML = '<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:120px 24px;min-height:300px;">'
             + '<div style="width:64px;height:64px;border-radius:16px;background:#FFEFEF;display:flex;align-items:center;justify-content:center;margin-bottom:20px;"><i data-lucide="file-x" style="width:32px;height:32px;color:#ED4458;"></i></div>'
             + '<div style="font-size:18px;font-weight:700;color:#333;margin-bottom:10px;">과제물 인식에 실패했어요</div>'
-            + '<div style="font-size:14px;color:#494949;line-height:1.7;max-width:400px;margin-bottom:24px;">네트워크 오류 등으로 답안을 인식하지 못했어요.<br>원본 제출물을 보고 직접 채점해 주세요.</div>'
+            + '<div style="font-size:14px;color:#494949;line-height:1.7;max-width:400px;margin-bottom:24px;">네트워크 오류 등으로 답안을 인식하지 못했어요.<br>원본 과제물을 보고 직접 채점해 주세요.</div>'
             + '<button onclick="switchLeftTab(\'original\')" style="display:inline-flex;align-items:center;justify-content:center;line-height:1;vertical-align:middle;gap:6px;height:40px;padding:0 16px;border-radius:8px;background:white;color:#7E44FB;border:1px solid #B28FFD;font-size:16px;font-weight:700;cursor:pointer;font-family:inherit;"><i data-lucide="image" style="width:20px;height:20px;"></i>원본으로 보기</button>'
             + '</div>';
         } else {
@@ -898,7 +898,7 @@
       container.innerHTML = '<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:48px 24px;min-height:300px;">'
         + '<div style="width:64px;height:64px;border-radius:16px;background:#FFEFEF;display:flex;align-items:center;justify-content:center;margin-bottom:16px;"><i data-lucide="triangle-alert" style="width:30px;height:30px;color:#ED4458;"></i></div>'
         + '<div style="font-size:18px;font-weight:700;color:#333;margin-bottom:8px;">과제물 인식 정확도가 너무 낮아요</div>'
-        + '<div style="font-size:14px;color:#494949;line-height:1.7;max-width:400px;">확인이 필요한 문항이 대부분이라 인식 결과를 표시하지 않았어요. <strong>원본 제출물</strong> 탭을 보고 직접 채점해 주세요.</div>'
+        + '<div style="font-size:14px;color:#494949;line-height:1.7;max-width:400px;">확인이 필요한 문항이 대부분이라 인식 결과를 표시하지 않았어요. <strong>원본 과제물</strong> 탭을 보고 직접 채점해 주세요.</div>'
         + '</div>';
       // 정확도 낮음 — 수정할 인식 결과가 없으므로 보기 옵션·인식 결과 수정 모두 미노출
       _leftCtrlAvail.answers = false;
@@ -1156,7 +1156,7 @@
         try { var sid=(new URLSearchParams(location.search)).get('id'); var rs=JSON.parse(sessionStorage.getItem('hiai_rescore')||'[]'); var i=rs.indexOf(sid); if(i>=0){ rs.splice(i,1); sessionStorage.setItem('hiai_rescore', JSON.stringify(rs)); } } catch(e){}
       }, 1400);
     };
-    if (true) { // 항상 전사 텍스트+원본 제출물 탭(B안)만 표시. 이전 A안(원본 이미지 뷰어)은 코드 보존하되 미표시 — 필요 시 이 조건만 되돌리면 복원됨.
+    if (true) { // 항상 전사 텍스트+원본 과제물 탭(B안)만 표시. 이전 A안(원본 이미지 뷰어)은 코드 보존하되 미표시 — 필요 시 이 조건만 되돌리면 복원됨.
       // 좌측: B안 OCR 뷰어 표시 (C안은 읽기 전용)
       document.getElementById('left-panel-a').style.display = 'none';
       var lb = document.getElementById('left-panel-b');
