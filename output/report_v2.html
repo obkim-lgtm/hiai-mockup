@@ -4,7 +4,7 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
 <link rel="icon" href="../screens/favicon_src.png" type="image/png"/>
-<title>평가 리포트 v2 (현행 재현 · 관찰기록 제외)</title>
+<title>평가 리포트 v2</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
 <style>
@@ -314,10 +314,16 @@
         <!-- student_graph: 프로필 + 백분위 비교 (빌더로 렌더 — 출력과 동일 컴포넌트) -->
         <div id="graphRow" style="display:flex;gap:16px;margin-bottom:32px"></div>
 
-        <!-- 평가 결과 (전체 너비 · 관찰기록 제거됨) -->
-        <div>
-          <div class="section-title">평가 결과</div>
-          <div id="resultCards" style="display:flex;flex-direction:column;gap:14px"></div>
+        <!-- 평가 결과 | 학생 관찰 기록 (2컬럼) -->
+        <div style="display:flex;gap:20px;align-items:flex-start">
+          <div style="flex:1;min-width:0">
+            <div class="section-title">평가 결과</div>
+            <div id="resultCards" style="display:flex;flex-direction:column;gap:14px"></div>
+          </div>
+          <div style="width:340px;flex-shrink:0">
+            <div class="section-title">학생 관찰 기록</div>
+            <div id="obsCards" style="display:flex;flex-direction:column;gap:12px"></div>
+          </div>
         </div>
       </div><!-- /detailView -->
 
@@ -398,6 +404,7 @@
       <label class="pv-check"><input type="checkbox" id="it-chart" checked onchange="pvRenderPaper()">평가 결과 백분위 비교</label>
       <label class="pv-check"><input type="checkbox" id="it-ai" checked onchange="pvRenderPaper()">과제별 AI 피드백</label>
       <label class="pv-check"><input type="checkbox" id="it-info" checked onchange="pvRenderPaper()">학생 정보 (총점·미제출)</label>
+      <label class="pv-check"><input type="checkbox" id="it-notes" onchange="pvRenderPaper()">학생 관찰 기록 <span style="font-weight:600;color:#808080;font-size:13px">(교사 관찰 · 기본 제외)</span></label>
     </div>
     <div class="pv-mfoot">
       <button class="pv-btn" onclick="pvCloseItems()">취소</button>
@@ -430,12 +437,9 @@
     <i id="mp-caret" data-lucide="chevron-down" style="width:14px;height:14px;transform:rotate(180deg);"></i>
   </div>
   <div id="mp-body" class="mp-body" style="display:none">
-    <div class="mp-cap">안1 · 수정최소화 (현행 기반)</div>
+    <div class="mp-cap">화면 이동</div>
     <button class="mp-btn" data-k="a2" onclick="mpGo('a2')">리포트 목록 <span class="mp-sub">과제·학생별</span></button>
-    <button class="mp-btn" data-k="a2d" onclick="mpGo('a2d')">리포트 상세 <span class="mp-sub">관찰기록 제외</span></button>
-    <div class="mp-cap">안2 · 최대버전 (기존 리뉴얼)</div>
-    <button class="mp-btn" data-k="a1" onclick="location.href='class_report_v1.html'">수업·학생 리포트 <span class="mp-sub">서브탭 2종</span></button>
-    <button class="mp-btn" data-k="a1d" onclick="location.href='student_report_v1.html'">리포트 상세 <span class="mp-sub">학생 개인</span></button>
+    <button class="mp-btn" data-k="a2d" onclick="mpGo('a2d')">리포트 상세 <span class="mp-sub">관찰기록·출력</span></button>
   </div>
 </div>
 
@@ -497,6 +501,30 @@ function _genResults(s3){return s3.map((sc,i)=>{if(sc==null)return null;const p=
   STUDENTS.push({cls,id,name,num,total,s:s3.slice(),miss:0,comp,results:_genResults(s3)});
 });
 
+/* ── 학생 관찰 기록 (교사 수시 관찰 메모) ── */
+const _NOTES={
+  "10201":[{date:"25.04.28",text:"모둠 자료 조사를 도맡아 성실히 수행함."}],
+  "10202":[{date:"25.04.28",text:"적극적으로 발표하며 자신의 주장을 논리적으로 펼침."},{date:"25.05.28",text:"동료의 글에 구체적인 피드백을 제시하며 협력하는 태도를 보임."}],
+  "10204":[{date:"25.04.28",text:"자료를 스스로 찾아 정리하는 힘이 좋음."},{date:"25.05.28",text:"주제 의식을 높여 과제를 완성함."}],
+  "10205":[{date:"25.05.10",text:"수업 중 질문에 근거를 들어 답함."}],
+};
+STUDENTS.forEach(s=>{ s.notes = _NOTES[s.id] || (s.noReport?[]:[{date:"25.05.10",text:"수업 활동에 꾸준히 참여함."}]); });
+
+/* ── 5과제 데모 학생 (레이아웃 확장 확인용) ── */
+(function(){
+  const names=["미래 사회 예측 시나리오","독후감 1차 과제","독후감 2차 과제","토론문 작성","주제 탐구 보고서"];
+  const pairs=[[15,15],[15,10],[10,10],[15,10],[10,5]];
+  STUDENTS.push({cls:"1-2",id:"10210",name:"정다섯",num:6,
+    total:pairs.reduce((a,p)=>a+p[0]+p[1],0),
+    s:pairs.map(p=>p[0]+p[1]).slice(0,3),
+    miss:0,
+    comp:pairs.map(p=>Math.round((p[0]+p[1])/30*100)),
+    results:names.map((t,i)=>({t,score:pairs[i][0]+pairs[i][1],max:30,
+      rows:[["다양한 자료를 활용하였는가",[15,10,5],pairs[i][0]],["자신의 경험을 반영하였는가",[15,10,5],pairs[i][1]]],
+      ai:_ai(pairs[i][0]+pairs[i][1])})),
+    notes:[{date:"25.05.20",text:"다양한 평가 과제에 꾸준하고 성실하게 참여함."}]});
+})();
+
 // 한국어 조사
 function hasBatchim(s){const c=s[s.length-1].charCodeAt(0);return (c-0xAC00)%28!==0;}
 function subj(n){return hasBatchim(n)?n+"이의":n+"의";}
@@ -554,7 +582,7 @@ function buildChartCard(s,opts){
       ? `<div style="flex:1;display:flex;flex-direction:column;gap:8px;min-width:0">${_hbar('학생 점수',stu,'#7E44FB')}${o.classAvg?_hbar('반 평균',avg[i],'#D8C7FE','#B28FFD'):''}</div>`
       : `<div style="flex:1;font-size:13px;color:#B3B3B3;font-weight:700">미실시</div>`;
     return `<div style="display:flex;align-items:center;gap:16px">
-      <div style="width:150px;flex-shrink:0;text-align:right;font-size:13px;font-weight:800;color:#341761">${TASKS[i]||('과제 '+(i+1))}</div>
+      <div style="width:150px;flex-shrink:0;text-align:right;font-size:13px;font-weight:800;color:#341761">${(s.results&&s.results[i]&&s.results[i].t)||TASKS[i]||('과제 '+(i+1))}</div>
       ${body}
     </div>`;
   }).join('<div style="height:1px;background:#F5F5F5;margin:14px 0"></div>');
@@ -588,6 +616,16 @@ function buildResults(s,opts){
       ${o.ai?`<div style="background:#F8F8F8;border-radius:10px;padding:14px 16px;font-size:14px;line-height:1.7;color:#494949">${r.ai}</div>`:''}
     </div>`).join("");
 }
+// 학생 관찰 기록 (교사 수시 관찰)
+function buildNotes(s){
+  const notes=s.notes||[];
+  if(!notes.length) return `<div class="card" style="padding:22px 20px;text-align:center;color:#B3B3B3;font-size:13px;font-weight:700">관찰 기록이 없습니다.</div>`;
+  return notes.map(n=>`
+    <div class="card" style="padding:16px 18px">
+      <div style="font-size:12px;font-weight:700;color:#808080;margin-bottom:8px">[${n.date} 관찰]</div>
+      <div style="font-size:14px;line-height:1.65;color:#333">${n.text}</div>
+    </div>`).join("");
+}
 
 function showDetail(id){
   const s=STUDENTS.find(x=>x.id===id);
@@ -600,6 +638,7 @@ function showDetail(id){
   document.getElementById("dWho").textContent=`${s.id} ${s.name}`;
   document.getElementById("graphRow").innerHTML = buildProfileCard(s) + buildChartCard(s);
   document.getElementById("resultCards").innerHTML = buildResults(s);
+  document.getElementById("obsCards").innerHTML = buildNotes(s);
   document.getElementById("listView").style.display="none";
   document.getElementById("detailView").style.display="block";
   document.getElementById("backBtn").style.display="flex";
@@ -716,6 +755,10 @@ function pvRenderPaper(){
   // 과제별 평가결과 — 점수 미공개면 점수 숨기고 피드백만
   if(pubStu||showAi){
     html+=`<div class="pp-sec"><div class="pp-sec-title">평가 결과</div><div style="display:flex;flex-direction:column;gap:14px">${buildResults(s,{scores:pubStu,ai:showAi})}</div></div>`;
+  }
+  // 학생 관찰 기록 — 기본 제외(교사 관찰), 체크 시에만
+  if(on("it-notes")&&(s.notes||[]).length){
+    html+=`<div class="pp-sec"><div class="pp-sec-title">학생 관찰 기록</div><div style="display:flex;flex-direction:column;gap:10px">${buildNotes(s)}</div></div>`;
   }
   document.getElementById("pvPaper").innerHTML=html;
 }
