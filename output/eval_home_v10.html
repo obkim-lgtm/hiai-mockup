@@ -19,6 +19,19 @@
     .step-line-done { flex:1; height:1px; background:#B28FFD; min-width:12px; }
     .step-line-todo { flex:1; height:1px; background:#CCCCCC; min-width:12px; }
 
+    /* 단계 인디케이터 — 점 4개 + 현재 단계명 (pill 반복·면적 문제 해소) */
+    .stage { display:inline-flex; align-items:center; gap:10px; align-self:flex-start; }
+    .stage-dots { display:inline-flex; align-items:center; gap:0; }
+    .dot { width:9px; height:9px; border-radius:50%; background:#E0E0E0; flex-shrink:0; }
+    .dot.done { background:#B28FFD; }
+    .dot.now  { width:11px; height:11px; background:#7E44FB; box-shadow:0 0 0 3px #F0EBFF; }
+    .dot-line { width:14px; height:2px; background:#EDEDED; flex-shrink:0; }
+    .dot-line.done { background:#D9C9FF; }
+    .stage-name { font-size:14px; font-weight:700; color:#7E44FB; white-space:nowrap; }
+    .eval-card.is-done .dot.done { background:#DADADA; }
+    .eval-card.is-done .dot-line.done { background:#E8E8E8; }
+    .eval-card.is-done .stage-name { color:#9A9A9A; }
+
     /* Status badges */
     .badge-ing   { background:#F1F9F3; color:#00AF3D; border-radius:100px; padding:3px 10px; font-size:12px; font-weight:700; white-space:nowrap; }
     .badge-done  { background:#E0E0E0; color:#222222; border-radius:100px; padding:3px 10px; font-size:12px; font-weight:700; white-space:nowrap; }
@@ -34,6 +47,9 @@
     .btn-warn:hover { background:#F07E3D; }
     .btn-ghost { background:transparent; color:#7E44FB; border:none; padding:0; font-size:14px; font-weight:700; cursor:pointer; font-family:inherit; display:inline-flex; align-items:center; justify-content:center; line-height:1; vertical-align:middle; gap:4px; white-space:nowrap; }
     .btn-ghost:hover { text-decoration:underline; }
+    .btn-primary:hover   { background:#6D33E8; }
+    .btn-secondary:hover { background:#F7F4FF; }
+    .btn-outline:hover   { background:#F8F8F8; border-color:#B3B3B3; }
 
     /* Tab */
     .tab-active   { flex:1; height:60px; background:white; border-radius:20px 20px 0 0; display:flex; align-items:center; justify-content:center; cursor:pointer; }
@@ -130,6 +146,22 @@
     .fb-chip:hover { border-color:#B28FFD; background:#FAF7FF; }
     .fb-chip.selected { border-color:#7E44FB; background:#F7F4FF; color:#7E44FB; }
 
+  /* 관찰 기록 — 좌측 컬럼 블록. 작성 동선만 홈에, 열람·관리는 상세 화면 */
+  .obs-head { display:flex; align-items:center; justify-content:space-between; cursor:pointer; padding:10px 2px; }
+  .obs-title { display:flex; align-items:center; gap:8px; font-size:16px; font-weight:700; color:#333; }
+  .obs-count { font-size:14px; font-weight:700; color:#7E44FB; background:#F7F4FF; border-radius:100px; padding:2px 9px; }
+  .obs-body { display:none; flex-direction:column; gap:10px; padding:2px 2px 10px; }
+  .obs-body.open { display:flex; }
+  .kw-wrap { display:flex; flex-wrap:wrap; gap:5px; max-height:132px; overflow-y:auto; padding:10px; border:1px solid #E6E6E6; border-radius:8px; background:white; }
+  .kw { background:#F7F4FF; color:#7E44FB; border:1px solid #EDE7FF; border-radius:100px; padding:3px 9px; font-size:13px; font-weight:700; font-family:inherit; cursor:pointer; line-height:1.3; }
+  .kw:hover { background:#EDE7FF; }
+  .kw.on { background:#7E44FB; color:white; border-color:#7E44FB; }
+  .obs-row { display:flex; align-items:flex-start; gap:8px; padding:9px 2px; border-bottom:1px solid #F5F5F5; font-size:13px; }
+  .obs-row:last-child { border-bottom:none; }
+  .obs-row .d { color:#B3B3B3; flex-shrink:0; width:34px; }
+  .obs-row .nm { color:#494949; font-weight:700; flex-shrink:0; width:56px; }
+  .obs-row .tx { color:#494949; line-height:1.45; min-width:0; }
+
   /* 평가 현황 묶음 컨테이너 (좌측 정보는 플랫, 작업 영역에 면을 준다) */
   #eval-wrap.grouped { background:#F8F8F8; border-radius:16px; padding:20px; }
   #eval-wrap.grouped .eval-card { border-color:#EBEBEB; }
@@ -204,18 +236,13 @@
       <div style="display:flex; gap:20px; align-items:flex-start;">
 
         <!-- 좌측 정보 컬럼 — 수업 정보(위) · 평가 대상(아래) -->
-        <div id="info-col" style="display:flex; width:300px; flex-shrink:0; flex-direction:column; gap:16px; position:sticky; top:16px;">
+        <div id="info-col" style="display:flex; width:360px; flex-shrink:0; flex-direction:column; gap:20px; position:sticky; top:16px;">
 
-          <!-- 수업 정보 블록 (플랫) -->
-          <div style="padding:8px 4px 24px; border-bottom:1px solid #F0F0F0; display:flex; flex-direction:column; gap:20px;">
-            <div style="display:flex; align-items:center; justify-content:space-between;">
-              <span style="font-size:20px; font-weight:700; color:#333;">수업 정보</span>
-              <button class="btn-outline" style="height:32px; font-size:13px; padding:0 12px;" onclick="document.getElementById('editClassModal').classList.add('open')">
-                <i data-lucide="pencil" style="width:13px; height:13px;"></i>
-                수업 수정
-              </button>
-            </div>
-            <div style="display:flex; flex-direction:column; gap:12px;">
+        <!-- 수업 정보 (플랫) — 속성 4행 + 수업 수정 / 구분선 / 평가 대상 + 관리 -->
+        <div style="padding:8px 4px 4px; display:flex; flex-direction:column; gap:16px;">
+          <span style="font-size:20px; font-weight:700; color:#333;">수업 정보</span>
+
+          <div style="display:flex; flex-direction:column; gap:12px;">
               <div style="display:flex; align-items:center; gap:12px;">
                 <i data-lucide="book-open" style="width:16px; height:16px; color:#808080; flex-shrink:0;"></i>
                 <span style="font-size:14px; color:#808080; width:40px; flex-shrink:0;">과목</span>
@@ -231,53 +258,110 @@
                 <span style="font-size:14px; color:#808080; width:40px; flex-shrink:0;">학기</span>
                 <span style="font-size:14px; font-weight:700; color:#333;">2026학년도 1학기</span>
               </div>
-              <div style="height:1px; background:#E6E6E6;"></div>
               <div style="display:flex; align-items:center; gap:12px;">
                 <i data-lucide="layout-grid" style="width:16px; height:16px; color:#808080; flex-shrink:0;"></i>
                 <span style="font-size:14px; color:#808080; width:40px; flex-shrink:0;">수업반</span>
                 <span style="font-size:14px; font-weight:700; color:#333;">이동수업반</span>
               </div>
-            </div>
+          </div>
+          <!-- 평가 대상 — 수업 정보 안의 한 행으로 (데이터 있는 뷰 / 빈 뷰) -->
+          <div style="display:flex; align-items:center; gap:12px;">
+            <i data-lucide="users" style="width:16px; height:16px; color:#808080; flex-shrink:0;"></i>
+            <span style="font-size:14px; color:#808080; width:56px; flex-shrink:0;">평가 대상</span>
+            <span id="target-filled" style="font-size:14px; color:#494949;">학생 <b style="color:#7E44FB; font-weight:800;">82명</b> · 학급 <b style="color:#7E44FB; font-weight:800;">3개</b></span>
+            <span id="target-empty" style="display:none; font-size:14px; color:#B3B3B3;">학생 <b style="font-weight:800;">0명</b> · 학급 <b style="font-weight:800;">0개</b></span>
           </div>
 
-          <!-- 평가 대상 카드 — 데이터 있는 뷰 -->
-          <div id="target-filled" style="padding:8px 4px; display:flex; flex-direction:column; gap:16px;">
-            <span style="font-size:20px; font-weight:700; color:#333;">평가 대상</span>
-            <div style="display:flex; flex-direction:column; gap:8px;">
-              <div style="display:flex; align-items:center; justify-content:space-between;">
-                <span style="font-size:14px; color:#808080;">총 학생</span>
-                <span style="font-size:20px; font-weight:800; color:#7E44FB;">82명</span>
-              </div>
-              <div style="height:1px; background:#E6E6E6;"></div>
-              <div style="display:flex; align-items:center; justify-content:space-between;">
-                <span style="font-size:14px; color:#808080;">등록 학급</span>
-                <span style="font-size:20px; font-weight:800; color:#7E44FB;">3개</span>
-              </div>
-            </div>
-            <button class="btn-secondary" style="width:100%; justify-content:center;">
-              <i data-lucide="users" style="width:16px; height:16px;"></i>
-              평가 대상 관리
-            </button>
+          <!-- 정보 영역 액션 — 같은 위계라 같은 스타일(outline)로 통일, 한 줄 배치 -->
+          <div style="display:flex; gap:8px;">
+            <button class="btn-outline" style="flex:1; min-width:0; height:34px; font-size:14px; padding:0 10px;" onclick="document.getElementById('editClassModal').classList.add('open')">수업 수정</button>
+            <button class="btn-outline" style="flex:1; min-width:0; height:34px; font-size:14px; padding:0 10px;">평가 대상 관리</button>
           </div>
+        </div>
 
-          <!-- 평가 대상 카드 — 빈 화면 뷰 -->
-          <div id="target-empty" style="display:none; padding:8px 4px; flex-direction:column; gap:16px;">
-            <span style="font-size:20px; font-weight:700; color:#333;">평가 대상</span>
-            <div style="display:flex; flex-direction:column; gap:8px;">
-              <div style="display:flex; align-items:center; justify-content:space-between;">
-                <span style="font-size:14px; color:#808080;">총 학생</span>
-                <span style="font-size:20px; font-weight:800; color:#B3B3B3;">0명</span>
-              </div>
-              <div style="height:1px; background:#E6E6E6;"></div>
-              <div style="display:flex; align-items:center; justify-content:space-between;">
-                <span style="font-size:14px; color:#808080;">등록 학급</span>
-                <span style="font-size:20px; font-weight:800; color:#B3B3B3;">0개</span>
-              </div>
+          <!-- 관찰 기록 — 현행 진입점 유지. 기본 접힘(실측: 작성 교사가 전체의 0.9%)
+               작성만 여기서, 전체 목록·키워드 편집·다운로드는 '관찰 기록 상세' 화면 -->
+          <div style="background:white; border:1px solid #E6E6E6; border-radius:14px; padding:6px 12px 4px;">
+            <div class="obs-head" onclick="toggleObs()">
+              <span class="obs-title">
+                관찰 기록
+                <span class="obs-count" id="obs-count">12건</span>
+              </span>
+              <i data-lucide="chevron-down" id="obs-caret" style="width:16px; height:16px; color:#808080;"></i>
             </div>
-            <button class="btn-secondary" style="width:100%; justify-content:center;">
-              <i data-lucide="users" style="width:16px; height:16px;"></i>
-              평가 대상 관리
-            </button>
+
+            <div class="obs-body" id="obs-body">
+              <select class="field-select" id="obs-student" style="height:38px; font-size:15px;">
+                <option value="">학생 선택</option>
+                <option>10101 김하나</option>
+                <option>10102 이민영</option>
+                <option>10122 김연주</option>
+                <option>10124 고재연</option>
+              </select>
+
+              <!-- 키워드 등록된 수업 -->
+              <div id="obs-kw-set">
+                <div class="kw-wrap">
+                <button class="kw" onclick="toggleKw(this)">질문 활동</button>
+                <button class="kw" onclick="toggleKw(this)">활발함</button>
+                <button class="kw" onclick="toggleKw(this)">뛰어난 집중력</button>
+                <button class="kw" onclick="toggleKw(this)">적극적</button>
+                <button class="kw" onclick="toggleKw(this)">참여</button>
+                <button class="kw" onclick="toggleKw(this)">소통</button>
+                <button class="kw" onclick="toggleKw(this)">배려</button>
+                <button class="kw" onclick="toggleKw(this)">존중</button>
+                <button class="kw" onclick="toggleKw(this)">협력</button>
+                <button class="kw" onclick="toggleKw(this)">창의적 아이디어</button>
+                <button class="kw" onclick="toggleKw(this)">협업</button>
+                <button class="kw" onclick="toggleKw(this)">피드백 수용</button>
+                <button class="kw" onclick="toggleKw(this)">시간관리</button>
+                <button class="kw" onclick="toggleKw(this)">리더십</button>
+                <button class="kw" onclick="toggleKw(this)">실험 활동</button>
+                <button class="kw" onclick="toggleKw(this)">토론 기여도</button>
+                <button class="kw" onclick="toggleKw(this)">열정</button>
+                <button class="kw" onclick="toggleKw(this)">목표 설정</button>
+                <button class="kw" onclick="toggleKw(this)">추진력</button>
+                <button class="kw" onclick="toggleKw(this)">공동체 의식</button>
+                </div>
+                <textarea id="obs-input" rows="2" placeholder="입력해 주세요." oninput="growObs(this)"
+                  style="width:100%; margin-top:8px; min-height:60px; max-height:180px; border:1px solid #D9D9D9; border-radius:8px; padding:9px 12px; font-size:15px; font-family:inherit; color:#333; line-height:1.5; resize:none; overflow-y:auto; outline:none;"
+                  onfocus="this.style.borderColor='#7E44FB'" onblur="this.style.borderColor='#D9D9D9'"></textarea>
+                <button class="btn-primary" style="width:100%; justify-content:center; height:38px; font-size:15px; margin-top:8px;" onclick="submitObs()">등록</button>
+              </div>
+
+              <!-- 키워드 미등록 수업 (기본 숨김) -->
+              <div id="obs-kw-empty" style="display:none;">
+                <div style="background:#FAFAFA; border:1px dashed #E0D9FF; border-radius:8px; padding:16px; text-align:center;">
+                  <p style="margin:0 0 4px; font-size:14px; font-weight:700; color:#494949;">등록된 키워드가 없어요</p>
+                  <p style="margin:0 0 12px; font-size:13px; color:#808080; line-height:1.5;">자주 쓰는 표현을 키워드로 등록하면<br>클릭만으로 기록할 수 있어요</p>
+                  <button class="btn-secondary" style="height:34px; font-size:13px; padding:0 12px;" onclick="goObsDetail()">키워드 등록</button>
+                </div>
+                <textarea rows="2" placeholder="입력해 주세요." oninput="growObs(this)"
+                  style="width:100%; margin-top:8px; min-height:60px; max-height:180px; border:1px solid #D9D9D9; border-radius:8px; padding:9px 12px; font-size:15px; font-family:inherit; color:#333; line-height:1.5; resize:none; overflow-y:auto; outline:none;"
+                  onfocus="this.style.borderColor='#7E44FB'" onblur="this.style.borderColor='#D9D9D9'"></textarea>
+                <button class="btn-primary" style="width:100%; justify-content:center; height:38px; font-size:15px; margin-top:8px;" onclick="submitObs()">등록</button>
+              </div>
+
+              <!-- 최근 기록 3건 — 전체는 상세에서 -->
+              <div style="border-top:1px solid #F0F0F0; padding-top:10px;">
+                <span style="display:block; font-size:14px; font-weight:700; color:#494949; margin-bottom:2px;">최근 기록</span>
+              <div class="obs-row">
+                <span class="d">5/21</span><span class="nm">김하나</span><span class="tx">뛰어난 집중력, 적극적, 참여</span>
+              </div>
+              <div class="obs-row">
+                <span class="d">5/21</span><span class="nm">이민영</span><span class="tx">수업 중 선생님의 설명을 집중해서 듣고 중요한 내용을 기록함.</span>
+              </div>
+              <div class="obs-row">
+                <span class="d">5/21</span><span class="nm">김연주</span><span class="tx">팀 프로젝트에서 리더 역할을 맡아 팀원들의 의견을 수렴하고 조율함.</span>
+              </div>
+              </div>
+
+              <!-- 전체 목록·키워드 편집·다운로드는 관찰 기록 상세 화면 -->
+              <button class="btn-outline" style="width:100%; justify-content:center; height:38px; font-size:14px; margin-top:2px;" onclick="goObsDetail()">
+                기록 상세
+                <i data-lucide="arrow-right" style="width:14px;height:14px;"></i>
+              </button>
+            </div>
           </div>
 
         </div>
@@ -358,7 +442,7 @@
           <!-- 케이스: 설계 중 — 정교·간편 공통 — 진행 문구 없음(비순차 수정으로 단계 판정 모호) -->
           <div class="eval-card" data-status="draft" data-case="설계 중">
             <div class="eval-card-body">
-              <div style="display:flex; flex-direction:column; gap:16px;">
+              <div style="display:flex; flex-direction:column; gap:12px;">
                 <div style="display:flex; align-items:center; justify-content:space-between;">
                   <div style="display:flex; align-items:center; gap:8px;">
                     <span class="badge-draft">임시저장</span>
@@ -366,14 +450,9 @@
                   </div>
                   <span style="font-size:12px; color:#B3B3B3;">오늘 수정</span>
                 </div>
-                <div style="display:flex; align-items:center; gap:0; max-width:600px;">
-                  <div class="step-now">평가 설계</div>
-                  <div class="step-line-todo"></div>
-                  <div class="step-todo">과제물 업로드</div>
-                  <div class="step-line-todo"></div>
-                  <div class="step-todo">과제물 인식</div>
-                  <div class="step-line-todo"></div>
-                  <div class="step-todo">AI 채점</div>
+                                <div class="stage">
+                  <span class="stage-dots"><span class="dot now"></span><span class="dot-line"></span><span class="dot"></span><span class="dot-line"></span><span class="dot"></span><span class="dot-line"></span><span class="dot"></span></span>
+                  <span class="stage-name">평가 설계</span>
                 </div>
               </div>
             </div>
@@ -385,7 +464,7 @@
           <!-- 케이스: 과제물 업로드 — u/N + 미업로드 칩. 0건도 같은 표시 규칙(별도 케이스 아님) -->
           <div class="eval-card" data-status="ing" data-case="과제물 업로드">
             <div class="eval-card-body">
-              <div style="display:flex; flex-direction:column; gap:16px;">
+              <div style="display:flex; flex-direction:column; gap:12px;">
                 <div style="display:flex; align-items:center; justify-content:space-between;">
                   <div style="display:flex; align-items:center; gap:8px;">
                     <span class="badge-ing">진행 중</span>
@@ -393,14 +472,9 @@
                   </div>
                   <span style="font-size:12px; color:#B3B3B3;">2일 전 수정</span>
                 </div>
-                <div style="display:flex; align-items:center; gap:0; max-width:600px;">
-                  <div class="step-done">평가 설계</div>
-                  <div class="step-line-done"></div>
-                  <div class="step-now">과제물 업로드</div>
-                  <div class="step-line-todo"></div>
-                  <div class="step-todo">과제물 인식</div>
-                  <div class="step-line-todo"></div>
-                  <div class="step-todo">AI 채점</div>
+                                <div class="stage">
+                  <span class="stage-dots"><span class="dot done"></span><span class="dot-line done"></span><span class="dot now"></span><span class="dot-line"></span><span class="dot"></span><span class="dot-line"></span><span class="dot"></span></span>
+                  <span class="stage-name">과제물 업로드</span>
                 </div>
               </div>
             </div>
@@ -418,7 +492,7 @@
           <!-- 케이스: 인식 확인 필요 — 확인 필요·정확도 낮음·실패 묶음 카운트 — 세분은 과제물 관리에서 -->
           <div class="eval-card" data-status="ing" data-case="인식 확인 필요">
             <div class="eval-card-body">
-              <div style="display:flex; flex-direction:column; gap:16px;">
+              <div style="display:flex; flex-direction:column; gap:12px;">
                 <div style="display:flex; align-items:center; justify-content:space-between;">
                   <div style="display:flex; align-items:center; gap:8px;">
                     <span class="badge-ing">진행 중</span>
@@ -426,14 +500,9 @@
                   </div>
                   <span style="font-size:12px; color:#B3B3B3;">5일 전 수정</span>
                 </div>
-                <div style="display:flex; align-items:center; gap:0; max-width:600px;">
-                  <div class="step-done">평가 설계</div>
-                  <div class="step-line-done"></div>
-                  <div class="step-done">과제물 업로드</div>
-                  <div class="step-line-done"></div>
-                  <div class="step-now">과제물 인식</div>
-                  <div class="step-line-todo"></div>
-                  <div class="step-todo">AI 채점</div>
+                                <div class="stage">
+                  <span class="stage-dots"><span class="dot done"></span><span class="dot-line done"></span><span class="dot done"></span><span class="dot-line done"></span><span class="dot now"></span><span class="dot-line"></span><span class="dot"></span></span>
+                  <span class="stage-name">과제물 인식</span>
                 </div>
               </div>
             </div>
@@ -451,7 +520,7 @@
           <!-- 케이스: 채점 중 — 0건도 같은 표시 규칙. 실패는 칩으로만(f>0일 때) -->
           <div class="eval-card" data-status="ing" data-case="채점 중">
             <div class="eval-card-body">
-              <div style="display:flex; flex-direction:column; gap:16px;">
+              <div style="display:flex; flex-direction:column; gap:12px;">
                 <div style="display:flex; align-items:center; justify-content:space-between;">
                   <div style="display:flex; align-items:center; gap:8px;">
                     <span class="badge-ing">진행 중</span>
@@ -459,14 +528,9 @@
                   </div>
                   <span style="font-size:12px; color:#B3B3B3;">1주 전 수정</span>
                 </div>
-                <div style="display:flex; align-items:center; gap:0; max-width:600px;">
-                  <div class="step-done">평가 설계</div>
-                  <div class="step-line-done"></div>
-                  <div class="step-done">과제물 업로드</div>
-                  <div class="step-line-done"></div>
-                  <div class="step-done">과제물 인식</div>
-                  <div class="step-line-done"></div>
-                  <div class="step-now">AI 채점</div>
+                                <div class="stage">
+                  <span class="stage-dots"><span class="dot done"></span><span class="dot-line done"></span><span class="dot done"></span><span class="dot-line done"></span><span class="dot done"></span><span class="dot-line done"></span><span class="dot now"></span></span>
+                  <span class="stage-name">AI 채점</span>
                 </div>
               </div>
             </div>
@@ -484,7 +548,7 @@
           <!-- 케이스: 점수 저장 전 — 채점은 끝났으나 점수 저장 전 — 완료 판정 축(s/S학급)으로 표시 -->
           <div class="eval-card" data-status="ing" data-case="점수 저장 전" data-fb="invite">
             <div class="eval-card-body">
-              <div style="display:flex; flex-direction:column; gap:16px;">
+              <div style="display:flex; flex-direction:column; gap:12px;">
                 <div style="display:flex; align-items:center; justify-content:space-between;">
                   <div style="display:flex; align-items:center; gap:8px;">
                     <span class="badge-ing">진행 중</span>
@@ -492,14 +556,9 @@
                   </div>
                   <span style="font-size:12px; color:#B3B3B3;">2주 전 수정</span>
                 </div>
-                <div style="display:flex; align-items:center; gap:0; max-width:600px;">
-                  <div class="step-done">평가 설계</div>
-                  <div class="step-line-done"></div>
-                  <div class="step-done">과제물 업로드</div>
-                  <div class="step-line-done"></div>
-                  <div class="step-done">과제물 인식</div>
-                  <div class="step-line-done"></div>
-                  <div class="step-now">AI 채점</div>
+                                <div class="stage">
+                  <span class="stage-dots"><span class="dot done"></span><span class="dot-line done"></span><span class="dot done"></span><span class="dot-line done"></span><span class="dot done"></span><span class="dot-line done"></span><span class="dot now"></span></span>
+                  <span class="stage-name">AI 채점</span>
                 </div>
               </div>
             </div>
@@ -516,7 +575,7 @@
           <!-- 케이스: 재채점 필요 — needsRescoring=true — 채점 후 인식 수정·과제물 교체·채점기준 수정 -->
           <div class="eval-card" data-status="ing" data-case="재채점 필요" data-fb="invite">
             <div class="eval-card-body">
-              <div style="display:flex; flex-direction:column; gap:16px;">
+              <div style="display:flex; flex-direction:column; gap:12px;">
                 <div style="display:flex; align-items:center; justify-content:space-between;">
                   <div style="display:flex; align-items:center; gap:8px;">
                     <span class="badge-ing">진행 중</span>
@@ -524,14 +583,9 @@
                   </div>
                   <span style="font-size:12px; color:#B3B3B3;">3주 전 수정</span>
                 </div>
-                <div style="display:flex; align-items:center; gap:0; max-width:600px;">
-                  <div class="step-done">평가 설계</div>
-                  <div class="step-line-done"></div>
-                  <div class="step-done">과제물 업로드</div>
-                  <div class="step-line-done"></div>
-                  <div class="step-done">과제물 인식</div>
-                  <div class="step-line-done"></div>
-                  <div class="step-now">AI 채점</div>
+                                <div class="stage">
+                  <span class="stage-dots"><span class="dot done"></span><span class="dot-line done"></span><span class="dot done"></span><span class="dot-line done"></span><span class="dot done"></span><span class="dot-line done"></span><span class="dot now"></span></span>
+                  <span class="stage-name">AI 채점</span>
                 </div>
               </div>
             </div>
@@ -549,7 +603,7 @@
           <!-- 케이스: 완료 — 전 학급 점수 저장 완료(미응시 체크도 점수 저장으로 귀결) — 약화 표기 -->
           <div class="eval-card is-done" data-status="done" data-case="완료" data-fb="done">
             <div class="eval-card-body">
-              <div style="display:flex; flex-direction:column; gap:16px;">
+              <div style="display:flex; flex-direction:column; gap:12px;">
                 <div style="display:flex; align-items:center; justify-content:space-between;">
                   <div style="display:flex; align-items:center; gap:8px;">
                     <span class="badge-done">완료</span>
@@ -557,14 +611,10 @@
                   </div>
                   <span style="font-size:12px; color:#B3B3B3;">1달 전 수정</span>
                 </div>
-                <div style="display:flex; align-items:center; gap:0; max-width:600px;">
-                  <div class="step-done">평가 설계</div>
-                  <div class="step-line-done"></div>
-                  <div class="step-done">과제물 업로드</div>
-                  <div class="step-line-done"></div>
-                  <div class="step-done">과제물 인식</div>
-                  <div class="step-line-done"></div>
-                  <div class="step-done">AI 채점</div>
+                                <div class="stage">
+                  <span class="stage-dots"><span class="dot done"></span><span class="dot-line done"></span><span class="dot done"></span><span class="dot-line done"></span><span class="dot done"></span><span class="dot-line done"></span><span class="dot done"></span></span>
+                  <span class="stage-name">전 단계 완료</span>
+                  
                 </div>
               </div>
             </div>
@@ -852,7 +902,6 @@
   </div>
 </div>
 
-<!-- ===== 평가 대상 관리 안내 모달 ===== -->
 <!-- ===== 토스트 ===== -->
 <div id="toast" class="toast toast-success">
   <i id="toast-icon" data-lucide="circle-check-big" style="width:20px; height:20px; color:white; flex-shrink:0;"></i>
@@ -990,6 +1039,10 @@
     <div class="mp-cap">평가 홈</div>
     <button class="mp-btn" data-k="filled" onclick="mpGo('filled')">평가 현황 목록 <span class="mp-sub">기본</span></button>
     <button class="mp-btn" data-k="empty" onclick="mpGo('empty')">평가 없는 상태 <span class="mp-sub">첫 진입 · 학생 0명</span></button>
+    <div class="mp-cap">관찰 기록 · 현행 기능</div>
+    <button class="mp-btn" data-k="obs" onclick="mpGo('obs')">관찰 기록 펼침 <span class="mp-sub">학생 · 키워드 · 등록</span></button>
+    <button class="mp-btn" data-k="obs-empty" onclick="mpGo('obs-empty')">키워드 미등록 수업 <span class="mp-sub">실측 99.9%</span></button>
+
     <div class="mp-cap">채점 만족도 설문 · 문항 확정 전 가안</div>
     <button class="mp-btn" data-k="survey-home" onclick="mpGo('survey-home')">설문 유도 노출 <span class="mp-sub">완료 평가 배너 · 의견 남기기</span></button>
     <button class="mp-btn" data-k="survey" onclick="mpGo('survey')">설문 팝업 <span class="mp-sub">척도 · 유형별 별점 · 의견</span></button>
@@ -1076,8 +1129,8 @@
     var isFilled = mode === 'filled';
 
     // 평가 대상 카드
-    document.getElementById('target-filled').style.display = isFilled ? 'flex' : 'none';
-    document.getElementById('target-empty').style.display = isFilled ? 'none' : 'flex';
+    document.getElementById('target-filled').style.display = isFilled ? 'inline' : 'none';
+    document.getElementById('target-empty').style.display = isFilled ? 'none' : 'inline';
 
     // 평가 현황
     document.getElementById('evals-filled').style.display = isFilled ? 'flex' : 'none';
@@ -1188,10 +1241,52 @@
     if (on) lucide.createIcons();
   }
 
+  /* ── 관찰 기록 (현행 기능 · 작성 동선만 홈에 둠) ── */
+  function toggleObs() {
+    var b = document.getElementById('obs-body');
+    var c = document.getElementById('obs-caret');
+    var open = b.classList.toggle('open');
+    if (c) c.style.transform = open ? 'rotate(180deg)' : '';
+    lucide.createIcons();
+  }
+  function toggleKw(el) {
+    el.classList.toggle('on');
+    // 선택한 키워드를 입력창에 이어 붙인다 (현행: 칩 클릭 → 입력값으로 들어감)
+    var input = document.getElementById('obs-input');
+    if (!input) return;
+    var picked = [].slice.call(document.querySelectorAll('#obs-kw-set .kw.on')).map(function(k){ return k.textContent.trim(); });
+    input.value = picked.join(', ');
+    growObs(input);
+  }
+  // 관찰 기록 상세는 현행 개발 화면 유지 — 목업에서는 이동 안내만
+  function goObsDetail() {
+    showToast('success', '현재 개발된 관찰 기록 상세 화면으로 이동합니다.');
+  }
+
+  // 입력 내용에 따라 높이 자동 증가 (좁은 컬럼에서 한 줄 입력창은 불편)
+  function growObs(el) {
+    el.style.height = 'auto';
+    el.style.height = Math.min(el.scrollHeight, 180) + 'px';
+  }
+  function submitObs() {
+    var sel = document.getElementById('obs-student');
+    if (sel && !sel.value) { showToast('error', '학생을 선택해 주세요.'); return; }
+    var input = document.getElementById('obs-input');
+    if (input && !input.value.trim()) { showToast('error', '기록할 내용을 입력해 주세요.'); return; }
+    if (input) { input.value = ''; input.style.height = ''; }
+    document.querySelectorAll('#obs-kw-set .kw.on').forEach(function(k){ k.classList.remove('on'); });
+    showToast('success', '관찰 기록이 등록되었습니다.');
+  }
+  // 키워드 미등록 수업 케이스 (실측 99.87%가 미설정)
+  function setObsKeywords(has) {
+    document.getElementById('obs-kw-set').style.display = has ? 'block' : 'none';
+    document.getElementById('obs-kw-empty').style.display = has ? 'none' : 'block';
+  }
+
   /* ── 해시 기반 케이스 라우팅 (까망이 key = 그대로 딥링크)
      #filled 평가 현황 · #empty 빈 상태 · #survey-home 설문 유도 노출 · #survey 설문 팝업
      · #class-edit 수업 정보 수정 (설계 추가 3경로·상태 필터·더 보기는 화면에서 직접 조작) */
-  var MP_CASES = ['filled', 'empty', 'survey-home', 'survey', 'class-edit'];
+  var MP_CASES = ['filled', 'empty', 'survey-home', 'survey', 'obs', 'obs-empty', 'class-edit'];
 
   // 케이스 진입 전 열려 있는 모달·드롭다운을 닫는다 (케이스가 겹쳐 보이는 것 방지)
   function closeAllCases() {
@@ -1219,6 +1314,16 @@
     }
     if (k === 'class-edit') document.getElementById('editClassModal').classList.add('open');
     else if (k === 'survey') openFeedbackModal();
+    // 관찰 기록 — 펼친 상태로 진입 (obs-empty는 키워드 미등록 수업)
+    if (k === 'obs' || k === 'obs-empty') {
+      setObsKeywords(k === 'obs');
+      var ob = document.getElementById('obs-body');
+      if (!ob.classList.contains('open')) toggleObs();
+    } else {
+      setObsKeywords(true);
+      document.getElementById('obs-body').classList.remove('open');
+      var oc = document.getElementById('obs-caret'); if (oc) oc.style.transform = '';
+    }
     mpSyncActive(k);
   }
   window.addEventListener('hashchange', applyViewFromHash);
@@ -1338,6 +1443,8 @@ lucide.createIcons();
   function currentKey(){
     if (document.getElementById('editClassModal').classList.contains('open')) return 'class-edit';
     if (document.getElementById('modal-feedback').classList.contains('open')) return 'survey';
+    if (document.getElementById('obs-body').classList.contains('open'))
+      return shown('obs-kw-empty') ? 'obs-empty' : 'obs';
     if (shown('fb-banner')) return 'survey-home';
     if (shown('evals-empty')) return 'empty';
     return 'filled';
@@ -1345,7 +1452,7 @@ lucide.createIcons();
   var t = null;
   function schedule(){ clearTimeout(t); t = setTimeout(function(){ mpSyncActive(currentKey()); }, 0); }
 
-  ['editClassModal', 'evals-empty', 'modal-feedback', 'fb-banner'].forEach(function(id){
+  ['editClassModal', 'evals-empty', 'modal-feedback', 'fb-banner', 'obs-body', 'obs-kw-empty'].forEach(function(id){
     var el = document.getElementById(id);
     if (!el) return;
     new MutationObserver(schedule).observe(el, { attributes:true, attributeFilter:['style','class'] });
