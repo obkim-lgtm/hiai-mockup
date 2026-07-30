@@ -440,6 +440,7 @@
     <div class="mp-cap">화면 이동</div>
     <button class="mp-btn" data-k="a2" onclick="mpGo('a2')">리포트 목록 <span class="mp-sub">과제·학생별</span></button>
     <button class="mp-btn" data-k="a2d" onclick="mpGo('a2d')">리포트 상세 <span class="mp-sub">관찰기록·출력</span></button>
+    <button class="mp-btn" data-k="a2p" onclick="mpGo('a2p')">리포트 출력 <span class="mp-sub">배부·차트 제외</span></button>
   </div>
 </div>
 
@@ -627,6 +628,13 @@ function buildNotes(s){
     </div>`).join("");
 }
 
+// 페이지 단위 URL — 각 화면이 별도 주소로 열리고, 이동 시 주소 갱신
+function setUrl(view,id){
+  const q = view==='list' ? location.pathname
+          : view==='detail' ? `?view=detail&id=${id}`
+          : `?view=print&id=${id}`;
+  history.replaceState(null,"",q);
+}
 function showDetail(id){
   const s=STUDENTS.find(x=>x.id===id);
   if(!s) return;
@@ -645,6 +653,7 @@ function showDetail(id){
   document.getElementById("titleSuffix").style.display="inline-flex";
   window.scrollTo(0,0);
   mpSyncActive("a2d");
+  setUrl("detail",id);
   lucide.createIcons();
 }
 function showList(){
@@ -654,6 +663,7 @@ function showList(){
   document.getElementById("titleSuffix").style.display="none";
   window.scrollTo(0,0);
   mpSyncActive("a2");
+  setUrl("list");
 }
 
 /* ══════════ 출력 (반 단위 · 범위 설정 · 개별/전체) ══════════ */
@@ -702,11 +712,15 @@ function pvOpenOverlay(){
   pvRenderDrop();
   pvRenderPaper();
   document.getElementById("printOverlay").classList.add("show");
+  setUrl("print",pvPreviewId);
   lucide.createIcons();
 }
 function pvClose(){
   document.getElementById("printOverlay").classList.remove("show");
   document.getElementById("pvDrop").classList.remove("open");
+  // 오버레이 닫으면 아래 화면(상세/목록) 주소로 복귀
+  if(document.getElementById("detailView").style.display!=="none") setUrl("detail",window.__detailId||pvPreviewId);
+  else setUrl("list");
 }
 function pvToggleDrop(){ document.getElementById("pvDrop").classList.toggle("open"); }
 function pvRenderDrop(){
@@ -721,6 +735,7 @@ function pvSelect(id){
   document.getElementById("pvDrop").classList.remove("open");
   pvRenderDrop();
   pvRenderPaper();
+  setUrl("print",id);
   lucide.createIcons();
 }
 
@@ -817,6 +832,7 @@ function mpToggle(){
 function mpGo(k){
   if(k==='a2') showList();
   else if(k==='a2d') showDetail('10202');
+  else if(k==='a2p'){ const c=document.getElementById('it-chart'); if(c) c.checked=false; openPrint(); }  // 차트 제외 출력 화면
 }
 function mpSyncActive(key){
   document.querySelectorAll('#mockpick .mp-btn').forEach(b=>b.classList.toggle('on',b.dataset.k===key));
@@ -832,10 +848,12 @@ function mpSyncActive(key){
 renderList();
 mpSyncActive("a2");
 
-/* URL 파라미터: ?view=detail&id=10202 → 상세 직행 */
+/* URL 파라미터: ?view=detail&id= → 상세 · ?view=print&id= → 출력 화면 직행 */
 (function(){
   const q=new URLSearchParams(location.search);
-  if(q.get('view')==='detail') showDetail(q.get('id')||'10202');
+  const view=q.get('view'), id=q.get('id')||'10202';
+  if(view==='detail') showDetail(id);
+  else if(view==='print'){ showDetail(id); openPrint(); }
 })();
 lucide.createIcons();
 </script>
