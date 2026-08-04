@@ -2637,7 +2637,12 @@ function _fillDetail(name, mode) {
 function showDetailFilled(name) { _fillDetail(name, 'simple'); }
 
 // 임시 저장
+// '확인 필요' 표식은 그 단계를 저장하면 해제 — 임시저장도 저장으로 친다 (PRD 3.5)
 function saveDraft() {
+  var cur = document.querySelector('.screen.active');
+  var id = cur ? cur.id : '';
+  if (id === 'screen-step3') clearStep('3');
+  if (id === 'screen-step4') clearStep('4');
   clearDesignDirty();
   showToast('임시저장됐습니다.', 'success');
 }
