@@ -2569,25 +2569,42 @@ function saveSimpleDesign() {
 }
 
 // 1단계 완료 상태로 detail 화면 표시
-function showDetailFilled(name) {
+// 1단계 화면을 모드에 맞춰 한 번에 그린다
+// (간편 상태를 그렸다가 정교로 되돌리면 진행 바가 한 프레임 깜박이므로 분기해서 1회만 적용)
+function _fillDetail(name, mode) {
   showScreen('detail'); // 먼저 화면 전환 (초기화 포함)
   setTimeout(function() {
-    // 평가명 채우기
+    // 공통: 평가명 + 성취기준 완료 상태
     document.getElementById('d1-name-input').value = name;
-    // 성취기준 완료 상태
     document.getElementById('d1-std-empty').style.display = 'none';
     document.getElementById('d1-std-filled').style.display = 'block';
     lucide.createIcons();
-    // 간편한 평가: 2~4단계 숨김
-    document.getElementById('d1-steps-2-4').style.display = 'none';
-    document.getElementById('d1-progress-count').textContent = '1 / 1 완료';
-    setStep1Primary('simple');
-    // step1 원 → 완료 (초록 체크)
+
     var c = document.getElementById('d1-step1-circle');
-    c.style.background = '#00AF3D'; c.style.color = 'white'; c.style.fontSize = '12px';
-    c.innerHTML = '<svg width="13" height="13" viewBox="0 0 13 13" fill="none"><polyline points="2,7 5.5,10.5 11,3" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+    c.style.fontSize = '12px'; c.style.color = 'white'; c.style.border = 'none';
+
+    if (mode === 'simple') {
+      // 간편한 평가: 1단계가 마지막 단계 → 완료(초록 체크)
+      document.getElementById('d1-steps-2-4').style.display = 'none';
+      document.getElementById('d1-progress-count').textContent = '1 / 1 완료';
+      setStep1Primary('simple');
+      c.style.background = '#00AF3D';
+      c.innerHTML = '<svg width="13" height="13" viewBox="0 0 13 13" fill="none"><polyline points="2,7 5.5,10.5 11,3" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+    } else {
+      // 정교한 평가: 1단계에 서 있는 상태 → 현재 단계(보라 1)
+      document.getElementById('d1-steps-2-4').style.display = 'flex';
+      document.getElementById('d1-progress-count').textContent = '1 / 4 완료';
+      setStep1Primary('advanced');
+      c.style.background = '#7E44FB';
+      c.innerHTML = '1';
+      _maxReached = 3;
+      updateStepBars();
+      syncStepMarks();
+    }
   }, 50);
 }
+
+function showDetailFilled(name) { _fillDetail(name, 'simple'); }
 
 // 임시 저장
 function saveDraft() {
@@ -3460,20 +3477,8 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 var _hasDownstreamData = false;
 function showDetailFilledAdvanced(name) {
-  showDetailFilled(name);
   _hasDownstreamData = true;
-  setTimeout(function() {
-    // 정교한 평가: 2~4단계 유지 + 다음 단계 버튼 복귀
-    document.getElementById('d1-steps-2-4').style.display = 'flex';
-    document.getElementById('d1-progress-count').textContent = '1 / 4 완료';
-    setStep1Primary('advanced');
-    // 정교한 평가는 1단계에 서 있는 상태 — 완료 체크가 아니라 현재 단계로 표시
-    var c = document.getElementById('d1-step1-circle');
-    c.style.background = '#7E44FB'; c.style.color = 'white'; c.style.fontSize = '12px';
-    c.innerHTML = '1';
-    _maxReached = 3;
-    updateStepBars();
-  }, 80);
+  _fillDetail(name, 'advanced');
 }
 function tryDeleteRubric() {
   if (_hasDownstreamData) { document.getElementById('modal-rubric-reset').style.display = 'flex'; lucide.createIcons(); }
@@ -3964,6 +3969,10 @@ function mpSyncActive(key){
 function mpGo(k){
   // 준비 팁 모달이 열려 있으면 먼저 닫는다 (안 닫으면 다른 케이스로 옮겨도 계속 떠 있음)
   if (typeof closeScoringGuide === 'function') closeScoringGuide();
+  // 케이스 상태가 지연 적용되는 동안 자동 동기화가 다른 버튼으로 튀지 않도록 고정
+  window._mpForcedKey = k;
+  clearTimeout(window._mpForcedTimer);
+  window._mpForcedTimer = setTimeout(function(){ window._mpForcedKey = null; }, 600);
   if(k.indexOf('lock-')!==0) setLockState(false);
   var _dm=document.getElementById('modal-delete-row'); if(_dm && k!=='del-row') _dm.style.display='none';
   if(k.indexOf('mark-')!==0) clearAllStepMarks();
@@ -4179,6 +4188,7 @@ document.addEventListener('input', function(e){
   }
   // 지금 보이는 화면·케이스에 해당하는 내비게이터 key를 DOM 상태에서 역산한다
   function currentKey(){
+    if (window._mpForcedKey) return window._mpForcedKey;
     var h = location.hash.slice(1);
     if (h === 'rubric-warn') return h;                        // 데모 케이스는 해시가 진실
     var act = document.querySelector('.screen.active');
