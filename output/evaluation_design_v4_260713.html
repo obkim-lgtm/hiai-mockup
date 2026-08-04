@@ -3444,7 +3444,9 @@ function closeDeleteRubric() {
 function confirmDeleteRubric() {
   var btn = _pendingRubricCard;
   closeDeleteRubric();
-  if (btn) { deleteRubricCard(btn); markStep('3'); }
+  // 삭제는 '확인 필요' 표식을 붙이지 않는다 — 3단계에 `미연결` 뱃지로 이미 드러나므로
+  // (문항 삭제와 동일한 처리. PRD 3.5)
+  if (btn) deleteRubricCard(btn);
 }
 function deleteRubricCard(btn) {
   const card = btn.closest('.rubric-dnd-card');
