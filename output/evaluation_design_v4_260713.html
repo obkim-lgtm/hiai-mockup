@@ -627,7 +627,7 @@ body { margin: 0; background: #EDF1FC; min-width: 1280px; }
                 <div style="width:22px;height:22px;border-radius:50%;background:#E6E6E6;color:#B3B3B3;font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;">3</div>
                 <div id="tip-d3" style="display:none;position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%);background:rgba(0,0,0,0.78);color:white;font-size:11px;font-weight:700;border-radius:6px;padding:5px 10px;white-space:nowrap;z-index:50;pointer-events:none;">이전 단계를 먼저 완료해 주세요<div style="position:absolute;top:100%;left:50%;transform:translateX(-50%);border:5px solid transparent;border-top-color:rgba(0,0,0,0.78);"></div></div>
               </div>
-              <span style="font-size:14px;color:#808080;white-space:nowrap;">채점기준 연결</span>
+              <span style="font-size:14px;color:#808080;white-space:nowrap;">채점기준 연결</span><span class="step-mark" data-step="3" style="display:none;align-items:center;gap:3px;background:#FFF3E0;color:#C2620A;border-radius:100px;padding:2px 8px;font-size:12px;font-weight:700;white-space:nowrap;margin-left:6px;">확인 필요</span>
             </div>
             <div style="flex:1;height:1px;background:#B3B3B3;margin:0 10px;min-width:12px;"></div>
             <!-- step 4: LOCKED + 선택 -->
@@ -638,7 +638,7 @@ body { margin: 0; background: #EDF1FC; min-width: 1280px; }
                 <div style="width:22px;height:22px;border-radius:50%;background:#E6E6E6;color:#B3B3B3;font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;">4</div>
                 <div id="tip-d4" style="display:none;position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%);background:rgba(0,0,0,0.78);color:white;font-size:11px;font-weight:700;border-radius:6px;padding:5px 10px;white-space:nowrap;z-index:50;pointer-events:none;">이전 단계를 먼저 완료해 주세요<div style="position:absolute;top:100%;left:50%;transform:translateX(-50%);border:5px solid transparent;border-top-color:rgba(0,0,0,0.78);"></div></div>
               </div>
-              <span style="font-size:14px;color:#808080;white-space:nowrap;">모범답안 입력 <span style="font-size:13px;font-weight:400;">(선택)</span></span>
+              <span style="font-size:14px;color:#808080;white-space:nowrap;">모범답안 입력 <span style="font-size:13px;font-weight:400;">(선택)</span></span><span class="step-mark" data-step="4" style="display:none;align-items:center;gap:3px;background:#FFF3E0;color:#C2620A;border-radius:100px;padding:2px 8px;font-size:12px;font-weight:700;white-space:nowrap;margin-left:6px;">확인 필요</span>
             </div>
             </div><!-- /d1-steps-2-4 -->
           </div>
@@ -1020,7 +1020,7 @@ body { margin: 0; background: #EDF1FC; min-width: 1280px; }
                 <button onclick="saveDraft()" style="display:inline-flex;justify-content:center;align-items:center;line-height:1;vertical-align:middle;gap:8px;background:transparent;border:1px solid #B28FFD;border-radius:8px;height:40px;padding:0 16px;cursor:pointer;color:#7E44FB;font-size:16px;font-weight:700;font-family:inherit;">
                   임시 저장
                 </button>
-                <button id="d1-btn-next" onclick="proceedFromStep1()" style="display:inline-flex;align-items:center;justify-content:center;line-height:1;vertical-align:middle;gap:8px;background:#7E44FB;border:none;border-radius:8px;height:40px;padding:0 16px;cursor:pointer;color:white;font-size:16px;font-weight:700;font-family:inherit;">
+                <button id="d1-btn-next" onclick="showScreen('step2')" style="display:inline-flex;align-items:center;justify-content:center;line-height:1;vertical-align:middle;gap:8px;background:#7E44FB;border:none;border-radius:8px;height:40px;padding:0 16px;cursor:pointer;color:white;font-size:16px;font-weight:700;font-family:inherit;">
                   저장 후 다음으로
                   <i data-lucide="arrow-right" style="width:16px;height:16px;"></i>
                 </button>
@@ -1120,7 +1120,7 @@ body { margin: 0; background: #EDF1FC; min-width: 1280px; }
                 <div style="width:22px;height:22px;border-radius:50%;background:#E6E6E6;color:#B3B3B3;font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;">3</div>
                 <div id="tip-s2-3" style="display:none;position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%);background:rgba(0,0,0,0.78);color:white;font-size:11px;font-weight:700;border-radius:6px;padding:5px 10px;white-space:nowrap;z-index:50;pointer-events:none;">이전 단계를 먼저 완료해 주세요<div style="position:absolute;top:100%;left:50%;transform:translateX(-50%);border:5px solid transparent;border-top-color:rgba(0,0,0,0.78);"></div></div>
               </div>
-              <span style="font-size:14px;color:#808080;white-space:nowrap;">채점기준 연결</span>
+              <span style="font-size:14px;color:#808080;white-space:nowrap;">채점기준 연결</span><span class="step-mark" data-step="3" style="display:none;align-items:center;gap:3px;background:#FFF3E0;color:#C2620A;border-radius:100px;padding:2px 8px;font-size:12px;font-weight:700;white-space:nowrap;margin-left:6px;">확인 필요</span>
             </div>
             <div style="flex:1;height:1px;background:#B3B3B3;margin:0 10px;min-width:12px;"></div>
             <!-- step 4: LOCKED + 선택 -->
@@ -1131,7 +1131,7 @@ body { margin: 0; background: #EDF1FC; min-width: 1280px; }
                 <div style="width:22px;height:22px;border-radius:50%;background:#E6E6E6;color:#B3B3B3;font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;">4</div>
                 <div id="tip-s2-4" style="display:none;position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%);background:rgba(0,0,0,0.78);color:white;font-size:11px;font-weight:700;border-radius:6px;padding:5px 10px;white-space:nowrap;z-index:50;pointer-events:none;">이전 단계를 먼저 완료해 주세요<div style="position:absolute;top:100%;left:50%;transform:translateX(-50%);border:5px solid transparent;border-top-color:rgba(0,0,0,0.78);"></div></div>
               </div>
-              <span style="font-size:14px;color:#808080;white-space:nowrap;">모범답안 입력 <span style="font-size:13px;font-weight:400;">(선택)</span></span>
+              <span style="font-size:14px;color:#808080;white-space:nowrap;">모범답안 입력 <span style="font-size:13px;font-weight:400;">(선택)</span></span><span class="step-mark" data-step="4" style="display:none;align-items:center;gap:3px;background:#FFF3E0;color:#C2620A;border-radius:100px;padding:2px 8px;font-size:12px;font-weight:700;white-space:nowrap;margin-left:6px;">확인 필요</span>
             </div>
           </div>
           <span style="font-size:14px;color:#7E44FB;font-weight:800;white-space:nowrap;margin-left:20px;">1 / 4 완료</span>
@@ -1238,7 +1238,7 @@ body { margin: 0; background: #EDF1FC; min-width: 1280px; }
                   <button onclick="moveRow(0,-1)" title="위로 이동" style="width:28px;height:28px;border:none;background:transparent;border-radius:6px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;line-height:1;vertical-align:middle;" onmouseover="this.style.background='#F0F0F0'" onmouseout="this.style.background='transparent'"><i data-lucide="chevron-up" style="width:16px;height:16px;color:#808080;"></i></button>
                   <button onclick="moveRow(0,1)" title="아래로 이동" style="width:28px;height:28px;border:none;background:transparent;border-radius:6px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;line-height:1;vertical-align:middle;" onmouseover="this.style.background='#F0F0F0'" onmouseout="this.style.background='transparent'"><i data-lucide="chevron-down" style="width:16px;height:16px;color:#808080;"></i></button>
                   <div style="width:1px;height:14px;background:#E6E6E6;margin:0 2px;"></div>
-                  <button onclick="deleteRow(0)" title="문항 삭제" style="width:28px;height:28px;border:none;background:transparent;border-radius:6px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;line-height:1;vertical-align:middle;color:#B3B3B3;" onmouseover="this.style.background='#FFF0F0';this.style.color='#DB3E51'" onmouseout="this.style.background='transparent';this.style.color='#B3B3B3'"><i data-lucide="trash-2" style="width:15px;height:15px;"></i></button>
+                  <button onclick="requestDeleteRow(0)" title="문항 삭제" style="width:28px;height:28px;border:none;background:transparent;border-radius:6px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;line-height:1;vertical-align:middle;color:#B3B3B3;" onmouseover="this.style.background='#FFF0F0';this.style.color='#DB3E51'" onmouseout="this.style.background='transparent';this.style.color='#B3B3B3'"><i data-lucide="trash-2" style="width:15px;height:15px;"></i></button>
                 </div>
                 <div style="padding:10px 12px;display:flex;flex-direction:column;gap:6px;">
                   <textarea class="q-content-ta" style="width:100%;min-height:56px;border:1px solid #D9D9D9;border-radius:6px;padding:9px 10px;font-size:16px;font-family:inherit;resize:vertical;outline:none;color:#333;line-height:1.55;background:white;" onfocus="this.style.borderColor='#7E44FB'" onblur="this.style.borderColor='#D9D9D9'">주인공의 심정을 이유와 함께 서술하시오.</textarea>
@@ -1254,7 +1254,7 @@ body { margin: 0; background: #EDF1FC; min-width: 1280px; }
                   <button onclick="moveRow(1,-1)" title="위로 이동" style="width:28px;height:28px;border:none;background:transparent;border-radius:6px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;line-height:1;vertical-align:middle;" onmouseover="this.style.background='#F0F0F0'" onmouseout="this.style.background='transparent'"><i data-lucide="chevron-up" style="width:16px;height:16px;color:#808080;"></i></button>
                   <button onclick="moveRow(1,1)" title="아래로 이동" style="width:28px;height:28px;border:none;background:transparent;border-radius:6px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;line-height:1;vertical-align:middle;" onmouseover="this.style.background='#F0F0F0'" onmouseout="this.style.background='transparent'"><i data-lucide="chevron-down" style="width:16px;height:16px;color:#808080;"></i></button>
                   <div style="width:1px;height:14px;background:#E6E6E6;margin:0 2px;"></div>
-                  <button onclick="deleteRow(1)" title="문항 삭제" style="width:28px;height:28px;border:none;background:transparent;border-radius:6px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;line-height:1;vertical-align:middle;color:#B3B3B3;" onmouseover="this.style.background='#FFF0F0';this.style.color='#DB3E51'" onmouseout="this.style.background='transparent';this.style.color='#B3B3B3'"><i data-lucide="trash-2" style="width:15px;height:15px;"></i></button>
+                  <button onclick="requestDeleteRow(1)" title="문항 삭제" style="width:28px;height:28px;border:none;background:transparent;border-radius:6px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;line-height:1;vertical-align:middle;color:#B3B3B3;" onmouseover="this.style.background='#FFF0F0';this.style.color='#DB3E51'" onmouseout="this.style.background='transparent';this.style.color='#B3B3B3'"><i data-lucide="trash-2" style="width:15px;height:15px;"></i></button>
                 </div>
                 <div style="padding:10px 12px;display:flex;flex-direction:column;gap:6px;">
                   <textarea class="q-content-ta" style="width:100%;min-height:56px;border:1px solid #D9D9D9;border-radius:6px;padding:9px 10px;font-size:16px;font-family:inherit;resize:vertical;outline:none;color:#333;line-height:1.55;background:white;" onfocus="this.style.borderColor='#7E44FB'" onblur="this.style.borderColor='#D9D9D9'">위 글에서 사용된 표현 방법 2가지를 쓰고, 각각의 효과를 설명하시오.</textarea>
@@ -1270,7 +1270,7 @@ body { margin: 0; background: #EDF1FC; min-width: 1280px; }
                   <button onclick="moveRow(2,-1)" title="위로 이동" style="width:28px;height:28px;border:none;background:transparent;border-radius:6px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;line-height:1;vertical-align:middle;" onmouseover="this.style.background='#F0F0F0'" onmouseout="this.style.background='transparent'"><i data-lucide="chevron-up" style="width:16px;height:16px;color:#808080;"></i></button>
                   <button onclick="moveRow(2,1)" title="아래로 이동" style="width:28px;height:28px;border:none;background:transparent;border-radius:6px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;line-height:1;vertical-align:middle;" onmouseover="this.style.background='#F0F0F0'" onmouseout="this.style.background='transparent'"><i data-lucide="chevron-down" style="width:16px;height:16px;color:#808080;"></i></button>
                   <div style="width:1px;height:14px;background:#E6E6E6;margin:0 2px;"></div>
-                  <button onclick="deleteRow(2)" title="문항 삭제" style="width:28px;height:28px;border:none;background:transparent;border-radius:6px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;line-height:1;vertical-align:middle;color:#B3B3B3;" onmouseover="this.style.background='#FFF0F0';this.style.color='#DB3E51'" onmouseout="this.style.background='transparent';this.style.color='#B3B3B3'"><i data-lucide="trash-2" style="width:15px;height:15px;"></i></button>
+                  <button onclick="requestDeleteRow(2)" title="문항 삭제" style="width:28px;height:28px;border:none;background:transparent;border-radius:6px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;line-height:1;vertical-align:middle;color:#B3B3B3;" onmouseover="this.style.background='#FFF0F0';this.style.color='#DB3E51'" onmouseout="this.style.background='transparent';this.style.color='#B3B3B3'"><i data-lucide="trash-2" style="width:15px;height:15px;"></i></button>
                 </div>
                 <div style="padding:10px 12px;display:flex;flex-direction:column;gap:6px;">
                   <textarea class="q-content-ta" style="width:100%;min-height:56px;border:1px solid #D9D9D9;border-radius:6px;padding:9px 10px;font-size:16px;font-family:inherit;resize:vertical;outline:none;color:#333;line-height:1.55;background:white;" onfocus="this.style.borderColor='#7E44FB'" onblur="this.style.borderColor='#D9D9D9'">아래 표를 완성하시오.</textarea>
@@ -1286,7 +1286,7 @@ body { margin: 0; background: #EDF1FC; min-width: 1280px; }
                   <button onclick="moveRow(3,-1)" title="위로 이동" style="width:28px;height:28px;border:none;background:transparent;border-radius:6px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;line-height:1;vertical-align:middle;" onmouseover="this.style.background='#F0F0F0'" onmouseout="this.style.background='transparent'"><i data-lucide="chevron-up" style="width:16px;height:16px;color:#808080;"></i></button>
                   <button onclick="moveRow(3,1)" title="아래로 이동" style="width:28px;height:28px;border:none;background:transparent;border-radius:6px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;line-height:1;vertical-align:middle;" onmouseover="this.style.background='#F0F0F0'" onmouseout="this.style.background='transparent'"><i data-lucide="chevron-down" style="width:16px;height:16px;color:#808080;"></i></button>
                   <div style="width:1px;height:14px;background:#E6E6E6;margin:0 2px;"></div>
-                  <button onclick="deleteRow(3)" title="문항 삭제" style="width:28px;height:28px;border:none;background:transparent;border-radius:6px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;line-height:1;vertical-align:middle;color:#B3B3B3;" onmouseover="this.style.background='#FFF0F0';this.style.color='#DB3E51'" onmouseout="this.style.background='transparent';this.style.color='#B3B3B3'"><i data-lucide="trash-2" style="width:15px;height:15px;"></i></button>
+                  <button onclick="requestDeleteRow(3)" title="문항 삭제" style="width:28px;height:28px;border:none;background:transparent;border-radius:6px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;line-height:1;vertical-align:middle;color:#B3B3B3;" onmouseover="this.style.background='#FFF0F0';this.style.color='#DB3E51'" onmouseout="this.style.background='transparent';this.style.color='#B3B3B3'"><i data-lucide="trash-2" style="width:15px;height:15px;"></i></button>
                 </div>
                 <div style="padding:10px 12px;display:flex;flex-direction:column;gap:6px;">
                   <textarea class="q-content-ta" style="width:100%;min-height:56px;border:1px solid #D9D9D9;border-radius:6px;padding:9px 10px;font-size:16px;font-family:inherit;resize:vertical;outline:none;color:#333;line-height:1.55;background:white;" onfocus="this.style.borderColor='#7E44FB'" onblur="this.style.borderColor='#D9D9D9'">위 내용을 바탕으로 환경 문제에 대한 의견을 논리적으로 서술하시오.</textarea>
@@ -1302,7 +1302,7 @@ body { margin: 0; background: #EDF1FC; min-width: 1280px; }
                   <button onclick="moveRow(4,-1)" title="위로 이동" style="width:28px;height:28px;border:none;background:transparent;border-radius:6px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;line-height:1;vertical-align:middle;" onmouseover="this.style.background='#F0F0F0'" onmouseout="this.style.background='transparent'"><i data-lucide="chevron-up" style="width:16px;height:16px;color:#808080;"></i></button>
                   <button onclick="moveRow(4,1)" title="아래로 이동" style="width:28px;height:28px;border:none;background:transparent;border-radius:6px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;line-height:1;vertical-align:middle;" onmouseover="this.style.background='#F0F0F0'" onmouseout="this.style.background='transparent'"><i data-lucide="chevron-down" style="width:16px;height:16px;color:#808080;"></i></button>
                   <div style="width:1px;height:14px;background:#E6E6E6;margin:0 2px;"></div>
-                  <button onclick="deleteRow(4)" title="문항 삭제" style="width:28px;height:28px;border:none;background:transparent;border-radius:6px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;line-height:1;vertical-align:middle;color:#B3B3B3;" onmouseover="this.style.background='#FFF0F0';this.style.color='#DB3E51'" onmouseout="this.style.background='transparent';this.style.color='#B3B3B3'"><i data-lucide="trash-2" style="width:15px;height:15px;"></i></button>
+                  <button onclick="requestDeleteRow(4)" title="문항 삭제" style="width:28px;height:28px;border:none;background:transparent;border-radius:6px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;line-height:1;vertical-align:middle;color:#B3B3B3;" onmouseover="this.style.background='#FFF0F0';this.style.color='#DB3E51'" onmouseout="this.style.background='transparent';this.style.color='#B3B3B3'"><i data-lucide="trash-2" style="width:15px;height:15px;"></i></button>
                 </div>
                 <div style="padding:10px 12px;display:flex;flex-direction:column;gap:6px;">
                   <textarea class="q-content-ta" style="width:100%;min-height:56px;border:1px solid #D9D9D9;border-radius:6px;padding:9px 10px;font-size:16px;font-family:inherit;resize:vertical;outline:none;color:#333;line-height:1.55;background:white;" onfocus="this.style.borderColor='#7E44FB'" onblur="this.style.borderColor='#D9D9D9'">이 글을 읽고 환경 보호에 대한 자신의 의견을 논리적으로 서술하시오. (150자 이상)</textarea>
@@ -1318,7 +1318,7 @@ body { margin: 0; background: #EDF1FC; min-width: 1280px; }
                   <button onclick="moveRow(5,-1)" title="위로 이동" style="width:28px;height:28px;border:none;background:transparent;border-radius:6px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;line-height:1;vertical-align:middle;" onmouseover="this.style.background='#F0F0F0'" onmouseout="this.style.background='transparent'"><i data-lucide="chevron-up" style="width:16px;height:16px;color:#808080;"></i></button>
                   <button onclick="moveRow(5,1)" title="아래로 이동" style="width:28px;height:28px;border:none;background:transparent;border-radius:6px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;line-height:1;vertical-align:middle;" onmouseover="this.style.background='#F0F0F0'" onmouseout="this.style.background='transparent'"><i data-lucide="chevron-down" style="width:16px;height:16px;color:#808080;"></i></button>
                   <div style="width:1px;height:14px;background:#E6E6E6;margin:0 2px;"></div>
-                  <button onclick="deleteRow(5)" title="문항 삭제" style="width:28px;height:28px;border:none;background:transparent;border-radius:6px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;line-height:1;vertical-align:middle;color:#B3B3B3;" onmouseover="this.style.background='#FFF0F0';this.style.color='#DB3E51'" onmouseout="this.style.background='transparent';this.style.color='#B3B3B3'"><i data-lucide="trash-2" style="width:15px;height:15px;"></i></button>
+                  <button onclick="requestDeleteRow(5)" title="문항 삭제" style="width:28px;height:28px;border:none;background:transparent;border-radius:6px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;line-height:1;vertical-align:middle;color:#B3B3B3;" onmouseover="this.style.background='#FFF0F0';this.style.color='#DB3E51'" onmouseout="this.style.background='transparent';this.style.color='#B3B3B3'"><i data-lucide="trash-2" style="width:15px;height:15px;"></i></button>
                 </div>
                 <div style="padding:10px 12px;display:flex;flex-direction:column;gap:6px;">
                   <textarea class="q-content-ta" style="width:100%;min-height:56px;border:1px solid #D9D9D9;border-radius:6px;padding:9px 10px;font-size:16px;font-family:inherit;resize:vertical;outline:none;color:#333;line-height:1.55;background:white;" onfocus="this.style.borderColor='#7E44FB'" onblur="this.style.borderColor='#D9D9D9'">두 작품의 공통된 주제를 찾고, 각 작품에서 주제를 표현한 방식의 차이를 서술하시오.</textarea>
@@ -1486,7 +1486,7 @@ body { margin: 0; background: #EDF1FC; min-width: 1280px; }
             <!-- step 3: ACTIVE -->
             <div style="display:flex;align-items:center;gap:6px;flex-shrink:0;">
               <div style="width:26px;height:26px;border-radius:50%;background:#7E44FB;color:white;font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center;">3</div>
-              <span style="font-size:14px;font-weight:800;color:#7E44FB;white-space:nowrap;">채점기준 연결</span>
+              <span style="font-size:14px;font-weight:800;color:#7E44FB;white-space:nowrap;">채점기준 연결</span><span class="step-mark" data-step="3" style="display:none;align-items:center;gap:3px;background:#FFF3E0;color:#C2620A;border-radius:100px;padding:2px 8px;font-size:12px;font-weight:700;white-space:nowrap;margin-left:6px;">확인 필요</span>
             </div>
             <div style="flex:1;height:1px;background:#B3B3B3;margin:0 10px;min-width:12px;"></div>
             <!-- step 4: LOCKED + 선택 -->
@@ -1497,19 +1497,11 @@ body { margin: 0; background: #EDF1FC; min-width: 1280px; }
                 <div style="width:22px;height:22px;border-radius:50%;background:#E6E6E6;color:#B3B3B3;font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;">4</div>
                 <div id="tip-s3-4" style="display:none;position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%);background:rgba(0,0,0,0.78);color:white;font-size:11px;font-weight:700;border-radius:6px;padding:5px 10px;white-space:nowrap;z-index:50;pointer-events:none;">이전 단계를 먼저 완료해 주세요<div style="position:absolute;top:100%;left:50%;transform:translateX(-50%);border:5px solid transparent;border-top-color:rgba(0,0,0,0.78);"></div></div>
               </div>
-              <span style="font-size:14px;color:#808080;white-space:nowrap;">모범답안 입력 <span style="font-size:13px;font-weight:400;">(선택)</span></span>
+              <span style="font-size:14px;color:#808080;white-space:nowrap;">모범답안 입력 <span style="font-size:13px;font-weight:400;">(선택)</span></span><span class="step-mark" data-step="4" style="display:none;align-items:center;gap:3px;background:#FFF3E0;color:#C2620A;border-radius:100px;padding:2px 8px;font-size:12px;font-weight:700;white-space:nowrap;margin-left:6px;">확인 필요</span>
             </div>
           </div>
           <span style="font-size:14px;color:#7E44FB;font-weight:800;white-space:nowrap;margin-left:20px;">2 / 4 완료</span>
         </div>
-        <!-- 채점기준 수정 후 재확인 안내 -->
-        <div id="s3-recheck-banner" style="display:none;padding:14px 16px;background:#EDF1FC;border-radius:8px;gap:10px;align-items:flex-start;margin-bottom:20px;">
-          <i data-lucide="info" style="width:16px;height:16px;color:#5890FF;flex-shrink:0;margin-top:2px;"></i>
-          <div style="font-size:14px;color:#3A68D8;line-height:1.65;">
-            <strong>1단계에서 채점기준이 수정됐어요.</strong> 문항에 연결된 기준이 여전히 맞는지 확인해 주세요.
-          </div>
-        </div>
-
         <!-- 전체 연결 실패 안내 -->
         <div id="s3-fail-banner" style="display:none;padding:14px 16px;background:#FFF8F0;border-radius:8px;gap:10px;align-items:flex-start;margin-bottom:20px;">
           <i data-lucide="alert-circle" style="width:16px;height:16px;color:#FF8C4C;flex-shrink:0;margin-top:2px;"></i>
@@ -1654,13 +1646,13 @@ body { margin: 0; background: #EDF1FC; min-width: 1280px; }
               <div style="width:22px;height:22px;border-radius:50%;background:#7E44FB;color:white;display:flex;align-items:center;justify-content:center;">
                 <i data-lucide="check" style="width:12px;height:12px;stroke-width:3;"></i>
               </div>
-              <span style="font-size:14px;font-weight:700;color:#7E44FB;white-space:nowrap;">채점기준 연결</span>
+              <span style="font-size:14px;font-weight:700;color:#7E44FB;white-space:nowrap;">채점기준 연결</span><span class="step-mark" data-step="3" style="display:none;align-items:center;gap:3px;background:#FFF3E0;color:#C2620A;border-radius:100px;padding:2px 8px;font-size:12px;font-weight:700;white-space:nowrap;margin-left:6px;">확인 필요</span>
             </div>
             <div style="flex:1;height:1px;background:#7E44FB;margin:0 10px;min-width:12px;"></div>
             <!-- step 4: ACTIVE + 선택 -->
             <div style="display:flex;align-items:center;gap:6px;flex-shrink:0;">
               <div style="width:26px;height:26px;border-radius:50%;background:#7E44FB;color:white;font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center;">4</div>
-              <span style="font-size:14px;font-weight:800;color:#7E44FB;white-space:nowrap;">모범답안 입력 <span style="font-size:13px;font-weight:400;">(선택)</span></span>
+              <span style="font-size:14px;font-weight:800;color:#7E44FB;white-space:nowrap;">모범답안 입력 <span style="font-size:13px;font-weight:400;">(선택)</span></span><span class="step-mark" data-step="4" style="display:none;align-items:center;gap:3px;background:#FFF3E0;color:#C2620A;border-radius:100px;padding:2px 8px;font-size:12px;font-weight:700;white-space:nowrap;margin-left:6px;">확인 필요</span>
             </div>
           </div>
           <span style="font-size:14px;color:#7E44FB;font-weight:800;white-space:nowrap;margin-left:20px;">3 / 4 완료</span>
@@ -2180,7 +2172,6 @@ function showScreen(name) {
     // 목록에서 직접 진입 시 로딩 없이 콘텐츠 바로 표시
     document.getElementById('s3-loading').style.display = 'none';
     document.getElementById('s3-content').style.display = 'block';
-    syncRecheckBanner();
     selectQuestion(_s3CurrentQ || _s3Data[0].id);
     setTimeout(initStep3Labels, 100);
   }
@@ -2213,6 +2204,7 @@ function showScreen(name) {
     document.querySelectorAll('#screen-step4 .s4-exact').forEach(function(ex) { s4SyncAddBtn(ex); });
   }
   updateStepBars();
+  syncStepMarks();
   _syncHash(name);
 }
 // ── 과제물 업로드 후 잠금 상태 ──
@@ -2480,33 +2472,23 @@ document.addEventListener('input', function(e) {
   if (e.target.closest('#screen-detail, #screen-step2, #screen-step3, #screen-step4, #screen-simple')) {
     _designDirty = true;
   }
-  // 3단계 연결이 있는 상태에서 1단계 채점기준을 고치면 → 재확인 안내 대상
-  if (_hasDownstreamData && e.target.closest('#rubric-list')) {
-    _rubricEditedAfterLink = true;
-  }
+  // 참조 대상의 내용이 바뀌면 뒷 단계에 '확인 필요'
+  if (_hasDownstreamData && e.target.closest('#rubric-list')) markStep('3');       // 채점기준 → 3단계
+  if (_hasDownstreamData && e.target.closest('.q-content-ta')) { markStep('3'); markStep('4'); } // 문항 지시문 → 3·4단계
 }, true);
 
-// ── 채점기준 수정 → 3단계 재확인 안내 ──
-var _rubricEditedAfterLink = false;
+// ── 변경 연쇄: '확인 필요' 표식 (진행 바 단일 모델) ──
+// 앞 단계를 바꾸면 뒷 단계에 표식이 붙고, 그 단계를 저장하면 꺼진다.
+var _needCheck = { '3': false, '4': false };
 
-function proceedFromStep1() {
-  if (_rubricEditedAfterLink) {
-    document.getElementById('modal-recheck-link').style.display = 'flex';
-    lucide.createIcons();
-    return;
-  }
-  showScreen('step2');
-}
-function closeRecheckModal() {
-  document.getElementById('modal-recheck-link').style.display = 'none';
-}
-function recheckGo(target) {
-  closeRecheckModal();
-  showScreen(target);
-}
-function syncRecheckBanner() {
-  var b = document.getElementById('s3-recheck-banner');
-  if (b) b.style.display = _rubricEditedAfterLink ? 'flex' : 'none';
+function markStep(step) { _needCheck[step] = true; syncStepMarks(); }
+function clearStep(step) { _needCheck[step] = false; syncStepMarks(); }
+function clearAllStepMarks() { _needCheck['3'] = false; _needCheck['4'] = false; syncStepMarks(); }
+
+function syncStepMarks() {
+  document.querySelectorAll('.step-mark').forEach(function(el) {
+    el.style.display = _needCheck[el.dataset.step] ? 'inline-flex' : 'none';
+  });
 }
 function markDesignDirty() { _designDirty = true; }
 function clearDesignDirty() { _designDirty = false; _step3Dirty = false; }
@@ -2570,7 +2552,7 @@ function setStep1Primary(mode) {
     b.setAttribute('onclick', 'saveSimpleDesign()');
     b.innerHTML = '저장';
   } else {
-    b.setAttribute('onclick', 'proceedFromStep1()');
+    b.setAttribute('onclick', "showScreen('step2')");
     b.innerHTML = '저장 후 다음으로 <i data-lucide="arrow-right" style="width:16px;height:16px;"></i>';
   }
   lucide.createIcons();
@@ -2762,6 +2744,23 @@ function addQuestionRow() {
 }
 
 // 문항 삭제 (2단계)
+var _pendingDeleteRow = null;
+function requestDeleteRow(idx) {
+  // 3·4단계 데이터가 있을 때만 확인 — 신규 작성 중에는 바로 삭제
+  if (!_hasDownstreamData) { deleteRow(idx); return; }
+  _pendingDeleteRow = idx;
+  document.getElementById('modal-delete-row').style.display = 'flex';
+  lucide.createIcons();
+}
+function closeDeleteRow() {
+  document.getElementById('modal-delete-row').style.display = 'none';
+  _pendingDeleteRow = null;
+}
+function confirmDeleteRow() {
+  var idx = _pendingDeleteRow;
+  closeDeleteRow();
+  if (idx !== null) deleteRow(idx);
+}
 function deleteRow(idx) {
   markDesignDirty();
 
@@ -2904,6 +2903,7 @@ function setListCase(mode) {
 
 // 4단계 설계 완료 → 목록 이동 + 성공 토스트
 function completeDesign() {
+  clearStep('4');
   clearDesignDirty();
   showScreen('list');
   setTimeout(function() { showToast('설계가 완료되었습니다.', 'success'); }, 100);
@@ -3410,8 +3410,7 @@ function initStep3Labels() {
 
 // ── 3단계: 다음 단계 이동 ──
 function checkStep3AndProceed() {
-  _rubricEditedAfterLink = false;
-  syncRecheckBanner();
+  clearStep('3');
   showScreen('step4');
 }
 
@@ -3543,22 +3542,22 @@ function closeRubricResetModal() { document.getElementById('modal-rubric-reset')
 
 
 <!-- ═══════════════════════════════════════
-     채점기준 수정 → 3단계 재확인 안내 팝업 (1단계 저장 시)
+     문항 삭제 확인 다이얼로그 (3·4단계 데이터 존재 시)
 ═══════════════════════════════════════ -->
-<div id="modal-recheck-link" style="display:none;position:fixed;inset:0;z-index:700;background:rgba(0,0,0,0.45);align-items:center;justify-content:center;" onclick="if(event.target===this)closeRecheckModal()">
-  <div style="background:white;border-radius:16px;width:460px;padding:28px 28px 24px;box-shadow:0 12px 40px rgba(0,0,0,0.18);">
+<div id="modal-delete-row" style="display:none;position:fixed;inset:0;z-index:700;background:rgba(0,0,0,0.45);align-items:center;justify-content:center;" onclick="if(event.target===this)closeDeleteRow()">
+  <div style="background:white;border-radius:16px;width:440px;padding:28px 28px 24px;box-shadow:0 12px 40px rgba(0,0,0,0.18);">
     <div style="display:flex;align-items:flex-start;gap:14px;">
-      <div style="width:40px;height:40px;border-radius:50%;background:#EDF1FC;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-        <i data-lucide="link" style="width:20px;height:20px;color:#5890FF;"></i>
+      <div style="width:40px;height:40px;border-radius:50%;background:#FFF8F0;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+        <i data-lucide="alert-circle" style="width:20px;height:20px;color:#FF8C4C;"></i>
       </div>
       <div>
-        <h3 style="font-size:16px;font-weight:800;color:#000;margin:0 0 6px;">수정한 채점기준, 문항 연결도 확인할까요?</h3>
-        <p style="font-size:14px;color:#494949;margin:0;line-height:1.6;">채점기준이 바뀌면 3단계에서 연결해 둔 문항과 더 이상 맞지 않을 수 있어요.<br>수정 내용은 저장됐습니다.</p>
+        <h3 style="font-size:16px;font-weight:800;color:#000;margin:0 0 6px;">이 문항을 삭제할까요?</h3>
+        <p style="font-size:14px;color:#494949;margin:0;line-height:1.6;">이 문항에 연결해 둔 채점기준과 입력한 모범답안도 함께 사라집니다.</p>
       </div>
     </div>
     <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:20px;">
-      <button onclick="recheckGo('step2')" style="height:36px;padding:0 16px;background:white;border:1px solid #D9D9D9;border-radius:8px;cursor:pointer;font-size:15px;font-weight:700;color:#494949;font-family:inherit;display:inline-flex;align-items:center;justify-content:center;line-height:1;vertical-align:middle;" onmouseover="this.style.background='#F8F8F8'" onmouseout="this.style.background='white'">2단계부터 진행</button>
-      <button onclick="recheckGo('step3')" style="height:36px;padding:0 16px;background:#7E44FB;border:none;border-radius:8px;cursor:pointer;font-size:15px;font-weight:700;color:white;font-family:inherit;display:inline-flex;align-items:center;justify-content:center;line-height:1;vertical-align:middle;" onmouseover="this.style.opacity='0.88'" onmouseout="this.style.opacity='1'">3단계 바로 확인</button>
+      <button onclick="closeDeleteRow()" style="height:36px;padding:0 16px;background:white;border:1px solid #D9D9D9;border-radius:8px;cursor:pointer;font-size:15px;font-weight:700;color:#494949;font-family:inherit;display:inline-flex;align-items:center;justify-content:center;line-height:1;vertical-align:middle;" onmouseover="this.style.background='#F8F8F8'" onmouseout="this.style.background='white'">취소</button>
+      <button onclick="confirmDeleteRow()" style="height:36px;padding:0 16px;background:#DB3E51;border:none;border-radius:8px;cursor:pointer;font-size:15px;font-weight:700;color:white;font-family:inherit;display:inline-flex;align-items:center;justify-content:center;line-height:1;vertical-align:middle;" onmouseover="this.style.opacity='0.88'" onmouseout="this.style.opacity='1'">삭제</button>
     </div>
   </div>
 </div>
@@ -3896,32 +3895,31 @@ function closeRubricResetModal() { document.getElementById('modal-rubric-reset')
     <button class="mp-btn" data-k="type" onclick="mpGo('type')">설계 방식 선택 <span class="mp-sub">간편 / 정교</span></button>
     <button class="mp-btn" data-k="simple" onclick="mpGo('simple')">간편한 평가 <span class="mp-sub">1단계로 완료</span></button>
 
-    <div class="mp-cap">정교한 평가 · 1단계</div>
-    <button class="mp-btn" data-k="detail" onclick="mpGo('detail')">설계 기본 정보</button>
-    <button class="mp-btn" data-k="rubric-warn" onclick="mpGo('rubric-warn')">채점기준 복잡 <span class="mp-sub">여러 판단 뭉침 경고</span></button>
+    <div class="mp-cap">정교한 평가 · 단계별</div>
+    <button class="mp-btn" data-k="detail" onclick="mpGo('detail')">1단계 · 설계 기본 정보</button>
+    <button class="mp-btn" data-k="s2-upload" onclick="mpGo('s2-upload')">2단계 · 업로드 대기</button>
+    <button class="mp-btn" data-k="s2-loading" onclick="mpGo('s2-loading')">2단계 · 문항 나누는 중</button>
+    <button class="mp-btn" data-k="s2-result" onclick="mpGo('s2-result')">2단계 · 문항 구분 완료</button>
+    <button class="mp-btn" data-k="s3-loading" onclick="mpGo('s3-loading')">3단계 · 연결하는 중</button>
+    <button class="mp-btn" data-k="s3-ai" onclick="mpGo('s3-ai')">3단계 · AI 연결 완료</button>
+    <button class="mp-btn" data-k="step4" onclick="mpGo('step4')">4단계 · 모범답안 입력</button>
 
-    <div class="mp-cap">2단계 · 활동지 문항 구분</div>
-    <button class="mp-btn" data-k="s2-upload" onclick="mpGo('s2-upload')">업로드 대기 <span class="mp-sub">빈 상태</span></button>
-    <button class="mp-btn" data-k="s2-loading" onclick="mpGo('s2-loading')">문항 나누는 중 <span class="mp-sub">로딩</span></button>
-    <button class="mp-btn" data-k="s2-result" onclick="mpGo('s2-result')">문항 구분 완료 <span class="mp-sub">기본</span></button>
-    <button class="mp-btn" data-k="s2-fail" onclick="mpGo('s2-fail')">문항 구분 실패 <span class="mp-sub">재시도 · 교체</span></button>
-    <button class="mp-btn" data-k="s2-guide" onclick="mpGo('s2-guide')">채점 정확도 안내 <span class="mp-sub">준비 팁 모달</span></button>
-
-    <div class="mp-cap">3단계 · 채점기준 연결</div>
-    <button class="mp-btn" data-k="s3-loading" onclick="mpGo('s3-loading')">연결하는 중 <span class="mp-sub">로딩</span></button>
-    <button class="mp-btn" data-k="s3-ai" onclick="mpGo('s3-ai')">AI 연결 완료 <span class="mp-sub">기본</span></button>
+    <div class="mp-cap">실패</div>
+    <button class="mp-btn" data-k="s2-fail" onclick="mpGo('s2-fail')">문항 구분 실패 <span class="mp-sub">재시도 · 간편 전환</span></button>
     <button class="mp-btn" data-k="s3-fail" onclick="mpGo('s3-fail')">AI 연결 실패 <span class="mp-sub">전체 직접 선택</span></button>
 
-    <div class="mp-cap">1단계 수정 연쇄</div>
-    <button class="mp-btn" data-k="recheck-popup" onclick="mpGo('recheck-popup')">저장 시 안내 팝업 <span class="mp-sub">2단계 / 3단계 선택</span></button>
-    <button class="mp-btn" data-k="s3-recheck" onclick="mpGo('s3-recheck')">3단계 재확인 배너</button>
+    <div class="mp-cap">변경 연쇄 · 확인 필요</div>
+    <button class="mp-btn" data-k="mark-rubric" onclick="mpGo('mark-rubric')">채점기준 수정 <span class="mp-sub">3단계 표식</span></button>
+    <button class="mp-btn" data-k="mark-question" onclick="mpGo('mark-question')">문항 지시문 수정 <span class="mp-sub">3·4단계 표식</span></button>
+    <button class="mp-btn" data-k="del-row" onclick="mpGo('del-row')">문항 삭제 확인 <span class="mp-sub">연결·모범답안 함께 삭제</span></button>
 
-    <div class="mp-cap">과제물 인식 후 (잠금)</div>
+    <div class="mp-cap">잠금 · 과제물 인식 후</div>
     <button class="mp-btn" data-k="lock-s1" onclick="mpGo('lock-s1')">1단계 · 채점기준 잠금 <span class="mp-sub">삭제·교체 불가</span></button>
     <button class="mp-btn" data-k="lock-s2" onclick="mpGo('lock-s2')">2단계 · 문항 잠금 <span class="mp-sub">편집 불가</span></button>
 
-    <div class="mp-cap">4단계 · 문항별 모범답안</div>
-    <button class="mp-btn" data-k="step4" onclick="mpGo('step4')">모범답안 입력 <span class="mp-sub">정답형 · 자유 서술형</span></button>
+    <div class="mp-cap">기타</div>
+    <button class="mp-btn" data-k="rubric-warn" onclick="mpGo('rubric-warn')">채점기준 복잡 경고</button>
+    <button class="mp-btn" data-k="s2-guide" onclick="mpGo('s2-guide')">채점 정확도 안내 <span class="mp-sub">준비 팁 모달</span></button>
   </div>
 </div>
 
@@ -3959,8 +3957,8 @@ function mpGo(k){
   // 준비 팁 모달이 열려 있으면 먼저 닫는다 (안 닫으면 다른 케이스로 옮겨도 계속 떠 있음)
   if (typeof closeScoringGuide === 'function') closeScoringGuide();
   if(k.indexOf('lock-')!==0) setLockState(false);
-  var _rm=document.getElementById('modal-recheck-link'); if(_rm && k!=='recheck-popup') _rm.style.display='none';
-  if(k!=='recheck-popup' && k!=='s3-recheck'){ _rubricEditedAfterLink=false; var _rb=document.getElementById('s3-recheck-banner'); if(_rb) _rb.style.display='none'; }
+  var _dm=document.getElementById('modal-delete-row'); if(_dm && k!=='del-row') _dm.style.display='none';
+  if(k.indexOf('mark-')!==0) clearAllStepMarks();
   if(k==='list'){ showScreen('list'); setListCase('cards'); }
   else if(k==='list-empty'){ showScreen('list'); setListCase('empty'); }
   else if(k==='type'){ showScreen('type'); }
@@ -3983,8 +3981,9 @@ function mpGo(k){
   else if(k==='s3-fail'){ showScreen('step3'); s3SetCase('fail'); }
   else if(k==='step4'){ showScreen('step4'); }
   else if(k==='lock-s1'){ showDetailFilledAdvanced('1학기 중간고사 서술형'); setTimeout(function(){ setLockState(true); }, 150); }
-  else if(k==='recheck-popup'){ showDetailFilledAdvanced('논설문 작성 평가'); setTimeout(function(){ _rubricEditedAfterLink=true; document.getElementById('modal-recheck-link').style.display='flex'; lucide.createIcons(); }, 300); }
-  else if(k==='s3-recheck'){ _rubricEditedAfterLink=true; showScreen('step3'); s3SetCase('ai'); syncRecheckBanner(); }
+  else if(k==='mark-rubric'){ showDetailFilledAdvanced('논설문 작성 평가'); setTimeout(function(){ markStep('3'); }, 300); }
+  else if(k==='mark-question'){ showScreen('step2'); s2ShowState('result'); setTimeout(function(){ markStep('3'); markStep('4'); }, 200); }
+  else if(k==='del-row'){ showScreen('step2'); s2ShowState('result'); _hasDownstreamData=true; setTimeout(function(){ requestDeleteRow(0); }, 250); }
   else if(k==='lock-s2'){ showScreen('step2'); s2ShowState('result'); setLockState(true); }
   // 채점기준 복잡도 경고 데모 — 1단계 화면의 채점기준 섹션으로 스크롤 + 복잡한 예시 주입
   else if(k==='rubric-warn'){
