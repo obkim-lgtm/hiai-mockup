@@ -648,7 +648,7 @@ body { margin: 0; background: #EDF1FC; min-width: 1280px; }
         <!-- 과제물 업로드 후 잠금 안내 -->
         <div id="d1-lock-banner" style="display:none;padding:14px 16px;background:#FFF8F0;border-radius:8px;gap:10px;align-items:flex-start;margin-bottom:20px;">
           <i data-lucide="lock" style="width:16px;height:16px;color:#FF8C4C;flex-shrink:0;margin-top:2px;"></i>
-          <div style="font-size:14px;color:#7A4A00;line-height:1.65;">
+          <div id="d1-lock-text" style="font-size:14px;color:#7A4A00;line-height:1.65;">
             <strong>과제물 인식이 시작되어 일부 항목을 수정할 수 없어요.</strong> 채점기준의 내용과 배점은 고칠 수 있지만, 삭제하거나 전체를 바꾸는 건 학생 답안과의 연결이 끊어져 막혀 있습니다.
           </div>
         </div>
@@ -2211,8 +2211,23 @@ function showScreen(name) {
 var _taskUploaded = false;
 var LOCK_TIP = '과제물 인식이 시작된 뒤에는 바꿀 수 없어요.';
 
+// 잠금 레벨 — null(없음) | 'ocr'(참조 축: 과제물 인식 후) | 'scored'(값 축: 채점 실행 후)
+// 'scored'는 'ocr'을 포함하며 배점·세부기준 삭제까지 추가로 잠근다.
+var _lockLevel = null;
+var LOCK_TEXT = {
+  ocr: '<strong>과제물 인식이 시작되어 일부 항목을 수정할 수 없어요.</strong> 채점기준의 내용과 배점은 고칠 수 있지만, 삭제하거나 전체를 바꾸는 건 학생 답안과의 연결이 끊어져 막혀 있습니다.',
+  scored: '<strong>채점이 진행되어 배점을 바꿀 수 없어요.</strong> 채점기준의 문구는 고칠 수 있지만, 배점과 세부기준을 바꾸면 이미 매겨진 점수가 맞지 않게 되어 막혀 있습니다. 바꾸려면 설계를 복사해 새로 만들어 주세요.'
+};
+
 function setLockState(locked) {
-  _taskUploaded = !!locked;
+  if (locked === true) locked = 'ocr';
+  if (locked === false) locked = null;
+  _lockLevel = locked || null;
+  var scored = (_lockLevel === 'scored');
+  locked = !!_lockLevel;
+  _taskUploaded = locked;
+  var lt = document.getElementById('d1-lock-text');
+  if (lt && locked) lt.innerHTML = LOCK_TEXT[_lockLevel];
   var d1 = document.getElementById('d1-lock-banner');
   var s2 = document.getElementById('s2-lock-banner');
   if (d1) d1.style.display = locked ? 'flex' : 'none';
@@ -2220,7 +2235,8 @@ function setLockState(locked) {
 
   // 1단계 — 채점기준 삭제 / 세트 교체만 잠금 (문구·배점 수정은 계속 가능)
   document.querySelectorAll('#screen-detail button').forEach(function(b) {
-    var oc = b.getAttribute('onclick') || '';
+    // 잠글 때 onclick을 'return false'로 바꾸므로, 해제 판별은 보관해 둔 원래 값을 함께 본다
+    var oc = b.dataset.prevOnclick || b.getAttribute('onclick') || '';
     var isLockTarget = oc.indexOf('deleteRubricCard') === 0 || oc.indexOf('tryDeleteRubric') === 0 || oc.indexOf('switchToEmptyRubric') === 0;
     if (isLockTarget) applyLock(b, locked, '과제물 인식이 시작된 뒤에는 채점기준을 삭제할 수 없어요. 내용을 수정해 주세요.');
   });
@@ -2236,6 +2252,19 @@ function setLockState(locked) {
   ['s2-add-row-btn', 's2-replace-btn'].forEach(function(id) {
     var b = document.getElementById(id);
     if (b) applyLock(b, locked, LOCK_TIP);
+  });
+
+  // 값 축 — 채점 실행 후에만 배점·세부기준 구성을 잠근다 (문구 수정은 계속 허용)
+  var SCORE_TIP = '채점이 진행된 뒤에는 배점을 바꿀 수 없어요. 설계를 복사해 새로 만들어 주세요.';
+  document.querySelectorAll('#rubric-list input[type="number"]').forEach(function(f) {
+    f.readOnly = scored;
+    f.style.background = scored ? '#F2F2F5' : 'transparent';
+    f.style.color = scored ? '#808080' : '#333';
+    f.title = scored ? SCORE_TIP : '';
+  });
+  document.querySelectorAll('#rubric-list button').forEach(function(b) {
+    var txt = (b.textContent || '').replace(/\s/g, '');
+    if (txt.indexOf('배점추가') === 0 || txt.indexOf('배점제거') === 0) applyLock(b, scored, SCORE_TIP);
   });
   lucide.createIcons();
 }
@@ -3937,6 +3966,7 @@ function closeRubricResetModal() { document.getElementById('modal-rubric-reset')
     <div class="mp-cap">잠금 · 과제물 인식 후</div>
     <button class="mp-btn" data-k="lock-s1" onclick="mpGo('lock-s1')">1단계 · 채점기준 잠금 <span class="mp-sub">삭제·교체 불가</span></button>
     <button class="mp-btn" data-k="lock-s2" onclick="mpGo('lock-s2')">2단계 · 문항 잠금 <span class="mp-sub">편집 불가</span></button>
+    <button class="mp-btn" data-k="lock-scored" onclick="mpGo('lock-scored')">채점 후 · 배점 잠금 <span class="mp-sub">값 축 · 문구는 허용</span></button>
 
     <div class="mp-cap">기타</div>
     <button class="mp-btn" data-k="rubric-warn" onclick="mpGo('rubric-warn')">채점기준 복잡 경고</button>
@@ -4008,7 +4038,8 @@ function mpGo(k){
   else if(k==='s3-ai'){ showScreen('step3'); s3SetCase('ai'); }
   else if(k==='s3-fail'){ showScreen('step3'); s3SetCase('fail'); }
   else if(k==='step4'){ showScreen('step4'); }
-  else if(k==='lock-s1'){ showDetailFilledAdvanced('1학기 중간고사 서술형'); setTimeout(function(){ setLockState(true); if(window.mpSync) mpSync(); }, 150); }
+  else if(k==='lock-s1'){ showDetailFilledAdvanced('1학기 중간고사 서술형'); setTimeout(function(){ setLockState('ocr'); if(window.mpSync) mpSync(); }, 150); }
+  else if(k==='lock-scored'){ showDetailFilledAdvanced('미래 사회 예측'); setTimeout(function(){ setLockState('scored'); if(window.mpSync) mpSync(); }, 150); }
   else if(k==='mark-rubric'){ showDetailFilledAdvanced('논설문 작성 평가'); setTimeout(function(){ markStep('3'); if(window.mpSync) mpSync(); }, 300); }
   else if(k==='mark-question'){ showScreen('step2'); s2ShowState('result'); setTimeout(function(){ markStep('3'); markStep('4'); if(window.mpSync) mpSync(); }, 200); }
   else if(k==='del-row'){ showScreen('step2'); s2ShowState('result'); _hasDownstreamData=true; setTimeout(function(){ requestDeleteRow(0); if(window.mpSync) mpSync(); }, 250); }
@@ -4210,7 +4241,7 @@ document.addEventListener('input', function(e){
     var _rr2 = document.getElementById('modal-rubric-reset');
     if (_rr2 && getComputedStyle(_rr2).display !== 'none') return 'rubric-swap';
     if (typeof _taskUploaded !== 'undefined' && _taskUploaded) {
-      if (name === 'detail') return 'lock-s1';
+      if (name === 'detail') return (typeof _lockLevel !== 'undefined' && _lockLevel === 'scored') ? 'lock-scored' : 'lock-s1';
       if (name === 'step2')  return 'lock-s2';
     }
     if (typeof _needCheck !== 'undefined' && (_needCheck['3'] || _needCheck['4'])) {
