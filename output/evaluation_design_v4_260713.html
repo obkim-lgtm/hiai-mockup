@@ -3463,6 +3463,10 @@ function showDetailFilledAdvanced(name) {
     document.getElementById('d1-steps-2-4').style.display = 'flex';
     document.getElementById('d1-progress-count').textContent = '1 / 4 완료';
     setStep1Primary('advanced');
+    // 정교한 평가는 1단계에 서 있는 상태 — 완료 체크가 아니라 현재 단계로 표시
+    var c = document.getElementById('d1-step1-circle');
+    c.style.background = '#7E44FB'; c.style.color = 'white'; c.style.fontSize = '12px';
+    c.innerHTML = '1';
     _maxReached = 3;
     updateStepBars();
   }, 80);
@@ -3980,10 +3984,10 @@ function mpGo(k){
   else if(k==='s3-ai'){ showScreen('step3'); s3SetCase('ai'); }
   else if(k==='s3-fail'){ showScreen('step3'); s3SetCase('fail'); }
   else if(k==='step4'){ showScreen('step4'); }
-  else if(k==='lock-s1'){ showDetailFilledAdvanced('1학기 중간고사 서술형'); setTimeout(function(){ setLockState(true); }, 150); }
-  else if(k==='mark-rubric'){ showDetailFilledAdvanced('논설문 작성 평가'); setTimeout(function(){ markStep('3'); }, 300); }
-  else if(k==='mark-question'){ showScreen('step2'); s2ShowState('result'); setTimeout(function(){ markStep('3'); markStep('4'); }, 200); }
-  else if(k==='del-row'){ showScreen('step2'); s2ShowState('result'); _hasDownstreamData=true; setTimeout(function(){ requestDeleteRow(0); }, 250); }
+  else if(k==='lock-s1'){ showDetailFilledAdvanced('1학기 중간고사 서술형'); setTimeout(function(){ setLockState(true); if(window.mpSync) mpSync(); }, 150); }
+  else if(k==='mark-rubric'){ showDetailFilledAdvanced('논설문 작성 평가'); setTimeout(function(){ markStep('3'); if(window.mpSync) mpSync(); }, 300); }
+  else if(k==='mark-question'){ showScreen('step2'); s2ShowState('result'); setTimeout(function(){ markStep('3'); markStep('4'); if(window.mpSync) mpSync(); }, 200); }
+  else if(k==='del-row'){ showScreen('step2'); s2ShowState('result'); _hasDownstreamData=true; setTimeout(function(){ requestDeleteRow(0); if(window.mpSync) mpSync(); }, 250); }
   else if(k==='lock-s2'){ showScreen('step2'); s2ShowState('result'); setLockState(true); }
   // 채점기준 복잡도 경고 데모 — 1단계 화면의 채점기준 섹션으로 스크롤 + 복잡한 예시 주입
   else if(k==='rubric-warn'){
@@ -4174,6 +4178,16 @@ document.addEventListener('input', function(e){
     var act = document.querySelector('.screen.active');
     if (!act) return '';
     var name = act.id.replace(/^screen-/, '');
+    // 데모 전용 상태가 켜져 있으면 그 케이스가 우선 (일반 화면 상태보다 구체적)
+    var _dm = document.getElementById('modal-delete-row');
+    if (_dm && getComputedStyle(_dm).display !== 'none') return 'del-row';
+    if (typeof _taskUploaded !== 'undefined' && _taskUploaded) {
+      if (name === 'detail') return 'lock-s1';
+      if (name === 'step2')  return 'lock-s2';
+    }
+    if (typeof _needCheck !== 'undefined' && (_needCheck['3'] || _needCheck['4'])) {
+      return _needCheck['4'] ? 'mark-question' : 'mark-rubric';
+    }
     if (name === 'list')  return shown('list-empty') ? 'list-empty' : 'list';
     if (name === 'step2') {
       var sg = document.getElementById('sg-overlay');
