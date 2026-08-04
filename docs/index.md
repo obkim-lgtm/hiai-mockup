@@ -13,6 +13,7 @@
 - **새 화면/컴포넌트 그리기 전(GNB·로고·파비콘·Dialog·Toast·패널·버튼·Input·Badge·토큰·타이포) → [design-system.md](design-system.md)**
 - **컴포넌트 구현 전 실제 수치(색·radius·spacing·폰트) → [design-system.md](design-system.md)의 Figma 파일키로 get_design_context** (육안 추정 금지)
 - **목업 내비게이터(까망이)에 화면·케이스 추가하거나 케이스 선택기 만들기 전 → [mockup-navigator.md](mockup-navigator.md)** (전용 패널 금지·진입 항목→케이스 그룹·딥링크·파일 간 동기화, CLIPO 목업과 공통 규칙)
+- **정교한 평가(H-2608) 설계 2~4단계 작업 전 → [sessions/2026-08-04.md](sessions/2026-08-04.md)** (변경 규칙=참조 원칙 하나·잠금 2축(OCR 분석 후/채점 실행 후)·안내 3종·세트 교체 제품에 없음). 목업 ../output/evaluation_design_v4_260713.html · PRD https://app.notion.com/p/33717e5c8cf1817c830ee4f97380a4a0
 - 서비스 배경·컬러 팔레트 상세·스크린 인덱스 → ../context.md
 - 디자인 토큰(PPT 정리본) → ../HIAI_design_tokens_PPT.md
 - 실행·미리보기 방법 → ../manual.md
