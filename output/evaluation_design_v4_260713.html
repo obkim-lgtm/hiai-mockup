@@ -649,7 +649,7 @@ body { margin: 0; background: #EDF1FC; min-width: 1280px; }
         <div id="d1-lock-banner" style="display:none;padding:14px 16px;background:#FFF8F0;border-radius:8px;gap:10px;align-items:flex-start;margin-bottom:20px;">
           <i data-lucide="lock" style="width:16px;height:16px;color:#FF8C4C;flex-shrink:0;margin-top:2px;"></i>
           <div style="font-size:14px;color:#7A4A00;line-height:1.65;">
-            <strong>과제물이 올라와 일부 항목을 수정할 수 없어요.</strong> 채점기준의 내용과 배점은 고칠 수 있지만, 삭제하거나 전체를 바꾸는 건 학생 답안과의 연결이 끊어져 막혀 있습니다.
+            <strong>과제물 인식이 시작되어 일부 항목을 수정할 수 없어요.</strong> 채점기준의 내용과 배점은 고칠 수 있지만, 삭제하거나 전체를 바꾸는 건 학생 답안과의 연결이 끊어져 막혀 있습니다.
           </div>
         </div>
 
@@ -1020,7 +1020,7 @@ body { margin: 0; background: #EDF1FC; min-width: 1280px; }
                 <button onclick="saveDraft()" style="display:inline-flex;justify-content:center;align-items:center;line-height:1;vertical-align:middle;gap:8px;background:transparent;border:1px solid #B28FFD;border-radius:8px;height:40px;padding:0 16px;cursor:pointer;color:#7E44FB;font-size:16px;font-weight:700;font-family:inherit;">
                   임시 저장
                 </button>
-                <button id="d1-btn-next" onclick="showScreen('step2')" style="display:inline-flex;align-items:center;justify-content:center;line-height:1;vertical-align:middle;gap:8px;background:#7E44FB;border:none;border-radius:8px;height:40px;padding:0 16px;cursor:pointer;color:white;font-size:16px;font-weight:700;font-family:inherit;">
+                <button id="d1-btn-next" onclick="proceedFromStep1()" style="display:inline-flex;align-items:center;justify-content:center;line-height:1;vertical-align:middle;gap:8px;background:#7E44FB;border:none;border-radius:8px;height:40px;padding:0 16px;cursor:pointer;color:white;font-size:16px;font-weight:700;font-family:inherit;">
                   저장 후 다음으로
                   <i data-lucide="arrow-right" style="width:16px;height:16px;"></i>
                 </button>
@@ -1142,7 +1142,7 @@ body { margin: 0; background: #EDF1FC; min-width: 1280px; }
         <div id="s2-lock-banner" style="display:none;padding:14px 16px;background:#FFF8F0;border-radius:8px;gap:10px;align-items:flex-start;margin-bottom:20px;">
           <i data-lucide="lock" style="width:16px;height:16px;color:#FF8C4C;flex-shrink:0;margin-top:2px;"></i>
           <div style="font-size:14px;color:#7A4A00;line-height:1.65;">
-            <strong>과제물이 올라와 문항을 수정할 수 없어요.</strong> 학생 답안이 지금 문항 구성으로 나뉘어 있어, 바꾸면 답안과 연결이 어긋납니다.
+            <strong>과제물 인식이 시작되어 문항을 수정할 수 없어요.</strong> 학생 답안이 지금 문항 구성으로 나뉘어 있어, 바꾸면 답안과 연결이 어긋납니다.
           </div>
         </div>
 
@@ -1502,6 +1502,14 @@ body { margin: 0; background: #EDF1FC; min-width: 1280px; }
           </div>
           <span style="font-size:14px;color:#7E44FB;font-weight:800;white-space:nowrap;margin-left:20px;">2 / 4 완료</span>
         </div>
+        <!-- 채점기준 수정 후 재확인 안내 -->
+        <div id="s3-recheck-banner" style="display:none;padding:14px 16px;background:#EDF1FC;border-radius:8px;gap:10px;align-items:flex-start;margin-bottom:20px;">
+          <i data-lucide="info" style="width:16px;height:16px;color:#5890FF;flex-shrink:0;margin-top:2px;"></i>
+          <div style="font-size:14px;color:#3A68D8;line-height:1.65;">
+            <strong>1단계에서 채점기준이 수정됐어요.</strong> 문항에 연결된 기준이 여전히 맞는지 확인해 주세요.
+          </div>
+        </div>
+
         <!-- 전체 연결 실패 안내 -->
         <div id="s3-fail-banner" style="display:none;padding:14px 16px;background:#FFF8F0;border-radius:8px;gap:10px;align-items:flex-start;margin-bottom:20px;">
           <i data-lucide="alert-circle" style="width:16px;height:16px;color:#FF8C4C;flex-shrink:0;margin-top:2px;"></i>
@@ -2172,6 +2180,7 @@ function showScreen(name) {
     // 목록에서 직접 진입 시 로딩 없이 콘텐츠 바로 표시
     document.getElementById('s3-loading').style.display = 'none';
     document.getElementById('s3-content').style.display = 'block';
+    syncRecheckBanner();
     selectQuestion(_s3CurrentQ || _s3Data[0].id);
     setTimeout(initStep3Labels, 100);
   }
@@ -2208,7 +2217,7 @@ function showScreen(name) {
 }
 // ── 과제물 업로드 후 잠금 상태 ──
 var _taskUploaded = false;
-var LOCK_TIP = '과제물이 올라온 뒤에는 바꿀 수 없어요.';
+var LOCK_TIP = '과제물 인식이 시작된 뒤에는 바꿀 수 없어요.';
 
 function setLockState(locked) {
   _taskUploaded = !!locked;
@@ -2221,7 +2230,7 @@ function setLockState(locked) {
   document.querySelectorAll('#screen-detail button').forEach(function(b) {
     var oc = b.getAttribute('onclick') || '';
     var isLockTarget = oc.indexOf('deleteRubricCard') === 0 || oc.indexOf('tryDeleteRubric') === 0 || oc.indexOf('switchToEmptyRubric') === 0;
-    if (isLockTarget) applyLock(b, locked, '과제물이 올라온 뒤에는 채점기준을 삭제할 수 없어요. 내용을 수정해 주세요.');
+    if (isLockTarget) applyLock(b, locked, '과제물 인식이 시작된 뒤에는 채점기준을 삭제할 수 없어요. 내용을 수정해 주세요.');
   });
 
   // 2단계 — 문항 편집 전체 잠금
@@ -2471,7 +2480,34 @@ document.addEventListener('input', function(e) {
   if (e.target.closest('#screen-detail, #screen-step2, #screen-step3, #screen-step4, #screen-simple')) {
     _designDirty = true;
   }
+  // 3단계 연결이 있는 상태에서 1단계 채점기준을 고치면 → 재확인 안내 대상
+  if (_hasDownstreamData && e.target.closest('#rubric-list')) {
+    _rubricEditedAfterLink = true;
+  }
 }, true);
+
+// ── 채점기준 수정 → 3단계 재확인 안내 ──
+var _rubricEditedAfterLink = false;
+
+function proceedFromStep1() {
+  if (_rubricEditedAfterLink) {
+    document.getElementById('modal-recheck-link').style.display = 'flex';
+    lucide.createIcons();
+    return;
+  }
+  showScreen('step2');
+}
+function closeRecheckModal() {
+  document.getElementById('modal-recheck-link').style.display = 'none';
+}
+function recheckGo(target) {
+  closeRecheckModal();
+  showScreen(target);
+}
+function syncRecheckBanner() {
+  var b = document.getElementById('s3-recheck-banner');
+  if (b) b.style.display = _rubricEditedAfterLink ? 'flex' : 'none';
+}
 function markDesignDirty() { _designDirty = true; }
 function clearDesignDirty() { _designDirty = false; _step3Dirty = false; }
 
@@ -2534,7 +2570,7 @@ function setStep1Primary(mode) {
     b.setAttribute('onclick', 'saveSimpleDesign()');
     b.innerHTML = '저장';
   } else {
-    b.setAttribute('onclick', "showScreen('step2')");
+    b.setAttribute('onclick', 'proceedFromStep1()');
     b.innerHTML = '저장 후 다음으로 <i data-lucide="arrow-right" style="width:16px;height:16px;"></i>';
   }
   lucide.createIcons();
@@ -3374,6 +3410,8 @@ function initStep3Labels() {
 
 // ── 3단계: 다음 단계 이동 ──
 function checkStep3AndProceed() {
+  _rubricEditedAfterLink = false;
+  syncRecheckBanner();
   showScreen('step4');
 }
 
@@ -3499,6 +3537,28 @@ function closeRubricResetModal() { document.getElementById('modal-rubric-reset')
     <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:20px;">
       <button onclick="saveDraftAndLeave()" style="height:36px;padding:0 16px;background:transparent;border:1px solid #B28FFD;border-radius:8px;cursor:pointer;font-size:15px;font-weight:700;color:#7E44FB;font-family:inherit;" onmouseover="this.style.background='#F7F4FF'" onmouseout="this.style.background='transparent'">임시저장 후 나가기</button>
       <button onclick="executePendingNav()" style="height:36px;padding:0 16px;background:#7E44FB;border:none;border-radius:8px;cursor:pointer;font-size:15px;font-weight:700;color:white;font-family:inherit;" onmouseover="this.style.opacity='0.88'" onmouseout="this.style.opacity='1'">저장 없이 나가기</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════
+     채점기준 수정 → 3단계 재확인 안내 팝업 (1단계 저장 시)
+═══════════════════════════════════════ -->
+<div id="modal-recheck-link" style="display:none;position:fixed;inset:0;z-index:700;background:rgba(0,0,0,0.45);align-items:center;justify-content:center;" onclick="if(event.target===this)closeRecheckModal()">
+  <div style="background:white;border-radius:16px;width:460px;padding:28px 28px 24px;box-shadow:0 12px 40px rgba(0,0,0,0.18);">
+    <div style="display:flex;align-items:flex-start;gap:14px;">
+      <div style="width:40px;height:40px;border-radius:50%;background:#EDF1FC;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+        <i data-lucide="link" style="width:20px;height:20px;color:#5890FF;"></i>
+      </div>
+      <div>
+        <h3 style="font-size:16px;font-weight:800;color:#000;margin:0 0 6px;">수정한 채점기준, 문항 연결도 확인할까요?</h3>
+        <p style="font-size:14px;color:#494949;margin:0;line-height:1.6;">채점기준이 바뀌면 3단계에서 연결해 둔 문항과 더 이상 맞지 않을 수 있어요.<br>수정 내용은 저장됐습니다.</p>
+      </div>
+    </div>
+    <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:20px;">
+      <button onclick="recheckGo('step2')" style="height:36px;padding:0 16px;background:white;border:1px solid #D9D9D9;border-radius:8px;cursor:pointer;font-size:15px;font-weight:700;color:#494949;font-family:inherit;display:inline-flex;align-items:center;justify-content:center;line-height:1;vertical-align:middle;" onmouseover="this.style.background='#F8F8F8'" onmouseout="this.style.background='white'">2단계부터 진행</button>
+      <button onclick="recheckGo('step3')" style="height:36px;padding:0 16px;background:#7E44FB;border:none;border-radius:8px;cursor:pointer;font-size:15px;font-weight:700;color:white;font-family:inherit;display:inline-flex;align-items:center;justify-content:center;line-height:1;vertical-align:middle;" onmouseover="this.style.opacity='0.88'" onmouseout="this.style.opacity='1'">3단계 바로 확인</button>
     </div>
   </div>
 </div>
@@ -3852,7 +3912,11 @@ function closeRubricResetModal() { document.getElementById('modal-rubric-reset')
     <button class="mp-btn" data-k="s3-ai" onclick="mpGo('s3-ai')">AI 연결 완료 <span class="mp-sub">기본</span></button>
     <button class="mp-btn" data-k="s3-fail" onclick="mpGo('s3-fail')">AI 연결 실패 <span class="mp-sub">전체 직접 선택</span></button>
 
-    <div class="mp-cap">과제물 업로드 후 (잠금)</div>
+    <div class="mp-cap">1단계 수정 연쇄</div>
+    <button class="mp-btn" data-k="recheck-popup" onclick="mpGo('recheck-popup')">저장 시 안내 팝업 <span class="mp-sub">2단계 / 3단계 선택</span></button>
+    <button class="mp-btn" data-k="s3-recheck" onclick="mpGo('s3-recheck')">3단계 재확인 배너</button>
+
+    <div class="mp-cap">과제물 인식 후 (잠금)</div>
     <button class="mp-btn" data-k="lock-s1" onclick="mpGo('lock-s1')">1단계 · 채점기준 잠금 <span class="mp-sub">삭제·교체 불가</span></button>
     <button class="mp-btn" data-k="lock-s2" onclick="mpGo('lock-s2')">2단계 · 문항 잠금 <span class="mp-sub">편집 불가</span></button>
 
@@ -3895,6 +3959,8 @@ function mpGo(k){
   // 준비 팁 모달이 열려 있으면 먼저 닫는다 (안 닫으면 다른 케이스로 옮겨도 계속 떠 있음)
   if (typeof closeScoringGuide === 'function') closeScoringGuide();
   if(k.indexOf('lock-')!==0) setLockState(false);
+  var _rm=document.getElementById('modal-recheck-link'); if(_rm && k!=='recheck-popup') _rm.style.display='none';
+  if(k!=='recheck-popup' && k!=='s3-recheck'){ _rubricEditedAfterLink=false; var _rb=document.getElementById('s3-recheck-banner'); if(_rb) _rb.style.display='none'; }
   if(k==='list'){ showScreen('list'); setListCase('cards'); }
   else if(k==='list-empty'){ showScreen('list'); setListCase('empty'); }
   else if(k==='type'){ showScreen('type'); }
@@ -3917,6 +3983,8 @@ function mpGo(k){
   else if(k==='s3-fail'){ showScreen('step3'); s3SetCase('fail'); }
   else if(k==='step4'){ showScreen('step4'); }
   else if(k==='lock-s1'){ showDetailFilledAdvanced('1학기 중간고사 서술형'); setTimeout(function(){ setLockState(true); }, 150); }
+  else if(k==='recheck-popup'){ showDetailFilledAdvanced('논설문 작성 평가'); setTimeout(function(){ _rubricEditedAfterLink=true; document.getElementById('modal-recheck-link').style.display='flex'; lucide.createIcons(); }, 300); }
+  else if(k==='s3-recheck'){ _rubricEditedAfterLink=true; showScreen('step3'); s3SetCase('ai'); syncRecheckBanner(); }
   else if(k==='lock-s2'){ showScreen('step2'); s2ShowState('result'); setLockState(true); }
   // 채점기준 복잡도 경고 데모 — 1단계 화면의 채점기준 섹션으로 스크롤 + 복잡한 예시 주입
   else if(k==='rubric-warn'){
