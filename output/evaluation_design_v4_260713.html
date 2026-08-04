@@ -645,6 +645,14 @@ body { margin: 0; background: #EDF1FC; min-width: 1280px; }
           <span id="d1-progress-count" style="font-size:14px;color:#7E44FB;font-weight:800;white-space:nowrap;margin-left:20px;">0 / 4 완료</span>
         </div>
 
+        <!-- 과제물 업로드 후 잠금 안내 -->
+        <div id="d1-lock-banner" style="display:none;padding:14px 16px;background:#FFF8F0;border-radius:8px;gap:10px;align-items:flex-start;margin-bottom:20px;">
+          <i data-lucide="lock" style="width:16px;height:16px;color:#FF8C4C;flex-shrink:0;margin-top:2px;"></i>
+          <div style="font-size:14px;color:#7A4A00;line-height:1.65;">
+            <strong>과제물이 올라와 일부 항목을 수정할 수 없어요.</strong> 채점기준의 내용과 배점은 고칠 수 있지만, 삭제하거나 전체를 바꾸는 건 학생 답안과의 연결이 끊어져 막혀 있습니다.
+          </div>
+        </div>
+
         <!-- 세션 섹션 -->
         <div>
           <div>
@@ -1130,6 +1138,14 @@ body { margin: 0; background: #EDF1FC; min-width: 1280px; }
         </div>
         <!-- 컨텐츠: 상태별 분기 -->
 
+        <!-- 과제물 업로드 후 잠금 안내 -->
+        <div id="s2-lock-banner" style="display:none;padding:14px 16px;background:#FFF8F0;border-radius:8px;gap:10px;align-items:flex-start;margin-bottom:20px;">
+          <i data-lucide="lock" style="width:16px;height:16px;color:#FF8C4C;flex-shrink:0;margin-top:2px;"></i>
+          <div style="font-size:14px;color:#7A4A00;line-height:1.65;">
+            <strong>과제물이 올라와 문항을 수정할 수 없어요.</strong> 학생 답안이 지금 문항 구성으로 나뉘어 있어, 바꾸면 답안과 연결이 어긋납니다.
+          </div>
+        </div>
+
         <!-- ── 상태 A: 업로드 대기 ── -->
         <div id="s2-upload">
           <div>
@@ -1194,7 +1210,7 @@ body { margin: 0; background: #EDF1FC; min-width: 1280px; }
                 <i data-lucide="file-text" style="width:18px;height:18px;color:#7E44FB;flex-shrink:0;"></i>
                 <span style="flex:1;font-size:14px;font-weight:700;color:#333;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">활동지_1학년_국어.pdf</span>
               </div>
-              <button onclick="requestReplaceSheet()" style="display:inline-flex;align-items:center;justify-content:center;line-height:1;vertical-align:middle;gap:6px;flex-shrink:0;background:white;border:1px solid #B28FFD;border-radius:8px;height:44px;padding:0 18px;cursor:pointer;color:#7E44FB;font-size:15px;font-weight:700;font-family:inherit;" onmouseover="this.style.background='#F7F4FF'" onmouseout="this.style.background='white'">
+              <button id="s2-replace-btn" onclick="requestReplaceSheet()" style="display:inline-flex;align-items:center;justify-content:center;line-height:1;vertical-align:middle;gap:6px;flex-shrink:0;background:white;border:1px solid #B28FFD;border-radius:8px;height:44px;padding:0 18px;cursor:pointer;color:#7E44FB;font-size:15px;font-weight:700;font-family:inherit;" onmouseover="this.style.background='#F7F4FF'" onmouseout="this.style.background='white'">
                 <i data-lucide="refresh-cw" style="width:16px;height:16px;"></i>다른 활동지로 교체
               </button>
             </div>
@@ -1313,7 +1329,7 @@ body { margin: 0; background: #EDF1FC; min-width: 1280px; }
             </div><!-- /question-list -->
 
             <!-- 문항 추가 버튼 -->
-            <button onclick="addQuestionRow()" style="margin-top:12px;display:inline-flex;align-items:center;justify-content:center;line-height:1;vertical-align:middle;gap:6px;background:#F7F4FF;border:1px dashed #B28FFD;border-radius:8px;height:36px;padding:0 16px;cursor:pointer;color:#7E44FB;font-size:14px;font-weight:700;font-family:inherit;">
+            <button id="s2-add-row-btn" onclick="addQuestionRow()" style="margin-top:12px;display:inline-flex;align-items:center;justify-content:center;line-height:1;vertical-align:middle;gap:6px;background:#F7F4FF;border:1px dashed #B28FFD;border-radius:8px;height:36px;padding:0 16px;cursor:pointer;color:#7E44FB;font-size:14px;font-weight:700;font-family:inherit;">
               <i data-lucide="plus" style="width:14px;height:14px;"></i>문항 추가
             </button>
           </div>
@@ -2190,6 +2206,59 @@ function showScreen(name) {
   updateStepBars();
   _syncHash(name);
 }
+// ── 과제물 업로드 후 잠금 상태 ──
+var _taskUploaded = false;
+var LOCK_TIP = '과제물이 올라온 뒤에는 바꿀 수 없어요.';
+
+function setLockState(locked) {
+  _taskUploaded = !!locked;
+  var d1 = document.getElementById('d1-lock-banner');
+  var s2 = document.getElementById('s2-lock-banner');
+  if (d1) d1.style.display = locked ? 'flex' : 'none';
+  if (s2) s2.style.display = locked ? 'flex' : 'none';
+
+  // 1단계 — 채점기준 삭제 / 세트 교체만 잠금 (문구·배점 수정은 계속 가능)
+  document.querySelectorAll('#screen-detail button').forEach(function(b) {
+    var oc = b.getAttribute('onclick') || '';
+    var isLockTarget = oc.indexOf('deleteRubricCard') === 0 || oc.indexOf('tryDeleteRubric') === 0 || oc.indexOf('switchToEmptyRubric') === 0;
+    if (isLockTarget) applyLock(b, locked, '과제물이 올라온 뒤에는 채점기준을 삭제할 수 없어요. 내용을 수정해 주세요.');
+  });
+
+  // 2단계 — 문항 편집 전체 잠금
+  document.querySelectorAll('#screen-step2 .q-row input, #screen-step2 .q-row textarea').forEach(function(f) {
+    f.readOnly = locked;
+    f.style.background = locked ? '#F8F8F8' : 'white';
+    f.style.color = locked ? '#808080' : (f.tagName === 'INPUT' ? '#7E44FB' : '#333');
+    f.title = locked ? LOCK_TIP : '';
+  });
+  document.querySelectorAll('#screen-step2 .q-row button').forEach(function(b) { applyLock(b, locked, LOCK_TIP); });
+  ['s2-add-row-btn', 's2-replace-btn'].forEach(function(id) {
+    var b = document.getElementById(id);
+    if (b) applyLock(b, locked, LOCK_TIP);
+  });
+  lucide.createIcons();
+}
+
+function applyLock(btn, locked, tip) {
+  if (locked) {
+    if (!btn.dataset.prevOnclick) btn.dataset.prevOnclick = btn.getAttribute('onclick') || '';
+    btn.setAttribute('onclick', 'return false');
+    btn.disabled = true;
+    btn.style.opacity = '0.4';
+    btn.style.cursor = 'not-allowed';
+    btn.title = tip;
+  } else {
+    if (btn.dataset.prevOnclick !== undefined) {
+      if (btn.dataset.prevOnclick) btn.setAttribute('onclick', btn.dataset.prevOnclick);
+      delete btn.dataset.prevOnclick;
+    }
+    btn.disabled = false;
+    btn.style.opacity = '1';
+    btn.style.cursor = 'pointer';
+    btn.title = '';
+  }
+}
+
 function toggleAddDropdown(e) {
   e.stopPropagation();
   const d = document.getElementById('add-dropdown');
@@ -3783,6 +3852,10 @@ function closeRubricResetModal() { document.getElementById('modal-rubric-reset')
     <button class="mp-btn" data-k="s3-ai" onclick="mpGo('s3-ai')">AI 연결 완료 <span class="mp-sub">기본</span></button>
     <button class="mp-btn" data-k="s3-fail" onclick="mpGo('s3-fail')">AI 연결 실패 <span class="mp-sub">전체 직접 선택</span></button>
 
+    <div class="mp-cap">과제물 업로드 후 (잠금)</div>
+    <button class="mp-btn" data-k="lock-s1" onclick="mpGo('lock-s1')">1단계 · 채점기준 잠금 <span class="mp-sub">삭제·교체 불가</span></button>
+    <button class="mp-btn" data-k="lock-s2" onclick="mpGo('lock-s2')">2단계 · 문항 잠금 <span class="mp-sub">편집 불가</span></button>
+
     <div class="mp-cap">4단계 · 문항별 모범답안</div>
     <button class="mp-btn" data-k="step4" onclick="mpGo('step4')">모범답안 입력 <span class="mp-sub">정답형 · 자유 서술형</span></button>
   </div>
@@ -3821,6 +3894,7 @@ function mpSyncActive(key){
 function mpGo(k){
   // 준비 팁 모달이 열려 있으면 먼저 닫는다 (안 닫으면 다른 케이스로 옮겨도 계속 떠 있음)
   if (typeof closeScoringGuide === 'function') closeScoringGuide();
+  if(k.indexOf('lock-')!==0) setLockState(false);
   if(k==='list'){ showScreen('list'); setListCase('cards'); }
   else if(k==='list-empty'){ showScreen('list'); setListCase('empty'); }
   else if(k==='type'){ showScreen('type'); }
@@ -3842,6 +3916,8 @@ function mpGo(k){
   else if(k==='s3-ai'){ showScreen('step3'); s3SetCase('ai'); }
   else if(k==='s3-fail'){ showScreen('step3'); s3SetCase('fail'); }
   else if(k==='step4'){ showScreen('step4'); }
+  else if(k==='lock-s1'){ showDetailFilledAdvanced('1학기 중간고사 서술형'); setTimeout(function(){ setLockState(true); }, 150); }
+  else if(k==='lock-s2'){ showScreen('step2'); s2ShowState('result'); setLockState(true); }
   // 채점기준 복잡도 경고 데모 — 1단계 화면의 채점기준 섹션으로 스크롤 + 복잡한 예시 주입
   else if(k==='rubric-warn'){
     showScreen('detail');
