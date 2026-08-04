@@ -2533,6 +2533,10 @@ function showScreenBack(target) {
     showScreen(target);
   }
 }
+function closeLeaveWarning() {
+  _pendingNav = null;
+  document.getElementById('modal-leave-warning').style.display = 'none';
+}
 function executePendingNav() {
   var target = _pendingNav;
   _pendingNav = null;
@@ -3526,7 +3530,7 @@ function closeRubricResetModal() { document.getElementById('modal-rubric-reset')
      3단계: 미연결 채점기준 경고 모달
 ═══════════════════════════════════════ -->
 <!-- ── 이탈 경고 모달 (이전 단계 클릭 시) ── -->
-<div id="modal-leave-warning" style="display:none;position:fixed;inset:0;z-index:700;background:rgba(0,0,0,0.45);align-items:center;justify-content:center;" onclick="if(event.target===this)closeleaveWarning()">
+<div id="modal-leave-warning" style="display:none;position:fixed;inset:0;z-index:700;background:rgba(0,0,0,0.45);align-items:center;justify-content:center;" onclick="if(event.target===this)closeLeaveWarning()">
   <div style="background:white;border-radius:16px;width:440px;padding:28px 28px 24px;box-shadow:0 12px 40px rgba(0,0,0,0.18);">
     <div style="display:flex;align-items:flex-start;gap:14px;margin-bottom:16px;">
       <div style="width:40px;height:40px;border-radius:50%;background:#FFF8F0;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
@@ -3963,6 +3967,8 @@ function mpGo(k){
   if(k.indexOf('lock-')!==0) setLockState(false);
   var _dm=document.getElementById('modal-delete-row'); if(_dm && k!=='del-row') _dm.style.display='none';
   if(k.indexOf('mark-')!==0) clearAllStepMarks();
+  // 3단계 실패는 데모 케이스 상태 — 다른 케이스로 옮기면 기본(AI 연결 완료)으로 되돌린다
+  if(k!=='s3-fail' && typeof _s3AllFailed !== 'undefined' && _s3AllFailed && typeof s3SetCase === 'function') s3SetCase('ai');
   if(k==='list'){ showScreen('list'); setListCase('cards'); }
   else if(k==='list-empty'){ showScreen('list'); setListCase('empty'); }
   else if(k==='type'){ showScreen('type'); }
