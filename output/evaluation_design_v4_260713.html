@@ -2597,6 +2597,7 @@ function _fillDetail(name, mode) {
       setStep1Primary('advanced');
       c.style.background = '#7E44FB';
       c.innerHTML = '1';
+      _hasDownstreamData = true;   // 정교한 평가 = 2~4단계 데이터가 있는 설계
       _maxReached = 3;
       updateStepBars();
       syncStepMarks();
@@ -3415,6 +3416,12 @@ function deleteRubricCard(btn) {
 
 // 채점기준 상태 토글 (레거시 — rubric-list 방식으로 대체, 호환성 유지)
 function switchToFilledRubric() { lucide.createIcons(); }
+// 채점기준 세트 교체 (AI 생성으로 전체 대체) — 3단계 연결이 있으면 확인 후 진행
+function applyRubricSet() {
+  if (_hasDownstreamData) { tryDeleteRubric(); return; }
+  switchToFilledRubric();
+  showToast('채점기준이 생성되었습니다.', 'success');
+}
 function switchToEmptyRubric() { lucide.createIcons(); }
 
 // ── 3단계: label 전체 클릭 영역 활성화 ──
@@ -3477,7 +3484,7 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 var _hasDownstreamData = false;
 function showDetailFilledAdvanced(name) {
-  _hasDownstreamData = true;
+  // showScreen('detail')이 _hasDownstreamData를 초기화하므로 렌더 콜백 안에서 세운다
   _fillDetail(name, 'advanced');
 }
 function tryDeleteRubric() {
@@ -3702,7 +3709,7 @@ function closeRubricResetModal() { document.getElementById('modal-rubric-reset')
 
     <!-- 하단 버튼 -->
     <div style="padding:16px 24px;border-top:1px solid #F0F0F0;flex-shrink:0;display:flex;justify-content:flex-end;">
-      <button onclick="closeAIDrawer();switchToFilledRubric();" style="display:inline-flex;justify-content:center;align-items:center;line-height:1;vertical-align:middle;gap:8px;background:#7E44FB;border:none;border-radius:8px;height:36px;padding:0 16px;cursor:pointer;color:white;font-size:16px;font-weight:700;font-family:inherit;">
+      <button onclick="closeAIDrawer();applyRubricSet();" style="display:inline-flex;justify-content:center;align-items:center;line-height:1;vertical-align:middle;gap:8px;background:#7E44FB;border:none;border-radius:8px;height:36px;padding:0 16px;cursor:pointer;color:white;font-size:16px;font-weight:700;font-family:inherit;">
         <i data-lucide="wand-sparkles" style="width:16px;height:16px;"></i>
         채점기준 AI 생성
       </button>
@@ -3925,6 +3932,7 @@ function closeRubricResetModal() { document.getElementById('modal-rubric-reset')
     <button class="mp-btn" data-k="mark-rubric" onclick="mpGo('mark-rubric')">채점기준 수정 <span class="mp-sub">3단계 표식</span></button>
     <button class="mp-btn" data-k="mark-question" onclick="mpGo('mark-question')">문항 지시문 수정 <span class="mp-sub">3·4단계 표식</span></button>
     <button class="mp-btn" data-k="del-row" onclick="mpGo('del-row')">문항 삭제 확인 <span class="mp-sub">연결·모범답안 함께 삭제</span></button>
+    <button class="mp-btn" data-k="rubric-swap" onclick="mpGo('rubric-swap')">채점기준 세트 교체 <span class="mp-sub">3단계 연결 전체 해제</span></button>
 
     <div class="mp-cap">잠금 · 과제물 인식 후</div>
     <button class="mp-btn" data-k="lock-s1" onclick="mpGo('lock-s1')">1단계 · 채점기준 잠금 <span class="mp-sub">삭제·교체 불가</span></button>
@@ -3975,6 +3983,7 @@ function mpGo(k){
   window._mpForcedTimer = setTimeout(function(){ window._mpForcedKey = null; }, 600);
   if(k.indexOf('lock-')!==0) setLockState(false);
   var _dm=document.getElementById('modal-delete-row'); if(_dm && k!=='del-row') _dm.style.display='none';
+  var _rr=document.getElementById('modal-rubric-reset'); if(_rr && k!=='rubric-swap') _rr.style.display='none';
   if(k.indexOf('mark-')!==0) clearAllStepMarks();
   // 3단계 실패는 데모 케이스 상태 — 다른 케이스로 옮기면 기본(AI 연결 완료)으로 되돌린다
   if(k!=='s3-fail' && typeof _s3AllFailed !== 'undefined' && _s3AllFailed && typeof s3SetCase === 'function') s3SetCase('ai');
@@ -4003,6 +4012,7 @@ function mpGo(k){
   else if(k==='mark-rubric'){ showDetailFilledAdvanced('논설문 작성 평가'); setTimeout(function(){ markStep('3'); if(window.mpSync) mpSync(); }, 300); }
   else if(k==='mark-question'){ showScreen('step2'); s2ShowState('result'); setTimeout(function(){ markStep('3'); markStep('4'); if(window.mpSync) mpSync(); }, 200); }
   else if(k==='del-row'){ showScreen('step2'); s2ShowState('result'); _hasDownstreamData=true; setTimeout(function(){ requestDeleteRow(0); if(window.mpSync) mpSync(); }, 250); }
+  else if(k==='rubric-swap'){ showDetailFilledAdvanced('논설문 작성 평가'); setTimeout(function(){ applyRubricSet(); if(window.mpSync) mpSync(); }, 300); }
   else if(k==='lock-s2'){ showScreen('step2'); s2ShowState('result'); setLockState(true); }
   // 채점기준 복잡도 경고 데모 — 1단계 화면의 채점기준 섹션으로 스크롤 + 복잡한 예시 주입
   else if(k==='rubric-warn'){
@@ -4197,6 +4207,8 @@ document.addEventListener('input', function(e){
     // 데모 전용 상태가 켜져 있으면 그 케이스가 우선 (일반 화면 상태보다 구체적)
     var _dm = document.getElementById('modal-delete-row');
     if (_dm && getComputedStyle(_dm).display !== 'none') return 'del-row';
+    var _rr2 = document.getElementById('modal-rubric-reset');
+    if (_rr2 && getComputedStyle(_rr2).display !== 'none') return 'rubric-swap';
     if (typeof _taskUploaded !== 'undefined' && _taskUploaded) {
       if (name === 'detail') return 'lock-s1';
       if (name === 'step2')  return 'lock-s2';
