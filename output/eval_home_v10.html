@@ -471,7 +471,7 @@
               <button class="btn-ghost">과제물 관리하기 <i data-lucide="arrow-right" style="width:14px;height:14px;"></i></button>
             </div>
           </div>
-          <!-- 케이스: 채점 진행 — 채점 안 된 학생 있음(실패 건 포함 — 수가 안 채워져 같은 버튼) -->
+          <!-- 케이스: 채점 진행 — 점수가 저장되지 않은 학생 있음(업로드 중·채점 중·채점 실패·저장 전 전부 포함) -->
           <div class="eval-card" data-status="ing" data-case="채점 진행">
             <div class="eval-card-body">
               <div style="display:flex; align-items:center; justify-content:space-between;">
@@ -483,7 +483,12 @@
               </div>
             </div>
             <div class="eval-card-footer">
-              <span></span>
+              <div style="display:flex; align-items:center; gap:16px;">
+                <div style="display:flex; align-items:center; gap:8px;">
+                  <div class="pbar"><div class="pbar-fill" style="width:54.9%;"></div></div>
+                  <span class="pbar-label">저장 45/82명</span>
+                </div>
+              </div>
               <button class="btn-ghost">채점 진행하기 <i data-lucide="arrow-right" style="width:14px;height:14px;"></i></button>
             </div>
           </div>
