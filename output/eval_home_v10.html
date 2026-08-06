@@ -422,8 +422,8 @@
 
         <!-- 상태 필터 — 평가가 쌓여도 필요한 상태만 보게 한다 -->
         <div id="eval-filter" style="display:flex; align-items:center; gap:6px; margin-bottom:14px;">
-          <button class="fchip on" data-f="all" onclick="setEvalFilter('all')">전체 <span class="fcnt">5</span></button>
-          <button class="fchip" data-f="ing" onclick="setEvalFilter('ing')">진행 중 <span class="fcnt">3</span></button>
+          <button class="fchip on" data-f="all" onclick="setEvalFilter('all')">전체 <span class="fcnt">6</span></button>
+          <button class="fchip" data-f="ing" onclick="setEvalFilter('ing')">진행 중 <span class="fcnt">4</span></button>
           <button class="fchip" data-f="draft" onclick="setEvalFilter('draft')">임시저장 <span class="fcnt">1</span></button>
           <button class="fchip" data-f="done" onclick="setEvalFilter('done')">완료 <span class="fcnt">1</span></button>
         </div>
@@ -434,7 +434,7 @@
           <div id="fb-banner" class="fb-summary-banner" style="display:none;">
             <i data-lucide="message-square-heart" style="width:18px; height:18px; color:#FF8C4C; flex-shrink:0; margin-top:2px;"></i>
             <div style="display:flex; flex-direction:column; gap:4px; min-width:0;">
-              <span style="font-size:14px; font-weight:700; color:#333; line-height:1.45;">채점 만족도 의견을 남길 수 있는 평가 <span style="color:#FF8C4C;">2건 중 1건</span>에 남겨주셨어요</span>
+              <span style="font-size:14px; font-weight:700; color:#333; line-height:1.45;">채점 만족도 의견을 남길 수 있는 평가 <span style="color:#FF8C4C;">3건 중 1건</span>에 남겨주셨어요</span>
               <span style="font-size:13px; color:#808080; line-height:1.45;">학급 채점 점수를 한 번이라도 저장하면 남길 수 있어요</span>
             </div>
           </div>
@@ -516,6 +516,28 @@
                 </div>
               </div>
               <button class="btn-ghost">채점 결과 확인하기 <i data-lucide="arrow-right" style="width:14px;height:14px;"></i></button>
+            </div>
+          </div>
+          <!-- 케이스: 재채점 필요 — 채점 후 인식 결과 수정·과제물 교체 시. 홈 표시 여부는 PRD 논의 사항 -->
+          <div class="eval-card" data-status="ing" data-case="재채점 필요" data-fb="invite">
+            <div class="eval-card-body">
+              <div style="display:flex; align-items:center; justify-content:space-between;">
+                <div style="display:flex; align-items:center; gap:8px;">
+                  <span class="badge-ing">진행 중</span>
+                  <span style="font-size:16px; font-weight:700; color:#222;">1학기 국어 독서 논술 평가</span>
+                </div>
+                <span style="font-size:12px; color:#B3B3B3;">3주 전 수정</span>
+              </div>
+            </div>
+            <div class="eval-card-footer">
+              <div style="display:flex; align-items:center; gap:16px;">
+                <div style="display:flex; align-items:center; gap:8px;">
+                  <div class="pbar"><div class="pbar-fill" style="width:100%;"></div></div>
+                  <span class="pbar-label">채점 82/82명</span>
+                </div>
+                <span class="chip-orange"><i data-lucide="refresh-cw" style="width:13px;height:13px;"></i> 재채점 필요</span>
+              </div>
+              <button class="btn-ghost">재채점 실행하기 <i data-lucide="arrow-right" style="width:14px;height:14px;"></i></button>
             </div>
           </div>
           <!-- 케이스: 완료 — 전원 점수 저장 — 약화 표기 -->
