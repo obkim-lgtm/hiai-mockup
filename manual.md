@@ -37,25 +37,23 @@
 
 ### 2. `.claude/launch.json` 생성 (PC-local, git에 안 올라감)
 
-이 파일은 PC마다 직접 만들어야 한다. 아래 템플릿을 `<프로젝트 루트>\.claude\launch.json` 또는 Claude Code의 working directory(`<드라이브>:\내 드라이브\Claude\.claude\launch.json`)에 저장:
+> **2026-08-05 개정** — 예전에는 이 파일을 PC마다 새로 만들고 드라이브 레터를 직접 박아야 했다. 지금은 **상대경로**를 쓰므로 PC마다 다시 만들 필요가 없다. 이미 Claude working directory의 `.claude\launch.json`에 `hiai-mockup` 항목이 상대경로로 들어가 있으니, 보통은 **이 단계를 건너뛰어도 된다.**
+
+없거나 새로 만들어야 하면, working directory(`내 드라이브\Claude\.claude\launch.json`)에 아래를 추가:
 
 ```json
 {
-  "version": "0.0.1",
-  "configurations": [
-    {
-      "name": "hiai-mockup",
-      "runtimeExecutable": "node",
-      "runtimeArgs": ["<드라이브>:\\내 드라이브\\Claude\\hiai_mockup\\server.js"],
-      "port": 3502,
-      "autoPort": true
-    }
-  ]
+  "name": "hiai-mockup",
+  "runtimeExecutable": "python",
+  "runtimeArgs": ["-m", "http.server", "3502", "--directory", "hiai_mockup"],
+  "port": 3502,
+  "autoPort": true
 }
 ```
 
-- `<드라이브>` 는 본인 PC의 Google Drive 드라이브 레터로 교체 (예: `F`, `G`)
-- 시스템 `node`가 PATH에 없으면 `runtimeExecutable`을 `node.exe` 절대경로로 (예: `C:\\Program Files\\Adobe\\Adobe Creative Cloud Experience\\libs\\node.exe`)
+- **경로에 드라이브 레터를 넣지 말 것.** 넣으면 다른 PC에서 404가 나고, PC별 중복 항목이 늘어난다.
+- 실행기도 절대경로 대신 PATH의 `python`(또는 `node`)을 쓴다. 예전 템플릿이 안내하던 Adobe 번들 `node.exe` 경로는 PC에 따라 존재하지 않는다.
+- 프로젝트 루트의 `server.js`로 띄우고 싶다면 `"runtimeExecutable": "node", "runtimeArgs": ["hiai_mockup/server.js"]` — 역시 상대경로로.
 
 ### 3. Claude Code에서 미리보기 시작
 ```
