@@ -409,7 +409,7 @@ body { margin: 0; background: #EDF1FC; min-width: 1280px; }
         <!-- 잠금 안내 (단일 배너) -->
         <div id="lock-banner" class="note note-lock" style="display:none;margin-bottom:20px;">
           <i data-lucide="lock"></i>
-          <div><strong>과제물 인식이 시작되어 일부 항목을 수정할 수 없어요.</strong> 채점기준의 내용과 배점은 고칠 수 있지만, 삭제하는 건 학생 답안과의 연결이 끊어져 막혀 있어요.</div>
+          <div id="lock-banner-text"></div>
         </div>
 
         <!-- 본문: 좌측 목차 + 우측 콘텐츠 -->
@@ -970,7 +970,8 @@ var S = {
   applied: {},           // 적용한 제안
   answersOpen: false,
   answersFilled: false,
-  locked: false,         // 과제물 인식 시작 후 잠금
+  locked: false,         // 인식 후 — 인식 결과가 존재(진행 중 포함). 문항 구조 잠금
+  scored: false,         // 채점 후 — 저장된 채점 결과가 존재. 점수를 무효로 만드는 변경 잠금
   marks: {}              // 섹션별 '확인 필요' 표식
 };
 
@@ -1190,7 +1191,7 @@ function applyCase(k){
   // 기본값 초기화
   S.name = ''; S.stdFilled = false; S.rubricFilled = false;
   S.ws = 'idle'; S.dg = 'idle'; S.worksheet = false; S.diagResultKind = 'warn';
-  S.applied = {}; S.setApplied = false; S.relinked = false; _draft = null; _draftFromAI = false; _draftEdited = false; S.answersOpen = false; S.answersFilled = false; S.locked = false; S.marks = {};
+  S.applied = {}; S.setApplied = false; S.relinked = false; _draft = null; _draftFromAI = false; _draftEdited = false; S.answersOpen = false; S.answersFilled = false; S.locked = false; S.scored = false; S.marks = {};
   S.diagDone = false;
   rubrics = JSON.parse(JSON.stringify(RUBRIC_SEED));
   standards = [blankStandard()];
@@ -1222,6 +1223,7 @@ function applyCase(k){
   if (k === 'result-ok'){ S.ws = 'ready'; S.worksheet = true; S.dg = 'result'; S.diagDone = true; S.diagResultKind = 'ok'; }
   if (k === 'answer'){ S.ws = 'ready'; S.worksheet = true; S.dg = 'result'; S.diagDone = true; S.diagResultKind = 'ok'; S.answersFilled = true; }
   if (k === 'locked'){ S.ws = 'ready'; S.worksheet = true; S.dg = 'result'; S.diagDone = true; S.diagResultKind = 'warn'; S.locked = true; }
+  if (k === 'scored'){ S.ws = 'ready'; S.worksheet = true; S.dg = 'result'; S.diagDone = true; S.diagResultKind = 'ok'; S.locked = true; S.scored = true; }
   if (k === 'locked-stale'){ S.ws = 'ready'; S.worksheet = true; S.dg = 'result'; S.diagDone = true; S.diagResultKind = 'warn'; S.locked = true; S.marks['sec-diagnosis'] = true; }
 
   var target = 'detail';
@@ -1256,7 +1258,12 @@ function renderDetail(){
   renderAll();
   renderAnswers();
   renderScoreTable();
-  document.getElementById('lock-banner').style.display = S.locked ? 'flex' : 'none';
+  var lbn = document.getElementById('lock-banner');
+  lbn.style.display = (S.locked || S.scored) ? 'flex' : 'none';
+  var lbt = document.getElementById('lock-banner-text');
+  if (lbt) lbt.innerHTML = S.scored
+    ? '<strong>AI 채점이 실행되어 배점과 채점기준 삭제를 막았어요.</strong> 이미 매긴 점수가 근거를 잃기 때문이에요. 문구 수정과 문항 연결 변경은 그대로 할 수 있고, 바뀐 내용은 재채점부터 반영돼요. 문항은 과제물 인식 때부터 고칠 수 없어요.'
+    : '<strong>과제물 인식이 시작되어 문항을 고칠 수 없어요.</strong> 학생 답안이 이미 이 문항대로 나뉘어 있기 때문이에요. 채점기준은 그대로 고칠 수 있어요.';
   renderToc();
   icons();
   renderMockpick();
@@ -1385,10 +1392,11 @@ function fillStandards(){ standards = JSON.parse(JSON.stringify(STD_SEED)); rend
 
 function rubricCardHtml(r, idx, ns){
   var oninput = (ns === 'dr') ? 'drInput()' : 'onRubricInput()';
+  var lockedScore = (ns !== 'dr') && S.scored;
   var rowsHtml = r.rows.map(function(row, ri){
     var last = (ri === r.rows.length - 1);
     return '<tr>'
-      + '<td class="c-score"' + (last ? ' style="border-bottom:none;"' : '') + '><input type="number" value="' + (row[0] || '') + '" oninput="' + oninput + '" placeholder="-"></td>'
+      + '<td class="c-score"' + (last ? ' style="border-bottom:none;"' : '') + '><input type="number" value="' + (row[0] || '') + '" oninput="' + oninput + '" placeholder="-"' + (lockedScore ? ' disabled title="AI 채점이 실행되어 배점을 바꿀 수 없어요"' : '') + '></td>'
       + '<td class="c-crit"' + (last ? ' style="border-bottom:none;"' : '') + '><input type="text" value="' + esc(row[1]) + '" oninput="' + oninput + '" placeholder="이 배점을 주는 조건을 적어 주세요.">'
       + '<button class="sigma-btn" title="수식 입력" onclick="openFormulaTip()"><i data-lucide="sigma" style="width:15px;height:15px;"></i></button></td>'
       + '</tr>';
@@ -1398,9 +1406,11 @@ function rubricCardHtml(r, idx, ns){
   var delFn  = (ns === 'dr') ? 'drDel'  : 'removeRubric';
   var addFn  = (ns === 'dr') ? 'drAddRow' : 'addRow';
   var remFn  = (ns === 'dr') ? 'drDelRow' : 'removeRow';
-  var locked = (ns !== 'dr') && S.locked;
+  /* 채점기준 삭제·배점 변경·세부기준 삭제는 '채점 실행 후'에만 잠근다 — 이미 매긴 점수가 근거를 잃기 때문.
+     과제물 인식은 채점기준을 쓰지 않으므로 인식 후에도 자유롭게 고칠 수 있다. */
+  var locked = (ns !== 'dr') && S.scored;
   var delBtn = locked
-    ? '<button class="btn btn-ghost btn-sm is-disabled" title="과제물 인식이 시작되어 삭제할 수 없어요"><i data-lucide="lock" style="width:15px;height:15px;"></i>삭제</button>'
+    ? '<button class="btn btn-ghost btn-sm is-disabled" title="AI 채점이 실행되어 삭제할 수 없어요"><i data-lucide="lock" style="width:15px;height:15px;"></i>삭제</button>'
     : '<button class="btn btn-ghost btn-sm" onclick="' + delFn + '(' + idx + ')"><i data-lucide="trash-2" style="width:15px;height:15px;color:#808080;"></i>삭제</button>';
 
   return ''
@@ -1418,7 +1428,9 @@ function rubricCardHtml(r, idx, ns){
     +       '</div>'
     +       '<div style="display:flex;gap:8px;margin-top:8px;">'
     +         '<button class="btn btn-ghost btn-sm" onclick="' + addFn + '(' + idx + ')"><i data-lucide="circle-plus" style="width:15px;height:15px;color:#808080;"></i>배점 추가</button>'
-    +         '<button class="btn btn-ghost btn-sm" onclick="' + remFn + '(' + idx + ')"><i data-lucide="circle-minus" style="width:15px;height:15px;color:#808080;"></i>배점 삭제</button>'
+    +         (locked
+                ? '<button class="btn btn-ghost btn-sm is-disabled" title="AI 채점이 실행되어 배점 줄을 지울 수 없어요"><i data-lucide="lock" style="width:15px;height:15px;"></i>배점 삭제</button>'
+                : '<button class="btn btn-ghost btn-sm" onclick="' + remFn + '(' + idx + ')"><i data-lucide="circle-minus" style="width:15px;height:15px;color:#808080;"></i>배점 삭제</button>')
     +       '</div>'
     +     '</div>'
     +   '</div>'
@@ -1472,7 +1484,6 @@ function onRubricInput(){
 function onBasicInput(){ S.name = document.getElementById('f-name').value; renderHeroName(); renderToc(); }
 function openFormulaTip(){ showToast('info','수식 입력 도구를 여는 화면입니다.'); }
 function aiGenRubrics(){
-  if (S.locked){ showToast('error','과제물 인식이 시작되어 채점기준을 새로 만들 수 없어요.'); return; }
   syncRubricsFromDom();
   var seed = JSON.parse(JSON.stringify(RUBRIC_SEED));
   seed.forEach(function(r){ r.id = r.id + 1000; });
@@ -2006,9 +2017,7 @@ function renderOverall(){
     staleHtml = '<div style="display:flex;gap:8px;align-items:flex-start;margin-top:12px;padding-top:12px;border-top:1px solid #D6E0F5;">'
       + '<i data-lucide="info" style="width:17px;height:17px;color:#C2620A;flex-shrink:0;margin-top:3px;"></i>'
       + '<p style="font-size:16px;color:#7A4A00;margin:0;line-height:1.65;">'
-      + (S.locked
-          ? '<strong>진단 뒤에 채점기준이 바뀌었어요.</strong> 이 결과는 지금 채점기준과 다를 수 있어요. 과제물 인식이 시작되어 다시 진단할 수는 없어요. 새 기준으로 진단하려면 설계를 복제해 주세요.'
-          : '<strong>진단 뒤에 채점기준이 바뀌었어요.</strong> 이 결과는 지금 채점기준과 다를 수 있어요. 활동지를 다시 올릴 필요는 없으니 <strong>다시 진단</strong>해 주세요.')
+      + '<strong>진단 뒤에 채점기준이 바뀌었어요.</strong> 이 결과는 지금 채점기준과 다를 수 있어요. 활동지를 다시 올릴 필요는 없으니 <strong>다시 진단</strong>해 주세요.'
       + '</p></div>';
   }
   document.getElementById('dg-overall').innerHTML = ''
@@ -2118,11 +2127,11 @@ function renderFitCards(){
      바꿀 수 없는 걸 편집 폼으로 열어두면 헛수고가 되므로 읽기 전용으로 내린다.
      제안 자체는 남겨 둔다 — 왜 보완이 필요한지 근거이고, 설계를 복제하면 쓸 수 있다. */
   var lb = document.getElementById('dg-lock-banner');
-  lb.style.display = S.locked ? 'flex' : 'none';
-  if (S.locked){
+  lb.style.display = S.scored ? 'flex' : 'none';
+  if (S.scored){
     document.getElementById('dg-lock-text').innerHTML = proposal
-      ? '<strong>과제물 인식이 시작되어 채점기준을 바꿀 수 없어요.</strong> 아래 AI 제안은 확인만 할 수 있어요. 적용하려면 설계를 복제해 새로 진단해 주세요.'
-      : '<strong>과제물 인식이 시작되어 채점기준을 바꿀 수 없어요.</strong> 진단 결과는 확인만 할 수 있어요.';
+      ? '<strong>AI 채점이 실행되어 채점기준을 바꿀 수 없어요.</strong> 이미 매긴 점수가 근거를 잃기 때문이에요. 아래 AI 제안은 확인만 할 수 있고, 적용하려면 설계를 복제해 주세요.'
+      : '<strong>AI 채점이 실행되어 채점기준을 바꿀 수 없어요.</strong> 진단 결과는 확인만 할 수 있어요.';
     document.getElementById('dg-draft-title').textContent = proposal ? 'AI 제안 채점기준' : '채점기준';
     document.getElementById('dg-draft-desc').textContent = proposal
       ? '채점하기 좋게 AI가 전체를 다시 구성한 안이에요. 지금은 적용할 수 없어요.'
@@ -2180,7 +2189,7 @@ function renderFitCards(){
 /* 작업본 적용 = 저장본 교체(DB 교체) + AI 재연결 + 3단계로 이동.
    저장이 이 순간에 일어나므로 "바뀐 기준 vs 옛 연결·판정"이 공존하는 상태가 없다. */
 function applyDraft(){
-  if (S.locked){ showToast('error','과제물 인식이 시작되어 채점기준을 바꿀 수 없어요.'); return; }
+  if (S.scored){ showToast('error','AI 채점이 실행되어 채점기준을 바꿀 수 없어요.'); return; }
   drSync();
   var bad = _draft.some(function(r){ return !r.title.trim(); });
   if (bad){ showToast('error','비어 있는 채점기준이 있어요. 내용을 채우거나 삭제해 주세요.'); return; }
@@ -2435,7 +2444,8 @@ var MP_MAIN = [
   { k:'ready',       label:'채점기준 입력 완료',      sub:'활동지 전 · 진단 잠김' },
   { k:'ws-done',     label:'활동지 문항까지 완료',     sub:'진단·모범답안 열림' },
   { k:'locked-stale',  label:'잠금 + 채점기준 변경', sub:'지난 진단 결과 · 재진단 불가' },
-  { k:'locked',      label:'과제물 인식 후 잠금',     sub:'삭제 막힘 · 단일 배너' },
+  { k:'locked',      label:'과제물 인식 후',          sub:'문항만 잠김 · 채점기준 자유' },
+  { k:'scored',      label:'AI 채점 실행 후',         sub:'배점·삭제·세트 교체 잠김' },
   { cap:'활동지 문항 화면' },
   { k:'upload',      label:'빈 활동지 업로드',        sub:'파일 올린 상태' },
   { k:'structure',   label:'문항 구조 확인',          sub:'문항 4개 · 지시문 수정' },
