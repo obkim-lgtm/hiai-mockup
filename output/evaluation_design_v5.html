@@ -238,7 +238,7 @@ body { margin: 0; background: #EDF1FC; min-width: 1280px; }
 /* ── 까망이 목업 내비게이터 (시연용 · 실제 화면 아님) ── */
 #mockpick{position:fixed;left:24px;bottom:24px;z-index:3000;background:#1F2233;border-radius:14px;padding:8px;box-shadow:0 10px 30px rgba(0,0,0,.35);width:max-content;max-width:360px;cursor:move;user-select:none}
 #mockpick .mp-head{font-size:11px;font-weight:800;color:#8A8FB0;letter-spacing:.04em;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:6px 8px;cursor:pointer}
-#mockpick .mp-body{display:flex;flex-direction:column;gap:6px;margin-top:6px;max-height:70vh;overflow-y:auto}
+#mockpick .mp-body{display:flex;flex-direction:column;gap:6px;margin-top:6px;max-height:35vh;overflow-y:auto}
 #mockpick .mp-cap{font-size:10px;font-weight:800;color:#6B6F8C;letter-spacing:.05em;padding:7px 8px 2px}
 #mockpick .mp-btn{width:100%;text-align:left;white-space:normal;padding:9px 12px;border-radius:9px;border:1px solid #3A3F58;background:#2A2E44;color:#C9CCE0;font-size:13px;font-weight:700;font-family:inherit;cursor:pointer;line-height:1.35}
 #mockpick .mp-btn:hover{background:#33384f}
@@ -514,7 +514,7 @@ body { margin: 0; background: #EDF1FC; min-width: 1280px; }
 
             <section class="sec" id="sec-diagnosis">
               <div class="sec-head">
-                <div class="sec-title">AI 채점 적합성 진단<span id="diag-badge"></span></div>
+                <div class="sec-title">AI 채점 적합성 진단 <span style="font-size:14px;font-weight:400;color:#808080;">(선택)</span><span id="diag-badge"></span></div>
               </div>
               <p class="sec-desc">AI 채점을 시작하기 전에, 지금 채점기준으로 점수를 매길 수 있는지 확인해 보세요. 애매한 기준은 고쳐 쓸 문장을 제안해 드려요.</p>
               <div id="diag-card-body"></div>
