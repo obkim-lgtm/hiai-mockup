@@ -13,7 +13,9 @@
 - **새 화면/컴포넌트 그리기 전(GNB·로고·파비콘·Dialog·Toast·패널·버튼·Input·Badge·토큰·타이포) → [design-system.md](design-system.md)**
 - **컴포넌트 구현 전 실제 수치(색·radius·spacing·폰트) → [design-system.md](design-system.md)의 Figma 파일키로 get_design_context** (육안 추정 금지)
 - **목업 내비게이터(까망이)에 화면·케이스 추가하거나 케이스 선택기 만들기 전 → [mockup-navigator.md](mockup-navigator.md)** (전용 패널 금지·진입 항목→케이스 그룹·딥링크·파일 간 동기화, CLIPO 목업과 공통 규칙)
-- **정교한 평가(H-2608) 설계 2~4단계 작업 전 → [sessions/2026-08-04.md](sessions/2026-08-04.md)** (변경 규칙=참조 원칙 하나·잠금 2축(OCR 분석 후/채점 실행 후)·안내 3종·세트 교체 제품에 없음). 목업 ../output/evaluation_design_v4_260713.html · PRD https://app.notion.com/p/33717e5c8cf1817c830ee4f97380a4a0
+- **평가 설계 작업 전(현행 = 단일 평가) → [sessions/2026-08-21.md](sessions/2026-08-21.md)** (간편/정교 구분 폐지 · 설계 상세=세로 스크롤+좌측 목차 · **적합성 진단은 전용 화면 4단계**(빈 활동지→문항 구조→채점기준 연결→적합도 진단) · 모범답안도 전용 화면). 목업 ../output/evaluation_design_v5.html
+- **채점기준 입력 UI(추가 버튼·카드·∑·배점) 그리기 전 → 개발 화면 Figma `MM23uA7pDEmFeMKGeFVJpB` `736:9578`** (점선 AI 카드 = 추가 진입점. 실측값은 sessions/2026-08-21.md §6에 정리)
+- **변경 규칙·잠금 정책(v5에도 유효) → [sessions/2026-08-04.md](sessions/2026-08-04.md)** (참조 원칙 하나 · 잠금 2축(OCR 분석 후/채점 실행 후) · 안내 3종 · 세트 교체는 제품에 없음). 구버전 4단계 위저드 목업 ../output/evaluation_design_v4_260713.html · PRD(간편/정교 전제라 개정 필요) https://app.notion.com/p/33717e5c8cf1817c830ee4f97380a4a0
 - 서비스 배경·컬러 팔레트 상세·스크린 인덱스 → ../context.md
 - 디자인 토큰(PPT 정리본) → ../HIAI_design_tokens_PPT.md
 - 실행·미리보기 방법 → ../manual.md
