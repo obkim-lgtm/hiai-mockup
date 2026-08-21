@@ -1197,12 +1197,11 @@ function rubricCardHtml(r, idx, ns){
   var delBtn = locked
     ? '<button class="btn btn-ghost btn-sm is-disabled" title="과제물 인식이 시작되어 삭제할 수 없어요"><i data-lucide="lock" style="width:15px;height:15px;"></i>삭제</button>'
     : '<button class="btn btn-ghost btn-sm" onclick="' + delFn + '(' + idx + ')"><i data-lucide="trash-2" style="width:15px;height:15px;color:#808080;"></i>삭제</button>';
-  var tag = (ns !== 'dr' && S.setApplied) ? '<span class="badge b-purple" style="margin-left:8px;">AI 제안</span>' : '';
 
   return ''
     + '<div class="rubric-card" data-rid="' + r.id + '" data-di="' + idx + '">'
     +   '<div style="display:flex;align-items:center;padding:14px 14px 0;gap:4px;">'
-    +     '<span style="font-size:16px;font-weight:700;color:#333;flex:1;">채점기준 ' + (idx+1) + tag + '</span>'
+    +     '<span style="font-size:16px;font-weight:700;color:#333;flex:1;">채점기준 ' + (idx+1) + '</span>'
     +     '<button class="btn btn-ghost btn-sm" onclick="' + copyFn + '(' + idx + ')"><i data-lucide="copy-plus" style="width:15px;height:15px;color:#808080;"></i>복제</button>'
     +     delBtn
     +   '</div>'
