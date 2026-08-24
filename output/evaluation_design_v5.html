@@ -169,6 +169,49 @@ body { margin: 0; background: #EDF1FC; min-width: 1280px; }
 .stage-num.done { background:#00AF3D; }
 .stage-title { font-size:18px; font-weight:800; color:#341761; }
 .stage-sum { font-size:14px; color:#808080; font-weight:700; margin-left:auto; }
+/* 완료한 단은 머리만 남기고 접는다 — 단이 늘어도 화면이 길어지지 않게 */
+.stage-head { cursor:pointer; }
+.stage-caret { width:18px; height:18px; color:#B3B3B3; flex-shrink:0; margin-left:10px; }
+.stage-card.collapsed { background:#FBFBFC; }
+.stage-card.collapsed > *:not(.stage-head) { display:none !important; }
+.stage-card.collapsed .stage-head { margin-bottom:0; }
+/* 같은 평가에 활동지가 여러 종류일 때 — 드문 경우라 필요한 사람만 펼쳐 보게 */
+.ws-help-link { display:inline-flex; align-items:center; justify-content:center; line-height:1; vertical-align:middle; gap:4px;
+                background:none; border:none; padding:0; cursor:pointer;
+                font-family:inherit; font-size:14px; font-weight:700; color:#6C2DF4; }
+.ws-help-link:hover { text-decoration:underline; }
+.ws-help-wrap { position:relative; display:inline-block; }
+.ws-pop { position:absolute; top:calc(100% + 10px); left:0; width:420px; max-width:80vw; z-index:60;
+          background:#fff; border:1px solid #E6E6E6; border-radius:10px; box-shadow:0 8px 24px rgba(95,102,178,.18);
+          padding:14px 16px; font-size:14px; color:#494949; line-height:1.65; text-align:left; }
+.ws-pop::before { content:''; position:absolute; top:-7px; left:18px; width:12px; height:12px; background:#fff;
+                  border-left:1px solid #E6E6E6; border-top:1px solid #E6E6E6; transform:rotate(45deg); }
+
+/* 개인정보 가림 영역 — 활동지 위에 사각형을 직접 그려 지정 */
+.ws-page-wrap { display:flex; justify-content:center; }
+.ws-page { position:relative; width:100%; max-width:620px; aspect-ratio:1/1.32; background:#fff;
+           border:1px solid #D9D9D9; border-radius:8px; overflow:hidden; user-select:none; }
+.ws-page.editable { cursor:crosshair; }
+.ws-paper { position:absolute; inset:0; padding:26px 30px; pointer-events:none; }
+.ws-id-row { display:flex; gap:14px; font-size:12px; color:#333; margin-bottom:14px; }
+.ws-id-row span { border-bottom:1px solid #B3B3B3; min-width:52px; display:inline-block; }
+.ws-doc-title { text-align:center; font-size:15px; font-weight:800; color:#111; margin:0 0 3px; }
+.ws-doc-sub { text-align:center; font-size:11px; color:#494949; margin:0 0 14px; }
+.ws-tb { width:100%; border:1px solid #333; border-collapse:collapse; }
+.ws-tb td { border:1px solid #333; padding:5px 6px; font-size:10.5px; color:#333; height:26px; vertical-align:top; }
+.ws-tb td.n { width:26px; text-align:center; color:#C2434F; }
+.mask-box { position:absolute; background:rgba(85,85,85,.85); border:2px solid #3C3C3C; border-radius:2px; }
+.ws-page.editable .mask-box { cursor:move; }
+.mb-h { position:absolute; width:11px; height:11px; background:#fff; border:1.5px solid #3C3C3C; border-radius:2px; }
+.mb-h.nw { left:-6px; top:-6px; cursor:nwse-resize; }
+.mb-h.ne { right:-6px; top:-6px; cursor:nesw-resize; }
+.mb-h.sw { left:-6px; bottom:-6px; cursor:nesw-resize; }
+.mb-h.se { right:-6px; bottom:-6px; cursor:nwse-resize; }
+.mask-box .mb-del { position:absolute; top:-9px; right:-9px; width:20px; height:20px; border-radius:50%;
+                    background:#fff; border:1px solid #B3B3B3; display:none; align-items:center; justify-content:center;
+                    cursor:pointer; color:#494949; }
+.mask-box:hover .mb-del { display:inline-flex; }
+.mask-draft { position:absolute; background:rgba(126,68,251,.18); border:2px dashed #7E44FB; border-radius:2px; }
 
 /* 진단 화면 공통 하단 바 — 좌: 뒤로 / 우: 보조 + 주 행동 */
 .dg-navbar { display:flex; align-items:center; justify-content:space-between; gap:12px;
@@ -638,13 +681,22 @@ body { margin: 0; background: #EDF1FC; min-width: 1280px; }
         </div>
 
         <!-- 1단계: 빈 활동지 업로드 -->
-        <div id="dg-s1" class="stage-card" style="display:none;"><div class="stage-head"><span class="stage-num" id="dg-s1-num">1</span><span class="stage-title">빈 활동지 업로드</span><span class="stage-sum" id="ws-sum-1"></span></div>
-          <p class="sec-desc">학생이 작성하기 전, <strong>문항만 인쇄된 빈 활동지</strong>를 올려 주세요. 이 파일로 문항 구조를 나눕니다.</p>
+        <div id="dg-s1" class="stage-card" style="display:none;"><div class="stage-head"><span class="stage-num" id="dg-s1-num">1</span><span class="stage-title">활동지 업로드</span><span class="stage-sum" id="ws-sum-1"></span></div>
+          <p class="sec-desc">학생이 작성하기 전, <strong>문항만 인쇄된 빈 활동지</strong>를 올려 주세요. 올리면 이름·학번이 적히는 칸을 바로 찾아 드려요.</p>
+          <input type="file" id="ws-file" accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/*" style="display:none;" onchange="onWsFile(this)">
           <div id="dz-empty" class="dropzone">
             <i data-lucide="file-up" style="width:34px;height:34px;color:#7E44FB;"></i>
             <p style="font-size:16px;font-weight:700;color:#341761;margin:0;">빈 활동지를 끌어다 놓거나 파일을 선택해 주세요</p>
             <p style="font-size:14px;color:#808080;margin:0;">PDF · JPG · PNG · 20MB 이하</p>
             <button class="btn btn-secondary btn-sm" style="margin-top:4px;" onclick="pickWorksheet()">파일 선택</button>
+          </div>
+          <div id="ws-help-row" style="display:none;margin-top:14px;">
+            <span class="ws-help-wrap">
+              <button class="ws-help-link" onclick="event.stopPropagation();toggleWsMulti()"><i data-lucide="help-circle" style="width:15px;height:15px;"></i>활동지가 두 종류 이상인가요?</button>
+              <div id="ws-multi-note" class="ws-pop" style="display:none;" onclick="event.stopPropagation();">
+                순서나 내용이 조금씩 다른 활동지를 함께 쓰신다면 <strong>평가를 나눠 각각 만들어 주세요.</strong><br>한 평가에는 활동지 하나만 올릴 수 있고, 문항과 모범답안이 그 활동지에 묶이기 때문이에요.
+              </div>
+            </span>
           </div>
           <div id="dz-filled" style="display:none;">
             <div style="display:flex;align-items:center;gap:12px;border:1px solid #D9D9D9;border-radius:12px;padding:14px 16px;">
@@ -652,7 +704,7 @@ body { margin: 0; background: #EDF1FC; min-width: 1280px; }
                 <i data-lucide="file-text" style="width:20px;height:20px;color:#7E44FB;"></i>
               </div>
               <div style="flex:1;min-width:0;">
-                <p style="font-size:16px;font-weight:700;color:#333;margin:0 0 2px;">1학년_국어_논설문쓰기_활동지.pdf</p>
+                <p id="ws-file-name" style="font-size:16px;font-weight:700;color:#333;margin:0 0 2px;"></p>
                 <p style="font-size:14px;color:#808080;margin:0;">2.4MB · 4쪽</p>
               </div>
               <button class="btn btn-ghost btn-sm" onclick="pickWorksheet()">파일 교체</button>
@@ -662,14 +714,35 @@ body { margin: 0; background: #EDF1FC; min-width: 1280px; }
               <i data-lucide="triangle-alert" style="color:#E4631C;"></i>
               <div><strong>활동지에서 문항을 나누지 못했어요.</strong> 문항 번호가 보이지 않거나 손글씨·표로 되어 있으면 나누기 어려워요. 문항 구분이 명확한 파일로 바꿔 다시 분석해 주세요.<br>나누지 못해도 설계는 저장할 수 있어요. 이 경우 문항 구분 없이 채점기준 전체로 채점돼요.</div>
             </div>
+            <div id="mask-block" style="display:none;margin-top:18px;">
+              <div class="note note-info" id="mask-why" style="margin-bottom:14px;">
+                <i data-lucide="shield-check" style="color:#5890FF;"></i>
+                <div><strong>개인정보 보호를 위해 학생 이름과 학번은 가리고 채점해요. 표시된 칸이 맞는지 확인해 주세요.</strong> 가린 영역은 AI가 읽지 않고, 선생님 화면에는 그대로 보여요.</div>
+              </div>
+              <p class="sec-desc" id="mask-desc"></p>
+              <div style="display:flex;justify-content:flex-end;margin-bottom:8px;">
+                <button class="btn btn-ghost btn-sm" id="btn-mask-clear" onclick="clearMasks()"><i data-lucide="eraser" style="width:15px;height:15px;color:#808080;"></i>영역 모두 지우기</button>
+              </div>
+              <div class="ws-page-wrap">
+                <div id="ws-page" class="ws-page">
+                  <div class="ws-paper">
+                    <div class="ws-id-row"><div>1학년 <span></span>반</div><div>번호: <span></span></div><div>이름: <span></span></div></div>
+                    <p class="ws-doc-title">1학년 1학기 영어 서술형 수행평가 문장</p>
+                    <p class="ws-doc-sub">범위: 1~3과 / 시험 시간: 6월 넷째 주</p>
+                    <table class="ws-tb"><tbody id="ws-tb-body"></tbody></table>
+                  </div>
+                  <div id="mask-layer"></div>
+                </div>
+              </div>
+            </div>
             <div class="dg-navbar">
               <button class="btn btn-outline" onclick="backToDetail('sec-worksheet')"><i data-lucide="arrow-left" style="width:16px;height:16px;"></i>설계로 돌아가기</button>
-              <button class="btn btn-primary" onclick="analyzeStructure()"><i data-lucide="scan-text" style="width:20px;height:20px;"></i><span id="btn-analyze-label">문항 구조 분석</span></button>
+              <button class="btn btn-primary" id="btn-mask-next" onclick="saveMasks()"><i data-lucide="scan-text" style="width:20px;height:20px;"></i><span id="btn-mask-label">저장하고 문항 분석</span></button>
             </div>
           </div>
         </div>
 
-        <!-- 2단계: 문항 구조 확인 -->
+        <!-- 2단: 문항 구조 확인 -->
         <div id="dg-s2" class="stage-card" style="display:none;"><div class="stage-head"><span class="stage-num" id="dg-s2-num">2</span><span class="stage-title">문항 구조 확인</span><span class="stage-sum" id="ws-sum-2"></span></div>
           <div class="note note-info" style="margin-bottom:16px;">
             <i data-lucide="scan-text" style="color:#5890FF;"></i>
@@ -933,7 +1006,8 @@ var S = {
   ws: 'idle',            // 활동지 문항: idle | file | load | ready | fail
   dg: 'idle',            // 적합성 진단: idle | link | load | result
   diagDone: false,       // 진단까지 마쳤는지
-  worksheet: false,      // 빈 활동지 파일을 올렸는지
+  worksheet: false,
+  masks: [],             // 개인정보 가림 영역 [{x,y,w,h}] — 활동지 대비 %      // 빈 활동지 파일을 올렸는지
   diagResultKind: 'warn',// warn | ok
   setApplied: false,     // AI 채점기준 세트로 교체했는지
   relinked: false,       // 교체 후 AI가 다시 연결한 결과를 보는 중인지
@@ -961,6 +1035,7 @@ var STD_SEED = [
             ['C','내용 조직이나 표현이 목적과 어긋나는 곳이 있음'],
             ['D','목적과 독자를 고려한 흔적을 찾기 어려움']] }
 ];
+var MASK_SEED = [{x:4.5,y:3.2,w:44,h:4.4}];
 function blankStandard(){ return { code:'', text:'', custom:false, levels:[['',''],['',''],['','']] }; }
 var standards = [];
 
@@ -1160,7 +1235,8 @@ function openDetail(caseKey){
 function applyCase(k){
   // 기본값 초기화
   S.name = ''; S.stdFilled = false; S.rubricFilled = false;
-  S.ws = 'idle'; S.dg = 'idle'; S.worksheet = false; S.diagResultKind = 'warn';
+  S.ws = 'idle'; S.dg = 'idle'; S.worksheet = false; S.masks = [];
+  resetStageOpen(); S.diagResultKind = 'warn';
   S.applied = {}; S.setApplied = false; S.relinked = false; _draft = null; _draftFromAI = false; _draftEdited = false; S.answersOpen = false; S.answersFilled = false; S.locked = false; S.scored = false; S.marks = {};
   S.diagDone = false;
   rubrics = JSON.parse(JSON.stringify(RUBRIC_SEED));
@@ -1184,20 +1260,21 @@ function applyCase(k){
     standards = JSON.parse(JSON.stringify(STD_SEED));
   }
   if (k === 'upload'){ S.ws = 'file'; S.worksheet = true; }
-  if (k === 'structure'){ S.ws = 'ready'; S.worksheet = true; }
+  if (k === 'mask'){ S.ws = 'mask'; S.worksheet = true; S.masks = JSON.parse(JSON.stringify(MASK_SEED)); }
+  if (k === 'structure'){ S.ws = 'ready'; S.worksheet = true; S.masks = JSON.parse(JSON.stringify(MASK_SEED)); }
   if (k === 'qfail'){ S.ws = 'fail'; S.worksheet = true; }
-  if (k === 'ws-done'){ S.ws = 'ready'; S.worksheet = true; }
-  if (k === 'linking'){ S.ws = 'ready'; S.worksheet = true; S.dg = 'link'; }
-  if (k === 'diagnosing'){ S.ws = 'ready'; S.worksheet = true; S.dg = 'load'; }
-  if (k === 'result'){ S.ws = 'ready'; S.worksheet = true; S.dg = 'result'; S.diagDone = true; S.diagResultKind = 'warn'; }
-  if (k === 'result-ok'){ S.ws = 'ready'; S.worksheet = true; S.dg = 'result'; S.diagDone = true; S.diagResultKind = 'ok'; }
-  if (k === 'answer'){ S.ws = 'ready'; S.worksheet = true; S.dg = 'result'; S.diagDone = true; S.diagResultKind = 'ok'; S.answersFilled = true; }
-  if (k === 'locked'){ S.ws = 'ready'; S.worksheet = true; S.dg = 'result'; S.diagDone = true; S.diagResultKind = 'warn'; S.locked = true; }
-  if (k === 'scored'){ S.ws = 'ready'; S.worksheet = true; S.dg = 'result'; S.diagDone = true; S.diagResultKind = 'ok'; S.locked = true; S.scored = true; }
-  if (k === 'locked-stale'){ S.ws = 'ready'; S.worksheet = true; S.dg = 'result'; S.diagDone = true; S.diagResultKind = 'warn'; S.locked = true; S.marks['sec-diagnosis'] = true; }
+  if (k === 'ws-done'){ S.ws = 'ready'; S.worksheet = true; S.masks = JSON.parse(JSON.stringify(MASK_SEED)); }
+  if (k === 'linking'){ S.ws = 'ready'; S.worksheet = true; S.masks = JSON.parse(JSON.stringify(MASK_SEED)); S.dg = 'link'; }
+  if (k === 'diagnosing'){ S.ws = 'ready'; S.worksheet = true; S.masks = JSON.parse(JSON.stringify(MASK_SEED)); S.dg = 'load'; }
+  if (k === 'result'){ S.ws = 'ready'; S.worksheet = true; S.masks = JSON.parse(JSON.stringify(MASK_SEED)); S.dg = 'result'; S.diagDone = true; S.diagResultKind = 'warn'; }
+  if (k === 'result-ok'){ S.ws = 'ready'; S.worksheet = true; S.masks = JSON.parse(JSON.stringify(MASK_SEED)); S.dg = 'result'; S.diagDone = true; S.diagResultKind = 'ok'; }
+  if (k === 'answer'){ S.ws = 'ready'; S.worksheet = true; S.masks = JSON.parse(JSON.stringify(MASK_SEED)); S.dg = 'result'; S.diagDone = true; S.diagResultKind = 'ok'; S.answersFilled = true; }
+  if (k === 'locked'){ S.ws = 'ready'; S.worksheet = true; S.masks = JSON.parse(JSON.stringify(MASK_SEED)); S.dg = 'result'; S.diagDone = true; S.diagResultKind = 'warn'; S.locked = true; }
+  if (k === 'scored'){ S.ws = 'ready'; S.worksheet = true; S.masks = JSON.parse(JSON.stringify(MASK_SEED)); S.dg = 'result'; S.diagDone = true; S.diagResultKind = 'ok'; S.locked = true; S.scored = true; }
+  if (k === 'locked-stale'){ S.ws = 'ready'; S.worksheet = true; S.masks = JSON.parse(JSON.stringify(MASK_SEED)); S.dg = 'result'; S.diagDone = true; S.diagResultKind = 'warn'; S.locked = true; S.marks['sec-diagnosis'] = true; }
 
   var target = 'detail';
-  if (k === 'upload' || k === 'structure' || k === 'qfail') target = 'worksheet';
+  if (k === 'upload' || k === 'mask' || k === 'structure' || k === 'qfail') target = 'worksheet';
   if (k === 'linking' || k === 'diagnosing' || k === 'result' || k === 'result-ok') target = 'diag';
   if (k === 'answer') target = 'answer';
   renderDetail();
@@ -1535,6 +1612,7 @@ function stageCase(){
   if (S.dg === 'link') return 'linking';
   if (S.dg === 'load') return 'diagnosing';
   if (S.dg === 'result') return (S.diagResultKind === 'ok' ? 'result-ok' : 'result');
+  if (S.ws === 'mask') return 'mask';
   if (S.ws === 'fail') return 'qfail';
   if (S.ws === 'ready') return 'structure';
   return 'upload';
@@ -1542,7 +1620,7 @@ function stageCase(){
 function wsDone(){ return S.ws === 'ready'; }
 function gotoWorksheet(){
   if (S.ws === 'idle') S.ws = 'file';
-  S.case = (S.ws === 'fail') ? 'qfail' : (S.ws === 'ready' ? 'structure' : 'upload');
+  S.case = (S.ws === 'fail') ? 'qfail' : (S.ws === 'ready' ? 'structure' : (S.ws === 'mask' ? 'mask' : 'upload'));
   renderWorksheet();
   showScreen('worksheet');
   setHash('#case=' + S.case);
@@ -1635,18 +1713,24 @@ function renderAnswerCard(){
 /* ══ 활동지 문항 화면 ══ */
 function renderWorksheet(){
   var show = function(id, on, disp){ var e = document.getElementById(id); if (e) e.style.display = on ? (disp || 'block') : 'none'; };
-  show('ws-loading', S.ws === 'load', 'flex');
-  show('dg-s1', S.ws !== 'load');
+  var loading = (S.ws === 'load' || S.ws === 'load2');
+  show('ws-loading', loading, 'flex');
+  show('dg-s1', !loading);
   show('dg-fail', S.ws === 'fail', 'flex');
-  show('dg-s2', S.ws === 'ready');
+  show('mask-block', !loading && (S.ws === 'mask' || S.ws === 'ready' || S.ws === 'fail'));
+  show('dg-s2', !loading && S.ws === 'ready');
+  applyStageCollapse('dg-s1', S.ws === 'ready');
+  applyStageCollapse('dg-s2', false);
+  if (S.ws === 'mask' || S.ws === 'ready' || S.ws === 'fail') renderMasks();
 
   document.getElementById('dz-empty').style.display = S.worksheet ? 'none' : 'flex';
+  document.getElementById('ws-help-row').style.display = S.worksheet ? 'none' : 'block';
   document.getElementById('dz-filled').style.display = S.worksheet ? 'block' : 'none';
   document.getElementById('dg-s1-num').classList.toggle('done', wsDone());
-  document.getElementById('ws-sum-1').textContent = S.worksheet ? '1학년_국어_논설문쓰기_활동지.pdf' : '';
+  if (!S.worksheet) document.getElementById('ws-sum-1').textContent = '';
+  var fn = document.getElementById('ws-file-name');
+  if (fn) fn.textContent = WS_FILE_NAME;
   document.getElementById('ws-sum-2').textContent = wsDone() ? ('문항 ' + QUESTIONS.length + '개') : '';
-  var al = document.getElementById('btn-analyze-label');
-  if (al) al.textContent = (wsDone() || S.ws === 'fail') ? '문항 다시 분석' : '문항 구조 분석';
 
   var badge = '';
   if (S.ws === 'fail') badge = '<span class="badge b-red">문항 구분 실패</span>';
@@ -1667,6 +1751,8 @@ function renderDiagnosis(){
   show('dg-loading', loading, 'flex');
   show('dg-s3', !loading && S.dg !== 'idle');
   show('dg-s4', !loading && S.dg === 'result');
+  applyStageCollapse('dg-s3', S.dg === 'result');
+  applyStageCollapse('dg-s4', false);
 
   document.getElementById('dg-s3-num').classList.toggle('done', S.dg === 'result');
   var linked = QUESTIONS.filter(function(q){ return q.links.length; }).length;
@@ -1694,14 +1780,42 @@ function renderDiagnosis(){
 function renderAll(){ renderWorksheet(); renderDiagnosis(); }
 
 /* ── 활동지 문항: 업로드 → 분석 ── */
-function pickWorksheet(){ S.worksheet = true; renderWorksheet(); showToast('success','빈 활동지를 올렸어요.'); }
+var WS_FILE_NAME = '1학년_국어_논설문쓰기_활동지.pdf';
+/* 파일을 고르면 곧바로 이름·학번 칸까지 찾는다 — 교사가 버튼을 한 번 더 누를 이유가 없다. */
+function pickWorksheet(){
+  if (S.locked){ showToast('error','과제물 인식이 시작되어 활동지를 바꿀 수 없어요.'); return; }
+  if (!S.worksheet){ document.getElementById('ws-file').click(); return; }
+  var gone = ['가림 영역'];
+  if (wsDone()) gone.push('문항 목록과 직접 고친 내용');
+  if (S.dg !== 'idle' || S.diagDone) gone.push('채점기준 연결과 진단 결과');
+  if (countAnswers() > 0) gone.push('문항별 모범답안');
+  openConfirm('활동지를 바꿀까요?',
+    '<strong>' + gone.join(', ') + '</strong>이 사라지고 새로 만들어져요.<br>채점기준 자체는 그대로 남아요.',
+    '파일 고르기', function(){ document.getElementById('ws-file').click(); });
+}
+function onWsFile(input){
+  var f = input.files && input.files[0];
+  if (!f) return;
+  WS_FILE_NAME = f.name;
+  input.value = '';
+  S.worksheet = true;
+  S.masks = [];
+  QUESTIONS = seedQuestions();
+  S.ws = 'file';
+  S.dg = 'idle'; S.diagDone = false; S.setApplied = false; S.relinked = false;
+  S.marks['sec-diagnosis'] = false;
+  _draft = null; _draftFromAI = false; _draftEdited = false;
+  S.answersFilled = false;
+  renderAnswers();
+  runWsLoad();
+}
 function removeWorksheet(){
   if (S.locked){ showToast('error','과제물 인식이 시작되어 활동지를 지울 수 없어요.'); return; }
   if (!wsDone()){ S.worksheet = false; renderWorksheet(); return; }
   openConfirm('활동지를 지울까요?',
     '<strong>문항 목록과 이어서 만든 연결·진단 결과·모범답안</strong>이 함께 사라져요.<br>채점기준 자체는 그대로 남아요.',
     '지우기', function(){
-      S.worksheet = false; S.ws = 'file';
+      S.worksheet = false; S.ws = 'file'; S.masks = [];
       QUESTIONS = seedQuestions();
       S.dg = 'idle'; S.diagDone = false; S.setApplied = false; S.relinked = false;
       S.marks['sec-diagnosis'] = false;
@@ -1719,11 +1833,22 @@ var DG_LOAD_MSG = {
 var _loadTimer = null;
 function runWsLoad(){
   S.ws = 'load';
+  document.getElementById('ws-load-title').textContent = '이름·학번이 적히는 칸을 찾고 있어요';
+  renderWorksheet();
+  clearTimeout(_loadTimer);
+  _loadTimer = setTimeout(function(){
+    S.ws = 'mask'; S.masks = JSON.parse(JSON.stringify(MASK_SEED)); S.case = 'mask';
+    renderAll(); renderAnswers(); renderToc(); renderMockpick();
+    setHash('#case=mask');
+  }, 1400);
+}
+function runWsLoad2(){
+  S.ws = 'load2';
   document.getElementById('ws-load-title').textContent = DG_LOAD_MSG.ws;
   renderWorksheet();
   clearTimeout(_loadTimer);
   _loadTimer = setTimeout(function(){
-    S.ws = 'ready'; S.case = 'structure';
+    S.ws = 'ready'; S.case = 'structure'; resetStageOpen();
     renderAll(); renderAnswers(); renderToc(); renderMockpick();
     setHash('#case=structure');
   }, 1600);
@@ -1740,7 +1865,7 @@ function runDiagLoad(kind){
       S.dg = 'link'; S.case = 'linking';
       var nv = document.getElementById('dg-s3-nav'); if (nv) nv.style.display = 'flex';
     } else {
-      S.dg = 'result'; S.diagDone = true;
+      S.dg = 'result'; S.diagDone = true; resetStageOpen();
       S.marks['sec-diagnosis'] = false;
       S.case = (S.diagResultKind === 'ok' ? 'result-ok' : 'result');
       showToast('success','적합도 진단을 마쳤어요.');
@@ -1752,10 +1877,11 @@ function runDiagLoad(kind){
 function analyzeStructure(){
   if (!S.worksheet){ showToast('error','빈 활동지를 먼저 올려 주세요.'); return; }
   if (S.locked){ showToast('error','과제물 인식이 시작되어 문항을 다시 나눌 수 없어요.'); return; }
-  if (!wsDone()){ S.ws = 'file'; runWsLoad(); return; }
+  if (!wsDone()){ runWsLoad2(); return; }
 
   /* 이미 나눈 뒤 다시 분석하면 문항이 새로 만들어진다.
-     연결·진단·모범답안은 모두 문항을 참조하므로 함께 사라진다(되돌릴 수 없음 안내). */
+     연결·진단·모범답안은 모두 문항을 참조하므로 함께 사라진다(되돌릴 수 없음 안내).
+     가림 영역은 문항을 참조하지 않으므로 그대로 둔다. */
   var josa = function(w){ var c = w.charCodeAt(w.length - 1) - 0xAC00; return (c >= 0 && c <= 11171 && c % 28) ? '이' : '가'; };
   var gone = ['문항 목록과 직접 고친 내용'];
   if (S.dg !== 'idle' || S.diagDone) gone.push('채점기준 연결과 진단 결과');
@@ -1770,7 +1896,7 @@ function analyzeStructure(){
       _draft = null; _draftFromAI = false; _draftEdited = false;
       S.answersFilled = false;
       renderAnswers();
-      runWsLoad();
+      runWsLoad2();
     });
 }
 function saveStructure(){
@@ -1819,6 +1945,173 @@ function finishDiagnosis(){
 }
 
 /* ── 2단계: 문항 구조 확인 ── */
+/* 개인정보 가림 영역 — AI가 먼저 잡고, 교사가 직접 그리거나 지운다.
+   여기서 정한 영역이 학생 답안을 인식할 때 그대로 적용된다. */
+var WS_LINES = [
+  '어떻게 지내세요?', '이건 내가 제일 좋아하는 책이야.', '나는 기타를 치고, 민수는 드럼을 쳐.',
+  '그녀는 나를 위해 케이크를 구워주셔.', '그녀는 좋은 학생일까?', '너는 얼마나 자주 농구를 하니?',
+  '나는 일주일에 한 번 운동을 해.', '대신 물을 마시는 게 어때?', '저는 밀가루도 사용하지 않아요.'
+];
+function renderMasks(){
+  var body = document.getElementById('ws-tb-body');
+  if (body && !body.children.length){
+    body.innerHTML = WS_LINES.map(function(t, i){
+      return '<tr><td class="n">' + (i+1) + '</td><td><div style="height:11px;"></div>' + esc(t) + '</td></tr>';
+    }).join('');
+  }
+  var editable = !S.locked;
+  var page = document.getElementById('ws-page');
+  page.classList.toggle('editable', editable);
+  document.getElementById('mask-layer').innerHTML = S.masks.map(function(m, i){
+    var handles = editable
+      ? ['nw','ne','sw','se'].map(function(c){ return '<span class="mb-h ' + c + '" data-c="' + c + '"></span>'; }).join('')
+        + '<span class="mb-del" onclick="event.stopPropagation();removeMask(' + i + ')"><i data-lucide="x" style="width:12px;height:12px;"></i></span>'
+      : '';
+    return '<div class="mask-box" data-i="' + i + '" style="left:' + m.x + '%;top:' + m.y + '%;width:' + m.w + '%;height:' + m.h + '%;">'
+      + handles + '</div>';
+  }).join('');
+  document.getElementById('mask-desc').innerHTML = S.locked
+    ? '과제물 인식이 시작되어 가릴 영역을 바꿀 수 없어요. 확인만 할 수 있어요.'
+    : 'AI가 이름·학번이 적히는 칸을 찾아 표시해 두었어요. <strong>빈 곳을 끌면 영역을 새로 그리고, 영역을 끌면 옮기고, 모서리를 끌면 크기를 바꿀 수 있어요.</strong> 잘못 잡힌 곳은 × 로 지워 주세요.';
+  var cb = document.getElementById('btn-mask-clear');
+  cb.style.display = (editable && S.masks.length) ? 'inline-flex' : 'none';
+  document.getElementById('ws-sum-1').textContent = WS_FILE_NAME + (S.masks.length ? ' · 가릴 영역 ' + S.masks.length + '개' : ' · 가릴 영역 없음');
+  document.getElementById('btn-mask-label').textContent = wsDone() ? '문항 다시 분석' : '저장하고 문항 분석';
+  icons();
+}
+function removeMask(i){ S.masks.splice(i, 1); renderMasks(); renderWsCard(); }
+function clearMasks(){
+  if (!S.masks.length) return;
+  openConfirm('가림 영역을 모두 지울까요?',
+    '영역 ' + S.masks.length + '개가 사라져요. 학생 답안에서 이름·학번이 가려지지 않아요.',
+    '모두 지우기', function(){ S.masks = []; renderMasks(); renderWsCard(); });
+}
+function saveMasks(){
+  if (S.locked){ showToast('error','과제물 인식이 시작되어 바꿀 수 없어요.'); return; }
+  if (wsDone()){ analyzeStructure(); return; }
+  runWsLoad2();
+}
+/* 활동지 위 조작 — 빈 곳: 새로 그리기 / 영역 안: 옮기기 / 모서리: 크기 조절 */
+(function(){
+  var page, layer, draft, mode = null, idx = -1, corner = '', sx = 0, sy = 0, orig = null, box = null;
+  function pct(e, r){ return { x:(e.clientX - r.left) / r.width * 100, y:(e.clientY - r.top) / r.height * 100 }; }
+  function clamp(v, lo, hi){ return Math.max(lo, Math.min(hi, v)); }
+  function paint(m){
+    box.style.left = m.x + '%'; box.style.top = m.y + '%';
+    box.style.width = m.w + '%'; box.style.height = m.h + '%';
+  }
+  document.addEventListener('mousedown', function(e){
+    page = document.getElementById('ws-page');
+    if (!page || !page.classList.contains('editable') || !page.contains(e.target)) return;
+    if (e.target.closest('.mb-del')) return;
+    var r = page.getBoundingClientRect();
+    if (!r.width) return;
+    var pt = pct(e, r); sx = pt.x; sy = pt.y;
+    var h = e.target.closest('.mb-h');
+    var mb = e.target.closest('.mask-box');
+    if (h && mb){
+      mode = 'resize'; corner = h.getAttribute('data-c');
+      idx = Number(mb.getAttribute('data-i')); box = mb;
+      orig = JSON.parse(JSON.stringify(S.masks[idx]));
+    } else if (mb){
+      mode = 'move'; idx = Number(mb.getAttribute('data-i')); box = mb;
+      orig = JSON.parse(JSON.stringify(S.masks[idx]));
+    } else {
+      mode = 'draw';
+      layer = document.getElementById('mask-layer');
+      draft = document.createElement('div');
+      draft.className = 'mask-draft';
+      layer.appendChild(draft);
+    }
+    e.preventDefault();
+  });
+  document.addEventListener('mousemove', function(e){
+    if (!mode) return;
+    var r = page.getBoundingClientRect(), pt = pct(e, r);
+    var dx = pt.x - sx, dy = pt.y - sy;
+    if (mode === 'draw'){
+      var x = Math.min(sx, pt.x), y = Math.min(sy, pt.y);
+      draft.style.cssText = 'left:' + x + '%;top:' + y + '%;width:' + Math.abs(pt.x - sx) + '%;height:' + Math.abs(pt.y - sy) + '%;';
+      return;
+    }
+    var m = JSON.parse(JSON.stringify(orig));
+    if (mode === 'move'){
+      m.x = clamp(orig.x + dx, 0, 100 - orig.w);
+      m.y = clamp(orig.y + dy, 0, 100 - orig.h);
+    } else {
+      var l = orig.x, t = orig.y, rt = orig.x + orig.w, bt = orig.y + orig.h;
+      if (corner.indexOf('w') > -1) l = clamp(orig.x + dx, 0, rt - 1.5);
+      if (corner.indexOf('e') > -1) rt = clamp(rt + dx, l + 1.5, 100);
+      if (corner.indexOf('n') > -1) t = clamp(orig.y + dy, 0, bt - 1);
+      if (corner.indexOf('s') > -1) bt = clamp(bt + dy, t + 1, 100);
+      m.x = l; m.y = t; m.w = rt - l; m.h = bt - t;
+    }
+    S.masks[idx] = m;
+    paint(m);
+  });
+  document.addEventListener('mouseup', function(e){
+    if (!mode) return;
+    var m = mode; mode = null;
+    if (m === 'draw'){
+      var r = page.getBoundingClientRect(), pt = pct(e, r);
+      var x = Math.min(sx, pt.x), y = Math.min(sy, pt.y);
+      var w = Math.abs(pt.x - sx), h = Math.abs(pt.y - sy);
+      if (draft) draft.remove();
+      if (!isFinite(w) || !isFinite(h) || w < 2 || h < 1.2) return;   // 실수로 클릭했거나 좌표를 못 잡은 경우는 무시
+      S.masks.push({ x:Math.max(0,x), y:Math.max(0,y), w:Math.min(w,100-x), h:Math.min(h,100-y) });
+    }
+    renderMasks(); renderWsCard();
+  });
+})();
+
+/* 단 접기 — 보기 상태일 뿐 저장과는 무관.
+   기본값은 '뒤 단이 열렸으면 앞 단은 접힘'이고, 머리를 누르면 사람 뜻이 우선한다. */
+var _cardOpen = {};
+function toggleStage(id){
+  var el = document.getElementById(id);
+  if (!el) return;
+  var willOpen = el.classList.contains('collapsed');
+  _cardOpen[id] = willOpen;
+  el.classList.toggle('collapsed', !willOpen);
+  syncCaret(el);
+}
+function applyStageCollapse(id, autoCollapsed){
+  var el = document.getElementById(id);
+  if (!el) return;
+  var collapsed = (id in _cardOpen) ? !_cardOpen[id] : autoCollapsed;
+  el.classList.toggle('collapsed', collapsed);
+  syncCaret(el);
+}
+function syncCaret(el){
+  var c = el.querySelector('.stage-caret');
+  if (!c) return;
+  c.setAttribute('data-lucide', el.classList.contains('collapsed') ? 'chevron-down' : 'chevron-up');
+}
+function resetStageOpen(){ _cardOpen = {}; }
+function setupStageHeads(){
+  document.querySelectorAll('.stage-card').forEach(function(card){
+    var head = card.querySelector('.stage-head');
+    if (!head || head.dataset.wired) return;
+    head.dataset.wired = '1';
+    var c = document.createElement('i');
+    c.className = 'stage-caret';
+    c.setAttribute('data-lucide', 'chevron-up');
+    head.appendChild(c);
+    head.addEventListener('click', function(e){
+      if (e.target.closest('button')) return;
+      toggleStage(card.id);
+    });
+  });
+}
+function toggleWsMulti(){
+  var n = document.getElementById('ws-multi-note');
+  n.style.display = (n.style.display !== 'none') ? 'none' : 'block';
+}
+document.addEventListener('click', function(){
+  var n = document.getElementById('ws-multi-note');
+  if (n) n.style.display = 'none';
+});
+
 function renderQuestionList(){
   document.getElementById('dg-s2-intro').innerHTML = '<strong>AI가 활동지를 문항 ' + QUESTIONS.length + '개로 나눴어요. 실제 활동지와 같은지 확인해 주세요.</strong> 문항 번호와 내용을 직접 수정할 수 있고, 순서 변경(↑↓)·삭제·문항 추가도 할 수 있어요.';
   document.getElementById('dg-q-list').innerHTML = QUESTIONS.map(function(q, i){
@@ -2418,6 +2711,7 @@ var MP_MAIN = [
   { k:'scored',      label:'AI 채점 실행 후',         sub:'배점·삭제·세트 교체 잠김' },
   { cap:'활동지 문항 화면' },
   { k:'upload',      label:'빈 활동지 업로드',        sub:'파일 올린 상태' },
+  { k:'mask',        label:'빈 활동지와 가릴 영역',    sub:'그리기 · 옮기기 · 크기 조절' },
   { k:'structure',   label:'문항 구조 확인',          sub:'문항 4개 · 지시문 수정' },
   { k:'qfail',       label:'문항 구분 실패',          sub:'다시 올리기 · 활동지 없이 저장' },
   { cap:'적합성 진단 화면' },
@@ -2486,6 +2780,7 @@ function mpToggle(e){
 rubrics = JSON.parse(JSON.stringify(RUBRIC_SEED));
 standards = [blankStandard()];
 renderList();
+setupStageHeads();
 routeFromUrl();
 _booted = true;
 renderMockpick();

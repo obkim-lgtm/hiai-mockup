@@ -153,7 +153,7 @@
 // ── 데이터: 서비스 흐름 순서 ──
 const SECTIONS = [
   {
-    title:'과제물 인식 확인·수정 (OCR)', color:'#FF8C4C', note:'9/1 배포 예정',
+    title:'과제물 인식 확인·수정 (OCR)', color:'#FF8C4C', note:'8/31 개발 완료',
     cards:[
       { name:'과제물 관리', file:'task_ocr_review_v1.html', desc:'<b>AI 채점 실시 전 과제물 인식 결과를 보고 사용자가 학생 답안을 직접 수정</b>할 수 있도록 제공<br>업로드와 동시에 과제물 OCR이 진행되며, 과제물 확인 없이도 AI 채점 진행 가능 (단, 사용자 확인을 묻는 팝업 표시)',
         states:[
@@ -216,9 +216,9 @@ const SECTIONS = [
     ]
   },
   {
-    title:'평가 홈 / 설문조사', color:'#7E44FB', note:'9~10월',
+    title:'평가 홈 / 설문조사', color:'#7E44FB', note:'평가 홈 8/24 배포 완료',
     cards:[
-      { name:'평가 홈', file:'eval_home_v10.html', desc:'좌측 수업 정보·평가 대상 + 평가 현황 케이스 7종 (케이스=단계·상태 필터·완료 시각 무게 정리)<br><b>채점 만족도 설문 가안 포함 — 문항 확정 후 갱신 예정</b>',
+      { name:'평가 홈', file:'eval_home_v10.html', desc:'좌측 수업 정보·평가 대상 + 평가 현황 케이스 7종 (케이스=단계·상태 필터·완료 시각 무게 정리)<br><b>남은 것 — 채점 만족도 설문 (가안 포함, 문항 확정 후 갱신)</b>',
         states:[
           {label:'평가홈', hash:'#filled', def:true},
           {label:'설문 유도 노출', hash:'#survey-home'},
