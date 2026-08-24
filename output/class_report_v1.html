@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<link rel="icon" href="../screens/favicon_src.png" type="image/png"/>
+<link rel="icon" href="../screens/favicon_src.png?v=2" type="image/png"/>
 <title>수업 리포트 v1</title>
 <link rel="stylesheet" href="https://cdn.rawgit.com/moonspam/NanumSquareRound/master/nanumsquareround.min.css"/>
 <script src="https://cdn.tailwindcss.com"></script>
@@ -48,9 +48,7 @@ const {ResponsiveContainer,BarChart,Bar,XAxis,YAxis,Tooltip,Cell,
 
 /* ─── 에셋 ─── */
 const LOGO = {
-  icon:"../screens/logo_icon.png",
-  top: "../screens/logo_text_top.svg",
-  btm: "../screens/logo_text_bottom.svg",
+  kg: "../screens/logo_kg.png",
 };
 
 /* ─── 더미 데이터 ─── */
@@ -165,13 +163,7 @@ function GNB(){
     <div style={{background:"#fff",height:98,borderBottom:"1px solid #D9D9D9",display:"flex",alignItems:"center",justifyContent:"center",padding:"0 36px"}}>
       <div style={{flex:1,maxWidth:1200,minWidth:960,display:"flex",alignItems:"center",justifyContent:"space-between",padding:"0 36px"}}>
         <div style={{display:"flex",alignItems:"center",gap:8}}>
-          <div style={{width:58,height:42,overflow:"hidden",position:"relative",flexShrink:0}}>
-            <img src={LOGO.icon} alt="HIAI" style={{position:"absolute",left:"50%",transform:"translateX(-50%)",height:"100%",width:"auto",objectFit:"cover"}}/>
-          </div>
-          <div style={{position:"relative",width:150,height:41,flexShrink:0}}>
-            <img src={LOGO.top} alt="" style={{position:"absolute",top:0,left:0,width:79.842,height:16.284}}/>
-            <img src={LOGO.btm} alt="" style={{position:"absolute",top:24.08,left:0.31,width:149.692,height:16.422}}/>
-          </div>
+          <img src={LOGO.kg} alt="AI 서·논술형 평가지원시스템" style={{height:42,width:"auto",display:"block",flexShrink:0}}/>
         </div>
         <div style={{display:"flex",alignItems:"center",gap:52,fontSize:20}}>
           <span style={{color:"#7E44FB",fontWeight:800}}>나의 평가</span>
