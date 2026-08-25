@@ -826,7 +826,7 @@ body { margin: 0; background: #EDF1FC; min-width: 1280px; }
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;">
           <div>
             <h2 style="font-size:20px;font-weight:800;color:#000;margin:0 0 4px;">AI 채점 적합성 진단</h2>
-            <p style="font-size:14px;color:#494949;margin:0;font-weight:400;line-height:1.55;">문항마다 볼 채점기준을 연결하면, 그 기준대로 AI가 채점할 수 있는지 미리 확인해 드려요.</p>
+            <p style="font-size:14px;color:#494949;margin:0;font-weight:400;line-height:1.55;">AI가 문항마다 볼 채점기준을 연결하고, 그 기준대로 채점할 수 있는지 미리 확인해 드려요.</p>
           </div>
         </div>
 
@@ -837,46 +837,20 @@ body { margin: 0; background: #EDF1FC; min-width: 1280px; }
           <p style="font-size:16px;color:#808080;margin:0;">이 화면을 벗어나도 진행은 계속돼요.</p>
         </div>
 
-        <!-- 3단계: 채점기준 연결 (v4 좌우 분할 화면 이식) -->
-        <div id="dg-s3" class="stage-card" style="display:none;"><div class="stage-head"><span class="stage-num" id="dg-s3-num">1</span><span class="stage-title">채점기준 연결</span><span class="stage-sum" id="dg-sum-1"></span></div>
-          <div class="note note-info" id="s3-relink-note" style="display:none;margin-bottom:16px;">
-            <i data-lucide="wand-sparkles" style="color:#5890FF;"></i>
-            <div><strong>채점기준을 바꿔서 문항 연결을 다시 만들었어요.</strong> 기준이 달라진 만큼 이전 연결은 쓸 수 없어요. AI가 새로 연결한 결과를 확인하고, 맞지 않으면 고쳐 주세요.</div>
-          </div>
-          <div style="margin-bottom:16px;">
-            <p style="font-size:14px;color:#494949;margin:0;">문항마다 채점기준을 정해 두면 AI가 그 기준으로만 채점해요. AI가 먼저 연결해 두었어요 — 맞지 않으면 직접 고쳐 주세요.</p>
-          </div>
-
-          <!-- 컨텐츠: 좌우 분할 매핑 -->
-          <div style="display:flex;gap:0;background:white;border-radius:16px;overflow:hidden;min-height:520px;border:1px solid #E6E6E6;">
-            <!-- 왼쪽: 문항 목록 패널 -->
-            <div style="width:220px;flex-shrink:0;border-right:1px solid #E6E6E6;display:flex;flex-direction:column;background:white;">
-              <div style="flex:1;overflow-y:auto;">
-                <div style="padding:12px 14px 8px;border-bottom:1px solid #EFEFEF;">
-                  <span style="font-size:14px;font-weight:800;color:#808080;">문항 목록</span>
-                </div>
-                <div id="dg3-qlist"></div>
-              </div>
-            </div>
-            <!-- 오른쪽: 채점기준 확인 패널 -->
-            <div style="flex:1;display:flex;flex-direction:column;min-width:0;background:white;">
-              <div id="dg3-detail" style="flex:1;overflow-y:auto;padding:24px;"></div>
-            </div>
-          </div>
-
-          <div class="dg-navbar" id="dg-s3-nav">
-            <button class="btn btn-outline" onclick="backToDetail('sec-diagnosis')"><i data-lucide="arrow-left" style="width:16px;height:16px;"></i>설계로 돌아가기</button>
-            <button class="btn btn-primary" onclick="saveLinks()">연결 저장하고 진단<i data-lucide="arrow-down" style="width:16px;height:16px;"></i></button>
-          </div>
-        </div>
-
-        <!-- 4단계: 적합도 진단 — 편집 가능한 작업본 -->
-        <div id="dg-s4" class="stage-card" style="display:none;"><div class="stage-head"><span class="stage-num" id="dg-s4-num">2</span><span class="stage-title">적합도 진단</span><span class="stage-sum" id="dg-sum-2"></span></div>
+        <!-- 진단 결과 — 총평 · 문항별 연결과 진단 · AI 제안. 연결 확인을 별도 게이트로 두지 않는다 -->
+        <div id="dg-s4" style="display:none;">
           <div id="dg-lock-banner" class="note note-lock" style="display:none;margin-bottom:18px;">
             <i data-lucide="lock"></i>
             <div id="dg-lock-text"></div>
           </div>
           <div id="dg-overall" style="margin-bottom:22px;"></div>
+
+          <!-- 문항별 연결과 진단 -->
+          <div id="dg-qfit" style="margin-bottom:26px;">
+            <h4 style="font-size:16px;font-weight:800;color:#341761;margin:0 0 4px;">문항별 연결과 진단</h4>
+            <p class="sec-desc" style="margin-bottom:12px;">AI가 문항마다 볼 채점기준을 연결하고 문항 단위로 살펴봤어요. 문항을 누르면 연결된 기준을 보고 바로 고칠 수 있어요.</p>
+            <div id="dg-qfit-list" style="display:flex;flex-direction:column;gap:10px;"></div>
+          </div>
 
           <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:6px;">
             <h4 id="dg-draft-title" style="font-size:16px;font-weight:800;color:#341761;margin:0;">AI 제안 채점기준</h4>
@@ -897,7 +871,7 @@ body { margin: 0; background: #EDF1FC; min-width: 1280px; }
           <div class="apply-band" id="dg-apply-band" style="display:none;">
             <div style="flex:1;min-width:260px;">
               <p style="font-size:16px;font-weight:800;color:#341761;margin:0 0 6px;line-height:1.3;">이 채점기준으로 바꾸고 문항 연결을 다시 할까요?</p>
-              <p style="font-size:14px;color:#5B4B7A;margin:0;line-height:1.6;">기존 채점기준을 이 내용으로 교체해 저장하고, AI가 새 기준으로 문항 연결을 다시 만들어요. 3단계로 이동해 연결 결과를 확인하게 돼요.</p>
+              <p style="font-size:14px;color:#5B4B7A;margin:0;line-height:1.6;">기존 채점기준을 이 내용으로 교체해 저장하고, AI가 새 기준으로 문항 연결과 진단을 다시 해 드려요.</p>
             </div>
             <button class="btn btn-primary btn-lg" onclick="applyDraft()"><i data-lucide="wand-sparkles" style="width:18px;height:18px;"></i>채점기준 바꾸고 다시 연결</button>
           </div>
@@ -1026,6 +1000,7 @@ var S = {
   worksheet: false,
   masks: [],             // 개인정보 가림 영역 [{x,y,w,h}] — 활동지 대비 %
   maskEdit: false,       // 가림 영역 편집 모드 — 기본은 보기 전용, 수정 버튼으로 진입
+  linksEdited: false,    // 진단 후 문항 연결을 직접 고쳤는지 — 세트 교체 시 덮어쓰기 경고용
   diagResultKind: 'warn',// warn | ok
   setApplied: false,     // AI 채점기준 세트로 교체했는지
   relinked: false,       // 교체 후 AI가 다시 연결한 결과를 보는 중인지
@@ -1078,6 +1053,12 @@ var QUESTION_SEED = [
   { no:4, label:'4', text:'위 내용을 하나의 완성된 글로 다시 쓰시오. (600자 내외)', links:[],
     aiReason:'' }
 ];
+/* 양호 케이스용 — 4번(완성 글)도 연결이 다 된 상태를 보여준다 */
+function fillQ4Links(){
+  var q = QUESTIONS[QUESTIONS.length - 1];
+  q.links = [1, 2]; q.aiPicks = [1, 2];
+  q.aiReason = '완성된 글을 쓰는 문항이라 내용의 타당성(1)과 논리적 구성(2)을 함께 보는 것이 알맞아요.';
+}
 function seedQuestions(){
   var qs = JSON.parse(JSON.stringify(QUESTION_SEED));
   qs.forEach(function(q){ q.aiPicks = q.links.slice(); });
@@ -1089,10 +1070,11 @@ var QUESTIONS = seedQuestions();
 /* 적합도 진단 = 연결까지 끝난 뒤 AI가 채점기준 세트 전체를 다시 보고 내는 판정.
    요소 하나하나를 대조·매칭하지 않고 새 채점기준 세트를 통으로 제안한다(맥·빌 의견 2026-08-21).
    요소가 통폐합·삭제될 수 있어 1:1 대응이 성립하지 않기 때문. */
+/* 총평은 채점기준(세트) 축 문제만 말한다 — 연결 축 문제는 문항 카드의 판정·사유가 맡는다.
+   연결을 고쳐도 총평이 낡은 말을 반복하지 않게 하기 위한 역할 분리. */
 var DIAG_REASONS = [
   '채점기준 3번에는 어휘·맞춤법·문장 자연스러움이 한 칸에 함께 있어요. 사람은 함께 보고 판단하지만 AI는 어느 쪽에 점수를 줄지 스스로 정하지 못해요.',
-  '채점기준 4번의 "충분히", "설득력 있게"는 사람에게는 통하는 표현이지만, AI는 기준을 잡지 못해 학생마다 점수가 달라질 수 있어요.',
-  '3번이 2번 문항과 4번 문항에 모두 연결돼 있는데, 두 문항이 요구하는 것이 달라 같은 기준으로 채점하면 점수가 고르지 않아요.'
+  '채점기준 4번의 "충분히", "설득력 있게"는 사람에게는 통하는 표현이지만, AI는 기준을 잡지 못해 학생마다 점수가 달라질 수 있어요.'
 ];
 var SUGGESTED_SET = [
   { id:101, title:'주장이 분명하고 근거가 타당한지를 평가한다.',
@@ -1253,7 +1235,7 @@ function openDetail(caseKey){
 function applyCase(k){
   // 기본값 초기화
   S.name = ''; S.stdFilled = false; S.rubricFilled = false;
-  S.ws = 'idle'; S.dg = 'idle'; S.worksheet = false; S.masks = []; S.maskEdit = false;
+  S.ws = 'idle'; S.dg = 'idle'; S.worksheet = false; S.masks = []; S.maskEdit = false; S.linksEdited = false;
   resetStageOpen(); S.diagResultKind = 'warn';
   S.applied = {}; S.setApplied = false; S.relinked = false; _draft = null; _draftFromAI = false; _draftEdited = false; S.answersOpen = false; S.answersFilled = false; S.locked = false; S.scored = false; S.marks = {};
   S.diagDone = false;
@@ -1271,7 +1253,7 @@ function applyCase(k){
   if (k === 'new'){
     rubrics = [];   // 개발 화면 초기 상태: 채점기준 0개 + AI 생성 카드
   }
-  if (k === 'ready' || k === 'ws-done' || k === 'upload' || k === 'structure' || k === 'linking' || k === 'diagnosing' || k === 'result' || k === 'result-ok' || k === 'answer' || k === 'qfail' || k === 'locked' || k === 'locked-stale'){
+  if (k === 'ready' || k === 'ws-done' || k === 'upload' || k === 'structure' || k === 'diagnosing' || k === 'result' || k === 'result-ok' || k === 'answer' || k === 'qfail' || k === 'locked' || k === 'locked-stale'){
     S.name = '논설문 쓰기 — 우리 학교 급식 잔반 문제';
     S.stdFilled = true;
     S.rubricFilled = true;
@@ -1282,18 +1264,17 @@ function applyCase(k){
   if (k === 'structure'){ S.ws = 'ready'; S.worksheet = true; S.masks = JSON.parse(JSON.stringify(MASK_SEED)); }
   if (k === 'qfail'){ S.ws = 'fail'; S.worksheet = true; }
   if (k === 'ws-done'){ S.ws = 'ready'; S.worksheet = true; S.masks = JSON.parse(JSON.stringify(MASK_SEED)); }
-  if (k === 'linking'){ S.ws = 'ready'; S.worksheet = true; S.masks = JSON.parse(JSON.stringify(MASK_SEED)); S.dg = 'link'; }
   if (k === 'diagnosing'){ S.ws = 'ready'; S.worksheet = true; S.masks = JSON.parse(JSON.stringify(MASK_SEED)); S.dg = 'load'; }
   if (k === 'result'){ S.ws = 'ready'; S.worksheet = true; S.masks = JSON.parse(JSON.stringify(MASK_SEED)); S.dg = 'result'; S.diagDone = true; S.diagResultKind = 'warn'; }
-  if (k === 'result-ok'){ S.ws = 'ready'; S.worksheet = true; S.masks = JSON.parse(JSON.stringify(MASK_SEED)); S.dg = 'result'; S.diagDone = true; S.diagResultKind = 'ok'; }
-  if (k === 'answer'){ S.ws = 'ready'; S.worksheet = true; S.masks = JSON.parse(JSON.stringify(MASK_SEED)); S.dg = 'result'; S.diagDone = true; S.diagResultKind = 'ok'; S.answersFilled = true; }
+  if (k === 'result-ok'){ S.ws = 'ready'; S.worksheet = true; S.masks = JSON.parse(JSON.stringify(MASK_SEED)); S.dg = 'result'; S.diagDone = true; S.diagResultKind = 'ok'; fillQ4Links(); }
+  if (k === 'answer'){ S.ws = 'ready'; S.worksheet = true; S.masks = JSON.parse(JSON.stringify(MASK_SEED)); S.dg = 'result'; S.diagDone = true; S.diagResultKind = 'ok'; S.answersFilled = true; fillQ4Links(); }
   if (k === 'locked'){ S.ws = 'ready'; S.worksheet = true; S.masks = JSON.parse(JSON.stringify(MASK_SEED)); S.dg = 'result'; S.diagDone = true; S.diagResultKind = 'warn'; S.locked = true; }
-  if (k === 'scored'){ S.ws = 'ready'; S.worksheet = true; S.masks = JSON.parse(JSON.stringify(MASK_SEED)); S.dg = 'result'; S.diagDone = true; S.diagResultKind = 'ok'; S.locked = true; S.scored = true; }
+  if (k === 'scored'){ S.ws = 'ready'; S.worksheet = true; S.masks = JSON.parse(JSON.stringify(MASK_SEED)); S.dg = 'result'; S.diagDone = true; S.diagResultKind = 'ok'; S.locked = true; S.scored = true; fillQ4Links(); }
   if (k === 'locked-stale'){ S.ws = 'ready'; S.worksheet = true; S.masks = JSON.parse(JSON.stringify(MASK_SEED)); S.dg = 'result'; S.diagDone = true; S.diagResultKind = 'warn'; S.locked = true; S.marks['sec-diagnosis'] = true; }
 
   var target = 'detail';
   if (k === 'upload' || k === 'mask' || k === 'structure' || k === 'qfail') target = 'worksheet';
-  if (k === 'linking' || k === 'diagnosing' || k === 'result' || k === 'result-ok') target = 'diag';
+  if (k === 'diagnosing' || k === 'result' || k === 'result-ok') target = 'diag';
   if (k === 'answer') target = 'answer';
   renderDetail();
   showScreen(target);
@@ -1627,7 +1608,6 @@ function backToDetail(sec){
   if (sec) scrollToSection(sec);
 }
 function stageCase(){
-  if (S.dg === 'link') return 'linking';
   if (S.dg === 'load') return 'diagnosing';
   if (S.dg === 'result') return (S.diagResultKind === 'ok' ? 'result-ok' : 'result');
   if (S.ws === 'mask') return 'mask';
@@ -1697,18 +1677,16 @@ function renderDiagCard(){
     if (S.dg === 'idle'){
       h = '<button class="btn btn-secondary" onclick="openDiagnosis()"><i data-lucide="stethoscope" style="width:20px;height:20px;"></i>AI 채점 적합성 진단</button>';
     } else {
-      h = '<div class="note note-info" style="margin-bottom:14px;"><i data-lucide="loader" style="color:#5890FF;"></i><div><strong>진단 진행 중</strong><br>채점기준 연결까지 저장하면 적합도 진단 결과를 볼 수 있어요.</div></div>'
+      h = '<div class="note note-info" style="margin-bottom:14px;"><i data-lucide="loader" style="color:#5890FF;"></i><div><strong>진단 진행 중</strong><br>AI가 문항 연결과 적합도를 살펴보고 있어요.</div></div>'
         + '<button class="btn btn-secondary" onclick="gotoDiag()">진단 이어서 하기</button>';
     }
   } else {
-    var linked = QUESTIONS.filter(function(q){ return q.links.length; }).length;
-    var statLine = '문항 ' + QUESTIONS.length + '개 · 연결 ' + linked + '개' + (S.setApplied ? ' · AI 채점기준으로 교체함' : '');
     if (S.marks['sec-diagnosis']){
       h = '<div class="note note-warn" style="margin-bottom:14px;"><i data-lucide="info" style="color:#E4631C;"></i><div><strong>진단 후 채점기준이 바뀌었어요.</strong> 지난 진단 결과는 지금 기준과 다를 수 있어요. 활동지를 다시 올릴 필요는 없으니 다시 진단해 주세요.</div></div>'
         + '<div style="display:flex;gap:8px;"><button class="btn btn-secondary" onclick="startDiagnosis(true)"><i data-lucide="refresh-cw" style="width:18px;height:18px;"></i>다시 진단</button>'
         + '<button class="btn btn-outline" onclick="gotoDiag()">지난 진단 결과 보기</button></div>';
     } else {
-      h = '<p style="font-size:16px;color:#494949;margin:0 0 14px;line-height:1.6;">진단을 마쳤어요. ' + statLine + '</p>'
+      h = '<p style="font-size:16px;color:#494949;margin:0 0 14px;line-height:1.6;">진단을 마쳤어요.' + (S.setApplied ? ' AI 제안 채점기준으로 교체했어요.' : '') + '</p>'
         + '<button class="btn btn-secondary" onclick="gotoDiag()">진단 결과 보기</button>';
     }
   }
@@ -1766,14 +1744,7 @@ function renderDiagnosis(){
   var show = function(id, on, disp){ var e = document.getElementById(id); if (e) e.style.display = on ? (disp || 'block') : 'none'; };
   var loading = (S.dg === 'load');
   show('dg-loading', loading, 'flex');
-  show('dg-s3', !loading && S.dg !== 'idle');
   show('dg-s4', !loading && S.dg === 'result');
-  applyStageCollapse('dg-s3', S.dg === 'result');
-  applyStageCollapse('dg-s4', false);
-
-  var linked = QUESTIONS.filter(function(q){ return q.links.length; }).length;
-  document.getElementById('dg-sum-1').textContent = '문항 ' + QUESTIONS.length + '개 · 연결 ' + linked + '개';
-  document.getElementById('dg-sum-2').textContent = S.diagDone ? overallVerdict().tag : '';
 
   var rd = document.getElementById('btn-rediag');
   rd.style.display = (S.dg === 'result' && S.diagDone) ? 'inline-flex' : 'none';
@@ -1788,8 +1759,7 @@ function renderDiagnosis(){
   }
   document.getElementById('diag-badge').innerHTML = badgeHtml;
 
-  if (S.dg !== 'idle') renderS3();
-  if (S.dg === 'result'){ renderOverall(); renderFitCards(); }
+  if (S.dg === 'result'){ renderOverall(); renderQFit(); renderFitCards(); }
   renderWsCard(); renderDiagCard(); renderAnswerCard();
   icons();
 }
@@ -1843,8 +1813,7 @@ function removeWorksheet(){
 function cancelWorksheet(){ S.ws = 'idle'; S.worksheet = false; renderAll(); backToDetail('sec-worksheet'); }
 var DG_LOAD_MSG = {
   ws:   '빈 활동지에서 문항을 나누고 있어요',
-  link: '문항마다 볼 채점기준을 연결하고 있어요',
-  diag: '채점기준이 AI 채점에 맞는지 살펴보고 있어요'
+  diag: '문항마다 볼 채점기준을 연결하고, AI 채점에 맞는지 살펴보고 있어요'
 };
 var _loadTimer = null;
 function runWsLoad(){
@@ -1870,25 +1839,21 @@ function runWsLoad2(){
   }, 1600);
 }
 function runDiagLoad(kind){
-  // kind: 'link' = 연결 만드는 중, 'diag' = 적합도 보는 중
-  if (kind === 'diag') _draft = null;
+  // 연결과 진단은 한 번에 돈다 — 확인은 결과 화면에서 1회
+  _draft = null; _qEdit = null; S.linksEdited = false;
+  QUESTIONS.forEach(function(q){ delete q._rediag; });
   S.dg = 'load';
-  document.getElementById('dg-load-title').textContent = DG_LOAD_MSG[kind];
+  document.getElementById('dg-load-title').textContent = DG_LOAD_MSG.diag;
   renderDiagnosis();
   clearTimeout(_loadTimer);
   _loadTimer = setTimeout(function(){
-    if (kind === 'link'){
-      S.dg = 'link'; S.case = 'linking';
-      var nv = document.getElementById('dg-s3-nav'); if (nv) nv.style.display = 'flex';
-    } else {
-      S.dg = 'result'; S.diagDone = true; resetStageOpen();
-      S.marks['sec-diagnosis'] = false;
-      S.case = (S.diagResultKind === 'ok' ? 'result-ok' : 'result');
-      showToast('success','적합도 진단을 마쳤어요.');
-    }
+    S.dg = 'result'; S.diagDone = true; resetStageOpen();
+    S.marks['sec-diagnosis'] = false;
+    S.case = (S.diagResultKind === 'ok' ? 'result-ok' : 'result');
+    showToast('success','적합성 진단을 마쳤어요.');
     renderAll(); renderAnswers(); renderToc(); renderMockpick();
     setHash('#case=' + S.case);
-  }, 1600);
+  }, 1800);
 }
 function analyzeStructure(){
   if (!S.worksheet){ showToast('error','빈 활동지를 먼저 올려 주세요.'); return; }
@@ -1925,23 +1890,8 @@ function openDiagnosis(){
   if (!wsDone()){ showToast('error','빈 활동지를 먼저 올려 주세요.'); return; }
   if (!S.rubricFilled){ showToast('error','채점기준을 모두 입력해야 진단할 수 있어요.'); return; }
   showScreen('diag');
-  if (S.dg === 'idle') runDiagLoad('link');
+  if (S.dg === 'idle') runDiagLoad('diag');
   else { S.case = stageCase(); renderDiagnosis(); setHash('#case=' + S.case); }
-}
-function saveLinks(){
-  S.relinked = false;
-  var unlinked = QUESTIONS.filter(function(q){ return !q.links.length; });
-  if (unlinked.length){
-    openConfirm('연결하지 않은 문항이 있어요',
-      '<strong>' + unlinked.map(function(q){ return esc(q.label) + '번'; }).join(', ') + '</strong> 문항은 채점기준을 연결하지 않았어요.<br>'
-      + '이대로 진행하면 이 문항은 채점기준 전체로 채점돼요.', '이대로 진행', function(){ goDiagPhase(); });
-    return;
-  }
-  goDiagPhase();
-}
-function goDiagPhase(){
-  document.getElementById('dg-s3-nav').style.display = 'none';
-  runDiagLoad('diag');
 }
 function startDiagnosis(again){
   // 다시 진단: 활동지·문항·연결을 그대로 두고 판정만 다시 낸다 → 잠금 후에도 허용
@@ -2196,105 +2146,150 @@ function removeQuestion(i){
   });
 }
 
-/* ── 3단계: 문항·채점기준 연결 ── */
-var _s3Cur = null;
-function renderS3(){
-  var b = document.getElementById('s3-relink-note');
-  if (b) b.style.display = S.relinked ? 'flex' : 'none';
-  if (_s3Cur === null || !QUESTIONS.some(function(q){ return q.no === _s3Cur; })) _s3Cur = QUESTIONS.length ? QUESTIONS[0].no : null;
-  renderS3List();
-  renderS3Detail();
+/* ── 문항별 연결과 진단 — 문항당 한 줄, 누르면 상세. 연결 확인 게이트 없이 결과에서 한 번에 본다 ── */
+var _qEdit = null, _qBackup = null, _qLoading = null, _qOpen = null;
+function qVerdict(q){
+  if (!q.links.length) return { kind:'none', note:'연결된 채점기준이 없어요. 이대로면 이 문항은 채점기준 전체로 채점되니, 맞는 기준을 골라 주세요.' };
+  if (hasSuggestion() && q.links.indexOf(4) !== -1) return { kind:'warn', note:'연결된 채점기준 4의 「충분히」·「설득력 있게」는 AI가 기준을 잡기 어려워요. 아래 AI 제안에서 이 표현을 다듬었어요.' };
+  return { kind:'ok', note:'' };
 }
-function renderS3List(){
-  document.getElementById('dg3-qlist').innerHTML = QUESTIONS.map(function(q){
-    var linked = q.links.length > 0;
-    var badge = linked
-      ? '<span style="flex-shrink:0;display:inline-flex;align-items:center;background:#F1F9F3;border-radius:100px;padding:2px 7px;font-size:12px;font-weight:700;color:#00AF3D;white-space:nowrap;margin-left:auto;">연결완료</span>'
-      : '<span style="flex-shrink:0;display:inline-flex;align-items:center;background:#FFF0EF;border:1px solid #F0C0C4;border-radius:100px;padding:2px 7px;font-size:12px;font-weight:700;color:#DB3E51;white-space:nowrap;margin-left:auto;">미연결</span>';
-    return '<div class="s3-q-item' + (q.no === _s3Cur ? ' active' : '') + '" onclick="selectQ3(' + q.no + ')" style="padding:11px 12px;border-bottom:1px solid #F5F5F5;">'
-      + '<span style="font-size:14px;font-weight:800;color:#333;">' + esc(q.label) + '</span>' + badge + '</div>';
+/* 판정 태그 — 폭을 고정해 문항 번호 시작점이 밀리지 않게 */
+function qBadge(v){
+  var m = { ok:['b-green','적합'], warn:['b-orange','확인 필요'], none:['b-orange','미연결'] }[v.kind];
+  return '<span class="badge ' + m[0] + '" style="flex-shrink:0;min-width:68px;">' + m[1] + '</span>';
+}
+function qFitTitles(q){
+  if (!q.links.length) return '<span style="font-size:14px;color:#B3B3B3;">연결된 채점기준 없음</span>';
+  return q.links.map(function(id){
+    var idx = -1, r = null;
+    rubrics.forEach(function(x, i){ if (x.id === id){ r = x; idx = i; } });
+    if (!r) return '';
+    return '<div style="display:flex;gap:8px;align-items:baseline;">'
+      + '<span style="font-size:13px;font-weight:800;color:#7E44FB;flex-shrink:0;">' + (idx + 1) + '.</span>'
+      + '<span style="font-size:14px;color:#494949;line-height:1.55;">' + esc(r.title) + '</span></div>';
   }).join('');
 }
-function selectQ3(no){ _s3Cur = no; renderS3List(); renderS3Detail(); }
-function renderS3Detail(){
-  var panel = document.getElementById('dg3-detail');
-  var q = QUESTIONS.find(function(x){ return x.no === _s3Cur; });
-  if (!q){
-    panel.innerHTML = '<div style="flex:1;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:14px;padding:60px 40px;text-align:center;">'
-      + '<div style="width:52px;height:52px;border-radius:50%;background:#F0EBF9;display:flex;align-items:center;justify-content:center;"><i data-lucide="mouse-pointer-click" style="width:24px;height:24px;color:#7E44FB;"></i></div>'
-      + '<p style="font-size:14px;font-weight:700;color:#B3B3B3;margin:0;line-height:1.7;">왼쪽에서 문항을 선택하면<br>채점기준을 연결할 수 있어요</p></div>';
-    icons(); return;
-  }
-
-  var headerHtml = '<div style="margin-bottom:18px;">'
-    + '<div style="font-size:14px;font-weight:700;color:#808080;margin-bottom:6px;">문항 ' + esc(q.label) + '</div>'
-    + '<p style="font-size:17px;color:#222;margin:0;line-height:1.6;font-weight:400;">' + esc(q.text) + '</p>'
-    + '</div>';
-
-  var reasonBody = q.aiPicks.length > 0
-    ? '<strong style="display:block;font-weight:700;color:#494949;margin-bottom:2px;">AI가 채점기준을 선택한 이유</strong>' + esc(q.aiReason)
-    : 'AI가 이 문항과 관련된 채점기준을 찾지 못했어요. 아래 목록에서 직접 선택해 주세요.';
-  var reasonHtml = '<div style="display:flex;gap:10px;align-items:flex-start;background:#FBFBFC;border:1px solid #F0F0F2;border-radius:8px;padding:14px 16px;margin-bottom:18px;">'
-    + '<i data-lucide="wand-sparkles" style="width:15px;height:15px;color:#9B68F3;flex-shrink:0;margin-top:3px;"></i>'
-    + '<div style="flex:1;font-size:14px;color:#494949;line-height:1.65;font-weight:400;">' + reasonBody + '</div>'
-    + '</div>';
-
-  var controlsHtml = '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">'
-    + '<div style="display:flex;align-items:center;gap:10px;">'
-    + '<button onclick="s3SelectAll(true)" style="display:inline-flex;align-items:center;justify-content:center;line-height:1;vertical-align:middle;border:none;background:transparent;padding:0;cursor:pointer;font-size:14px;font-weight:700;color:#7E44FB;font-family:inherit;">모두 선택</button>'
-    + '<div style="width:1px;height:12px;background:#D9D9D9;"></div>'
-    + '<button onclick="s3SelectAll(false)" style="display:inline-flex;align-items:center;justify-content:center;line-height:1;vertical-align:middle;border:none;background:transparent;padding:0;cursor:pointer;font-size:14px;font-weight:700;color:#808080;font-family:inherit;">모두 해제</button>'
-    + '</div>'
-    + '<span style="font-size:14px;color:#808080;font-weight:700;">' + q.links.length + ' / ' + rubrics.length + ' 선택</span>'
-    + '</div>';
-
-  var rubricsHtml = '<div style="display:flex;flex-direction:column;gap:6px;">'
-    + rubrics.map(function(r, i){
-        var checked = q.links.indexOf(r.id) !== -1;
-        var isAI = q.aiPicks.indexOf(r.id) !== -1;
-        var maxScore = Math.max.apply(null, r.rows.map(function(x){ var v = Number(x[0]); return isFinite(v) ? v : 0; }));
-        var checkStyle = checked
-          ? 'width:18px;height:18px;border-radius:4px;background:#7E44FB;border:1.5px solid #7E44FB;display:flex;align-items:center;justify-content:center;flex-shrink:0;pointer-events:none;'
-          : 'width:18px;height:18px;border-radius:4px;background:white;border:1.5px solid #D9D9D9;display:flex;align-items:center;justify-content:center;flex-shrink:0;pointer-events:none;';
-        var checkInner = checked ? '<svg width="11" height="11" viewBox="0 0 11 11" fill="none"><polyline points="1.5,5.5 4.5,8 9.5,2.5" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>' : '';
-        var labelStyle = checked
-          ? 'display:flex;align-items:center;gap:10px;padding:12px 14px;border:1.5px solid #7E44FB;border-radius:8px;background:#FAF8FF;cursor:pointer;'
-          : 'display:flex;align-items:center;gap:10px;padding:12px 14px;border:1px solid #E6E6E6;border-radius:8px;background:white;cursor:pointer;';
-        var textStyle = checked ? 'font-size:14px;font-weight:700;color:#333;' : 'font-size:14px;color:#808080;font-weight:400;';
-        var aiBadge = isAI ? '<span style="font-size:11px;font-weight:700;color:#7E44FB;background:#EDE7FF;border-radius:100px;padding:2px 7px;flex-shrink:0;white-space:nowrap;">AI</span>' : '';
-        return '<label onclick="toggleLink(' + q.no + ',' + r.id + ')" style="' + labelStyle + '">'
-          + '<div style="' + checkStyle + '">' + checkInner + '</div>'
-          + '<div style="flex:1;"><span style="' + textStyle + '">' + esc(r.title || '(내용 없음)') + '</span><span style="font-size:14px;color:#808080;margin-left:6px;">' + maxScore + '점</span></div>'
-          + aiBadge
-          + '</label>';
-      }).join('')
-    + '</div>';
-
-  var warnFooter = '<div style="display:' + (q.links.length ? 'none' : 'flex') + ';align-items:flex-start;gap:7px;margin-top:14px;">'
-    + '<i data-lucide="info" style="width:14px;height:14px;color:#B3B3B3;flex-shrink:0;margin-top:3px;"></i>'
-    + '<span style="font-size:14px;color:#808080;line-height:1.6;">연결하지 않아도 다음 단계로 넘어갈 수 있어요. 이 경우 채점기준 전체로 채점돼요. 연결해 두면 맞는 기준만 적용해 더 정확해져요.</span>'
-    + '</div>';
-
-  panel.innerHTML = headerHtml + reasonHtml + controlsHtml + rubricsHtml + warnFooter;
+function renderQFit(){
+  var el = document.getElementById('dg-qfit-list'); if (!el) return;
+  el.innerHTML = QUESTIONS.map(function(q){
+    if (_qLoading === q.no){
+      return '<div class="diag-card" style="padding:18px 16px;display:flex;align-items:center;gap:12px;">'
+        + '<div style="width:20px;height:20px;border:3px solid #E7DDFF;border-top-color:#7E44FB;border-radius:50%;animation:spin .9s linear infinite;flex-shrink:0;"></div>'
+        + '<span style="font-size:14px;color:#494949;">문항 ' + esc(q.label) + '의 연결을 저장하고 적합도를 다시 보고 있어요.</span></div>';
+    }
+    var v = qVerdict(q);
+    var open = (_qOpen === q.no || _qEdit === q.no);
+    var badge = qBadge(v);
+    var head = '<div onclick="qRowToggle(' + q.no + ')" style="display:flex;align-items:center;gap:10px;cursor:pointer;padding:14px 16px;">'
+      + badge
+      + '<span style="font-size:12px;font-weight:800;background:#F7F4FF;color:#7E44FB;border-radius:100px;padding:3px 10px;white-space:nowrap;flex-shrink:0;">' + esc(q.label) + '</span>'
+      + '<span style="font-size:14px;color:#333;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;">' + esc(q.text) + '</span>'
+      + '<span style="font-size:13px;color:#808080;font-weight:700;flex-shrink:0;">' + (q.links.length ? '기준 ' + q.links.length + '개' : '연결 없음') + '</span>'
+      + '<i data-lucide="chevron-' + (open ? 'up' : 'down') + '" style="width:16px;height:16px;color:#808080;flex-shrink:0;"></i>'
+      + '</div>';
+    var body = '';
+    if (open){
+      if (_qEdit === q.no){
+        body = '<div style="padding:0 16px 16px;border-top:1px solid #F5F5F5;">' + qFitEditBody(q) + '</div>';
+      } else {
+        var editBtn = S.scored ? '' :
+          '<button class="btn btn-ghost btn-sm" style="flex-shrink:0;" onclick="event.stopPropagation();qFitEdit(' + q.no + ')"><i data-lucide="square-pen" style="width:14px;height:14px;color:#808080;"></i>연결 수정</button>';
+        var noteHtml = v.note
+          ? '<p style="font-size:14px;color:#9A5B00;margin:10px 0 0;line-height:1.6;">' + v.note + '</p>'
+          : (q._rediag ? '<p style="font-size:14px;color:#808080;margin:10px 0 0;">연결을 바꿔 이 문항만 다시 진단했어요.</p>' : '');
+        body = '<div style="padding:12px 16px 14px;border-top:1px solid #F5F5F5;">'
+          + '<div style="display:flex;align-items:flex-start;gap:12px;">'
+          +   '<div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:4px;">' + qFitTitles(q) + '</div>'
+          +   editBtn
+          + '</div>'
+          + noteHtml
+          + '</div>';
+      }
+    }
+    return '<div class="diag-card" style="padding:0;' + (open ? 'border-color:#D9C9FF;' : '') + '">' + head + body + '</div>';
+  }).join('');
   icons();
 }
-function toggleLink(qno, rid){
+function qRowToggle(no){
+  if (_qEdit === no) return; // 편집 중 실수로 접혀 입력을 잃지 않게
+  _qOpen = (_qOpen === no) ? null : no;
+  renderQFit();
+}
+function qFitEditBody(q){
+  var reason = q.aiReason
+    ? '<div style="display:flex;gap:10px;align-items:flex-start;background:#FBFBFC;border:1px solid #F0F0F2;border-radius:8px;padding:12px 14px;margin:12px 0;">'
+      + '<i data-lucide="wand-sparkles" style="width:15px;height:15px;color:#9B68F3;flex-shrink:0;margin-top:3px;"></i>'
+      + '<div style="flex:1;font-size:14px;color:#494949;line-height:1.65;"><strong style="display:block;font-weight:700;color:#494949;margin-bottom:2px;">AI가 채점기준을 선택한 이유</strong>' + esc(q.aiReason) + '</div></div>'
+    : '<div style="height:12px;"></div>';
+  var rows = rubrics.map(function(r, i){
+    var checked = q.links.indexOf(r.id) !== -1;
+    var isAI = q.aiPicks.indexOf(r.id) !== -1;
+    var maxScore = Math.max.apply(null, r.rows.map(function(x){ var v = Number(x[0]); return isFinite(v) ? v : 0; }));
+    var boxStyle = checked
+      ? 'width:18px;height:18px;border-radius:4px;background:#7E44FB;border:1.5px solid #7E44FB;display:flex;align-items:center;justify-content:center;flex-shrink:0;pointer-events:none;'
+      : 'width:18px;height:18px;border-radius:4px;background:white;border:1.5px solid #D9D9D9;display:flex;align-items:center;justify-content:center;flex-shrink:0;pointer-events:none;';
+    var inner = checked ? '<svg width="11" height="11" viewBox="0 0 11 11" fill="none"><polyline points="1.5,5.5 4.5,8 9.5,2.5" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>' : '';
+    var labStyle = checked
+      ? 'display:flex;align-items:center;gap:10px;padding:11px 14px;border:1.5px solid #7E44FB;border-radius:8px;background:#FAF8FF;cursor:pointer;'
+      : 'display:flex;align-items:center;gap:10px;padding:11px 14px;border:1px solid #E6E6E6;border-radius:8px;background:white;cursor:pointer;';
+    var txtStyle = checked ? 'font-size:14px;font-weight:700;color:#333;' : 'font-size:14px;color:#808080;';
+    var aiBadge = isAI ? '<span style="font-size:11px;font-weight:700;color:#7E44FB;background:#EDE7FF;border-radius:100px;padding:2px 7px;flex-shrink:0;white-space:nowrap;">AI</span>' : '';
+    return '<label onclick="qToggleLink(' + q.no + ',' + r.id + ')" style="' + labStyle + '">'
+      + '<div style="' + boxStyle + '">' + inner + '</div>'
+      + '<div style="flex:1;"><span style="' + txtStyle + '">' + esc(r.title || '(내용 없음)') + '</span><span style="font-size:14px;color:#808080;margin-left:6px;">' + maxScore + '점</span></div>'
+      + aiBadge + '</label>';
+  }).join('');
+  return reason
+    + '<div style="display:flex;flex-direction:column;gap:6px;">' + rows + '</div>'
+    + '<div style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:14px;">'
+    +   '<span style="font-size:14px;color:#808080;font-weight:700;">' + q.links.length + ' / ' + rubrics.length + ' 선택</span>'
+    +   '<div style="display:flex;gap:8px;">'
+    +     '<button class="btn btn-outline btn-sm" onclick="qFitCancel()">취소</button>'
+    +     '<button class="btn btn-primary btn-sm" onclick="qFitSave(' + q.no + ')">저장하고 다시 진단</button>'
+    +   '</div>'
+    + '</div>';
+}
+function qFitEdit(no){
+  if (S.scored){ showToast('error','AI 채점이 실행되어 연결을 바꿀 수 없어요.'); return; }
+  var q = QUESTIONS.find(function(x){ return x.no === no; });
+  _qEdit = no; _qOpen = no; _qBackup = q.links.slice();
+  renderQFit();
+}
+function qToggleLink(qno, rid){
   var q = QUESTIONS.find(function(x){ return x.no === qno; });
   var i = q.links.indexOf(rid);
   if (i === -1) q.links.push(rid); else q.links.splice(i, 1);
-  renderS3List(); renderS3Detail();
+  renderQFit();
 }
-function s3SelectAll(on){
-  var q = QUESTIONS.find(function(x){ return x.no === _s3Cur; });
-  q.links = on ? rubrics.map(function(r){ return r.id; }) : [];
-  renderS3List(); renderS3Detail();
+function qFitCancel(){
+  var q = QUESTIONS.find(function(x){ return x.no === _qEdit; });
+  if (q && _qBackup) q.links = _qBackup.slice();
+  _qEdit = null; _qBackup = null;
+  renderQFit();
+}
+function qFitSave(no){
+  var q = QUESTIONS.find(function(x){ return x.no === no; });
+  var run = function(){
+    _qEdit = null; _qBackup = null; _qLoading = no;
+    renderQFit();
+    setTimeout(function(){
+      _qLoading = null; q._rediag = true; S.linksEdited = true; _qOpen = no;
+      renderQFit(); renderOverall(); renderDiagCard();
+      showToast('success','연결을 저장하고 문항 ' + q.label + '만 다시 진단했어요.');
+    }, 1100);
+  };
+  if (!q.links.length){
+    openConfirm('연결 없이 저장할까요?',
+      '이 문항은 채점기준을 연결하지 않으면 <strong>채점기준 전체로 채점</strong>돼요.',
+      '이대로 저장', run);
+    return;
+  }
+  run();
 }
 
-/* ── 4단계: 적합도 진단 결과 ── */
+/* ── 진단 결과(총평·AI 제안) ── */
 function renderOverall(){
   var v = overallVerdict();
-  var linked = QUESTIONS.filter(function(q){ return q.links.length; }).length;
-  var statLine = '문항 ' + QUESTIONS.length + '개 · 연결 ' + linked + '개';
   var stale = !!S.marks['sec-diagnosis'];
   var opinion;
   if (!hasSuggestion()){
@@ -2308,20 +2303,19 @@ function renderOverall(){
      지금 기준과 다를 수 있다는 사실만 알리고, 할 수 있는 다음 행동으로 닫는다. */
   var staleHtml = '';
   if (stale){
-    staleHtml = '<div style="display:flex;gap:8px;align-items:flex-start;margin-top:12px;padding-top:12px;border-top:1px solid #D6E0F5;">'
+    staleHtml = '<div style="display:flex;gap:8px;align-items:flex-start;margin-top:12px;padding-top:12px;border-top:1px solid #E6E6E6;">'
       + '<i data-lucide="info" style="width:17px;height:17px;color:#C2620A;flex-shrink:0;margin-top:3px;"></i>'
       + '<p style="font-size:16px;color:#7A4A00;margin:0;line-height:1.65;">'
       + '<strong>진단 뒤에 채점기준이 바뀌었어요.</strong> 이 결과는 지금 채점기준과 다를 수 있어요. 활동지를 다시 올릴 필요는 없으니 <strong>다시 진단</strong>해 주세요.'
       + '</p></div>';
   }
   document.getElementById('dg-overall').innerHTML = ''
-    + '<div style="border:1px solid #C9D9F7;background:#EDF1FC;border-radius:12px;padding:18px 20px;">'
-    +   '<div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">'
-    +     '<span style="font-size:16px;font-weight:800;color:#341761;">' + (stale ? '지난 진단 결과' : '진단 결과') + '</span>'
-    +     '<span class="badge ' + v.cls + '" style="font-size:14px;padding:4px 12px;">' + v.tag + '</span>'
-    +     (stale ? '<span class="badge b-orange" style="font-size:14px;padding:4px 12px;">확인 필요</span>' : '')
-    +     '<span style="font-size:14px;color:#808080;font-weight:700;margin-left:auto;">' + statLine + '</span>'
-    +   '</div>'
+    + '<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">'
+    +   '<h4 style="font-size:16px;font-weight:800;color:#341761;margin:0;">' + (stale ? '지난 진단 총평' : '총평') + '</h4>'
+    +   '<span class="badge ' + v.cls + '">' + v.tag + '</span>'
+    +   (stale ? '<span class="badge b-orange">확인 필요</span>' : '')
+    + '</div>'
+    + '<div style="border:1px solid #F0F0F2;background:#FBFBFC;border-radius:12px;padding:16px 20px;">'
     +   '<p style="font-size:16px;color:#494949;margin:0;line-height:1.65;">' + opinion + '</p>'
     +   staleHtml
     + '</div>';
@@ -2457,9 +2451,7 @@ function renderFitCards(){
   }
   document.getElementById('dg-draft-add').style.display = 'flex';
   document.getElementById('dg-draft-title').textContent = proposal ? 'AI 제안 채점기준' : '채점기준';
-  document.getElementById('dg-draft-desc').textContent = proposal
-    ? '선생님 기준을 AI가 그대로 따를 수 있게 다시 써 봤어요. 내용을 고치거나 더하고 뺄 수 있어요.'
-    : '그대로 채점해도 좋아요. 의견을 보고 고치고 싶다면 여기서 바로 수정할 수 있어요. 고치면 문항 연결을 다시 하게 돼요.';
+  document.getElementById('dg-draft-desc').textContent = '필요하면 직접 수정할 수 있어요. 바꿔 저장하면 문항 연결과 진단을 다시 해 드려요.';
 
   document.getElementById('dg-draft-list').innerHTML = _draft.map(function(r, i){
     return rubricCardHtml(r, i, 'dr');
@@ -2480,7 +2472,7 @@ function renderFitCards(){
   icons();
 }
 
-/* 작업본 적용 = 저장본 교체(DB 교체) + AI 재연결 + 3단계로 이동.
+/* 작업본 적용 = 저장본 교체(DB 교체) + AI가 연결·진단을 한 번에 다시 실행.
    저장이 이 순간에 일어나므로 "바뀐 기준 vs 옛 연결·판정"이 공존하는 상태가 없다. */
 function applyDraft(){
   if (S.scored){ showToast('error','AI 채점이 실행되어 채점기준을 바꿀 수 없어요.'); return; }
@@ -2489,21 +2481,21 @@ function applyDraft(){
   if (bad){ showToast('error','비어 있는 채점기준이 있어요. 내용을 채우거나 삭제해 주세요.'); return; }
   openConfirm('채점기준 바꾸고 다시 연결',
     '채점기준 ' + rubrics.length + '개(만점 ' + fullScore(rubrics) + '점)를 이 내용 ' + _draft.length + '개(만점 ' + fullScore(_draft) + '점)로 <strong>교체해 저장</strong>해요.<br>'
-    + '문항 연결은 AI가 새 기준으로 다시 만들어 드리며, 3단계에서 확인하실 수 있어요.',
+    + '문항 연결과 적합성 진단은 AI가 새 기준으로 다시 해 드려요.'
+    + (S.linksEdited ? '<br><strong>직접 고친 문항 연결도 AI가 새 기준으로 다시 만들어요.</strong>' : ''),
     '바꾸고 다시 연결', function(){
       rubrics = _draft.map(function(r, i){ return { id: 300 + i, title: r.title, rows: JSON.parse(JSON.stringify(r.rows)) }; });
       S.setApplied = true;
-      S.relinked = true;
       _draft = null;
       // AI 재연결(목업은 순서대로 배분)
       QUESTIONS.forEach(function(q, i){
         q.links = rubrics.filter(function(r, ri){ return (ri % QUESTIONS.length) === i || (ri === 0 && i === 0); }).map(function(r){ return r.id; });
         if (!q.links.length) q.links = [rubrics[0].id];
-        q.aiReason = 'AI가 새 채점기준으로 다시 연결한 결과예요. 맞지 않으면 직접 고쳐 주세요.';
+        q.aiReason = 'AI가 새 채점기준으로 다시 연결했어요. 맞지 않으면 직접 고쳐 주세요.';
       });
       renderRubrics(); renderScoreTable(); renderToc();
-      runDiagLoad('link');
-      showToast('success','채점기준을 바꿔 저장했어요. 새 기준으로 다시 연결한 결과를 확인해 주세요.');
+      runDiagLoad('diag');
+      showToast('success','채점기준을 바꿔 저장했어요. 새 기준으로 연결과 진단을 다시 할게요.');
     });
 }
 
@@ -2769,7 +2761,6 @@ var MP_MAIN = [
   { k:'structure',   label:'문항 구조 확인',          sub:'문항 4개 · 지시문 수정' },
   { k:'qfail',       label:'문항 구분 실패',          sub:'다시 올리기 · 활동지 없이 저장' },
   { cap:'적합성 진단 화면' },
-  { k:'linking',     label:'채점기준 연결',           sub:'AI 맵핑 결과 확인·수정' },
   { k:'diagnosing',  label:'진단 중',                sub:'적합도 살펴보는 중' },
   { k:'result',      label:'보완 권장(세트 제안)',     sub:'현재 ↔ AI 제안 비교' },
   { k:'result-ok',   label:'양호',                   sub:'제안 없음' },
