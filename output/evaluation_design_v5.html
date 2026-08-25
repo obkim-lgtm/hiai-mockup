@@ -158,7 +158,22 @@ body { margin: 0; background: #EDF1FC; min-width: 1280px; }
 .s4-add-btn { align-self:flex-start; display:inline-flex; align-items:center; justify-content:center; line-height:1; vertical-align:middle; gap:6px; background:#F7F4FF; border:1px dashed #B28FFD; border-radius:8px; height:34px; padding:0 14px; cursor:pointer; color:#7E44FB; font-size:14px; font-weight:700; font-family:inherit; }
 .s4-ans-input { flex:1; height:40px; border:1px solid #D9D9D9; border-radius:8px; padding:0 12px; font-size:16px; font-family:inherit; outline:none; color:#333; }
 .s4-ans-input:focus, .s4-model textarea:focus { border-color:#7E44FB; }
-.s4-model textarea { width:100%; min-height:80px; border:1px solid #D9D9D9; border-radius:8px; padding:10px 12px; font-size:16px; font-family:inherit; resize:vertical; outline:none; color:#333; line-height:1.55; box-sizing:border-box; }
+.s4-field { display:flex; flex-direction:column; gap:6px; }
+.s4-lab { display:flex; align-items:center; gap:8px; min-height:32px; }
+.s4-lab-t { font-size:14px; font-weight:700; color:#333; white-space:nowrap; }
+.s4-lab-d { font-size:14px; font-weight:400; color:#808080; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.s4-lab .s4-sum-btn { margin-left:auto; }
+.s4-guide { display:flex; flex-direction:column; gap:6px; }
+.s4-ansblock { display:flex; flex-direction:column; gap:8px; padding-top:12px; border-top:1px solid #EFEFEF; }
+.s4-exchk { display:flex; align-items:center; gap:8px; cursor:pointer; user-select:none; margin-left:auto; flex-shrink:0; }
+.s4-exchk .box { width:14px; height:14px; border:1px solid #B3B3B3; border-radius:2px; background:#fff; flex-shrink:0;
+                 display:inline-flex; align-items:center; justify-content:center; }
+.s4-exchk.on .box { background:#7E44FB; border-color:#7E44FB; }
+.s4-exchk span.t { font-size:14px; font-weight:700; color:#333; white-space:nowrap; }
+.s4-guide textarea { width:100%; min-height:60px; border:1px solid #D9D9D9; border-radius:8px; padding:10px 12px;
+                     font-size:16px; font-family:inherit; resize:vertical; outline:none; color:#333; line-height:1.55; box-sizing:border-box; }
+.s4-guide textarea:focus { border-color:#7E44FB; }
+.s4-model textarea { width:100%; min-height:72px; border:1px solid #D9D9D9; border-radius:8px; padding:10px 12px; font-size:16px; font-family:inherit; resize:vertical; outline:none; color:#333; line-height:1.55; box-sizing:border-box; }
 
 /* 누적 카드 — 앞 카드를 끝내면 다음 카드가 아래에 나타난다(단계 바 없음) */
 .stage-card { border:1px solid #E6E6E6; border-radius:12px; padding:20px 22px; margin-bottom:16px; background:#fff; }
@@ -554,9 +569,9 @@ body { margin: 0; background: #EDF1FC; min-width: 1280px; }
             <!-- ⑤ 모범답안 (요약 — 입력은 전용 화면) -->
             <section class="sec" id="sec-answer">
               <div class="sec-head">
-                <div class="sec-title">모범답안 <span style="font-size:14px;font-weight:400;color:#808080;">(선택)</span></div>
+                <div class="sec-title">답안과 채점 가이드 <span style="font-size:14px;font-weight:400;color:#808080;">(선택)</span></div>
               </div>
-              <p class="sec-desc">답안을 넣으면 AI가 선생님이 생각한 정답에 맞춰 채점해요. 정답이 정해진 문항은 되도록 「정답형」으로 인정 답안을 등록해 주세요. 넣지 않아도 채점은 진행돼요.</p>
+              <p class="sec-desc">답안을 넣으면 AI가 선생님이 생각한 정답에 맞춰 채점해요. 문항마다 어떻게 채점할지 가이드를 남기면 그대로 따릅니다. 넣지 않아도 채점은 진행돼요.</p>
               <div id="answer-card-body"></div>
             </section>
 
@@ -940,21 +955,17 @@ body { margin: 0; background: #EDF1FC; min-width: 1280px; }
       <div style="background:white;border-radius:0 0 20px 20px;box-shadow:0 4px 36px rgba(95,102,178,0.16);padding:28px 24px;">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;">
           <div>
-            <h2 style="font-size:20px;font-weight:800;color:#000;margin:0 0 4px;">모범답안</h2>
-            <p style="font-size:14px;color:#494949;margin:0;font-weight:400;line-height:1.55;">문항마다 답변 유형을 고르고 답안을 적어 주세요. 넣지 않은 문항이 있어도 저장할 수 있어요.</p>
+            <h2 style="font-size:20px;font-weight:800;color:#000;margin:0 0 4px;">답안과 채점 가이드</h2>
+            <p style="font-size:14px;color:#494949;margin:0;font-weight:400;line-height:1.55;">문항마다 답변 유형을 고르고 답안을 적은 뒤, 채점할 때 참고할 점을 가이드로 남겨 주세요. 비워 둔 문항이 있어도 저장할 수 있어요.</p>
           </div>
           <span id="answer-screen-count" style="font-size:14px;color:#808080;font-weight:700;"></span>
         </div>
 
 <div id="answer-editor">
-          <div class="note note-info" style="margin-bottom:20px;">
-            <i data-lucide="info" style="color:#5890FF;"></i>
-            <div><strong>정답이 정해진 문항은 답변 유형을 「정답형」으로 바꿔 인정 답안을 등록해 주세요.</strong> 인정 답안은 여러 개 등록할 수 있고, 그중 하나와 일치하면 정답으로 봐요.<br>그림·연결하기처럼 자유 형식이거나 입력하지 않은 문항이 있어도 설계를 완료할 수 있어요.</div>
-          </div>
           <div id="answer-list" style="display:flex;flex-direction:column;gap:12px;"></div>
           <div class="dg-navbar">
             <button class="btn btn-outline" onclick="closeAnswers()"><i data-lucide="arrow-left" style="width:16px;height:16px;"></i>설계로 돌아가기</button>
-            <button class="btn btn-primary" onclick="saveAnswers()">모범답안 저장</button>
+            <button class="btn btn-primary" onclick="saveAnswers()">저장</button>
           </div>
         </div>
 
@@ -1111,7 +1122,7 @@ var TOC = [
   { id:'sec-rubric',    label:'채점기준' },
   { id:'sec-worksheet', label:'활동지 문항 (선택)', optional:true },
   { id:'sec-diagnosis', label:'AI 채점 적합성 진단 (선택)', optional:true },
-  { id:'sec-answer',    label:'모범답안 (선택)', optional:true },
+  { id:'sec-answer',    label:'답안과 채점 가이드 (선택)', optional:true },
   { id:'sec-score',     label:'점수 계산 방식' },
   { id:'sec-absent',    label:'결시자 처리' }
 ];
@@ -1704,9 +1715,9 @@ function renderAnswerCard(){
   if (!el) return;
   if (!wsDone()){
     el.innerHTML = '<div class="note note-lock" style="margin-bottom:14px;"><i data-lucide="lock"></i><div><strong>활동지 문항을 먼저 나눠 주세요.</strong> 문항이 나뉘어야 문항별로 답안을 넣을 수 있어요.</div></div>'
-      + '<button class="btn btn-secondary is-disabled"><i data-lucide="pen-line" style="width:20px;height:20px;"></i>모범답안 입력</button>';
+      + '<button class="btn btn-secondary is-disabled"><i data-lucide="pen-line" style="width:20px;height:20px;"></i>답안과 채점 가이드 입력</button>';
   } else {
-    el.innerHTML = '<button class="btn btn-secondary" onclick="openAnswers()"><i data-lucide="pen-line" style="width:20px;height:20px;"></i>모범답안 입력</button>';
+    el.innerHTML = '<button class="btn btn-secondary" onclick="openAnswers()"><i data-lucide="pen-line" style="width:20px;height:20px;"></i>답안과 채점 가이드 입력</button>';
   }
 }
 
@@ -1788,7 +1799,7 @@ function pickWorksheet(){
   var gone = ['가림 영역'];
   if (wsDone()) gone.push('문항 목록과 직접 고친 내용');
   if (S.dg !== 'idle' || S.diagDone) gone.push('채점기준 연결과 진단 결과');
-  if (countAnswers() > 0) gone.push('문항별 모범답안');
+  if (countAnswers() > 0) gone.push('문항별 답안과 채점 가이드');
   openConfirm('활동지를 바꿀까요?',
     '<strong>' + gone.join(', ') + '</strong>이 사라지고 새로 만들어져요.<br>채점기준 자체는 그대로 남아요.',
     '파일 고르기', function(){ document.getElementById('ws-file').click(); });
@@ -1813,7 +1824,7 @@ function removeWorksheet(){
   if (S.locked){ showToast('error','과제물 인식이 시작되어 활동지를 지울 수 없어요.'); return; }
   if (!wsDone()){ S.worksheet = false; renderWorksheet(); return; }
   openConfirm('활동지를 지울까요?',
-    '<strong>문항 목록과 이어서 만든 연결·진단 결과·모범답안</strong>이 함께 사라져요.<br>채점기준 자체는 그대로 남아요.',
+    '<strong>문항 목록과 이어서 만든 연결·진단 결과·답안</strong>이 함께 사라져요.<br>채점기준 자체는 그대로 남아요.',
     '지우기', function(){
       S.worksheet = false; S.ws = 'file'; S.masks = [];
       QUESTIONS = seedQuestions();
@@ -1885,7 +1896,7 @@ function analyzeStructure(){
   var josa = function(w){ var c = w.charCodeAt(w.length - 1) - 0xAC00; return (c >= 0 && c <= 11171 && c % 28) ? '이' : '가'; };
   var gone = ['문항 목록과 직접 고친 내용'];
   if (S.dg !== 'idle' || S.diagDone) gone.push('채점기준 연결과 진단 결과');
-  if (countAnswers() > 0) gone.push('문항별 모범답안');
+  if (countAnswers() > 0) gone.push('문항별 답안과 채점 가이드');
   var last = gone[gone.length - 1];
   openConfirm('문항을 다시 나눌까요?',
     '<strong>' + gone.join(', ') + '</strong>' + josa(last) + ' 사라지고 새로 만들어져요.<br>채점기준 자체는 그대로 남아요.',
@@ -1937,11 +1948,11 @@ function finishDiagnosis(){
   if (draftDirty()){
     openConfirm('채점기준을 바꾸지 않고 마칠까요?',
       '지금 화면의 내용은 저장되지 않고, <strong>현재 채점기준 그대로</strong> 유지돼요.',
-      '바꾸지 않고 마치기', function(){ _draft = null; backToDetail('sec-diagnosis'); showToast('success','진단을 마쳤어요. 모범답안을 입력할 수 있어요.'); });
+      '바꾸지 않고 마치기', function(){ _draft = null; backToDetail('sec-diagnosis'); showToast('success','진단을 마쳤어요.'); });
     return;
   }
   backToDetail('sec-diagnosis');
-  showToast('success','진단을 마쳤어요. 모범답안을 입력할 수 있어요.');
+  showToast('success','진단을 마쳤어요.');
 }
 
 /* ── 2단계: 문항 구조 확인 ── */
@@ -2479,6 +2490,10 @@ function applyDraft(){
 /* ══════════════════════════════════════════════════════════
    모범답안
 ══════════════════════════════════════════════════════════ */
+var GUIDE_SEED = {
+  2:'근거가 두 가지인지만 세어 주세요. 맞춤법은 보지 않아도 됩니다.',
+  3:'반론과 반박이 모두 있어야 만점이에요. 하나만 있으면 절반만 주세요.'
+};
 var ANSWER_SEED = {
   1:'글쓴이는 급식 잔반을 줄이려면 학생이 먹을 양을 스스로 정할 수 있어야 한다고 주장한다.',
   2:'나는 글쓴이의 주장에 찬성한다. 첫째, 스스로 양을 정하면 남기는 음식이 줄어 음식물 쓰레기 처리 비용을 아낄 수 있다. 둘째, 자기가 고른 만큼 책임지고 먹게 되어 식습관을 스스로 관리하는 힘이 길러진다.',
@@ -2500,33 +2515,39 @@ function ansRowHtml(){
 function renderAnswers(){
   document.getElementById('answer-list').innerHTML = QUESTIONS.map(function(q){
     var v = S.answersFilled ? (ANSWER_SEED[q.no] || '') : '';
+    var g = S.answersFilled ? (GUIDE_SEED[q.no] || '') : '';
     return '<div class="s4-card" data-qno="' + q.no + '">'
       + '<div style="background:#FBFBFC;padding:12px 16px;border-bottom:1px solid #EFEFEF;display:flex;align-items:center;gap:10px;">'
       +   '<span style="font-size:12px;font-weight:800;background:#F7F4FF;color:#7E44FB;border-radius:100px;padding:3px 10px;white-space:nowrap;flex-shrink:0;">' + esc(q.label) + '</span>'
-      +   '<span style="font-size:14px;color:#333;font-weight:400;">' + esc(q.text) + '</span>'
+      +   '<span style="font-size:14px;color:#333;font-weight:400;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + esc(q.text) + '</span>'
+      +   '<label class="s4-exchk" onclick="s4ToggleExact(this)"><span class="box"></span><span class="t">정답이 정해진 문항</span></label>'
       + '</div>'
-      + '<div style="padding:14px 16px;display:flex;flex-direction:column;gap:12px;">'
-      +   '<div>'
-      +     '<p style="font-size:14px;font-weight:700;color:#333;margin:0 0 8px;">답변 유형 <span style="font-weight:400;color:#808080;">(선택)</span></p>'
-      +     '<div style="display:flex;gap:8px;">'
-      +       '<button class="s4-type-btn" data-type="exact" onclick="s4SetType(this,&quot;exact&quot;)">'
-      +         '<span class="s4-type-title">정답형</span>'
-      +         '<span class="s4-type-desc">정해진 답이 있어요 · 인정 답안 여러 개 등록</span>'
-      +       '</button>'
-      +       '<button class="s4-type-btn" data-type="essay" onclick="s4SetType(this,&quot;essay&quot;)">'
-      +         '<span class="s4-type-title">자유 서술형</span>'
-      +         '<span class="s4-type-desc">정해진 답이 없어요 · 모범답안 1개를 참고 자료로 사용</span>'
-      +       '</button>'
+      + '<div style="padding:14px 16px;display:flex;flex-direction:column;gap:10px;">'
+      +   '<div class="s4-guide s4-field">'
+      +     '<div class="s4-lab">'
+      +       '<span class="s4-lab-t">채점 가이드</span>'
+      +       '<span class="s4-lab-d">이 문항을 어떻게 채점할지 적어 두면 AI가 그대로 따릅니다</span>'
+      +       '<button class="s4-sum-btn" title="수식 입력" onclick="openFormulaTip()"><span style="font-size:15px;">&#8721;</span> 수식</button>'
       +     '</div>'
+      +     '<textarea id="gd-' + q.no + '" placeholder="예) 맞춤법은 보지 않고 내용만 채점해 주세요. / 단위를 쓰지 않으면 1점 깎아 주세요. / 풀이 과정이 있으면 답이 틀려도 부분 점수를 주세요." oninput="onAnswerInput()">' + esc(g) + '</textarea>'
       +   '</div>'
-      +   '<div class="s4-exact" style="display:none;flex-direction:column;gap:8px;">'
-      +     '<p style="font-size:14px;font-weight:700;color:#333;margin:0;">인정 답안 <span style="font-weight:400;color:#808080;">· 최대 ' + S4_MAX_ANSWERS + '개 · 등록한 답안 중 하나와 일치하면 정답으로 봐요</span></p>'
-      +     '<div class="s4-ans-list" style="display:flex;flex-direction:column;gap:8px;">' + ansRowHtml() + '</div>'
-      +     '<button class="s4-add-btn" onclick="s4AddAnswer(this)"><i data-lucide="plus" style="width:14px;height:14px;"></i>인정 답안 추가</button>'
-      +   '</div>'
-      +   '<div class="s4-model" style="display:flex;flex-direction:column;gap:6px;">'
-      +     '<textarea id="ans-' + q.no + '" placeholder="모범답안을 입력해 주세요. (없으면 비워두셔도 됩니다)" oninput="onAnswerInput()">' + esc(v) + '</textarea>'
-      +     '<span><button class="s4-sum-btn" style="height:30px;" title="수식 입력" onclick="openFormulaTip()"><span style="font-size:15px;">&#8721;</span> 수식</button></span>'
+      +   '<div class="s4-ansblock">'
+      +     '<div class="s4-exact" style="display:none;flex-direction:column;gap:8px;">'
+      +       '<div class="s4-lab">'
+      +         '<span class="s4-lab-t">인정 답안</span>'
+      +         '<span class="s4-lab-d">적어 둔 답안과 하나라도 일치하면 정답으로 봐요 · 최대 ' + S4_MAX_ANSWERS + '개</span>'
+      +       '</div>'
+      +       '<div class="s4-ans-list" style="display:flex;flex-direction:column;gap:8px;">' + ansRowHtml() + '</div>'
+      +       '<button class="s4-add-btn" onclick="s4AddAnswer(this)"><i data-lucide="plus" style="width:14px;height:14px;"></i>인정 답안 추가</button>'
+      +     '</div>'
+      +     '<div class="s4-model s4-field">'
+      +       '<div class="s4-lab">'
+      +         '<span class="s4-lab-t">모범답안</span>'
+      +         '<span class="s4-lab-d">채점할 때 참고할 예시 답안이에요</span>'
+      +         '<button class="s4-sum-btn" title="수식 입력" onclick="openFormulaTip()"><span style="font-size:15px;">&#8721;</span> 수식</button>'
+      +       '</div>'
+      +       '<textarea id="ans-' + q.no + '" placeholder="모범답안을 입력해 주세요. (없으면 비워두셔도 됩니다)" oninput="onAnswerInput()">' + esc(v) + '</textarea>'
+      +     '</div>'
       +   '</div>'
       + '</div></div>';
   }).join('');
@@ -2535,21 +2556,24 @@ function renderAnswers(){
   renderAnswerCard();
   icons();
 }
-function s4SetType(btn, type){
-  var card = btn.closest('.s4-card');
-  var wasActive = btn.classList.contains('active');
-  card.querySelectorAll('.s4-type-btn').forEach(function(b){ b.classList.remove('active'); });
+/* 정답형은 특수 모드 — 기본은 모범답안이고, 정답이 정해진 문항에서만 인정 답안으로 바꾼다.
+   버튼 2개를 상시 노출하는 대신 링크로 접어 화면 부담을 줄였다. */
+function s4ToggleExact(el){
+  var card = el.closest('.s4-card');
   var exact = card.querySelector('.s4-exact');
   var model = card.querySelector('.s4-model');
-  if (wasActive){
-    /* 같은 유형을 다시 누르면 선택 해제 → 기본(모범답안 1개) 상태 */
+  var on = (exact.style.display !== 'none');
+  if (on){
     exact.style.display = 'none';
     model.style.display = 'flex';
   } else {
-    btn.classList.add('active');
-    if (type === 'exact'){ exact.style.display = 'flex'; model.style.display = 'none'; s4SyncAddBtn(exact); }
-    else { exact.style.display = 'none'; model.style.display = 'flex'; }
+    exact.style.display = 'flex';
+    model.style.display = 'none';
+    s4SyncAddBtn(exact);
   }
+  el.classList.toggle('on', !on);
+  el.querySelector('.box').innerHTML = on ? '' : '<i data-lucide="check" style="width:11px;height:11px;color:#fff;stroke-width:3.5;"></i>';
+  icons();
   onAnswerInput();
 }
 function s4SyncAddBtn(exact){
@@ -2600,8 +2624,16 @@ function countAnswers(){
   });
   return n;
 }
+function countGuides(){
+  var n = 0;
+  QUESTIONS.forEach(function(q){
+    var ta = document.getElementById('gd-' + q.no);
+    if (ta && ta.value.trim()) n++;
+  });
+  return n;
+}
 function updateAnswerCounts(){
-  var text = S.diagDone ? ('문항 ' + QUESTIONS.length + '개 중 ' + countAnswers() + '개 입력됨') : '';
+  var text = wsDone() ? ('답안 ' + countAnswers() + '개 · 채점 가이드 ' + countGuides() + '개') : '';
   document.getElementById('answer-screen-count').textContent = text;
 }
 function onAnswerInput(){ _answersDirty = true; updateAnswerCounts(); renderToc(); }
@@ -2615,10 +2647,10 @@ function openAnswers(){
 function closeAnswers(){
   if (!_answersDirty){ backToDetail('sec-answer'); return; }
   openConfirm('저장하지 않고 나갈까요?',
-    '입력한 모범답안이 <strong>저장되지 않습니다.</strong>',
+    '입력한 답안과 채점 가이드가 <strong>저장되지 않습니다.</strong>',
     '저장하지 않고 나가기', function(){ _answersDirty = false; renderAnswers(); backToDetail('sec-answer'); });
 }
-function saveAnswers(){ _answersDirty = false; renderToc(); showToast('success','모범답안을 저장했어요.'); backToDetail('sec-answer'); }
+function saveAnswers(){ _answersDirty = false; renderToc(); showToast('success','답안과 채점 가이드를 저장했어요.'); backToDetail('sec-answer'); }
 
 /* ══════════════════════════════════════════════════════════
    목차 · 스크롤 스파이
@@ -2720,7 +2752,7 @@ var MP_MAIN = [
   { k:'result',      label:'보완 필요(세트 제안)',     sub:'현재 ↔ AI 제안 비교' },
   { k:'result-ok',   label:'양호',                   sub:'제안 없음' },
   { cap:'모범답안 화면' },
-  { k:'answer',      label:'모범답안 입력',          sub:'답변 유형 · 인정 답안' }
+  { k:'answer',      label:'답안과 채점 가이드',      sub:'답변 유형 · 인정 답안 · 가이드' }
 ];
 function renderMockpick(){
   var items = (S.screen === 'list') ? MP_LIST : MP_MAIN;
