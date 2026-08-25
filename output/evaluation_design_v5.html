@@ -863,21 +863,19 @@ body { margin: 0; background: #EDF1FC; min-width: 1280px; }
 
           <div class="apply-band" id="dg-apply-band" style="display:none;">
             <div style="flex:1;min-width:260px;">
-              <p style="font-size:16px;font-weight:800;color:#341761;margin:0 0 6px;line-height:1.3;">이 채점기준으로 바꾸고 문항 연결을 다시 할까요?</p>
-              <p style="font-size:14px;color:#5B4B7A;margin:0;line-height:1.6;">기존 채점기준을 이 내용으로 교체해 저장하고, AI가 새 기준으로 문항 연결과 진단을 다시 해 드려요.</p>
+              <p style="font-size:16px;font-weight:800;color:#341761;margin:0 0 6px;line-height:1.3;">어떤 채점기준으로 채점할까요?</p>
+              <p style="font-size:14px;color:#5B4B7A;margin:0;line-height:1.6;">바꾸기를 누르면 이 내용으로 교체하고, AI가 문항 연결과 진단을 다시 해 드려요. 정하고 나면 아래에서 문항 연결을 확인할 수 있어요.</p>
             </div>
-            <button class="btn btn-primary btn-lg" onclick="applyDraft()"><i data-lucide="wand-sparkles" style="width:18px;height:18px;"></i>채점기준 바꾸고 다시 연결</button>
+            <div style="display:flex;gap:10px;flex-shrink:0;align-items:center;">
+              <button class="btn btn-outline btn-lg" id="btn-keep-set" onclick="keepCurrentSet()">현재 기준 그대로 쓰기</button>
+              <button class="btn btn-primary btn-lg" onclick="applyDraft()"><i data-lucide="wand-sparkles" style="width:18px;height:18px;"></i>이 기준으로 바꾸기</button>
+            </div>
           </div>
 
           <!-- 문항별 연결 확인 — 도달점은 채점기준, 연결은 그 기준이 문항에 어떻게 적용되는지 보는 보조 뷰 -->
           <div id="dg-qfit" style="margin-top:26px;">
             <h4 style="font-size:16px;font-weight:800;color:#341761;margin:0 0 4px;">문항별 연결 확인</h4>
             <p class="sec-desc" style="margin-bottom:12px;">문항마다 어떤 채점기준을 볼지 AI가 연결해 뒀어요. 문항을 누르면 확인하고 고칠 수 있어요.</p>
-            <div id="dg-qfit-gate" class="note note-info" style="display:none;margin-bottom:12px;align-items:center;">
-              <i data-lucide="info" style="color:#5890FF;margin-top:0;"></i>
-              <div style="flex:1;">채점기준이 바뀌면 연결도 다시 만들어져요. <strong>위에서 채점기준을 먼저 정하면</strong> 연결을 고칠 수 있어요.</div>
-              <button class="btn btn-ghost btn-sm" style="flex-shrink:0;" onclick="keepCurrentSet()">현재 채점기준 그대로 쓰기</button>
-            </div>
             <div id="dg-qfit-list" style="display:flex;flex-direction:column;gap:10px;"></div>
           </div>
 
@@ -1905,7 +1903,7 @@ function startDiagnosis(again){
 }
 function finishDiagnosis(){
   drSync();
-  if (draftDirty()){
+  if (draftDirty() && setUndecided()){
     openConfirm('채점기준을 바꾸지 않고 마칠까요?',
       '지금 화면의 내용은 저장되지 않고, <strong>현재 채점기준 그대로</strong> 유지돼요.',
       '바꾸지 않고 마치기', function(){ _draft = null; backToDetail('sec-diagnosis'); showToast('success','진단을 마쳤어요.'); });
@@ -2179,13 +2177,17 @@ function qFitTitles(q){
 function setUndecided(){ return hasSuggestion() && !S.setApplied && !S.setKept; }
 function keepCurrentSet(){
   S.setKept = true;
-  showToast('success','현재 채점기준을 그대로 써요. 이제 문항 연결을 고칠 수 있어요.');
+  _draft = rubrics.map(function(r){ return { id:r.id, title:r.title, rows: JSON.parse(JSON.stringify(r.rows)) }; });
+  _draftFromAI = false; _draftEdited = false;
+  showToast('success','현재 채점기준을 그대로 써요. 아래에서 문항 연결을 확인해 주세요.');
   renderDiagnosis();
+  var sec = document.getElementById('dg-qfit');
+  if (sec) sec.scrollIntoView({ behavior:'smooth', block:'start' });
 }
 function renderQFit(){
+  var sec = document.getElementById('dg-qfit');
+  if (sec) sec.style.display = setUndecided() ? 'none' : 'block';
   var el = document.getElementById('dg-qfit-list'); if (!el) return;
-  var gate = document.getElementById('dg-qfit-gate');
-  if (gate) gate.style.display = (setUndecided() && !S.scored) ? 'flex' : 'none';
   el.innerHTML = QUESTIONS.map(function(q){
     var v = qVerdict(q);
     var open = (_qOpen === q.no || _qEdit === q.no);
@@ -2405,7 +2407,8 @@ function drToggleCur(){
   var l = document.getElementById('dg-cur-list');
   var open = l.style.display !== 'none';
   l.style.display = open ? 'none' : 'flex';
-  document.getElementById('dg-cur-label').textContent = open ? '현재 채점기준 보기' : '현재 채점기준 접기';
+  var nm = S.setKept ? 'AI 제안 채점기준' : '현재 채점기준';
+  document.getElementById('dg-cur-label').textContent = nm + (open ? ' 보기' : ' 접기');
   document.getElementById('dg-cur-caret').setAttribute('data-lucide', open ? 'chevron-down' : 'chevron-up');
   icons();
 }
@@ -2413,12 +2416,14 @@ function drMetaBand(){
   drSync();
   if (!_draft) return;
   document.getElementById('dg-draft-meta').textContent = _draft.length + '개 · 만점 ' + fullScore(_draft) + '점';
-  document.getElementById('dg-apply-band').style.display = draftDirty() ? 'flex' : 'none';
+  document.getElementById('dg-apply-band').style.display = (setUndecided() || draftDirty()) ? 'flex' : 'none';
+  var kb = document.getElementById('btn-keep-set');
+  if (kb) kb.style.display = setUndecided() ? 'inline-flex' : 'none';
 }
 
 function renderFitCards(){
   if (!_draft) initDraft();
-  var proposal = hasSuggestion();
+  var proposal = hasSuggestion() && !S.setKept;
 
   /* 과제물 인식이 시작되면 채점기준을 바꿀 수 없다(참조 축 잠금).
      바꿀 수 없는 걸 편집 폼으로 열어두면 헛수고가 되므로 읽기 전용으로 내린다.
@@ -2466,12 +2471,15 @@ function renderFitCards(){
     return rubricCardHtml(r, i, 'dr');
   }).join('');
 
-  // 현재(저장본) 참고 — 제안이 있을 때만
+  /* 참고 열람 — 검토 중이면 '현재 채점기준', 제안을 받지 않기로 했으면 'AI 제안'을 접어 둔다 */
   var wrap = document.getElementById('dg-cur-wrap');
-  wrap.style.display = proposal ? 'block' : 'none';
-  if (proposal){
-    document.getElementById('dg-cur-meta').textContent = rubrics.length + '개 · 만점 ' + fullScore(rubrics) + '점';
-    document.getElementById('dg-cur-list').innerHTML = rubrics.map(function(r, i){
+  var showRef = proposal || (S.setKept && hasSuggestion());
+  wrap.style.display = showRef ? 'block' : 'none';
+  if (showRef){
+    var refList = S.setKept ? SUGGESTED_SET : rubrics;
+    document.getElementById('dg-cur-label').textContent = (S.setKept ? 'AI 제안 채점기준' : '현재 채점기준') + ' 보기';
+    document.getElementById('dg-cur-meta').textContent = refList.length + '개 · 만점 ' + fullScore(refList) + '점';
+    document.getElementById('dg-cur-list').innerHTML = refList.map(function(r, i){
       return '<div class="diag-card" style="padding:12px;">'
         + '<p style="font-size:16px;font-weight:700;color:#333;margin:0 0 8px;">' + (i+1) + '. ' + esc(r.title) + '</p>'
         + roTableHtml(r.rows) + '</div>';
