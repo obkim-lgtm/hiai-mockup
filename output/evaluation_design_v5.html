@@ -1840,8 +1840,7 @@ function runWsLoad2(){
 }
 function runDiagLoad(kind){
   // 연결과 진단은 한 번에 돈다 — 확인은 결과 화면에서 1회
-  _draft = null; _qEdit = null; S.linksEdited = false;
-  QUESTIONS.forEach(function(q){ delete q._rediag; });
+  _draft = null; _qEdit = null;
   S.dg = 'load';
   document.getElementById('dg-load-title').textContent = DG_LOAD_MSG.diag;
   renderDiagnosis();
@@ -2147,7 +2146,7 @@ function removeQuestion(i){
 }
 
 /* ── 문항별 연결과 진단 — 문항당 한 줄, 누르면 상세. 연결 확인 게이트 없이 결과에서 한 번에 본다 ── */
-var _qEdit = null, _qBackup = null, _qLoading = null, _qOpen = null;
+var _qEdit = null, _qBackup = null, _qOpen = null;
 function qVerdict(q){
   if (!q.links.length) return { kind:'none', note:'연결된 채점기준이 없어요. 이대로면 이 문항은 채점기준 전체로 채점되니, 맞는 기준을 골라 주세요.' };
   if (hasSuggestion() && q.links.indexOf(4) !== -1) return { kind:'warn', note:'연결된 채점기준 4의 「충분히」·「설득력 있게」는 AI가 기준을 잡기 어려워요. 아래 AI 제안에서 이 표현을 다듬었어요.' };
@@ -2172,11 +2171,6 @@ function qFitTitles(q){
 function renderQFit(){
   var el = document.getElementById('dg-qfit-list'); if (!el) return;
   el.innerHTML = QUESTIONS.map(function(q){
-    if (_qLoading === q.no){
-      return '<div class="diag-card" style="padding:18px 16px;display:flex;align-items:center;gap:12px;">'
-        + '<div style="width:20px;height:20px;border:3px solid #E7DDFF;border-top-color:#7E44FB;border-radius:50%;animation:spin .9s linear infinite;flex-shrink:0;"></div>'
-        + '<span style="font-size:14px;color:#494949;">문항 ' + esc(q.label) + '의 연결을 저장하고 적합도를 다시 보고 있어요.</span></div>';
-    }
     var v = qVerdict(q);
     var open = (_qOpen === q.no || _qEdit === q.no);
     var badge = qBadge(v);
@@ -2196,7 +2190,7 @@ function renderQFit(){
           '<button class="btn btn-ghost btn-sm" style="flex-shrink:0;" onclick="event.stopPropagation();qFitEdit(' + q.no + ')"><i data-lucide="square-pen" style="width:14px;height:14px;color:#808080;"></i>연결 수정</button>';
         var noteHtml = v.note
           ? '<p style="font-size:14px;color:#9A5B00;margin:10px 0 0;line-height:1.6;">' + v.note + '</p>'
-          : (q._rediag ? '<p style="font-size:14px;color:#808080;margin:10px 0 0;">연결을 바꿔 이 문항만 다시 진단했어요.</p>' : '');
+          : '';
         body = '<div style="padding:12px 16px 14px;border-top:1px solid #F5F5F5;">'
           + '<div style="display:flex;align-items:flex-start;gap:12px;">'
           +   '<div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:4px;">' + qFitTitles(q) + '</div>'
@@ -2242,10 +2236,10 @@ function qFitEditBody(q){
   return reason
     + '<div style="display:flex;flex-direction:column;gap:6px;">' + rows + '</div>'
     + '<div style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:14px;">'
-    +   '<span style="font-size:14px;color:#808080;font-weight:700;">' + q.links.length + ' / ' + rubrics.length + ' 선택</span>'
+    +   '<span style="font-size:14px;color:#808080;">저장하면 바뀐 연결로 AI가 다시 살펴봐요.</span>'
     +   '<div style="display:flex;gap:8px;">'
     +     '<button class="btn btn-outline btn-sm" onclick="qFitCancel()">취소</button>'
-    +     '<button class="btn btn-primary btn-sm" onclick="qFitSave(' + q.no + ')">저장하고 다시 진단</button>'
+    +     '<button class="btn btn-primary btn-sm" onclick="qFitSave(' + q.no + ')">저장</button>'
     +   '</div>'
     + '</div>';
 }
@@ -2267,16 +2261,14 @@ function qFitCancel(){
   _qEdit = null; _qBackup = null;
   renderQFit();
 }
+/* 저장 = 자동 재진단. 진단은 세트 단위로 돌므로 문항 단위 부분 재진단은 두지 않는다.
+   교사가 기억할 규칙은 하나 — 무엇을 저장하든 AI가 다시 살펴보고 결과가 갱신된다. */
 function qFitSave(no){
   var q = QUESTIONS.find(function(x){ return x.no === no; });
   var run = function(){
-    _qEdit = null; _qBackup = null; _qLoading = no;
-    renderQFit();
-    setTimeout(function(){
-      _qLoading = null; q._rediag = true; S.linksEdited = true; _qOpen = no;
-      renderQFit(); renderOverall(); renderDiagCard();
-      showToast('success','연결을 저장하고 문항 ' + q.label + '만 다시 진단했어요.');
-    }, 1100);
+    _qEdit = null; _qBackup = null; _qOpen = no; S.linksEdited = true;
+    showToast('success','연결을 저장했어요. 바뀐 연결로 AI가 다시 살펴볼게요.');
+    runDiagLoad('diag');
   };
   if (!q.links.length){
     openConfirm('연결 없이 저장할까요?',
@@ -2486,6 +2478,7 @@ function applyDraft(){
     '바꾸고 다시 연결', function(){
       rubrics = _draft.map(function(r, i){ return { id: 300 + i, title: r.title, rows: JSON.parse(JSON.stringify(r.rows)) }; });
       S.setApplied = true;
+      S.linksEdited = false; // AI가 연결을 새로 만들었으므로 교사 수정본은 더 이상 없음
       _draft = null;
       // AI 재연결(목업은 순서대로 배분)
       QUESTIONS.forEach(function(q, i){
