@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="icon" href="../screens/favicon_src.png?v=2" type="image/png">
-<title>평가 설계 v5</title>
+<title>평가 설계 — HIAI 목업</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
 <style>
@@ -32,7 +32,8 @@ body { margin: 0; background: #EDF1FC; min-width: 1280px; }
 
 /* ── 좌측 목차 ── */
 .toc-item { display:flex; align-items:center; gap:9px; padding:9px 10px; border-radius:9px; cursor:pointer; border:none; background:transparent;
-            font-family:inherit; font-size:14px; font-weight:700; color:#494949; text-align:left; width:100%; line-height:1.35; }
+            font-family:inherit; font-size:14px; font-weight:700; color:#494949; text-align:left; width:100%; line-height:1.35;
+            word-break:keep-all; }
 .toc-item:hover { background:#F7F4FF; }
 .toc-item.on { background:#F0E9FF; color:#5B3AA6; }
 .toc-dot { width:18px; height:18px; border-radius:50%; flex-shrink:0; display:flex; align-items:center; justify-content:center;
@@ -448,7 +449,7 @@ body { margin: 0; background: #EDF1FC; min-width: 1280px; }
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;">
           <div>
             <h2 style="font-size:20px;font-weight:800;color:#000;margin:0 0 4px;">평가 설계</h2>
-            <p style="font-size:14px;color:#494949;margin:0;font-weight:400;line-height:1.55;">위에서부터 차례로 채워 주세요. 활동지 문항·진단·모범답안은 선택이라 넣지 않아도 저장할 수 있어요.</p>
+            <p style="font-size:14px;color:#494949;margin:0;font-weight:400;line-height:1.55;">위에서부터 차례로 채워 주세요. 빈 활동지 등록·진단·채점 가이드는 선택이라 넣지 않아도 저장할 수 있어요.</p>
           </div>
         </div>
 
@@ -552,7 +553,7 @@ body { margin: 0; background: #EDF1FC; min-width: 1280px; }
             <!-- ④ 활동지 문항 (요약 — 업로드·확인은 전용 화면) -->
             <section class="sec" id="sec-worksheet">
               <div class="sec-head">
-                <div class="sec-title">활동지 문항 <span style="font-size:14px;font-weight:400;color:#808080;">(선택)</span><span id="ws-badge"></span></div>
+                <div class="sec-title">빈 활동지 등록 <span style="font-size:14px;font-weight:400;color:#808080;">(선택)</span><span id="ws-badge"></span></div>
               </div>
               <p class="sec-desc">문항만 인쇄된 빈 활동지를 올리면 AI가 문항을 나눠 드려요. 문항을 나눠 두면 채점기준을 문항마다 연결할 수 있고, 모범답안도 문항별로 넣을 수 있어요. 올리지 않아도 저장할 수 있어요.</p>
               <div id="ws-card-body"></div>
@@ -569,7 +570,7 @@ body { margin: 0; background: #EDF1FC; min-width: 1280px; }
             <!-- ⑤ 모범답안 (요약 — 입력은 전용 화면) -->
             <section class="sec" id="sec-answer">
               <div class="sec-head">
-                <div class="sec-title">답안과 채점 가이드 <span style="font-size:14px;font-weight:400;color:#808080;">(선택)</span></div>
+                <div class="sec-title">채점 가이드·모범답안 <span style="font-size:14px;font-weight:400;color:#808080;">(선택)</span></div>
               </div>
               <p class="sec-desc">답안을 넣으면 AI가 선생님이 생각한 정답에 맞춰 채점해요. 문항마다 어떻게 채점할지 가이드를 남기면 그대로 따릅니다. 넣지 않아도 채점은 진행돼요.</p>
               <div id="answer-card-body"></div>
@@ -683,7 +684,7 @@ body { margin: 0; background: #EDF1FC; min-width: 1280px; }
       <div style="background:white;border-radius:0 0 20px 20px;box-shadow:0 4px 36px rgba(95,102,178,0.16);padding:28px 24px;">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;">
           <div>
-            <h2 style="font-size:20px;font-weight:800;color:#000;margin:0 0 4px;">활동지 문항</h2>
+            <h2 style="font-size:20px;font-weight:800;color:#000;margin:0 0 4px;">빈 활동지 등록</h2>
             <p style="font-size:14px;color:#494949;margin:0;font-weight:400;line-height:1.55;">문항만 인쇄된 빈 활동지를 올려 주세요. AI가 문항을 나눠 드리면, 그 문항으로 채점기준을 연결하고 모범답안을 넣을 수 있어요.</p>
           </div>
         </div>
@@ -819,7 +820,7 @@ body { margin: 0; background: #EDF1FC; min-width: 1280px; }
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;">
           <div>
             <h2 style="font-size:20px;font-weight:800;color:#000;margin:0 0 4px;">AI 채점 적합성 진단</h2>
-            <p style="font-size:14px;color:#494949;margin:0;font-weight:400;line-height:1.55;">문항마다 볼 채점기준을 연결하면, 그 결과까지 보고 AI가 채점하기 좋은 기준인지 알려 드려요.</p>
+            <p style="font-size:14px;color:#494949;margin:0;font-weight:400;line-height:1.55;">문항마다 볼 채점기준을 연결하면, 그 기준대로 AI가 채점할 수 있는지 미리 확인해 드려요.</p>
           </div>
         </div>
 
@@ -955,10 +956,9 @@ body { margin: 0; background: #EDF1FC; min-width: 1280px; }
       <div style="background:white;border-radius:0 0 20px 20px;box-shadow:0 4px 36px rgba(95,102,178,0.16);padding:28px 24px;">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;">
           <div>
-            <h2 style="font-size:20px;font-weight:800;color:#000;margin:0 0 4px;">답안과 채점 가이드</h2>
+            <h2 style="font-size:20px;font-weight:800;color:#000;margin:0 0 4px;">채점 가이드·모범답안</h2>
             <p style="font-size:14px;color:#494949;margin:0;font-weight:400;line-height:1.55;">문항마다 답변 유형을 고르고 답안을 적은 뒤, 채점할 때 참고할 점을 가이드로 남겨 주세요. 비워 둔 문항이 있어도 저장할 수 있어요.</p>
           </div>
-          <span id="answer-screen-count" style="font-size:14px;color:#808080;font-weight:700;"></span>
         </div>
 
 <div id="answer-editor">
@@ -1083,8 +1083,8 @@ var QUESTIONS = seedQuestions();
    요소 하나하나를 대조·매칭하지 않고 새 채점기준 세트를 통으로 제안한다(맥·빌 의견 2026-08-21).
    요소가 통폐합·삭제될 수 있어 1:1 대응이 성립하지 않기 때문. */
 var DIAG_REASONS = [
-  '채점기준 3번은 한 칸에 어휘·맞춤법·문장 자연스러움 세 가지 판단이 함께 들어 있어 AI가 어느 쪽으로 점수를 줄지 정하지 못해요.',
-  '채점기준 4번은 "충분히", "설득력 있게"처럼 읽는 사람마다 다르게 판단할 표현이 있어요.',
+  '채점기준 3번에는 어휘·맞춤법·문장 자연스러움이 한 칸에 함께 있어요. 사람은 함께 보고 판단하지만 AI는 어느 쪽에 점수를 줄지 스스로 정하지 못해요.',
+  '채점기준 4번의 "충분히", "설득력 있게"는 사람에게는 통하는 표현이지만, AI는 기준을 잡지 못해 학생마다 점수가 달라질 수 있어요.',
   '3번이 2번 문항과 4번 문항에 모두 연결돼 있는데, 두 문항이 요구하는 것이 달라 같은 기준으로 채점하면 점수가 고르지 않아요.'
 ];
 var SUGGESTED_SET = [
@@ -1099,7 +1099,7 @@ var SUGGESTED_SET = [
   { id:105, title:'예상 반론을 쓰고 반박 근거를 댔는지를 평가한다.',
     rows:[[5,'예상 반론을 한 가지 이상 쓰고, 그에 대한 반박 근거를 함께 제시함'],[3,'예상 반론은 썼으나 반박 근거가 없음'],[1,'예상 반론을 쓰지 않음']] }
 ];
-var SUGGEST_NOTE = '한 칸에 섞여 있던 어휘·맞춤법을 두 기준으로 나누고, 사람마다 다르게 읽히던 표현을 무엇이 보이면 몇 점인지로 바꿨어요.';
+var SUGGEST_NOTE = '한 칸에 함께 있던 어휘·맞춤법을 두 기준으로 나누고, 뜻은 그대로 두되 무엇이 보이면 몇 점인지를 덧붙였어요.';
 
 var LIST_CARDS = [
   { name:'2학기 수행평가',        state:'draft', summary:'기본 정보만 입력', date:'26.04.01', open:'new' },
@@ -1120,9 +1120,9 @@ var TOC = [
   { id:'sec-basic',     label:'기본 정보' },
   { id:'sec-standard',  label:'성취기준' },
   { id:'sec-rubric',    label:'채점기준' },
-  { id:'sec-worksheet', label:'활동지 문항 (선택)', optional:true },
+  { id:'sec-worksheet', label:'빈 활동지 등록 (선택)', optional:true },
   { id:'sec-diagnosis', label:'AI 채점 적합성 진단 (선택)', optional:true },
-  { id:'sec-answer',    label:'답안과 채점 가이드 (선택)', optional:true },
+  { id:'sec-answer',    label:'채점 가이드·모범답안 (선택)', optional:true },
   { id:'sec-score',     label:'점수 계산 방식' },
   { id:'sec-absent',    label:'결시자 처리' }
 ];
@@ -1648,7 +1648,7 @@ function hasSuggestion(){
   return S.diagResultKind !== 'ok' && !S.setApplied;
 }
 function overallVerdict(){
-  return hasSuggestion() ? { tag:'보완 필요', cls:'b-orange' } : { tag:'양호', cls:'b-green' };
+  return hasSuggestion() ? { tag:'보완 권장', cls:'b-orange' } : { tag:'양호', cls:'b-green' };
 }
 
 /* ── 상세: 활동지 문항 요약 카드 ── */
@@ -1682,7 +1682,7 @@ function renderDiagCard(){
   var h;
   if (!wsDone() || !S.rubricFilled){
     var why = !wsDone()
-      ? '<strong>활동지 문항을 먼저 나눠 주세요.</strong> 문항마다 어떤 채점기준을 볼지 연결해야 진단할 수 있어요.'
+      ? '<strong>빈 활동지를 먼저 올려 주세요.</strong> 문항마다 어떤 채점기준을 볼지 연결해야 진단할 수 있어요.'
       : '<strong>채점기준을 모두 입력하면 진단할 수 있어요.</strong> 채점기준 문구와 배점별 세부 기준이 모두 채워져야 AI가 무엇을 볼지 판단할 수 있어요.';
     h = '<div class="note note-lock" style="margin-bottom:14px;"><i data-lucide="lock"></i><div>' + why + '</div></div>'
       + '<button class="btn btn-secondary is-disabled"><i data-lucide="stethoscope" style="width:20px;height:20px;"></i>AI 채점 적합성 진단</button>';
@@ -1714,10 +1714,10 @@ function renderAnswerCard(){
   var el = document.getElementById('answer-card-body');
   if (!el) return;
   if (!wsDone()){
-    el.innerHTML = '<div class="note note-lock" style="margin-bottom:14px;"><i data-lucide="lock"></i><div><strong>활동지 문항을 먼저 나눠 주세요.</strong> 문항이 나뉘어야 문항별로 답안을 넣을 수 있어요.</div></div>'
-      + '<button class="btn btn-secondary is-disabled"><i data-lucide="pen-line" style="width:20px;height:20px;"></i>답안과 채점 가이드 입력</button>';
+    el.innerHTML = '<div class="note note-lock" style="margin-bottom:14px;"><i data-lucide="lock"></i><div><strong>빈 활동지를 먼저 올려 주세요.</strong> 문항이 나뉘어야 문항별로 답안을 넣을 수 있어요.</div></div>'
+      + '<button class="btn btn-secondary is-disabled"><i data-lucide="pen-line" style="width:20px;height:20px;"></i>채점 가이드·모범답안 입력</button>';
   } else {
-    el.innerHTML = '<button class="btn btn-secondary" onclick="openAnswers()"><i data-lucide="pen-line" style="width:20px;height:20px;"></i>답안과 채점 가이드 입력</button>';
+    el.innerHTML = '<button class="btn btn-secondary" onclick="openAnswers()"><i data-lucide="pen-line" style="width:20px;height:20px;"></i>채점 가이드·모범답안 입력</button>';
   }
 }
 
@@ -1917,7 +1917,7 @@ function saveStructure(){
   showToast('success','문항 구조를 저장했어요.');
 }
 function openDiagnosis(){
-  if (!wsDone()){ showToast('error','활동지 문항을 먼저 나눠 주세요.'); return; }
+  if (!wsDone()){ showToast('error','빈 활동지를 먼저 올려 주세요.'); return; }
   if (!S.rubricFilled){ showToast('error','채점기준을 모두 입력해야 진단할 수 있어요.'); return; }
   showScreen('diag');
   if (S.dg === 'idle') runDiagLoad('link');
@@ -2408,7 +2408,7 @@ function renderFitCards(){
       : '<strong>AI 채점이 실행되어 채점기준을 바꿀 수 없어요.</strong> 진단 결과는 확인만 할 수 있어요.';
     document.getElementById('dg-draft-title').textContent = proposal ? 'AI 제안 채점기준' : '채점기준';
     document.getElementById('dg-draft-desc').textContent = proposal
-      ? '채점하기 좋게 AI가 전체를 다시 구성한 안이에요. 지금은 적용할 수 없어요.'
+      ? 'AI가 그대로 따를 수 있게 같은 뜻을 다시 쓴 안이에요. 지금은 적용할 수 없어요.'
       : '지금 저장된 채점기준이에요.';
     var roList = proposal ? SUGGESTED_SET : rubrics;
     document.getElementById('dg-draft-meta').textContent = roList.length + '개 · 만점 ' + fullScore(roList) + '점';
@@ -2438,7 +2438,7 @@ function renderFitCards(){
   document.getElementById('dg-draft-add').style.display = 'flex';
   document.getElementById('dg-draft-title').textContent = proposal ? 'AI 제안 채점기준' : '채점기준';
   document.getElementById('dg-draft-desc').textContent = proposal
-    ? '채점하기 좋게 AI가 전체를 다시 구성했어요. 내용을 고치거나 더하고 뺄 수 있어요.'
+    ? '선생님 기준을 AI가 그대로 따를 수 있게 다시 써 봤어요. 내용을 고치거나 더하고 뺄 수 있어요.'
     : '그대로 채점해도 좋아요. 의견을 보고 고치고 싶다면 여기서 바로 수정할 수 있어요. 고치면 문항 연결을 다시 하게 돼요.';
 
   document.getElementById('dg-draft-list').innerHTML = _draft.map(function(r, i){
@@ -2552,7 +2552,6 @@ function renderAnswers(){
       + '</div></div>';
   }).join('');
   _answersDirty = false;
-  updateAnswerCounts();
   renderAnswerCard();
   icons();
 }
@@ -2624,21 +2623,9 @@ function countAnswers(){
   });
   return n;
 }
-function countGuides(){
-  var n = 0;
-  QUESTIONS.forEach(function(q){
-    var ta = document.getElementById('gd-' + q.no);
-    if (ta && ta.value.trim()) n++;
-  });
-  return n;
-}
-function updateAnswerCounts(){
-  var text = wsDone() ? ('답안 ' + countAnswers() + '개 · 채점 가이드 ' + countGuides() + '개') : '';
-  document.getElementById('answer-screen-count').textContent = text;
-}
-function onAnswerInput(){ _answersDirty = true; updateAnswerCounts(); renderToc(); }
+function onAnswerInput(){ _answersDirty = true; renderToc(); }
 function openAnswers(){
-  if (!wsDone()){ showToast('error','활동지 문항을 먼저 나눠 주세요.'); return; }
+  if (!wsDone()){ showToast('error','빈 활동지를 먼저 올려 주세요.'); return; }
   S.case = 'answer';
   _answersDirty = false;
   showScreen('answer');
@@ -2650,7 +2637,7 @@ function closeAnswers(){
     '입력한 답안과 채점 가이드가 <strong>저장되지 않습니다.</strong>',
     '저장하지 않고 나가기', function(){ _answersDirty = false; renderAnswers(); backToDetail('sec-answer'); });
 }
-function saveAnswers(){ _answersDirty = false; renderToc(); showToast('success','답안과 채점 가이드를 저장했어요.'); backToDetail('sec-answer'); }
+function saveAnswers(){ _answersDirty = false; renderToc(); showToast('success','저장했어요.'); backToDetail('sec-answer'); }
 
 /* ══════════════════════════════════════════════════════════
    목차 · 스크롤 스파이
@@ -2737,11 +2724,11 @@ var MP_MAIN = [
   { cap:'평가 설계 상세' },
   { k:'new',         label:'새로 만들기',            sub:'채점기준 0개 · AI 생성 카드' },
   { k:'ready',       label:'채점기준 입력 완료',      sub:'활동지 전 · 진단 잠김' },
-  { k:'ws-done',     label:'활동지 문항까지 완료',     sub:'진단·모범답안 열림' },
+  { k:'ws-done',     label:'빈 활동지 등록까지 완료',  sub:'진단·모범답안 열림' },
   { k:'locked-stale',  label:'잠금 + 채점기준 변경', sub:'지난 진단 결과 · 재진단 불가' },
   { k:'locked',      label:'과제물 인식 후',          sub:'문항만 잠김 · 채점기준 자유' },
   { k:'scored',      label:'AI 채점 실행 후',         sub:'배점·삭제·세트 교체 잠김' },
-  { cap:'활동지 문항 화면' },
+  { cap:'빈 활동지 등록 화면' },
   { k:'upload',      label:'빈 활동지 업로드',        sub:'파일 올린 상태' },
   { k:'mask',        label:'빈 활동지와 가릴 영역',    sub:'그리기 · 옮기기 · 크기 조절' },
   { k:'structure',   label:'문항 구조 확인',          sub:'문항 4개 · 지시문 수정' },
@@ -2749,10 +2736,10 @@ var MP_MAIN = [
   { cap:'적합성 진단 화면' },
   { k:'linking',     label:'채점기준 연결',           sub:'AI 맵핑 결과 확인·수정' },
   { k:'diagnosing',  label:'진단 중',                sub:'적합도 살펴보는 중' },
-  { k:'result',      label:'보완 필요(세트 제안)',     sub:'현재 ↔ AI 제안 비교' },
+  { k:'result',      label:'보완 권장(세트 제안)',     sub:'현재 ↔ AI 제안 비교' },
   { k:'result-ok',   label:'양호',                   sub:'제안 없음' },
   { cap:'모범답안 화면' },
-  { k:'answer',      label:'답안과 채점 가이드',      sub:'답변 유형 · 인정 답안 · 가이드' }
+  { k:'answer',      label:'채점 가이드·모범답안',    sub:'채점 가이드 · 모범답안 · 인정 답안' }
 ];
 function renderMockpick(){
   var items = (S.screen === 'list') ? MP_LIST : MP_MAIN;
