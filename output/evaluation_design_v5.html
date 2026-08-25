@@ -172,9 +172,9 @@ body { margin: 0; background: #EDF1FC; min-width: 1280px; }
 .s4-exchk.on .box { background:#7E44FB; border-color:#7E44FB; }
 .s4-exchk span.t { font-size:14px; font-weight:700; color:#333; white-space:nowrap; }
 .s4-guide textarea { width:100%; min-height:60px; border:1px solid #D9D9D9; border-radius:8px; padding:10px 12px;
-                     font-size:16px; font-family:inherit; resize:vertical; outline:none; color:#333; line-height:1.55; box-sizing:border-box; }
+                     font-size:16px; font-family:inherit; resize:none; overflow:hidden; outline:none; color:#333; line-height:1.55; box-sizing:border-box; }
 .s4-guide textarea:focus { border-color:#7E44FB; }
-.s4-model textarea { width:100%; min-height:72px; border:1px solid #D9D9D9; border-radius:8px; padding:10px 12px; font-size:16px; font-family:inherit; resize:vertical; outline:none; color:#333; line-height:1.55; box-sizing:border-box; }
+.s4-model textarea { width:100%; min-height:72px; border:1px solid #D9D9D9; border-radius:8px; padding:10px 12px; font-size:16px; font-family:inherit; resize:none; overflow:hidden; outline:none; color:#333; line-height:1.55; box-sizing:border-box; }
 
 /* 누적 카드 — 앞 카드를 끝내면 다음 카드가 아래에 나타난다(단계 바 없음) */
 .stage-card { border:1px solid #E6E6E6; border-radius:12px; padding:20px 22px; margin-bottom:16px; background:#fff; }
@@ -182,7 +182,6 @@ body { margin: 0; background: #EDF1FC; min-width: 1280px; }
 .stage-head { display:flex; align-items:center; gap:10px; margin-bottom:8px; }
 .stage-num { width:26px; height:26px; border-radius:50%; background:#7E44FB; color:#fff; font-size:13px; font-weight:800;
              display:flex; align-items:center; justify-content:center; flex-shrink:0; }
-.stage-num.done { background:#00AF3D; }
 .stage-title { font-size:18px; font-weight:800; color:#341761; }
 .stage-sum { font-size:14px; color:#808080; font-weight:700; margin-left:auto; }
 /* 완료한 단은 머리만 남기고 접는다 — 단이 늘어도 화면이 길어지지 않게 */
@@ -205,9 +204,15 @@ body { margin: 0; background: #EDF1FC; min-width: 1280px; }
 
 /* 개인정보 가림 영역 — 활동지 위에 사각형을 직접 그려 지정 */
 .ws-page-wrap { display:flex; justify-content:center; }
-.ws-page { position:relative; width:100%; max-width:620px; aspect-ratio:1/1.32; background:#fff;
+.ws-page { position:relative; width:100%; max-width:620px; aspect-ratio:1/0.79; background:#fff;
+           /* 보기 모드는 내용 끝까지만 잘라 보여주고, 편집 모드는 원본 전체를 펼친다 */
            border:1px solid #D9D9D9; border-radius:8px; overflow:hidden; user-select:none; }
-.ws-page.editable { cursor:crosshair; }
+.ws-page.editable { cursor:crosshair; aspect-ratio:1/1.32; }
+.ws-page.clickable { cursor:pointer; }
+.ws-page.clickable:hover { border-color:#7E44FB; box-shadow:0 0 0 3px rgba(126,68,251,.15); }
+.ws-page.clickable:hover::after { content:'클릭해서 가림 영역 수정'; position:absolute; left:50%; top:50%; transform:translate(-50%,-50%);
+                                  background:rgba(52,23,97,.85); color:#fff; font-size:14px; font-weight:700;
+                                  padding:10px 16px; border-radius:999px; pointer-events:none; z-index:5; white-space:nowrap; }
 .ws-paper { position:absolute; inset:0; padding:26px 30px; pointer-events:none; }
 .ws-id-row { display:flex; gap:14px; font-size:12px; color:#333; margin-bottom:14px; }
 .ws-id-row span { border-bottom:1px solid #B3B3B3; min-width:52px; display:inline-block; }
@@ -449,7 +454,7 @@ body { margin: 0; background: #EDF1FC; min-width: 1280px; }
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;">
           <div>
             <h2 style="font-size:20px;font-weight:800;color:#000;margin:0 0 4px;">평가 설계</h2>
-            <p style="font-size:14px;color:#494949;margin:0;font-weight:400;line-height:1.55;">위에서부터 차례로 채워 주세요. 빈 활동지 등록·진단·채점 가이드는 선택이라 넣지 않아도 저장할 수 있어요.</p>
+            <p style="font-size:14px;color:#494949;margin:0;font-weight:400;line-height:1.55;">어떤 기준으로 채점할지 설계하는 화면이에요. 빈 활동지 등록·진단·채점 가이드까지 더하면 AI 채점이 더 정확해져요.</p>
           </div>
         </div>
 
@@ -685,7 +690,7 @@ body { margin: 0; background: #EDF1FC; min-width: 1280px; }
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;">
           <div>
             <h2 style="font-size:20px;font-weight:800;color:#000;margin:0 0 4px;">빈 활동지 등록</h2>
-            <p style="font-size:14px;color:#494949;margin:0;font-weight:400;line-height:1.55;">문항만 인쇄된 빈 활동지를 올려 주세요. AI가 문항을 나눠 드리면, 그 문항으로 채점기준을 연결하고 모범답안을 넣을 수 있어요.</p>
+            <p style="font-size:14px;color:#494949;margin:0;font-weight:400;line-height:1.55;">문항만 인쇄된 빈 활동지를 올려 주세요. AI가 활동지의 문항 구조를 익혀 문항별 채점과 피드백이 더 정확해져요.</p>
           </div>
         </div>
 
@@ -698,8 +703,7 @@ body { margin: 0; background: #EDF1FC; min-width: 1280px; }
 
         <!-- 1단계: 빈 활동지 업로드 -->
         <div id="dg-s1" class="stage-card" style="display:none;"><div class="stage-head"><span class="stage-num" id="dg-s1-num">1</span><span class="stage-title">활동지 업로드</span><span class="stage-sum" id="ws-sum-1"></span></div>
-          <p class="sec-desc">학생이 작성하기 전, <strong>문항만 인쇄된 빈 활동지</strong>를 올려 주세요. 올리면 이름·학번이 적히는 칸을 바로 찾아 드려요.</p>
-          <input type="file" id="ws-file" accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/*" style="display:none;" onchange="onWsFile(this)">
+                    <input type="file" id="ws-file" accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/*" style="display:none;" onchange="onWsFile(this)">
           <div id="dz-empty" class="dropzone">
             <i data-lucide="file-up" style="width:34px;height:34px;color:#7E44FB;"></i>
             <p style="font-size:16px;font-weight:700;color:#341761;margin:0;">빈 활동지를 끌어다 놓거나 파일을 선택해 주세요</p>
@@ -730,17 +734,22 @@ body { margin: 0; background: #EDF1FC; min-width: 1280px; }
               <i data-lucide="triangle-alert" style="color:#E4631C;"></i>
               <div><strong>활동지에서 문항을 나누지 못했어요.</strong> 문항 번호가 보이지 않거나 손글씨·표로 되어 있으면 나누기 어려워요. 문항 구분이 명확한 파일로 바꿔 다시 분석해 주세요.<br>나누지 못해도 설계는 저장할 수 있어요. 이 경우 문항 구분 없이 채점기준 전체로 채점돼요.</div>
             </div>
-            <div id="mask-block" style="display:none;margin-top:18px;">
-              <div class="note note-info" id="mask-why" style="margin-bottom:14px;">
-                <i data-lucide="shield-check" style="color:#5890FF;"></i>
-                <div><strong>개인정보 보호를 위해 학생 이름과 학번은 가리고 채점해요. 표시된 칸이 맞는지 확인해 주세요.</strong> 가린 영역은 AI가 읽지 않고, 선생님 화면에는 그대로 보여요.</div>
+            <div id="mask-block" style="display:none;margin-top:20px;padding-top:20px;border-top:1px solid #F0F0F0;">
+              <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:4px;">
+                <div style="display:flex;align-items:center;gap:7px;">
+                  <i data-lucide="shield-check" style="width:18px;height:18px;color:#7E44FB;"></i>
+                  <h3 style="font-size:16px;font-weight:800;color:#341761;margin:0;">개인정보 보호</h3>
+                </div>
+                <button class="btn btn-ghost btn-sm" id="btn-mask-edit" onclick="startMaskEdit()" style="flex-shrink:0;"><i data-lucide="square-pen" style="width:15px;height:15px;color:#808080;"></i>가림 영역 수정</button>
               </div>
-              <p class="sec-desc" id="mask-desc"></p>
-              <div style="display:flex;justify-content:flex-end;margin-bottom:8px;">
+              <p class="sec-desc" style="margin-bottom:12px;">학생 이름·학번이 적히는 칸은 AI가 찾아 가리고 채점해요. 가린 곳은 AI가 읽지 않고, 선생님 화면에는 그대로 보여요.</p>
+              <p class="sec-desc" id="mask-desc" style="display:none;"></p>
+              <div id="mask-editbar" style="display:none;justify-content:flex-end;gap:8px;margin-bottom:8px;">
                 <button class="btn btn-ghost btn-sm" id="btn-mask-clear" onclick="clearMasks()"><i data-lucide="eraser" style="width:15px;height:15px;color:#808080;"></i>영역 모두 지우기</button>
+                <button class="btn btn-secondary btn-sm" onclick="endMaskEdit()"><i data-lucide="check" style="width:15px;height:15px;"></i>수정 완료</button>
               </div>
               <div class="ws-page-wrap">
-                <div id="ws-page" class="ws-page">
+                <div id="ws-page" class="ws-page" onclick="wsPageClick()">
                   <div class="ws-paper">
                     <div class="ws-id-row"><div>1학년 <span></span>반</div><div>번호: <span></span></div><div>이름: <span></span></div></div>
                     <p class="ws-doc-title">1학년 1학기 영어 서술형 수행평가 문장</p>
@@ -760,10 +769,7 @@ body { margin: 0; background: #EDF1FC; min-width: 1280px; }
 
         <!-- 2단: 문항 구조 확인 -->
         <div id="dg-s2" class="stage-card" style="display:none;"><div class="stage-head"><span class="stage-num" id="dg-s2-num">2</span><span class="stage-title">문항 구조 확인</span><span class="stage-sum" id="ws-sum-2"></span></div>
-          <div class="note note-info" style="margin-bottom:16px;">
-            <i data-lucide="scan-text" style="color:#5890FF;"></i>
-            <div id="dg-s2-intro"></div>
-          </div>
+          <p class="sec-desc" id="dg-s2-intro" style="margin-bottom:16px;"></p>
           <div id="dg-q-list" style="display:flex;flex-direction:column;gap:12px;margin-bottom:12px;"></div>
           <button class="btn btn-outline btn-sm" onclick="addQuestion()"><i data-lucide="plus" style="width:15px;height:15px;"></i>문항 추가</button>
           <div class="dg-navbar">
@@ -1018,7 +1024,8 @@ var S = {
   dg: 'idle',            // 적합성 진단: idle | link | load | result
   diagDone: false,       // 진단까지 마쳤는지
   worksheet: false,
-  masks: [],             // 개인정보 가림 영역 [{x,y,w,h}] — 활동지 대비 %      // 빈 활동지 파일을 올렸는지
+  masks: [],             // 개인정보 가림 영역 [{x,y,w,h}] — 활동지 대비 %
+  maskEdit: false,       // 가림 영역 편집 모드 — 기본은 보기 전용, 수정 버튼으로 진입
   diagResultKind: 'warn',// warn | ok
   setApplied: false,     // AI 채점기준 세트로 교체했는지
   relinked: false,       // 교체 후 AI가 다시 연결한 결과를 보는 중인지
@@ -1046,7 +1053,7 @@ var STD_SEED = [
             ['C','내용 조직이나 표현이 목적과 어긋나는 곳이 있음'],
             ['D','목적과 독자를 고려한 흔적을 찾기 어려움']] }
 ];
-var MASK_SEED = [{x:4.5,y:3.2,w:44,h:4.4}];
+var MASK_SEED = [{x:4.5,y:3.2,w:44,h:4.4}]; // 원본 페이지(1:1.32) 기준 %
 function blankStandard(){ return { code:'', text:'', custom:false, levels:[['',''],['',''],['','']] }; }
 var standards = [];
 
@@ -1246,7 +1253,7 @@ function openDetail(caseKey){
 function applyCase(k){
   // 기본값 초기화
   S.name = ''; S.stdFilled = false; S.rubricFilled = false;
-  S.ws = 'idle'; S.dg = 'idle'; S.worksheet = false; S.masks = [];
+  S.ws = 'idle'; S.dg = 'idle'; S.worksheet = false; S.masks = []; S.maskEdit = false;
   resetStageOpen(); S.diagResultKind = 'warn';
   S.applied = {}; S.setApplied = false; S.relinked = false; _draft = null; _draftFromAI = false; _draftEdited = false; S.answersOpen = false; S.answersFilled = false; S.locked = false; S.scored = false; S.marks = {};
   S.diagDone = false;
@@ -1270,7 +1277,7 @@ function applyCase(k){
     S.rubricFilled = true;
     standards = JSON.parse(JSON.stringify(STD_SEED));
   }
-  if (k === 'upload'){ S.ws = 'file'; S.worksheet = true; }
+  if (k === 'upload'){ S.ws = 'idle'; S.worksheet = false; } // 업로드 전 드롭존 — 올리면 곧장 가림 탐지라 '파일만 올린' 중간 상태는 없음
   if (k === 'mask'){ S.ws = 'mask'; S.worksheet = true; S.masks = JSON.parse(JSON.stringify(MASK_SEED)); }
   if (k === 'structure'){ S.ws = 'ready'; S.worksheet = true; S.masks = JSON.parse(JSON.stringify(MASK_SEED)); }
   if (k === 'qfail'){ S.ws = 'fail'; S.worksheet = true; }
@@ -1737,7 +1744,6 @@ function renderWorksheet(){
   document.getElementById('dz-empty').style.display = S.worksheet ? 'none' : 'flex';
   document.getElementById('ws-help-row').style.display = S.worksheet ? 'none' : 'block';
   document.getElementById('dz-filled').style.display = S.worksheet ? 'block' : 'none';
-  document.getElementById('dg-s1-num').classList.toggle('done', wsDone());
   if (!S.worksheet) document.getElementById('ws-sum-1').textContent = '';
   var fn = document.getElementById('ws-file-name');
   if (fn) fn.textContent = WS_FILE_NAME;
@@ -1765,7 +1771,6 @@ function renderDiagnosis(){
   applyStageCollapse('dg-s3', S.dg === 'result');
   applyStageCollapse('dg-s4', false);
 
-  document.getElementById('dg-s3-num').classList.toggle('done', S.dg === 'result');
   var linked = QUESTIONS.filter(function(q){ return q.links.length; }).length;
   document.getElementById('dg-sum-1').textContent = '문항 ' + QUESTIONS.length + '개 · 연결 ' + linked + '개';
   document.getElementById('dg-sum-2').textContent = S.diagDone ? overallVerdict().tag : '';
@@ -1970,26 +1975,40 @@ function renderMasks(){
       return '<tr><td class="n">' + (i+1) + '</td><td><div style="height:11px;"></div>' + esc(t) + '</td></tr>';
     }).join('');
   }
-  var editable = !S.locked;
+  var editable = !S.locked && S.maskEdit;
   var page = document.getElementById('ws-page');
   page.classList.toggle('editable', editable);
+  page.classList.toggle('clickable', !S.locked && !S.maskEdit);
+  var K = editable ? 1 : (1.32 / 0.79); // 좌표는 원본 기준 — 잘린 미리보기에서만 세로 확대 환산
   document.getElementById('mask-layer').innerHTML = S.masks.map(function(m, i){
     var handles = editable
       ? ['nw','ne','sw','se'].map(function(c){ return '<span class="mb-h ' + c + '" data-c="' + c + '"></span>'; }).join('')
         + '<span class="mb-del" onclick="event.stopPropagation();removeMask(' + i + ')"><i data-lucide="x" style="width:12px;height:12px;"></i></span>'
       : '';
-    return '<div class="mask-box" data-i="' + i + '" style="left:' + m.x + '%;top:' + m.y + '%;width:' + m.w + '%;height:' + m.h + '%;">'
+    return '<div class="mask-box" data-i="' + i + '" style="left:' + m.x + '%;top:' + (m.y * K) + '%;width:' + m.w + '%;height:' + (m.h * K) + '%;">'
       + handles + '</div>';
   }).join('');
-  document.getElementById('mask-desc').innerHTML = S.locked
-    ? '과제물 인식이 시작되어 가릴 영역을 바꿀 수 없어요. 확인만 할 수 있어요.'
-    : 'AI가 이름·학번이 적히는 칸을 찾아 표시해 두었어요. <strong>빈 곳을 끌면 영역을 새로 그리고, 영역을 끌면 옮기고, 모서리를 끌면 크기를 바꿀 수 있어요.</strong> 잘못 잡힌 곳은 × 로 지워 주세요.';
+  var desc = document.getElementById('mask-desc');
+  if (S.locked){
+    desc.style.display = 'block';
+    desc.innerHTML = '과제물 인식이 시작되어 가릴 영역을 바꿀 수 없어요. 확인만 할 수 있어요.';
+  } else if (S.maskEdit){
+    desc.style.display = 'block';
+    desc.innerHTML = '<strong>빈 곳을 끌면 영역을 새로 그리고, 영역을 끌면 옮기고, 모서리를 끌면 크기를 바꿀 수 있어요.</strong> 잘못 잡힌 곳은 × 로 지워 주세요.';
+  } else {
+    desc.style.display = 'none';
+  }
+  document.getElementById('btn-mask-edit').style.display = (!S.locked && !S.maskEdit) ? 'inline-flex' : 'none';
+  document.getElementById('mask-editbar').style.display = editable ? 'flex' : 'none';
   var cb = document.getElementById('btn-mask-clear');
   cb.style.display = (editable && S.masks.length) ? 'inline-flex' : 'none';
   document.getElementById('ws-sum-1').textContent = WS_FILE_NAME + (S.masks.length ? ' · 가릴 영역 ' + S.masks.length + '개' : ' · 가릴 영역 없음');
   document.getElementById('btn-mask-label').textContent = wsDone() ? '문항 다시 분석' : '저장하고 문항 분석';
   icons();
 }
+function wsPageClick(){ if (!S.locked && !S.maskEdit) startMaskEdit(); }
+function startMaskEdit(){ S.maskEdit = true; renderMasks(); }
+function endMaskEdit(){ S.maskEdit = false; renderMasks(); }
 function removeMask(i){ S.masks.splice(i, 1); renderMasks(); renderWsCard(); }
 function clearMasks(){
   if (!S.masks.length) return;
@@ -1999,6 +2018,7 @@ function clearMasks(){
 }
 function saveMasks(){
   if (S.locked){ showToast('error','과제물 인식이 시작되어 바꿀 수 없어요.'); return; }
+  S.maskEdit = false;
   if (wsDone()){ analyzeStructure(); return; }
   runWsLoad2();
 }
@@ -2124,7 +2144,7 @@ document.addEventListener('click', function(){
 });
 
 function renderQuestionList(){
-  document.getElementById('dg-s2-intro').innerHTML = '<strong>AI가 활동지를 문항 ' + QUESTIONS.length + '개로 나눴어요. 실제 활동지와 같은지 확인해 주세요.</strong> 문항 번호와 내용을 직접 수정할 수 있고, 순서 변경(↑↓)·삭제·문항 추가도 할 수 있어요.';
+  document.getElementById('dg-s2-intro').innerHTML = 'AI가 활동지를 문항 단위로 나눴어요. 실제 활동지와 같은지 확인하고, 다르면 직접 고쳐 주세요.';
   document.getElementById('dg-q-list').innerHTML = QUESTIONS.map(function(q, i){
     return '<div class="q-row" data-qi="' + i + '" style="border:1px solid #E6E6E6;border-radius:12px;overflow:hidden;background:white;">'
       + '<div style="display:flex;align-items:center;gap:6px;padding:10px 10px 10px 12px;background:#FBFBFC;border-bottom:1px solid #F0F0F0;">'
@@ -2507,7 +2527,7 @@ var _answersDirty = false;
    AI 초안 생성은 제품에 없는 기능이라 두지 않는다. */
 function ansRowHtml(){
   return '<div class="s4-ans-row" style="display:flex;gap:8px;align-items:center;">'
-    + '<input class="s4-ans-input" placeholder="인정할 답안을 입력해 주세요" oninput="onAnswerInput()">'
+    + '<input class="s4-ans-input" placeholder="인정할 답안을 입력해 주세요" oninput="onAnswerInput(event)">'
     + '<button class="s4-sum-btn" title="수식 입력" onclick="openFormulaTip()"><span style="font-size:15px;">&#8721;</span> 수식</button>'
     + '<button class="s4-del-btn" title="답안 삭제" onclick="s4DelAnswer(this)"><i data-lucide="trash-2" style="width:15px;height:15px;"></i></button>'
     + '</div>';
@@ -2529,7 +2549,7 @@ function renderAnswers(){
       +       '<span class="s4-lab-d">이 문항을 어떻게 채점할지 적어 두면 AI가 그대로 따릅니다</span>'
       +       '<button class="s4-sum-btn" title="수식 입력" onclick="openFormulaTip()"><span style="font-size:15px;">&#8721;</span> 수식</button>'
       +     '</div>'
-      +     '<textarea id="gd-' + q.no + '" placeholder="예) 맞춤법은 보지 않고 내용만 채점해 주세요. / 단위를 쓰지 않으면 1점 깎아 주세요. / 풀이 과정이 있으면 답이 틀려도 부분 점수를 주세요." oninput="onAnswerInput()">' + esc(g) + '</textarea>'
+      +     '<textarea id="gd-' + q.no + '" placeholder="예) 맞춤법은 보지 않고 내용만 채점해 주세요. / 단위를 쓰지 않으면 1점 깎아 주세요. / 풀이 과정이 있으면 답이 틀려도 부분 점수를 주세요." oninput="onAnswerInput(event)">' + esc(g) + '</textarea>'
       +   '</div>'
       +   '<div class="s4-ansblock">'
       +     '<div class="s4-exact" style="display:none;flex-direction:column;gap:8px;">'
@@ -2546,12 +2566,13 @@ function renderAnswers(){
       +         '<span class="s4-lab-d">채점할 때 참고할 예시 답안이에요</span>'
       +         '<button class="s4-sum-btn" title="수식 입력" onclick="openFormulaTip()"><span style="font-size:15px;">&#8721;</span> 수식</button>'
       +       '</div>'
-      +       '<textarea id="ans-' + q.no + '" placeholder="모범답안을 입력해 주세요. (없으면 비워두셔도 됩니다)" oninput="onAnswerInput()">' + esc(v) + '</textarea>'
+      +       '<textarea id="ans-' + q.no + '" placeholder="모범답안을 입력해 주세요. (없으면 비워두셔도 됩니다)" oninput="onAnswerInput(event)">' + esc(v) + '</textarea>'
       +     '</div>'
       +   '</div>'
       + '</div></div>';
   }).join('');
   _answersDirty = false;
+  growAnswerFields();
   renderAnswerCard();
   icons();
 }
@@ -2623,7 +2644,21 @@ function countAnswers(){
   });
   return n;
 }
-function onAnswerInput(){ _answersDirty = true; renderToc(); }
+/* 내용이 길어지면 칸이 늘어난다 — 안에서 스크롤되면 적은 내용이 가려져 놓치기 쉽다 */
+function autoGrow(el){
+  if (!el) return;
+  el.style.height = 'auto';
+  el.style.height = el.scrollHeight + 'px';
+}
+function growAnswerFields(){
+  document.querySelectorAll('#answer-list .s4-guide textarea, #answer-list .s4-model textarea').forEach(autoGrow);
+}
+function onAnswerInput(e){
+  _answersDirty = true;
+  var t = (e && e.target) ? e.target : null;
+  if (t && t.tagName === 'TEXTAREA') autoGrow(t);
+  renderToc();
+}
 function openAnswers(){
   if (!wsDone()){ showToast('error','빈 활동지를 먼저 올려 주세요.'); return; }
   S.case = 'answer';
@@ -2729,7 +2764,7 @@ var MP_MAIN = [
   { k:'locked',      label:'과제물 인식 후',          sub:'문항만 잠김 · 채점기준 자유' },
   { k:'scored',      label:'AI 채점 실행 후',         sub:'배점·삭제·세트 교체 잠김' },
   { cap:'빈 활동지 등록 화면' },
-  { k:'upload',      label:'빈 활동지 업로드',        sub:'파일 올린 상태' },
+  { k:'upload',      label:'빈 활동지 업로드',        sub:'파일 올리기 전 · 드롭존' },
   { k:'mask',        label:'빈 활동지와 가릴 영역',    sub:'그리기 · 옮기기 · 크기 조절' },
   { k:'structure',   label:'문항 구조 확인',          sub:'문항 4개 · 지시문 수정' },
   { k:'qfail',       label:'문항 구분 실패',          sub:'다시 올리기 · 활동지 없이 저장' },
