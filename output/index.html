@@ -131,8 +131,8 @@
   <div class="wrap">
     <div class="h-flex">
       <div>
-        <h1>AI 서·논술형 평가 서비스 - 목업 화면 URL 인덱스</h1>
-        <p>개선 예정 화면을 미리 볼 수 있는 목업 모음입니다. 링크를 누르면 새 탭에서 화면이 열려요.<br>업데이트: 2026. 7. 15.</p>
+        <h1>AI 서·논술형 평가지원시스템 — 목업 화면 인덱스</h1>
+        <p>개선 예정 화면을 미리 볼 수 있는 목업 모음입니다. 버튼을 누르면 새 탭에서 화면이 열려요.<br>업데이트: 2026. 8. 25.</p>
       </div>
       <div class="slogan"><img src="../screens/slogan.jpg" alt="경기교육 대전환, 크게 제대로!"></div>
     </div>
@@ -144,8 +144,7 @@
   <div id="board"></div>
 
   <footer>
-    AI 서·논술형 평가지원시스템 목업 인덱스 · 로컬 미리보기 <code>http://localhost:3503/output/</code><br>
-    파일을 직접 열려면 각 카드의 파일명 버튼을 누르세요.
+    AI 서·논술형 평가지원시스템 · 목업 화면 인덱스
   </footer>
 </div>
 
@@ -155,7 +154,7 @@ const SECTIONS = [
   {
     title:'평가 홈 / 설문조사', color:'#7E44FB', note:'평가 홈 8/24 배포 완료',
     cards:[
-      { name:'평가 홈', file:'eval_home_v10.html', desc:'좌측 수업 정보·평가 대상 + 평가 현황 케이스 7종 (케이스=단계·상태 필터·완료 시각 무게 정리)<br><b>남은 것 — 채점 만족도 설문 (가안 포함, 문항 확정 후 갱신)</b>',
+      { name:'평가 홈', file:'eval_home_v10.html', desc:'수업 정보·평가 대상·평가 진행 상황을 한 화면에서 확인할 수 있도록 개편<br><b>채점 만족도 설문은 문항 확정 후 반영 예정 — 아래 설문 화면은 가안</b>',
         states:[
           {label:'평가홈', hash:'#filled', def:true},
           {label:'설문 유도 노출', hash:'#survey-home'},
@@ -178,28 +177,28 @@ const SECTIONS = [
           {label:'정확도 낮음', hash:'#case=ocrLow'},
           {label:'인식 실패', hash:'#case=ocrFail'},
           {label:'문항 제외', hash:'#case=ocrExclude', tip:'사용자가 원할 경우 AI 채점에서 제외할 문항 선택 가능'},
-          {label:'레거시 미인식', hash:'#case=ocrLegacy', tip:'업데이트 전 업로드된 과제'},
+          {label:'업데이트 전 과제', hash:'#case=ocrLegacy', tip:'업데이트 이전에 업로드되어 인식 결과가 없는 과제'},
         ]}},
-      { name:'AI 채점', file:'task_ocr_review_v1.html', desc:'AI 채점 실행 전 과제물 인식 여부 확인, OCR 인식 결과 확인이 필요한 학생의 과제물이 확인되지 않은 경우 재안내<br><b>학생 채점 상세 화면에서 OCR 인식 결과 표시</b> (단, 과제물 인식 결과 수정은 과제물 관리에서 진행, 채점 화면에서 제공하지 않음)',
+      { name:'AI 채점', file:'task_ocr_review_v1.html', desc:'AI 채점 실행 전 과제물 인식 여부를 확인하고, 확인이 필요한 과제물이 남아 있으면 다시 안내<br><b>학생 채점 상세 화면에 인식 결과 표시</b> (인식 결과 수정은 과제물 관리에서만 가능)',
         states:[],
         subs:[
           { label:'AI 채점 실행', states:[
-            {label:'OCR 미인식', file:'scoring_list_v1.html', query:'?run=first'},
+            {label:'인식 미진행', file:'scoring_list_v1.html', query:'?run=first'},
             {label:'확인 필요 과제물 미확인', file:'scoring_list_v1.html', query:'?run=few'},
-            {label:'OCR 인식 완료(정상)', file:'scoring_list_v1.html', query:'?run=ok'},
+            {label:'인식 완료(정상)', file:'scoring_list_v1.html', query:'?run=ok'},
           ]},
           { label:'학생 채점 상세', states:[
             {label:'채점 진행', file:'scoring_student_v1.html', query:'?id=10101&name=김서윤'},
             {label:'확인 필요', file:'scoring_student_v1.html', query:'?id=10102&name=이준호'},
             {label:'정확도 낮음', file:'scoring_student_v1.html', query:'?id=10103&name=박지민'},
-            {label:'OCR 미진행', file:'scoring_student_v1.html', query:'?id=10105&name=정현우'},
-            {label:'OCR 인식 실패', file:'scoring_student_v1.html', query:'?id=10106&name=한가람'},
+            {label:'인식 미진행', file:'scoring_student_v1.html', query:'?id=10105&name=정현우'},
+            {label:'인식 실패', file:'scoring_student_v1.html', query:'?id=10106&name=한가람'},
             {label:'재채점 필요', file:'scoring_student_v1.html', query:'?id=10101&name=김서윤&rescore=1'},
             {label:'업데이트 전 과제', file:'scoring_student_v1.html', query:'?id=10109&name=임도윤'},
             {label:'문항 직접 채점', file:'scoring_student_v1.html', query:'?id=10101&name=김서윤&exclude=1'},
           ]},
         ]},
-      { name:'백오피스(관리자 기능) : 과제물 인식 검수', file:'backoffice_v1.html', desc:'<b>개인정보 비식별화를 포함한</b> 과제물 인식 결과를 평가, 과제물 단위로 모니터링하여 인식 정확도 개선 및 관련 CS 대응에 활용',
+      { name:'백오피스(관리자 기능) : 과제물 인식 검수', file:'backoffice_v1.html', desc:'<b>개인정보 비식별화를 포함한</b> 과제물 인식 결과를 과제물 단위로 모니터링 — 인식 정확도 개선과 문의 대응에 활용',
         states:[
           {label:'검수 목록', hash:'#recognition-review', def:true},
           {label:'과제 상세', hash:'#recognition-review/task'},
@@ -239,7 +238,7 @@ const SECTIONS = [
   {
     title:'평가 리포트 개선', color:'#00AF3D', note:'10월',
     cards:[
-      { name:'평가 리포트', file:'report_v2.html', desc:'VOC 반영. 리포트 출력 기능 추가 및 디자인 개선',
+      { name:'평가 리포트', file:'report_v2.html', desc:'현장 의견을 반영해 리포트 출력(인쇄) 기능 추가 및 디자인 개선',
         states:[
           {label:'평가 리포트', file:'report_v2.html', query:'', def:true},
         ]},
