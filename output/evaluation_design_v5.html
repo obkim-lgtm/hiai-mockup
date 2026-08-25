@@ -845,13 +845,6 @@ body { margin: 0; background: #EDF1FC; min-width: 1280px; }
           </div>
           <div id="dg-overall" style="margin-bottom:22px;"></div>
 
-          <!-- 문항별 연결과 진단 -->
-          <div id="dg-qfit" style="margin-bottom:26px;">
-            <h4 style="font-size:16px;font-weight:800;color:#341761;margin:0 0 4px;">문항별 연결과 진단</h4>
-            <p class="sec-desc" style="margin-bottom:12px;">AI가 문항마다 볼 채점기준을 연결하고 문항 단위로 살펴봤어요. 문항을 누르면 연결된 기준을 보고 바로 고칠 수 있어요.</p>
-            <div id="dg-qfit-list" style="display:flex;flex-direction:column;gap:10px;"></div>
-          </div>
-
           <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:6px;">
             <h4 id="dg-draft-title" style="font-size:16px;font-weight:800;color:#341761;margin:0;">AI 제안 채점기준</h4>
             <span id="dg-draft-meta" style="font-size:14px;color:#808080;font-weight:700;"></span>
@@ -874,6 +867,18 @@ body { margin: 0; background: #EDF1FC; min-width: 1280px; }
               <p style="font-size:14px;color:#5B4B7A;margin:0;line-height:1.6;">기존 채점기준을 이 내용으로 교체해 저장하고, AI가 새 기준으로 문항 연결과 진단을 다시 해 드려요.</p>
             </div>
             <button class="btn btn-primary btn-lg" onclick="applyDraft()"><i data-lucide="wand-sparkles" style="width:18px;height:18px;"></i>채점기준 바꾸고 다시 연결</button>
+          </div>
+
+          <!-- 문항별 연결 확인 — 도달점은 채점기준, 연결은 그 기준이 문항에 어떻게 적용되는지 보는 보조 뷰 -->
+          <div id="dg-qfit" style="margin-top:26px;">
+            <h4 style="font-size:16px;font-weight:800;color:#341761;margin:0 0 4px;">문항별 연결 확인</h4>
+            <p class="sec-desc" style="margin-bottom:12px;">문항마다 어떤 채점기준을 볼지 AI가 연결해 뒀어요. 문항을 누르면 확인하고 고칠 수 있어요.</p>
+            <div id="dg-qfit-gate" class="note note-info" style="display:none;margin-bottom:12px;align-items:center;">
+              <i data-lucide="info" style="color:#5890FF;margin-top:0;"></i>
+              <div style="flex:1;">채점기준이 바뀌면 연결도 다시 만들어져요. <strong>위에서 채점기준을 먼저 정하면</strong> 연결을 고칠 수 있어요.</div>
+              <button class="btn btn-ghost btn-sm" style="flex-shrink:0;" onclick="keepCurrentSet()">현재 채점기준 그대로 쓰기</button>
+            </div>
+            <div id="dg-qfit-list" style="display:flex;flex-direction:column;gap:10px;"></div>
           </div>
 
           <div class="dg-navbar">
@@ -1001,6 +1006,7 @@ var S = {
   masks: [],             // 개인정보 가림 영역 [{x,y,w,h}] — 활동지 대비 %
   maskEdit: false,       // 가림 영역 편집 모드 — 기본은 보기 전용, 수정 버튼으로 진입
   linksEdited: false,    // 진단 후 문항 연결을 직접 고쳤는지 — 세트 교체 시 덮어쓰기 경고용
+  setKept: false,        // 제안을 받지 않고 현재 채점기준으로 가기로 했는지 — 연결 수정 잠금 해제 조건
   diagResultKind: 'warn',// warn | ok
   setApplied: false,     // AI 채점기준 세트로 교체했는지
   relinked: false,       // 교체 후 AI가 다시 연결한 결과를 보는 중인지
@@ -1235,7 +1241,7 @@ function openDetail(caseKey){
 function applyCase(k){
   // 기본값 초기화
   S.name = ''; S.stdFilled = false; S.rubricFilled = false;
-  S.ws = 'idle'; S.dg = 'idle'; S.worksheet = false; S.masks = []; S.maskEdit = false; S.linksEdited = false;
+  S.ws = 'idle'; S.dg = 'idle'; S.worksheet = false; S.masks = []; S.maskEdit = false; S.linksEdited = false; S.setKept = false;
   resetStageOpen(); S.diagResultKind = 'warn';
   S.applied = {}; S.setApplied = false; S.relinked = false; _draft = null; _draftFromAI = false; _draftEdited = false; S.answersOpen = false; S.answersFilled = false; S.locked = false; S.scored = false; S.marks = {};
   S.diagDone = false;
@@ -2168,8 +2174,18 @@ function qFitTitles(q){
       + '<span style="font-size:14px;color:#494949;line-height:1.55;">' + esc(r.title) + '</span></div>';
   }).join('');
 }
+/* 세트가 미확정(제안이 떠 있고 교체도 유지 선택도 안 함)이면 연결 수정을 잠근다.
+   기준을 정하기 전의 연결 수정은 교체 시 AI 재연결로 덮여 헛수고가 되기 때문. */
+function setUndecided(){ return hasSuggestion() && !S.setApplied && !S.setKept; }
+function keepCurrentSet(){
+  S.setKept = true;
+  showToast('success','현재 채점기준을 그대로 써요. 이제 문항 연결을 고칠 수 있어요.');
+  renderDiagnosis();
+}
 function renderQFit(){
   var el = document.getElementById('dg-qfit-list'); if (!el) return;
+  var gate = document.getElementById('dg-qfit-gate');
+  if (gate) gate.style.display = (setUndecided() && !S.scored) ? 'flex' : 'none';
   el.innerHTML = QUESTIONS.map(function(q){
     var v = qVerdict(q);
     var open = (_qOpen === q.no || _qEdit === q.no);
@@ -2186,7 +2202,7 @@ function renderQFit(){
       if (_qEdit === q.no){
         body = '<div style="padding:0 16px 16px;border-top:1px solid #F5F5F5;">' + qFitEditBody(q) + '</div>';
       } else {
-        var editBtn = S.scored ? '' :
+        var editBtn = (S.scored || setUndecided()) ? '' :
           '<button class="btn btn-ghost btn-sm" style="flex-shrink:0;" onclick="event.stopPropagation();qFitEdit(' + q.no + ')"><i data-lucide="square-pen" style="width:14px;height:14px;color:#808080;"></i>연결 수정</button>';
         var noteHtml = v.note
           ? '<p style="font-size:14px;color:#9A5B00;margin:10px 0 0;line-height:1.6;">' + v.note + '</p>'
@@ -2245,6 +2261,7 @@ function qFitEditBody(q){
 }
 function qFitEdit(no){
   if (S.scored){ showToast('error','AI 채점이 실행되어 연결을 바꿀 수 없어요.'); return; }
+  if (setUndecided()){ showToast('error','채점기준을 먼저 확정해 주세요.'); return; }
   var q = QUESTIONS.find(function(x){ return x.no === no; });
   _qEdit = no; _qOpen = no; _qBackup = q.links.slice();
   renderQFit();
