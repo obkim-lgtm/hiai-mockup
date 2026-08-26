@@ -406,6 +406,19 @@ body { margin: 0; background: #EDF1FC; min-width: 1280px; }
           <button class="btn btn-primary" style="margin-top:6px;" onclick="openDetail('new')"><i data-lucide="plus" style="width:20px;height:20px;"></i>설계 추가</button>
         </div>
 
+        <div id="saved-banner" style="display:none;border:1px solid #E3D7FF;background:#F8F5FF;border-radius:14px;padding:18px 20px;margin-bottom:18px;">
+          <div style="display:flex;align-items:flex-start;gap:12px;">
+            <i data-lucide="wand-sparkles" style="width:20px;height:20px;color:#7E44FB;flex-shrink:0;margin-top:2px;"></i>
+            <div style="flex:1;min-width:0;">
+              <p style="font-size:16px;font-weight:800;color:#341761;margin:0 0 4px;" id="saved-banner-title">채점 전에 AI 채점 결과를 미리 볼 수 있어요</p>
+              <p style="font-size:14px;color:#5B4B7A;margin:0;line-height:1.6;" id="saved-banner-desc">방금 저장한 채점기준으로 학생 답안 한 장을 채점해 봐요. 마음에 들지 않으면 다듬어 다시 채점할 수 있어요.</p>
+            </div>
+            <button class="btn btn-primary" style="flex-shrink:0;" onclick="openPreview('list')"><i data-lucide="play" style="width:18px;height:18px;"></i>AI 채점 미리보기</button>
+            <button onclick="hideSavedBanner()" style="width:28px;height:28px;border:none;background:transparent;border-radius:6px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;">
+              <i data-lucide="x" style="width:16px;height:16px;color:#8AA795;"></i>
+            </button>
+          </div>
+
         <!-- 카드 목록 -->
         <div id="list-cards" style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;"></div>
 
@@ -622,18 +635,6 @@ body { margin: 0; background: #EDF1FC; min-width: 1280px; }
 
         </div><!-- /grp-adv -->
 
-        <div id="saved-banner" style="display:none;border:1px solid #C9E7D3;background:#F4FBF6;border-radius:14px;padding:18px 20px;margin-top:18px;">
-          <div style="display:flex;align-items:flex-start;gap:12px;">
-            <i data-lucide="circle-check-big" style="width:20px;height:20px;color:#00AF3D;flex-shrink:0;margin-top:2px;"></i>
-            <div style="flex:1;min-width:0;">
-              <p style="font-size:16px;font-weight:800;color:#1B6B39;margin:0 0 4px;" id="saved-banner-title">설계를 저장했어요</p>
-              <p style="font-size:14px;color:#3D6B4E;margin:0;line-height:1.6;" id="saved-banner-desc">학생 답안 한 장을 올려 보면 AI가 이 기준으로 어떻게 채점하는지 미리 볼 수 있어요.</p>
-            </div>
-            <button class="btn btn-primary" style="flex-shrink:0;" onclick="openPreview('detail')"><i data-lucide="play" style="width:18px;height:18px;"></i>AI 채점 미리보기</button>
-            <button onclick="hideSavedBanner()" style="width:28px;height:28px;border:none;background:transparent;border-radius:6px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;">
-              <i data-lucide="x" style="width:16px;height:16px;color:#8AA795;"></i>
-            </button>
-          </div>
         </div>
 
             <!-- 하단 버튼 -->
@@ -1356,6 +1357,7 @@ function goList(){
   S.listEmpty = false;
   showScreen('list');
   renderList();
+  renderSavedBanner();
   setHash('#list');
 }
 
@@ -2700,10 +2702,8 @@ function saveDesign(){
   if (!S.rubricFilled){ showToast('error','채점기준을 모두 입력해 주세요.'); scrollToSection('sec-rubric'); return; }
   Object.keys(S.marks).forEach(function(k){ S.marks[k] = false; });
   S.saved = true;
-  renderSavedBanner();
-  var b = document.getElementById('saved-banner');
-  if (b && b.style.display !== 'none') b.scrollIntoView({ behavior:'smooth', block:'center' });
   showToast('success','평가 설계를 저장했어요.');
+  goList();
 }
 
 /* ══════════════════════════════════════════════════════════
