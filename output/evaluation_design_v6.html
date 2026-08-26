@@ -1839,9 +1839,12 @@ function openPreview(){
   if (S.pv === 'result'){ renderPreview(); setHash('#case=preview'); return; }
   S.pv = 'idle'; renderPreview(); setHash('#case=pv-upload');
 }
+/* 다른 답안을 올리면 처음부터 새로 보는 것 — 시험 채점 상태와 직전 채점 안내는 여기서 끝난다 */
 function onPvFile(input){
   var f = input.files && input.files[0];
   if (f){ PV_FILE_NAME = f.name; input.value = ''; }
+  _pvRubrics = null;
+  S.pvTrial = false; S.pvRerun = false;
   runPvScore(false);
 }
 function runPvScore(isRerun){
