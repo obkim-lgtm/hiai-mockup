@@ -260,6 +260,15 @@ body { margin: 0; background: #EDF1FC; min-width: 1280px; }
 .pvx-radio { display:inline-flex; align-items:center; gap:6px; font-size:14px; font-weight:700; color:#494949; cursor:pointer; }
 .pvx-radio i { width:16px; height:16px; }
 
+/* 다듬기 화면 탭 */
+.tn-tabs { display:flex; border:1px solid #E6E6E6; border-radius:10px; overflow:hidden; margin-bottom:16px; }
+.tn-tabs button { flex:1; height:46px; border:none; background:#fff; cursor:pointer; font-family:inherit;
+                  display:inline-flex; align-items:center; justify-content:center; line-height:1; vertical-align:middle; gap:7px;
+                  font-size:15px; font-weight:700; color:#808080; }
+.tn-tabs button.on { background:#F3EDFF; color:#5B2EBE; }
+.tn-tabs .tn-cnt { font-size:12px; font-weight:700; color:#B3B3B3; }
+.tn-tabs button.on .tn-cnt { color:#7E44FB; }
+
 /* ①단 좌측 문항 목록 아이템 */
 .s3-q-item { display:flex; align-items:center; cursor:pointer; }
 .s3-q-item:hover { background:#F7F4FF; }
@@ -935,7 +944,14 @@ body { margin: 0; background: #EDF1FC; min-width: 1280px; }
           <div id="tn-stuck" style="display:flex;flex-direction:column;gap:10px;"></div>
         </div>
 
-        <!-- AI 제안 채점기준 (작업본) -->
+        <!-- 고칠 수 있는 두 축 — 채점기준 자체 / 문항에 무엇을 볼지 -->
+        <div class="tn-tabs">
+          <button id="tn-tab-rub"  onclick="tnTab('rub')"><i data-lucide="list-checks" style="width:16px;height:16px;"></i>채점기준<span class="tn-cnt" id="tn-cnt-rub"></span></button>
+          <button id="tn-tab-link" onclick="tnTab('link')"><i data-lucide="git-merge" style="width:16px;height:16px;"></i>문항 연결<span class="tn-cnt" id="tn-cnt-link"></span></button>
+        </div>
+
+        <!-- 탭 A: AI 제안 채점기준 (작업본) -->
+        <div id="tn-pane-rub">
         <div id="dg-lock-banner" class="note note-lock" style="display:none;margin-bottom:18px;">
           <i data-lucide="lock"></i>
           <div id="dg-lock-text"></div>
@@ -954,14 +970,35 @@ body { margin: 0; background: #EDF1FC; min-width: 1280px; }
           <button class="btn btn-ghost btn-sm" onclick="drToggleCur()"><i data-lucide="chevron-down" style="width:15px;height:15px;" id="dg-cur-caret"></i><span id="dg-cur-label">현재 채점기준 보기</span><span id="dg-cur-meta" style="color:#808080;font-weight:400;margin-left:6px;"></span></button>
           <div id="dg-cur-list" style="display:none;flex-direction:column;gap:10px;margin-top:10px;"></div>
         </div>
+        </div><!-- /tn-pane-rub -->
+
+        <!-- 탭 B: 문항 연결 — AI가 먼저 연결하고 교사가 문항별로 고친다 -->
+        <div id="tn-pane-link" style="display:none;">
+          <div class="note note-info" id="tn-relink-note" style="display:none;margin-bottom:16px;">
+            <i data-lucide="wand-sparkles" style="color:#5890FF;"></i>
+            <div><strong>채점기준을 고쳐서 문항 연결을 다시 만들었어요.</strong> AI가 새로 연결한 결과를 확인하고, 맞지 않으면 고쳐 주세요.</div>
+          </div>
+          <p class="sec-desc" style="margin-bottom:14px;">문항마다 볼 채점기준을 AI가 골라 뒀어요. 왼쪽에서 문항을 고르고, 맞지 않으면 체크를 바꿔 주세요.</p>
+          <div style="display:flex;gap:0;background:white;border-radius:16px;overflow:hidden;min-height:420px;border:1px solid #E6E6E6;">
+            <div style="width:220px;flex-shrink:0;border-right:1px solid #E6E6E6;display:flex;flex-direction:column;background:white;">
+              <div style="padding:12px 14px 8px;border-bottom:1px solid #EFEFEF;">
+                <span style="font-size:14px;font-weight:800;color:#808080;">문항 목록</span>
+              </div>
+              <div style="flex:1;overflow-y:auto;"><div id="tn-qlist"></div></div>
+            </div>
+            <div style="flex:1;display:flex;flex-direction:column;min-width:0;background:white;">
+              <div id="tn-qdetail" style="flex:1;overflow-y:auto;padding:24px;"></div>
+            </div>
+          </div>
+        </div>
 
         <!-- 저장이 아니라 '먼저 채점해 보기' — 확정은 결과를 본 뒤에 -->
         <div class="apply-band" id="dg-apply-band" style="margin-top:20px;">
           <div style="flex:1;min-width:260px;">
-            <p style="font-size:16px;font-weight:800;color:#341761;margin:0 0 6px;line-height:1.3;">이 기준으로 먼저 채점해 볼까요?</p>
-            <p style="font-size:14px;color:#5B4B7A;margin:0;line-height:1.6;">아직 저장하지 않아요. 같은 답안을 이 기준으로 채점해 보고, 결과가 마음에 들면 그때 바꾸면 돼요.</p>
+            <p style="font-size:16px;font-weight:800;color:#341761;margin:0 0 6px;line-height:1.3;">이 설정으로 먼저 채점해 볼까요?</p>
+            <p style="font-size:14px;color:#5B4B7A;margin:0;line-height:1.6;">아직 저장하지 않아요. 고친 채점기준과 문항 연결로 같은 답안을 채점해 보고, 결과가 마음에 들면 그때 바꾸면 돼요.</p>
           </div>
-          <button class="btn btn-primary btn-lg" style="flex-shrink:0;" onclick="tryDraft()"><i data-lucide="play" style="width:18px;height:18px;"></i>이 기준으로 채점해 보기</button>
+          <button class="btn btn-primary btn-lg" style="flex-shrink:0;" onclick="tryDraft()"><i data-lucide="play" style="width:18px;height:18px;"></i>이 설정으로 채점해 보기</button>
         </div>
 
         <div class="dg-navbar">
@@ -1322,7 +1359,7 @@ function applyCase(k){
   S.name = ''; S.stdFilled = false; S.rubricFilled = false;
   S.ws = 'idle'; S.dg = 'idle'; S.worksheet = false; S.linksEdited = false;
   resetStageOpen(); S.diagResultKind = 'warn';
-  S.saved = false; S.pv = 'idle'; S.pvRerun = false; S.pvTrial = false; _pvRubrics = null; S.applied = {}; S.setApplied = false; S.relinked = false; _draft = null; _draftFromAI = false; _draftEdited = false; S.answersOpen = false; S.answersFilled = false; S.locked = false; S.scored = false; S.marks = {};
+  S.saved = false; S.pv = 'idle'; S.pvRerun = false; S.pvTrial = false; _pvRubrics = null; _dLinks = null; _dLinkCur = null; _dRelinked = false; _tnTab = 'rub'; S.applied = {}; S.setApplied = false; S.relinked = false; _draft = null; _draftFromAI = false; _draftEdited = false; S.answersOpen = false; S.answersFilled = false; S.locked = false; S.scored = false; S.marks = {};
   S.diagDone = false;
   rubrics = JSON.parse(JSON.stringify(RUBRIC_SEED));
   standards = [blankStandard()];
@@ -1365,7 +1402,7 @@ function applyCase(k){
   var target = 'detail';
   if (k === 'upload' || k === 'structure') target = 'worksheet';
   if (k === 'preview' || k === 'pv-upload' || k === 'preview-after' || k === 'pv-trial') target = 'preview';
-  if (k === 'tune'){ target = 'diag'; if (!_draft) initDraft(); renderStuck(); renderFitCards(); }
+  if (k === 'tune'){ target = 'diag'; if (!_draft) initDraft(); renderStuck(); renderFitCards(); renderTune(); renderTune(); }
   if (k === 'answer') target = 'answer';
   renderDetail();
   renderPreview();
@@ -1961,11 +1998,125 @@ function renderPreview(){
   icons();
 }
 
-/* ── 채점기준 다듬기 ── */
+/* ── 채점기준 다듬기 ──
+   고칠 수 있는 축이 둘이다: 채점기준 자체(_draft) / 문항이 볼 기준(_dLinks).
+   둘 다 저장하지 않고, 검증은 '시험 채점 결과' 한 곳에서 한다. */
+var _tnTab = 'rub';
+var _dLinks = null;      // 작업본 기준 문항 연결 {문항no: [기준 index]}
+var _dLinkCur = null;    // 좌측에서 고른 문항
+var _dRelinked = false;  // 채점기준을 고쳐 연결을 다시 만들었는지
+
+/* 채점기준이 바뀌면 연결은 무효 — AI가 그 자리에서 다시 만든다(저장 전이라 부담이 없다) */
+function rebuildDraftLinks(){
+  var n = _draft ? _draft.length : 0;
+  _dLinks = {};
+  QUESTIONS.forEach(function(q, qi){
+    var picks = [];
+    for (var i = 0; i < n; i++){ if (i % QUESTIONS.length === qi) picks.push(i); }
+    if (!picks.length && n) picks = [Math.min(qi, n - 1)];
+    _dLinks[q.no] = picks;
+  });
+}
+function ensureDraftLinks(){ if (!_dLinks) rebuildDraftLinks(); }
+function tnTab(t){ _tnTab = t; renderTune(); }
+function tnPickQ(no){ _dLinkCur = no; renderTune(); }
+function tnToggleLink(qno, idx){
+  ensureDraftLinks();
+  var a = _dLinks[qno] || (_dLinks[qno] = []);
+  var i = a.indexOf(idx);
+  if (i === -1) a.push(idx); else a.splice(i, 1);
+  renderTune();
+}
+function tnSelectAll(on){
+  ensureDraftLinks();
+  _dLinks[_dLinkCur] = on ? _draft.map(function(_, i){ return i; }) : [];
+  renderTune();
+}
+
+function renderTune(){
+  if (!document.getElementById('tn-pane-link')) return;
+  if (!_draft) initDraft();
+  ensureDraftLinks();
+  if (_dLinkCur === null || !QUESTIONS.some(function(q){ return q.no === _dLinkCur; })){
+    _dLinkCur = QUESTIONS.length ? QUESTIONS[0].no : null;
+  }
+  document.getElementById('tn-tab-rub').classList.toggle('on', _tnTab === 'rub');
+  document.getElementById('tn-tab-link').classList.toggle('on', _tnTab === 'link');
+  document.getElementById('tn-pane-rub').style.display  = (_tnTab === 'rub')  ? 'block' : 'none';
+  document.getElementById('tn-pane-link').style.display = (_tnTab === 'link') ? 'block' : 'none';
+  document.getElementById('tn-cnt-rub').textContent  = _draft.length + '개';
+  var un = QUESTIONS.filter(function(q){ return !(_dLinks[q.no] || []).length; }).length;
+  document.getElementById('tn-cnt-link').textContent = un ? ('미연결 ' + un) : (QUESTIONS.length + '개');
+  document.getElementById('tn-relink-note').style.display = _dRelinked ? 'flex' : 'none';
+
+  /* 좌: 문항 목록 */
+  document.getElementById('tn-qlist').innerHTML = QUESTIONS.map(function(q){
+    var cnt = (_dLinks[q.no] || []).length;
+    var badge = cnt
+      ? '<span style="flex-shrink:0;background:#F1F9F3;border-radius:100px;padding:2px 7px;font-size:12px;font-weight:700;color:#00AF3D;white-space:nowrap;margin-left:auto;">기준 ' + cnt + '개</span>'
+      : '<span style="flex-shrink:0;background:#FFF0EF;border:1px solid #F0C0C4;border-radius:100px;padding:2px 7px;font-size:12px;font-weight:700;color:#DB3E51;white-space:nowrap;margin-left:auto;">미연결</span>';
+    return '<div class="s3-q-item' + (q.no === _dLinkCur ? ' active' : '') + '" onclick="tnPickQ(' + q.no + ')" style="padding:11px 12px;border-bottom:1px solid #F5F5F5;">'
+      + '<span style="font-size:14px;font-weight:800;color:#333;">' + esc(q.label) + '</span>' + badge + '</div>';
+  }).join('');
+
+  /* 우: 선택 문항의 채점기준 체크 */
+  var q = QUESTIONS.filter(function(x){ return x.no === _dLinkCur; })[0];
+  var panel = document.getElementById('tn-qdetail');
+  if (!q){ panel.innerHTML = ''; }
+  else {
+    var picks = _dLinks[q.no] || [];
+    var why = _dRelinked
+      ? 'AI가 새 채점기준으로 다시 연결했어요. 이 문항이 묻는 것과 맞는지 확인해 주세요.'
+      : (q.aiReason || 'AI가 이 문항과 관련된 채점기준을 찾지 못했어요. 아래에서 직접 골라 주세요.');
+    panel.innerHTML = ''
+      + '<div style="margin-bottom:18px;">'
+      +   '<div style="font-size:14px;font-weight:700;color:#808080;margin-bottom:6px;">문항 ' + esc(q.label) + '</div>'
+      +   '<p style="font-size:17px;color:#222;margin:0;line-height:1.6;">' + esc(q.text) + '</p>'
+      + '</div>'
+      + '<div style="display:flex;gap:10px;align-items:flex-start;background:#FBFBFC;border:1px solid #F0F0F2;border-radius:8px;padding:14px 16px;margin-bottom:18px;">'
+      +   '<i data-lucide="wand-sparkles" style="width:15px;height:15px;color:#9B68F3;flex-shrink:0;margin-top:3px;"></i>'
+      +   '<div style="flex:1;font-size:14px;color:#494949;line-height:1.65;"><strong style="display:block;font-weight:700;margin-bottom:2px;">AI가 채점기준을 고른 이유</strong>' + esc(why) + '</div>'
+      + '</div>'
+      + '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">'
+      +   '<div style="display:flex;align-items:center;gap:10px;">'
+      +     '<button onclick="tnSelectAll(true)" style="display:inline-flex;align-items:center;justify-content:center;line-height:1;vertical-align:middle;border:none;background:transparent;padding:0;cursor:pointer;font-size:14px;font-weight:700;color:#7E44FB;font-family:inherit;">모두 선택</button>'
+      +     '<div style="width:1px;height:12px;background:#D9D9D9;"></div>'
+      +     '<button onclick="tnSelectAll(false)" style="display:inline-flex;align-items:center;justify-content:center;line-height:1;vertical-align:middle;border:none;background:transparent;padding:0;cursor:pointer;font-size:14px;font-weight:700;color:#808080;font-family:inherit;">모두 해제</button>'
+      +   '</div>'
+      +   '<span style="font-size:14px;color:#808080;font-weight:700;">' + picks.length + ' / ' + _draft.length + ' 선택</span>'
+      + '</div>'
+      + '<div style="display:flex;flex-direction:column;gap:6px;">'
+      + _draft.map(function(r, i){
+          var on = picks.indexOf(i) !== -1;
+          var max = Math.max.apply(null, r.rows.map(function(x){ var v = Number(x[0]); return isFinite(v) ? v : 0; }));
+          var box = on
+            ? 'width:18px;height:18px;border-radius:4px;background:#7E44FB;border:1.5px solid #7E44FB;display:flex;align-items:center;justify-content:center;flex-shrink:0;pointer-events:none;'
+            : 'width:18px;height:18px;border-radius:4px;background:white;border:1.5px solid #D9D9D9;display:flex;align-items:center;justify-content:center;flex-shrink:0;pointer-events:none;';
+          var inner = on ? '<svg width="11" height="11" viewBox="0 0 11 11" fill="none"><polyline points="1.5,5.5 4.5,8 9.5,2.5" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>' : '';
+          var lab = on
+            ? 'display:flex;align-items:center;gap:10px;padding:12px 14px;border:1.5px solid #7E44FB;border-radius:8px;background:#FAF8FF;cursor:pointer;'
+            : 'display:flex;align-items:center;gap:10px;padding:12px 14px;border:1px solid #E6E6E6;border-radius:8px;background:white;cursor:pointer;';
+          var txt = on ? 'font-size:14px;font-weight:700;color:#333;' : 'font-size:14px;color:#808080;';
+          return '<label onclick="tnToggleLink(' + q.no + ',' + i + ')" style="' + lab + '">'
+            + '<div style="' + box + '">' + inner + '</div>'
+            + '<div style="flex:1;"><span style="' + txt + '">' + esc(r.title || '(내용 없음)') + '</span>'
+            +   '<span style="font-size:14px;color:#808080;margin-left:6px;">' + max + '점</span></div>'
+            + '<span style="font-size:11px;font-weight:700;color:#7E44FB;background:#EDE7FF;border-radius:100px;padding:2px 7px;flex-shrink:0;">AI</span>'
+            + '</label>';
+        }).join('')
+      + '</div>'
+      + (picks.length ? '' :
+          '<div style="display:flex;align-items:flex-start;gap:7px;margin-top:14px;">'
+          + '<i data-lucide="info" style="width:14px;height:14px;color:#B3B3B3;flex-shrink:0;margin-top:3px;"></i>'
+          + '<span style="font-size:14px;color:#808080;line-height:1.6;">연결하지 않아도 괜찮아요. 이 경우 이 문항은 채점기준 전체로 채점돼요.</span></div>');
+  }
+  icons();
+}
+
 function openTune(){
   if (!_draft) initDraft();
   showScreen('diag');
-  renderStuck(); renderFitCards();
+  renderStuck(); renderFitCards(); renderTune(); renderTune();
   setHash('#case=tune');
   S.case = 'tune'; renderMockpick();
 }
@@ -1985,12 +2136,12 @@ function keepDraft(){
     '지금 채점기준을 <strong>방금 채점해 본 기준</strong>으로 바꿔 저장해요.<br>문항에 연결된 채점기준도 새 기준으로 다시 만들어 드려요.',
     '바꾸기', function(){
       rubrics = _pvRubrics.map(function(r, i){ return { id: 300 + i, title: r.title, rows: JSON.parse(JSON.stringify(r.rows)) }; });
-      QUESTIONS.forEach(function(q, i){
-        q.links = rubrics.filter(function(r, ri){ return (ri % QUESTIONS.length) === i || (ri === 0 && i === 0); }).map(function(r){ return r.id; });
-        if (!q.links.length) q.links = [rubrics[0].id];
+      QUESTIONS.forEach(function(q){
+        var picks = (_dLinks && _dLinks[q.no]) ? _dLinks[q.no] : [];
+        q.links = picks.map(function(i){ return rubrics[i] ? rubrics[i].id : null; }).filter(Boolean);
         q.aiPicks = q.links.slice();
       });
-      _pvRubrics = null; _draft = null; _draftFromAI = false; _draftEdited = false;
+      _pvRubrics = null; _draft = null; _draftFromAI = false; _draftEdited = false; _dLinks = null; _dRelinked = false;
       S.pvTrial = false; S.setApplied = true; S.pvRerun = true;
       renderRubrics(); renderScoreTable(); renderPreview(); renderMockpick();
       showToast('success','채점기준을 바꿨어요. 문항 연결도 새 기준으로 다시 만들었어요.');
@@ -2007,7 +2158,7 @@ function dropDraft(){
 function renderDiagnosis(){
   if (!document.getElementById('dg-draft-list')) return;
   if (!_draft) initDraft();
-  renderStuck(); renderFitCards();
+  renderStuck(); renderFitCards(); renderTune(); renderTune();
   renderWsCard(); renderAnswerCard();
   icons();
 }
@@ -2259,21 +2410,25 @@ function drSync(){
   });
 }
 function drInput(){ _draftEdited = true; drMetaBand(); }
+/* 기준 목록이 바뀌면 연결 대상이 달라지므로 AI가 다시 연결한다 */
+function draftSetChanged(){ _dRelinked = true; rebuildDraftLinks(); renderTune(); }
+/* 기준 목록이 바뀌면 연결 대상이 달라지므로 AI가 다시 연결한다 */
+function draftSetChanged(){ _dRelinked = true; rebuildDraftLinks(); renderTune(); }
 function drCopy(i){
   drSync(); if (!_draft || !_draft[i]) return; _draftEdited = true;
   var src = _draft[i];
   _draft.splice(i + 1, 0, { id: 900 + _draft.length, title: src.title, rows: JSON.parse(JSON.stringify(src.rows)) });
-  renderFitCards();
+  renderFitCards(); draftSetChanged();
 }
 function drAdd(){
   drSync(); _draftEdited = true;
   _draft.push({ id: Date.now ? (200 + _draft.length) : (200 + _draft.length), title:'', rows:[['',''],['',''],['','']] });
-  renderFitCards();
+  renderFitCards(); draftSetChanged();
 }
 function drDel(i){
   drSync(); if (!_draft || !_draft[i]) return; _draftEdited = true;
   _draft.splice(i, 1);
-  renderFitCards();
+  renderFitCards(); draftSetChanged();
 }
 function drAddRow(i){ drSync(); if (!_draft || !_draft[i]) return; _draftEdited = true; _draft[i].rows.push(['','']); renderFitCards(); }
 function drDelRow(i){
