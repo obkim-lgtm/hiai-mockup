@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="icon" href="../screens/favicon_src.png?v=2" type="image/png">
-<title>평가 설계 — AI 서·논술형 평가지원시스템 목업</title>
+<title>평가 설계 v5 (시안1) — AI 서·논술형 평가지원시스템 목업</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
 <style>
@@ -260,9 +260,15 @@ body { margin: 0; background: #EDF1FC; min-width: 1280px; }
 .dlg-foot { padding:8px 24px 16px; display:flex; justify-content:flex-end; gap:12px; }
 
 /* ── 까망이 목업 내비게이터 (시연용 · 실제 화면 아님) ── */
-#mockpick{position:fixed;left:24px;bottom:24px;z-index:3000;background:#1F2233;border-radius:14px;padding:8px;box-shadow:0 10px 30px rgba(0,0,0,.35);width:max-content;max-width:360px;cursor:move;user-select:none}
+#mockpick{position:fixed;left:24px;bottom:24px;z-index:3000;background:#1F2233;border-radius:14px;padding:8px;box-shadow:0 10px 30px rgba(0,0,0,.35);width:max-content;min-width:250px;max-width:360px;cursor:move;user-select:none}
 #mockpick .mp-head{font-size:11px;font-weight:800;color:#8A8FB0;letter-spacing:.04em;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:6px 8px;cursor:pointer}
 #mockpick .mp-body{display:flex;flex-direction:column;gap:6px;margin-top:6px;max-height:35vh;overflow-y:auto}
+#mockpick .mp-plan{display:flex;gap:4px;margin:2px 0 8px;background:#171A28;border-radius:9px;padding:3px}
+#mockpick .mp-plan button{flex:1;height:28px;border:none;border-radius:7px;background:transparent;color:#8A8FB0;font-family:inherit;font-size:11px;font-weight:800;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;line-height:1;vertical-align:middle}
+#mockpick .mp-plan button.on{background:#3A3F58;color:#fff}
+#mockpick .mp-tabs{display:flex;gap:4px;margin-bottom:6px}
+#mockpick .mp-tabs button{flex:1;height:26px;border:1px solid #3A3F58;border-radius:7px;background:transparent;color:#8A8FB0;font-family:inherit;font-size:11px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;line-height:1;vertical-align:middle}
+#mockpick .mp-tabs button.on{background:#7E44FB;border-color:#7E44FB;color:#fff}
 #mockpick .mp-cap{font-size:10px;font-weight:800;color:#6B6F8C;letter-spacing:.05em;padding:7px 8px 2px}
 #mockpick .mp-btn{width:100%;text-align:left;white-space:normal;padding:9px 12px;border-radius:9px;border:1px solid #3A3F58;background:#2A2E44;color:#C9CCE0;font-size:13px;font-weight:700;font-family:inherit;cursor:pointer;line-height:1.35}
 #mockpick .mp-btn:hover{background:#33384f}
@@ -928,7 +934,14 @@ body { margin: 0; background: #EDF1FC; min-width: 1280px; }
     <span>MOCKUP · 평가 설계</span>
     <span id="mp-caret">▾</span>
   </div>
-  <div class="mp-body" id="mp-body"></div>
+  <div class="mp-body" id="mp-body">
+    <div class="mp-plan">
+      <button id="mp-plan-1" onclick="mpPlan(1)">시안1 · 진단</button>
+      <button id="mp-plan-2" onclick="mpPlan(2)">시안2 · 미리보기</button>
+    </div>
+    <div class="mp-tabs" id="mp-tabs"></div>
+    <div id="mp-cases" style="display:flex;flex-direction:column;gap:6px;"></div>
+  </div>
 </div>
 
 <script>
@@ -2410,44 +2423,48 @@ function saveDesign(){
 /* ══════════════════════════════════════════════════════════
    까망이 목업 내비게이터
 ══════════════════════════════════════════════════════════ */
-var MP_LIST = [
-  { cap:'평가 설계 목록' },
-  { k:'list',       label:'설계 목록',              sub:'카드 6개' },
-  { k:'list-empty', label:'설계 목록 · 빈 상태',     sub:'만든 설계 없음' },
-  { cap:'평가 설계 상세' },
-  { k:'new',        label:'설계 상세 · 새로 만들기',  sub:'채점기준 0개 · AI 생성 카드' }
+/* 연속 동작으로 닿는 중간 상태는 넣지 않는다 — 진입점과 예외만 */
+var MP_PLAN = 1;
+var MP_TABS = [
+  { id:'main', label:'화면', items:[
+    { k:'list',       label:'설계 목록',            sub:'카드 6개' },
+    { k:'new',        label:'새로 만들기',          sub:'채점기준 0개' },
+    { k:'ready',      label:'채점기준까지 입력',     sub:'활동지 전 · 진단 잠김' },
+    { k:'structure',  label:'빈 활동지 등록',        sub:'문항 구조 확인' },
+    { k:'answer',     label:'채점 가이드·모범답안',   sub:'문항별 입력' }
+  ]},
+  { id:'diag', label:'진단', items:[
+    { k:'linking',    label:'채점기준 연결',         sub:'AI 맵핑 확인·수정' },
+    { k:'result',     label:'진단 결과 · 다시 볼 곳', sub:'AI 제안 있음' },
+    { k:'result-ok',  label:'진단 결과 · 바로 채점',  sub:'제안 없음' }
+  ]},
+  { id:'edge', label:'예외', items:[
+    { k:'list-empty',   label:'설계 목록 비어 있음',  sub:'만든 설계 없음' },
+    { k:'qfail',        label:'문항 구분 실패',       sub:'문항 0개' },
+    { k:'locked',       label:'과제물 인식 후',       sub:'문항·가림 잠김' },
+    { k:'scored',       label:'AI 채점 실행 후',      sub:'배점·연결 잠김' },
+    { k:'locked-stale', label:'진단 후 기준 변경',    sub:'확인 필요 · 재진단' }
+  ]}
 ];
-var MP_MAIN = [
-  { cap:'평가 설계 목록' },
-  { k:'list',        label:'설계 목록',             sub:'카드 6개' },
-  { k:'list-empty',  label:'설계 목록 · 빈 상태',    sub:'만든 설계 없음' },
-  { cap:'평가 설계 상세' },
-  { k:'new',         label:'새로 만들기',            sub:'채점기준 0개 · AI 생성 카드' },
-  { k:'ready',       label:'채점기준 입력 완료',      sub:'활동지 전 · 진단 잠김' },
-  { k:'ws-done',     label:'빈 활동지 등록까지 완료',  sub:'진단·모범답안 열림' },
-  { k:'locked-stale',  label:'잠금 + 채점기준 변경', sub:'지난 진단 결과 · 재진단 불가' },
-  { k:'locked',      label:'과제물 인식 후',          sub:'문항만 잠김 · 채점기준 자유' },
-  { k:'scored',      label:'AI 채점 실행 후',         sub:'배점·삭제·세트 교체 잠김' },
-  { cap:'빈 활동지 등록 화면' },
-  { k:'upload',      label:'빈 활동지 업로드',        sub:'파일 올리기 전 · 드롭존' },
-  { k:'structure',   label:'문항 구조 확인',          sub:'문항 4개 · 지시문 수정' },
-  { k:'qfail',       label:'문항 구분 실패',          sub:'다시 올리기 · 활동지 없이 저장' },
-  { cap:'적합성 진단 화면' },
-  { k:'linking',     label:'채점기준 연결',           sub:'AI 맵핑 결과 확인·수정' },
-  { k:'diagnosing',  label:'진단 중',                sub:'적합도 살펴보는 중' },
-  { k:'result',      label:'다시 볼 곳 있음(세트 제안)', sub:'현재 ↔ AI 제안 비교' },
-  { k:'result-ok',   label:'바로 채점 가능',           sub:'제안 없음' },
-  { cap:'모범답안 화면' },
-  { k:'answer',      label:'채점 가이드·모범답안',    sub:'채점 가이드 · 모범답안 · 인정 답안' }
-];
+var MP_TAB = 'main';
+
 function renderMockpick(){
-  var items = (S.screen === 'list') ? MP_LIST : MP_MAIN;
   var cur = S.case || (S.screen === 'list' ? (S.listEmpty ? 'list-empty' : 'list') : '');
-  document.getElementById('mp-body').innerHTML = items.map(function(it){
-    if (it.cap) return '<div class="mp-cap">' + it.cap + '</div>';
-    return '<button class="mp-btn' + (it.k === cur ? ' on' : '') + '" data-k="' + it.k + '" onclick="mpGo(\'' + it.k + '\')">'
+  document.getElementById('mp-plan-1').classList.toggle('on', MP_PLAN === 1);
+  document.getElementById('mp-plan-2').classList.toggle('on', MP_PLAN === 2);
+  document.getElementById('mp-tabs').innerHTML = MP_TABS.map(function(t){
+    return '<button class="' + (t.id === MP_TAB ? 'on' : '') + '" onclick="mpTab(\'' + t.id + '\')">' + t.label + '</button>';
+  }).join('');
+  var tab = MP_TABS.filter(function(t){ return t.id === MP_TAB; })[0] || MP_TABS[0];
+  document.getElementById('mp-cases').innerHTML = tab.items.map(function(it){
+    return '<button class="mp-btn' + (it.k === cur ? ' on' : '') + '" onclick="mpGo(\'' + it.k + '\')">'
          + it.label + '<span class="mp-sub">' + it.sub + '</span></button>';
   }).join('');
+}
+function mpTab(id){ MP_TAB = id; renderMockpick(); }
+function mpPlan(n){
+  if (n === MP_PLAN) return;
+  location.href = (n === 1 ? 'evaluation_design_v5.html' : 'evaluation_design_v6.html');
 }
 function mpGo(k){
   closeConfirm();
