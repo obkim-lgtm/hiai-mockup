@@ -1077,7 +1077,7 @@ body { margin: 0; background: #EDF1FC; min-width: 1280px; }
           </div>
         </div>
 
-<div id="answer-editor">
+<div>
           <div id="answer-list" style="display:flex;flex-direction:column;gap:12px;"></div>
           <div class="dg-navbar">
             <button class="btn btn-outline" onclick="closeAnswers()"><i data-lucide="arrow-left" style="width:16px;height:16px;"></i>설계로 돌아가기</button>
@@ -1138,15 +1138,9 @@ var S = {
   stdFilled: false,
   rubricFilled: false,   // 채점기준 전부 입력 완료 → 진단 버튼 활성
   ws: 'idle',            // 활동지 문항: idle | file | load | ready | fail
-  dg: 'idle',            // 적합성 진단: idle | link | load | result
-  diagDone: false,       // 진단까지 마쳤는지
   worksheet: false,
-  linksEdited: false,    // 진단 후 문항 연결을 직접 고쳤는지 — 세트 교체 시 덮어쓰기 경고용
-  diagResultKind: 'warn',// warn | ok
-  setApplied: false,     // AI 채점기준 세트로 교체했는지
-  relinked: false,       // 교체 후 AI가 다시 연결한 결과를 보는 중인지
-  applied: {},           // 적용한 제안
-  saved: false,          // 설계를 저장했는지 — 미리보기 유도 배너 노출 조건
+  setApplied: false,     // 미리보기에서 채점기준을 바꿨는지
+  saved: false,          // 방금 저장했는지 — 저장 완료 팝업 노출 조건
   pv: 'idle',            // 미리보기: idle | load | result
   pvRerun: false,        // 채점기준을 고친 뒤 다시 채점한 결과인지
   pvTrial: false,        // 지금 결과가 '아직 저장하지 않은 제안 기준'으로 낸 것인지
@@ -1362,7 +1356,7 @@ function goList(){
   S.listEmpty = false;
   showScreen('list');
   renderList();
-  renderSavedBanner();
+  renderSaveModal();
   setHash('#list');
 }
 
@@ -1375,10 +1369,9 @@ function openDetail(caseKey){
 function applyCase(k){
   // 기본값 초기화
   S.name = ''; S.stdFilled = false; S.rubricFilled = false;
-  S.ws = 'idle'; S.dg = 'idle'; S.worksheet = false; S.linksEdited = false;
-  resetStageOpen(); S.diagResultKind = 'warn';
-  S.saved = false; _pvUsed = false; S.pv = 'idle'; S.pvRerun = false; S.pvTrial = false; _pvRubrics = null; _dLinks = null; _dLinkCur = null; _dRelinked = false; _tnTab = 'rub'; S.tn = 'idle'; S.applied = {}; S.setApplied = false; S.relinked = false; _draft = null; _draftFromAI = false; _draftEdited = false; S.answersOpen = false; S.answersFilled = false; S.locked = false; S.scored = false; S.marks = {};
-  S.diagDone = false;
+  S.ws = 'idle'; S.worksheet = false;
+  resetStageOpen();
+  S.saved = false; _pvUsed = false; S.pv = 'idle'; S.pvRerun = false; S.pvTrial = false; _pvRubrics = null; _dLinks = null; _dLinkCur = null; _dRelinked = false; _tnTab = 'rub'; S.tn = 'idle'; S.setApplied = false; _draft = null; _draftFromAI = false; _draftEdited = false; S.answersOpen = false; S.answersFilled = false; S.locked = false; S.scored = false; S.marks = {};
   rubrics = JSON.parse(JSON.stringify(RUBRIC_SEED));
   standards = [blankStandard()];
   QUESTIONS = seedQuestions();
@@ -1409,13 +1402,13 @@ function applyCase(k){
     S.pv = 'result'; S.pvRerun = true;
     /* 제안을 실제로 받아들인 상태 — 채점기준 세트가 교체돼 있어야 점수 비교가 성립한다 */
     rubrics = SUGGESTED_SET.map(function(r, i){ return { id: 300 + i, title: r.title, rows: JSON.parse(JSON.stringify(r.rows)) }; });
-    S.setApplied = true; S.dg = 'result'; S.diagDone = true; S.diagResultKind = 'ok';
+    S.setApplied = true;
   }
   if (k === 'tune'){ S.ws = 'ready'; S.worksheet = true; S.answersFilled = true; S.pv = 'result'; S.tn = 'ready'; _pvUsed = true; }
   if (k === 'pv-trial'){ S.ws = 'ready'; S.worksheet = true; S.answersFilled = true; S.pv = 'result'; S.pvTrial = true; S.pvRerun = true; _pvUsed = true; _pvRubrics = SUGGESTED_SET.map(function(r, i){ return { id: 300 + i, title: r.title, rows: JSON.parse(JSON.stringify(r.rows)) }; }); }
-  if (k === 'answer'){ S.ws = 'ready'; S.worksheet = true; S.dg = 'result'; S.diagDone = true; S.diagResultKind = 'ok'; S.answersFilled = true; fillQ4Links(); }
-  if (k === 'locked'){ S.ws = 'ready'; S.worksheet = true; S.dg = 'result'; S.diagDone = true; S.diagResultKind = 'warn'; S.locked = true; }
-  if (k === 'scored'){ S.ws = 'ready'; S.worksheet = true; S.dg = 'result'; S.diagDone = true; S.diagResultKind = 'ok'; S.locked = true; S.scored = true; fillQ4Links(); }
+  if (k === 'answer'){ S.ws = 'ready'; S.worksheet = true; S.answersFilled = true; fillQ4Links(); }
+  if (k === 'locked'){ S.ws = 'ready'; S.worksheet = true; S.locked = true; }
+  if (k === 'scored'){ S.ws = 'ready'; S.worksheet = true; S.locked = true; S.scored = true; fillQ4Links(); }
 
   var target = 'detail';
   if (k === 'upload' || k === 'structure') target = 'worksheet';
@@ -1580,8 +1573,6 @@ function removeStandard(i){
     showToast('success','성취기준을 삭제했어요.');
   });
 }
-function fillStandards(){ standards = JSON.parse(JSON.stringify(STD_SEED)); renderStandards(); syncStdState(); }
-
 function rubricCardHtml(r, idx, ns){
   var oninput = (ns === 'dr') ? 'drInput()' : 'onRubricInput()';
   var lockedScore = (ns !== 'dr') && S.scored;
@@ -1665,7 +1656,6 @@ function onRubricInput(){
   var was = S.rubricFilled;
   S.rubricFilled = isRubricComplete();
   // 진단 후 사람 손이 닿은 변경 → 진단 결과 재확인 필요 (수정안 '적용'은 AI 문장이라 해당 없음)
-  if (S.diagDone) S.marks['sec-diagnosis'] = true;
   var total = rubrics.reduce(function(a,r){ return a + Math.max.apply(null, r.rows.map(function(x){ return Number(x[0])||0; })); }, 0);
   document.getElementById('rubric-total').textContent = '채점기준 ' + rubrics.length + '개 · 만점 ' + total + '점';
   renderAll();
@@ -1681,7 +1671,6 @@ function aiGenRubrics(){
   seed.forEach(function(r){ r.id = r.id + 1000; });
   rubrics = rubrics.concat(seed);
   S.rubricFilled = isRubricComplete();
-  if (S.diagDone) S.marks['sec-diagnosis'] = true;
   renderRubrics(); renderAll(); renderScoreTable(); renderToc();
   showToast('success','성취기준을 바탕으로 채점기준 초안 ' + seed.length + '개를 만들었어요. 내용을 확인해 주세요.');
 }
@@ -1689,7 +1678,6 @@ function addRubric(){
   syncRubricsFromDom();
   rubrics.push({ id: Date.now(), title:'', rows:[['',''],['',''],['','']] });
   S.rubricFilled = false;
-  if (S.diagDone) S.marks['sec-diagnosis'] = true;   // 새 기준은 진단·연결이 없는 상태
   renderRubrics(); renderAll(); renderToc();
 }
 function copyRubric(i){
@@ -1709,7 +1697,6 @@ function removeRubric(i){
       rubrics.splice(i,1);
       QUESTIONS.forEach(function(q){ q.links = q.links.filter(function(id){ return rubrics.some(function(r){ return r.id === id; }); }); });
       S.rubricFilled = isRubricComplete();
-      if (S.diagDone) S.marks['sec-diagnosis'] = true;
       renderRubrics(); renderAll(); renderScoreTable(); renderToc();
       showToast('success','채점기준을 삭제했어요.');
     });
@@ -2217,7 +2204,6 @@ function pickWorksheet(){
   if (!S.worksheet){ document.getElementById('ws-file').click(); return; }
   var gone = [];
   if (wsDone()) gone.push('문항 목록과 직접 고친 내용');
-  if (S.dg !== 'idle' || S.diagDone) gone.push('채점기준 연결과 진단 결과');
   if (countAnswers() > 0) gone.push('문항별 답안과 채점 가이드');
   openConfirm('활동지를 바꿀까요?',
     '<strong>' + gone.join(', ') + '</strong>이 사라지고 새로 만들어져요.<br>채점기준 자체는 그대로 남아요.',
@@ -2231,8 +2217,6 @@ function onWsFile(input){
   S.worksheet = true;
   QUESTIONS = seedQuestions();
   S.ws = 'file';
-  S.dg = 'idle'; S.diagDone = false; S.setApplied = false; S.relinked = false;
-  S.marks['sec-diagnosis'] = false;
   _draft = null; _draftFromAI = false; _draftEdited = false;
   S.answersFilled = false;
   renderAnswers();
@@ -2246,20 +2230,11 @@ function removeWorksheet(){
     '지우기', function(){
       S.worksheet = false; S.ws = 'file';
       QUESTIONS = seedQuestions();
-      S.dg = 'idle'; S.diagDone = false; S.setApplied = false; S.relinked = false;
-      S.marks['sec-diagnosis'] = false;
       _draft = null; _draftFromAI = false; _draftEdited = false;
       S.answersFilled = false;
       renderAnswers(); renderAll(); renderToc(); renderMockpick();
     });
 }
-function cancelWorksheet(){ S.ws = 'idle'; S.worksheet = false; renderAll(); backToDetail('sec-worksheet'); }
-var DG_LOAD_MSG = {
-  ws:   '빈 활동지에서 문항을 나누고 있어요',
-  link: '문항마다 볼 채점기준을 연결하고 있어요',
-  diag: '채점기준이 AI 채점에 맞는지 살펴보고 있어요'
-};
-var _loadTimer = null;
 function runWsLoad2(){
   S.ws = 'load2';
   document.getElementById('ws-load-title').textContent = DG_LOAD_MSG.ws;
@@ -2281,15 +2256,12 @@ function analyzeStructure(){
      연결·진단·모범답안은 모두 문항을 참조하므로 함께 사라진다(되돌릴 수 없음 안내). */
   var josa = function(w){ var c = w.charCodeAt(w.length - 1) - 0xAC00; return (c >= 0 && c <= 11171 && c % 28) ? '이' : '가'; };
   var gone = ['문항 목록과 직접 고친 내용'];
-  if (S.dg !== 'idle' || S.diagDone) gone.push('채점기준 연결과 진단 결과');
   if (countAnswers() > 0) gone.push('문항별 답안과 채점 가이드');
   var last = gone[gone.length - 1];
   openConfirm('문항을 다시 나눌까요?',
     '<strong>' + gone.join(', ') + '</strong>' + josa(last) + ' 사라지고 새로 만들어져요.<br>채점기준 자체는 그대로 남아요.',
     '다시 분석', function(){
       QUESTIONS = seedQuestions();
-      S.dg = 'idle'; S.diagDone = false; S.setApplied = false; S.relinked = false;
-      S.marks['sec-diagnosis'] = false;
       _draft = null; _draftFromAI = false; _draftEdited = false;
       S.answersFilled = false;
       renderAnswers();
@@ -2662,7 +2634,6 @@ function sectionStatus(id){
     case 'sec-standard':  return S.stdFilled ? 'done' : 'todo';
     case 'sec-rubric':    return S.rubricFilled ? 'done' : 'todo';
     case 'sec-worksheet': return wsDone() ? 'done' : 'todo';
-    case 'sec-diagnosis': return S.diagDone ? 'done' : 'todo';
     case 'sec-answer':    return countAnswers() > 0 ? 'done' : 'todo';
     case 'sec-score':     return rubrics.length && S.rubricFilled ? 'done' : 'todo';
     case 'sec-absent':    return 'done';
@@ -2670,7 +2641,7 @@ function sectionStatus(id){
   return 'todo';
 }
 /* 저장 완료 팝업 — 일회성 다음 행동 유도. 닫으면 끝, 상시 인지는 목록 카드 버튼이 담당 */
-function renderSavedBanner(){
+function renderSaveModal(){
   var m = document.getElementById('saved-modal');
   if (!m) return;
   /* 채점 가이드·모범답안까지 있어야 미리보기가 돌 수 있다 */
@@ -2679,24 +2650,20 @@ function renderSavedBanner(){
   m.style.display = show ? 'flex' : 'none';
   icons();
 }
-function closeSavedModal(){ S.saved = false; renderSavedBanner(); }
+function closeSavedModal(){ S.saved = false; renderSaveModal(); }
 function renderToc(){
   var coreDone = ['sec-basic','sec-standard','sec-rubric','sec-score','sec-absent']
     .filter(function(id){ return sectionStatus(id) === 'done'; }).length;
   var cs = document.getElementById('grp-core-sum');
   if (cs) cs.textContent = coreDone + ' / 5 완료';
   var parts = [];
-  if (wsDone()) parts.push('활동지');
-  if (countAnswers() > 0) parts.push('모범답안');
-  if (S.diagDone) parts.push('진단');
+  if (wsDone()) parts.push('빈 활동지');
+  if (countAnswers() > 0) parts.push('채점 가이드');
   var as = document.getElementById('grp-adv-sum');
-  if (as){
-    var chip = S.marks['sec-diagnosis'] ? ' <span class="toc-chip">확인 필요</span>' : '';
-    as.innerHTML = (parts.length ? parts.join(' · ') + ' 완료' : '') + chip;
-  }
+  if (as) as.textContent = parts.length ? parts.join(' \u00B7 ') + ' 완료' : '';
   applyStageCollapse('grp-core', false);
   applyStageCollapse('grp-adv', false);
-  renderSavedBanner();
+  renderSaveModal();
   icons();
 }
 
