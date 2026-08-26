@@ -622,12 +622,12 @@ body { margin: 0; background: #EDF1FC; min-width: 1280px; }
 
         </div><!-- /grp-adv -->
 
-        <div id="saved-banner" style="display:none;border:1px solid #E3D7FF;background:#F8F5FF;border-radius:14px;padding:18px 20px;margin-top:18px;">
+        <div id="saved-banner" style="display:none;border:1px solid #C9E7D3;background:#F4FBF6;border-radius:14px;padding:18px 20px;margin-top:18px;">
           <div style="display:flex;align-items:flex-start;gap:12px;">
-            <i id="saved-banner-icon" data-lucide="wand-sparkles" style="width:20px;height:20px;color:#7E44FB;flex-shrink:0;margin-top:2px;"></i>
+            <i data-lucide="circle-check-big" style="width:20px;height:20px;color:#00AF3D;flex-shrink:0;margin-top:2px;"></i>
             <div style="flex:1;min-width:0;">
-              <p style="font-size:16px;font-weight:800;color:#341761;margin:0 0 4px;" id="saved-banner-title">채점 전에 AI 채점 결과를 미리 볼 수 있어요</p>
-              <p style="font-size:14px;color:#5B4B7A;margin:0;line-height:1.6;" id="saved-banner-desc">학생 답안 한 장만 올리면 돼요. 결과가 마음에 들지 않으면 채점기준을 다듬어 다시 채점해 볼 수 있어요.</p>
+              <p style="font-size:16px;font-weight:800;color:#1B6B39;margin:0 0 4px;" id="saved-banner-title">설계를 저장했어요</p>
+              <p style="font-size:14px;color:#3D6B4E;margin:0;line-height:1.6;" id="saved-banner-desc">학생 답안 한 장을 올려 보면 AI가 이 기준으로 어떻게 채점하는지 미리 볼 수 있어요.</p>
             </div>
             <button class="btn btn-primary" style="flex-shrink:0;" onclick="openPreview('detail')"><i data-lucide="play" style="width:18px;height:18px;"></i>AI 채점 미리보기</button>
             <button onclick="hideSavedBanner()" style="width:28px;height:28px;border:none;background:transparent;border-radius:6px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;">
@@ -1370,7 +1370,7 @@ function applyCase(k){
   S.name = ''; S.stdFilled = false; S.rubricFilled = false;
   S.ws = 'idle'; S.dg = 'idle'; S.worksheet = false; S.linksEdited = false;
   resetStageOpen(); S.diagResultKind = 'warn';
-  S.saved = false; _bannerHidden = false; S.pv = 'idle'; S.pvRerun = false; S.pvTrial = false; _pvRubrics = null; _dLinks = null; _dLinkCur = null; _dRelinked = false; _tnTab = 'rub'; S.tn = 'idle'; S.applied = {}; S.setApplied = false; S.relinked = false; _draft = null; _draftFromAI = false; _draftEdited = false; S.answersOpen = false; S.answersFilled = false; S.locked = false; S.scored = false; S.marks = {};
+  S.saved = false; S.pv = 'idle'; S.pvRerun = false; S.pvTrial = false; _pvRubrics = null; _dLinks = null; _dLinkCur = null; _dRelinked = false; _tnTab = 'rub'; S.tn = 'idle'; S.applied = {}; S.setApplied = false; S.relinked = false; _draft = null; _draftFromAI = false; _draftEdited = false; S.answersOpen = false; S.answersFilled = false; S.locked = false; S.scored = false; S.marks = {};
   S.diagDone = false;
   rubrics = JSON.parse(JSON.stringify(RUBRIC_SEED));
   standards = [blankStandard()];
@@ -2655,30 +2655,18 @@ function sectionStatus(id){
   }
   return 'todo';
 }
-/* 설계가 완료된 평가에는 상시 노출 — 잠긴 평가는 채점기준을 못 고치니 유도하지 않는다 */
-var _bannerHidden = false;   // X로 닫으면 이 평가 화면에서만 숨김
+/* 다음 행동 유도용 — 그 행동이 가능해진 순간(저장 직후)에만 노출.
+   미리보기는 저장된 설계로 돌기 때문에, 저장 전 상시 노출은 수정 중인 내용으로 채점해 줄 것처럼 읽혀 접었다.
+   상시 인지는 목록 카드의 '채점 미리보기' 버튼이 담당한다. */
 function renderSavedBanner(){
   var b = document.getElementById('saved-banner');
   if (!b) return;
   /* 채점 가이드·모범답안까지 있어야 미리보기가 돌 수 있다 */
-  var complete = !!(S.name && S.name.trim()) && S.rubricFilled && S.answersFilled;
-  b.style.display = (complete && !S.locked && !S.scored && !_bannerHidden) ? 'block' : 'none';
-  /* 저장 직후만 초록 성공 톤, 평소엔 보라 유도 톤 — 제목=이점, 본문=방법 */
-  var t = document.getElementById('saved-banner-title'), d = document.getElementById('saved-banner-desc'), ic = document.getElementById('saved-banner-icon');
-  if (S.saved){
-    b.style.borderColor = '#C9E7D3'; b.style.background = '#F4FBF6';
-    if (ic){ ic.setAttribute('data-lucide','circle-check-big'); ic.style.color = '#00AF3D'; }
-    if (t){ t.textContent = '설계를 저장했어요'; t.style.color = '#1B6B39'; }
-    if (d){ d.textContent = '학생 답안 한 장을 올려 보면 AI가 이 기준으로 어떻게 채점하는지 미리 볼 수 있어요.'; d.style.color = '#3D6B4E'; }
-  } else {
-    b.style.borderColor = '#E3D7FF'; b.style.background = '#F8F5FF';
-    if (ic){ ic.setAttribute('data-lucide','wand-sparkles'); ic.style.color = '#7E44FB'; }
-    if (t){ t.textContent = '채점 전에 AI 채점 결과를 미리 볼 수 있어요'; t.style.color = '#341761'; }
-    if (d){ d.textContent = '학생 답안 한 장만 올리면 돼요. 결과가 마음에 들지 않으면 채점기준을 다듬어 다시 채점해 볼 수 있어요.'; d.style.color = '#5B4B7A'; }
-  }
+  var previewable = !!(S.name && S.name.trim()) && S.rubricFilled && S.answersFilled;
+  b.style.display = (S.saved && previewable && !S.locked && !S.scored) ? 'block' : 'none';
   icons();
 }
-function hideSavedBanner(){ _bannerHidden = true; renderSavedBanner(); }
+function hideSavedBanner(){ S.saved = false; renderSavedBanner(); }
 function renderToc(){
   var coreDone = ['sec-basic','sec-standard','sec-rubric','sec-score','sec-absent']
     .filter(function(id){ return sectionStatus(id) === 'done'; }).length;
@@ -2711,7 +2699,7 @@ function saveDesign(){
   if (!S.name.trim()){ showToast('error','평가(과제)명을 입력해 주세요.'); scrollToSection('sec-basic'); return; }
   if (!S.rubricFilled){ showToast('error','채점기준을 모두 입력해 주세요.'); scrollToSection('sec-rubric'); return; }
   Object.keys(S.marks).forEach(function(k){ S.marks[k] = false; });
-  S.saved = true; _bannerHidden = false;
+  S.saved = true;
   renderSavedBanner();
   var b = document.getElementById('saved-banner');
   if (b && b.style.display !== 'none') b.scrollIntoView({ behavior:'smooth', block:'center' });
