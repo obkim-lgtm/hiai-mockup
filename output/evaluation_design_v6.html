@@ -2235,9 +2235,11 @@ function removeWorksheet(){
       renderAnswers(); renderAll(); renderToc(); renderMockpick();
     });
 }
+var WS_LOAD_MSG = '빈 활동지에서 문항을 나누고 있어요';
+var _loadTimer = null;
 function runWsLoad2(){
   S.ws = 'load2';
-  document.getElementById('ws-load-title').textContent = DG_LOAD_MSG.ws;
+  document.getElementById('ws-load-title').textContent = WS_LOAD_MSG;
   renderWorksheet();
   clearTimeout(_loadTimer);
   _loadTimer = setTimeout(function(){
