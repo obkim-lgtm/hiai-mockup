@@ -406,17 +406,23 @@ body { margin: 0; background: #EDF1FC; min-width: 1280px; }
           <button class="btn btn-primary" style="margin-top:6px;" onclick="openDetail('new')"><i data-lucide="plus" style="width:20px;height:20px;"></i>설계 추가</button>
         </div>
 
-        <div id="saved-banner" style="display:none;border:1px solid #E3D7FF;background:#F8F5FF;border-radius:14px;padding:18px 20px;margin-bottom:18px;">
-          <div style="display:flex;align-items:flex-start;gap:12px;">
-            <i data-lucide="wand-sparkles" style="width:20px;height:20px;color:#7E44FB;flex-shrink:0;margin-top:2px;"></i>
-            <div style="flex:1;min-width:0;">
-              <p style="font-size:16px;font-weight:800;color:#341761;margin:0 0 4px;" id="saved-banner-title">채점 전에 AI 채점 결과를 미리 볼 수 있어요</p>
-              <p style="font-size:14px;color:#5B4B7A;margin:0;line-height:1.6;" id="saved-banner-desc">방금 저장한 채점기준으로 학생 답안 한 장을 채점해 봐요. 마음에 들지 않으면 다듬어 다시 채점할 수 있어요.</p>
-            </div>
-            <button class="btn btn-primary" style="flex-shrink:0;" onclick="openPreview('list')"><i data-lucide="play" style="width:18px;height:18px;"></i>AI 채점 미리보기</button>
-            <button onclick="hideSavedBanner()" style="width:28px;height:28px;border:none;background:transparent;border-radius:6px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;">
-              <i data-lucide="x" style="width:16px;height:16px;color:#9C8FB8;"></i>
+
+        <!-- 저장 완료 팝업 — 일회성 유도라 배너 대신 팝업 -->
+        <div id="saved-modal" style="display:none;position:fixed;inset:0;z-index:1000;background:rgba(0,0,0,0.4);align-items:center;justify-content:center;" onclick="if(event.target===this)closeSavedModal()">
+          <div style="background:white;border-radius:24px;box-shadow:0 4px 12px rgba(95,102,178,0.16);width:480px;max-width:calc(100vw - 48px);position:relative;">
+            <button onclick="closeSavedModal()" style="position:absolute;top:11px;right:11px;width:36px;height:36px;border:none;background:transparent;border-radius:6px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;">
+              <i data-lucide="x" style="width:18px;height:18px;color:#808080;"></i>
             </button>
+            <div style="padding:24px 24px 16px;">
+              <h3 id="saved-modal-title" style="font-size:18px;font-weight:700;color:#222631;margin:0;word-break:keep-all;line-height:1.45;padding-right:36px;"></h3>
+            </div>
+            <div style="padding:0 24px 24px;">
+              <p style="font-size:15px;color:#494949;margin:0;line-height:1.7;">채점 전에 AI가 이 채점기준으로 어떻게 채점하는지 미리 볼 수 있어요. 학생 답안 한 장이면 돼요. 결과가 마음에 들지 않으면 채점기준을 다듬어 다시 채점할 수 있어요.</p>
+            </div>
+            <div style="padding:8px 24px 16px;display:flex;justify-content:flex-end;gap:12px;">
+              <button onclick="closeSavedModal()" style="display:inline-flex;align-items:center;justify-content:center;line-height:1;vertical-align:middle;height:40px;padding:0 18px;border:1px solid #B28FFD;color:#7E44FB;background:transparent;border-radius:8px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;">나중에</button>
+              <button onclick="closeSavedModal();openPreview('list')" style="display:inline-flex;align-items:center;justify-content:center;line-height:1;vertical-align:middle;height:40px;padding:0 18px;border:none;background:#7E44FB;color:white;border-radius:8px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;gap:7px;"><i data-lucide="play" style="width:16px;height:16px;"></i>AI 채점 미리보기</button>
+            </div>
           </div>
         </div>
 
@@ -2658,18 +2664,21 @@ function sectionStatus(id){
   }
   return 'todo';
 }
-/* 다음 행동 유도용 — 그 행동이 가능해진 순간(저장 직후)에만 노출.
-   미리보기는 저장된 설계로 돌기 때문에, 저장 전 상시 노출은 수정 중인 내용으로 채점해 줄 것처럼 읽혀 접었다.
-   상시 인지는 목록 카드의 '채점 미리보기' 버튼이 담당한다. */
+/* 저장 완료 팝업 — 일회성 다음 행동 유도. 닫으면 끝, 상시 인지는 목록 카드 버튼이 담당 */
 function renderSavedBanner(){
-  var b = document.getElementById('saved-banner');
-  if (!b) return;
+  var m = document.getElementById('saved-modal');
+  if (!m) return;
   /* 채점 가이드·모범답안까지 있어야 미리보기가 돌 수 있다 */
   var previewable = !!(S.name && S.name.trim()) && S.rubricFilled && S.answersFilled;
-  b.style.display = (S.saved && previewable && !S.locked && !S.scored) ? 'block' : 'none';
+  var show = S.saved && previewable && !S.locked && !S.scored;
+  m.style.display = show ? 'flex' : 'none';
+  if (show){
+    var t = document.getElementById('saved-modal-title');
+    if (t) t.textContent = '「' + S.name.trim() + '」 설계를 저장했어요';
+  }
   icons();
 }
-function hideSavedBanner(){ S.saved = false; renderSavedBanner(); }
+function closeSavedModal(){ S.saved = false; renderSavedBanner(); }
 function renderToc(){
   var coreDone = ['sec-basic','sec-standard','sec-rubric','sec-score','sec-absent']
     .filter(function(id){ return sectionStatus(id) === 'done'; }).length;
