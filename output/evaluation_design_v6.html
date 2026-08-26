@@ -483,20 +483,6 @@ body { margin: 0; background: #EDF1FC; min-width: 1280px; }
         </div>
 
         <!-- 저장 직후 인라인 유도 — 팝업으로 흐름을 끊지 않고 다음 행동을 그 자리에 둔다 -->
-        <div id="saved-banner" style="display:none;border:1px solid #E3D7FF;background:#F8F5FF;border-radius:14px;padding:18px 20px;margin-bottom:18px;">
-          <div style="display:flex;align-items:flex-start;gap:12px;">
-            <i id="saved-banner-icon" data-lucide="wand-sparkles" style="width:20px;height:20px;color:#7E44FB;flex-shrink:0;margin-top:2px;"></i>
-            <div style="flex:1;min-width:0;">
-              <p style="font-size:16px;font-weight:800;color:#341761;margin:0 0 4px;" id="saved-banner-title">채점 전에 AI 채점 결과를 미리 볼 수 있어요</p>
-              <p style="font-size:14px;color:#5B4B7A;margin:0;line-height:1.6;" id="saved-banner-desc">학생 답안 한 장만 올리면 돼요. 결과가 마음에 들지 않으면 채점기준을 다듬어 다시 채점해 볼 수 있어요.</p>
-            </div>
-            <button class="btn btn-primary" style="flex-shrink:0;" onclick="openPreview('detail')"><i data-lucide="play" style="width:18px;height:18px;"></i>AI 채점 미리보기</button>
-            <button onclick="hideSavedBanner()" style="width:28px;height:28px;border:none;background:transparent;border-radius:6px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;">
-              <i data-lucide="x" style="width:16px;height:16px;color:#8AA795;"></i>
-            </button>
-          </div>
-        </div>
-
         <!-- 필수 그룹 — 이것만 채우면 채점된다 -->
         <div id="grp-core" class="stage-card">
           <div class="stage-head"><span class="stage-title">기본 설계</span><span class="stage-sum" id="grp-core-sum"></span></div>
@@ -635,6 +621,20 @@ body { margin: 0; background: #EDF1FC; min-width: 1280px; }
             </section>
 
         </div><!-- /grp-adv -->
+
+        <div id="saved-banner" style="display:none;border:1px solid #E3D7FF;background:#F8F5FF;border-radius:14px;padding:18px 20px;margin-top:18px;">
+          <div style="display:flex;align-items:flex-start;gap:12px;">
+            <i id="saved-banner-icon" data-lucide="wand-sparkles" style="width:20px;height:20px;color:#7E44FB;flex-shrink:0;margin-top:2px;"></i>
+            <div style="flex:1;min-width:0;">
+              <p style="font-size:16px;font-weight:800;color:#341761;margin:0 0 4px;" id="saved-banner-title">채점 전에 AI 채점 결과를 미리 볼 수 있어요</p>
+              <p style="font-size:14px;color:#5B4B7A;margin:0;line-height:1.6;" id="saved-banner-desc">학생 답안 한 장만 올리면 돼요. 결과가 마음에 들지 않으면 채점기준을 다듬어 다시 채점해 볼 수 있어요.</p>
+            </div>
+            <button class="btn btn-primary" style="flex-shrink:0;" onclick="openPreview('detail')"><i data-lucide="play" style="width:18px;height:18px;"></i>AI 채점 미리보기</button>
+            <button onclick="hideSavedBanner()" style="width:28px;height:28px;border:none;background:transparent;border-radius:6px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;">
+              <i data-lucide="x" style="width:16px;height:16px;color:#8AA795;"></i>
+            </button>
+          </div>
+        </div>
 
             <!-- 하단 버튼 -->
             <div style="display:flex;align-items:center;justify-content:space-between;padding-top:20px;border-top:1px solid #F0F0F0;">
@@ -2660,7 +2660,8 @@ var _bannerHidden = false;   // X로 닫으면 이 평가 화면에서만 숨김
 function renderSavedBanner(){
   var b = document.getElementById('saved-banner');
   if (!b) return;
-  var complete = !!(S.name && S.name.trim()) && S.rubricFilled;
+  /* 채점 가이드·모범답안까지 있어야 미리보기가 돌 수 있다 */
+  var complete = !!(S.name && S.name.trim()) && S.rubricFilled && S.answersFilled;
   b.style.display = (complete && !S.locked && !S.scored && !_bannerHidden) ? 'block' : 'none';
   /* 저장 직후만 초록 성공 톤, 평소엔 보라 유도 톤 — 제목=이점, 본문=방법 */
   var t = document.getElementById('saved-banner-title'), d = document.getElementById('saved-banner-desc'), ic = document.getElementById('saved-banner-icon');
@@ -2712,7 +2713,8 @@ function saveDesign(){
   Object.keys(S.marks).forEach(function(k){ S.marks[k] = false; });
   S.saved = true; _bannerHidden = false;
   renderSavedBanner();
-  window.scrollTo({ top: 0, behavior: 'smooth' });
+  var b = document.getElementById('saved-banner');
+  if (b && b.style.display !== 'none') b.scrollIntoView({ behavior:'smooth', block:'center' });
   showToast('success','평가 설계를 저장했어요.');
 }
 
