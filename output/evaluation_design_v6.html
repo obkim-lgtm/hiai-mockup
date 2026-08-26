@@ -1377,7 +1377,7 @@ function applyCase(k){
   S.name = ''; S.stdFilled = false; S.rubricFilled = false;
   S.ws = 'idle'; S.dg = 'idle'; S.worksheet = false; S.linksEdited = false;
   resetStageOpen(); S.diagResultKind = 'warn';
-  S.saved = false; S.pv = 'idle'; S.pvRerun = false; S.pvTrial = false; _pvRubrics = null; _dLinks = null; _dLinkCur = null; _dRelinked = false; _tnTab = 'rub'; S.tn = 'idle'; S.applied = {}; S.setApplied = false; S.relinked = false; _draft = null; _draftFromAI = false; _draftEdited = false; S.answersOpen = false; S.answersFilled = false; S.locked = false; S.scored = false; S.marks = {};
+  S.saved = false; _pvUsed = false; S.pv = 'idle'; S.pvRerun = false; S.pvTrial = false; _pvRubrics = null; _dLinks = null; _dLinkCur = null; _dRelinked = false; _tnTab = 'rub'; S.tn = 'idle'; S.applied = {}; S.setApplied = false; S.relinked = false; _draft = null; _draftFromAI = false; _draftEdited = false; S.answersOpen = false; S.answersFilled = false; S.locked = false; S.scored = false; S.marks = {};
   S.diagDone = false;
   rubrics = JSON.parse(JSON.stringify(RUBRIC_SEED));
   standards = [blankStandard()];
@@ -1402,7 +1402,7 @@ function applyCase(k){
   if (k === 'upload'){ S.ws = 'idle'; S.worksheet = false; } // 업로드 전 드롭존 — 올리면 곧장 문항 분석이라 '파일만 올린' 중간 상태는 없음
   if (k === 'structure'){ S.ws = 'ready'; S.worksheet = true; }
   if (k === 'ws-done'){ S.ws = 'ready'; S.worksheet = true; }
-  if (k === 'preview'){ S.ws = 'ready'; S.worksheet = true; S.answersFilled = true; S.pv = 'result'; }
+  if (k === 'preview'){ S.ws = 'ready'; S.worksheet = true; S.answersFilled = true; S.pv = 'result'; _pvUsed = true; }
   if (k === 'pv-upload'){ S.ws = 'ready'; S.worksheet = true; S.answersFilled = true; S.pv = 'idle'; }
   if (k === 'preview-after'){
     S.ws = 'ready'; S.worksheet = true; S.answersFilled = true;
@@ -1411,8 +1411,8 @@ function applyCase(k){
     rubrics = SUGGESTED_SET.map(function(r, i){ return { id: 300 + i, title: r.title, rows: JSON.parse(JSON.stringify(r.rows)) }; });
     S.setApplied = true; S.dg = 'result'; S.diagDone = true; S.diagResultKind = 'ok';
   }
-  if (k === 'tune'){ S.ws = 'ready'; S.worksheet = true; S.answersFilled = true; S.pv = 'result'; S.tn = 'ready'; }
-  if (k === 'pv-trial'){ S.ws = 'ready'; S.worksheet = true; S.answersFilled = true; S.pv = 'result'; S.pvTrial = true; S.pvRerun = true; _pvRubrics = SUGGESTED_SET.map(function(r, i){ return { id: 300 + i, title: r.title, rows: JSON.parse(JSON.stringify(r.rows)) }; }); }
+  if (k === 'tune'){ S.ws = 'ready'; S.worksheet = true; S.answersFilled = true; S.pv = 'result'; S.tn = 'ready'; _pvUsed = true; }
+  if (k === 'pv-trial'){ S.ws = 'ready'; S.worksheet = true; S.answersFilled = true; S.pv = 'result'; S.pvTrial = true; S.pvRerun = true; _pvUsed = true; _pvRubrics = SUGGESTED_SET.map(function(r, i){ return { id: 300 + i, title: r.title, rows: JSON.parse(JSON.stringify(r.rows)) }; }); }
   if (k === 'answer'){ S.ws = 'ready'; S.worksheet = true; S.dg = 'result'; S.diagDone = true; S.diagResultKind = 'ok'; S.answersFilled = true; fillQ4Links(); }
   if (k === 'locked'){ S.ws = 'ready'; S.worksheet = true; S.dg = 'result'; S.diagDone = true; S.diagResultKind = 'warn'; S.locked = true; }
   if (k === 'scored'){ S.ws = 'ready'; S.worksheet = true; S.dg = 'result'; S.diagDone = true; S.diagResultKind = 'ok'; S.locked = true; S.scored = true; fillQ4Links(); }
@@ -1880,6 +1880,7 @@ function renderStuck(){
     + '</div>';
   icons();
 }
+var _pvUsed = false;   // 이 평가에서 미리보기를 이미 써 봤는지 — 써 봤으면 저장 후 다시 권하지 않는다
 var _pvFrom = 'detail';                      // 미리보기에 어디서 들어왔는지 — 뒤로가기가 그리로 돌려보낸다
 function openPreview(from){
   if (from) _pvFrom = from;
@@ -1900,7 +1901,7 @@ function runPvScore(isRerun){
   renderPreview();
   clearTimeout(_pvTimer);
   _pvTimer = setTimeout(function(){
-    S.pv = 'result'; S.case = 'preview';
+    S.pv = 'result'; S.case = 'preview'; _pvUsed = true;
     renderPreview(); renderMockpick(); setHash('#case=preview');
     showToast('success', isRerun ? '바뀐 채점기준으로 다시 채점했어요.' : '답안 한 장을 채점해 봤어요.');
   }, 1600);
@@ -2670,7 +2671,7 @@ function renderSavedBanner(){
   if (!m) return;
   /* 채점 가이드·모범답안까지 있어야 미리보기가 돌 수 있다 */
   var previewable = !!(S.name && S.name.trim()) && S.rubricFilled && S.answersFilled;
-  var show = S.saved && previewable && !S.locked && !S.scored;
+  var show = S.saved && previewable && !S.locked && !S.scored && !_pvUsed;
   m.style.display = show ? 'flex' : 'none';
   icons();
 }
