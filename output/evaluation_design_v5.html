@@ -713,15 +713,6 @@ body { margin: 0; background: #EDF1FC; min-width: 1280px; }
           </div>
         </div>
 
-        <!-- 3단: 문항별 채점기준 — 연결은 설계 데이터. 진단은 이를 읽고 판정만 낸다 -->
-        <div id="dg-s3l" class="stage-card" style="display:none;"><div class="stage-head"><span class="stage-num">3</span><span class="stage-title">문항별 채점기준</span><span class="stage-sum" id="ws-sum-3"></span></div>
-          <p class="sec-desc" style="margin-bottom:12px;">문항마다 어떤 채점기준을 보고 채점할지 AI가 정해 뒀어요. 문항을 누르면 확인하고 고칠 수 있어요.</p>
-          <div id="ws-qlink-list" style="display:flex;flex-direction:column;gap:10px;"></div>
-          <div class="dg-navbar">
-            <button class="btn btn-outline" onclick="backToDetail('sec-worksheet')"><i data-lucide="arrow-left" style="width:16px;height:16px;"></i>설계로 돌아가기</button>
-          </div>
-        </div>
-
       </div>
     </div>
   </div>
@@ -791,8 +782,8 @@ body { margin: 0; background: #EDF1FC; min-width: 1280px; }
 
           <!-- 문항별 진단 — 읽기 전용. 고치는 곳은 설계(빈 활동지 등록 ③단) -->
           <div id="dg-qfit" style="margin-bottom:26px;">
-            <h4 style="font-size:16px;font-weight:800;color:#341761;margin:0 0 4px;">문항별 진단</h4>
-            <p class="sec-desc" style="margin-bottom:12px;">문항마다 연결된 채점기준으로 채점할 수 있는지 살펴봤어요. 연결을 고치려면 빈 활동지 등록으로 이동해요.</p>
+            <h4 style="font-size:16px;font-weight:800;color:#341761;margin:0 0 4px;">문항별 채점기준</h4>
+            <p class="sec-desc" style="margin-bottom:12px;">문항마다 볼 채점기준을 AI가 연결하고, 그 기준으로 채점할 수 있는지 살펴봤어요. 문항을 누르면 확인하고 고칠 수 있어요.</p>
             <div id="dg-qfit-list" style="display:flex;flex-direction:column;gap:10px;"></div>
           </div>
 
@@ -1654,11 +1645,8 @@ function renderWorksheet(){
   show('dg-s1', !loading);
   show('dg-fail', S.ws === 'fail', 'flex');
   show('dg-s2', !loading && S.ws === 'ready');
-  show('dg-s3l', !loading && S.ws === 'ready');
   applyStageCollapse('dg-s1', S.ws === 'ready');
   applyStageCollapse('dg-s2', false);
-  applyStageCollapse('dg-s3l', false);
-  if (S.ws === 'ready') renderQLinks();
 
   document.getElementById('dz-empty').style.display = S.worksheet ? 'none' : 'flex';
   document.getElementById('ws-help-row').style.display = S.worksheet ? 'none' : 'block';
@@ -1812,9 +1800,8 @@ function analyzeStructure(){
 function saveStructure(){
   syncQuestionsFromDom();
   renderAll(); renderAnswers(); renderToc(); renderMockpick();
-  showToast('success','문항 구조를 저장했어요. 아래에서 문항별 채점기준을 확인해 주세요.');
-  var sec = document.getElementById('dg-s3l');
-  if (sec) sec.scrollIntoView({ behavior:'smooth', block:'start' });
+  backToDetail('sec-worksheet');
+  showToast('success','문항 구조를 저장했어요.');
 }
 function openDiagnosis(){
   if (!wsDone()){ showToast('error','빈 활동지를 먼저 올려 주세요.'); return; }
@@ -1925,20 +1912,20 @@ function moveQuestion(i, dir){
   var j = i + dir;
   if (j < 0 || j >= QUESTIONS.length) return;
   var t = QUESTIONS[i]; QUESTIONS[i] = QUESTIONS[j]; QUESTIONS[j] = t;
-  renderQuestionList(); renderQLinks();
+  renderQuestionList(); renderQFit();
 }
 function addQuestion(){
   syncQuestionsFromDom();
   var no = QUESTIONS.reduce(function(a,q){ return Math.max(a, q.no); }, 0) + 1;
   QUESTIONS.push({ no: no, label: String(QUESTIONS.length + 1), text:'', links:[], aiPicks:[], aiReason:'' });
-  renderQuestionList(); renderQLinks();
+  renderQuestionList(); renderQFit();
 }
 function removeQuestion(i){
   syncQuestionsFromDom();
   var q = QUESTIONS[i];
   openConfirm('문항 삭제', '<strong>' + esc(q.label) + '번 문항</strong>을 삭제할까요?<br>연결해 둔 채점기준도 함께 끊어지고, 되돌릴 수 없습니다.', '삭제', function(){
     QUESTIONS.splice(i, 1);
-    renderQuestionList(); renderQLinks();
+    renderQuestionList(); renderQFit();
     showToast('success','문항을 삭제했어요.');
   });
 }
@@ -1975,81 +1962,47 @@ function qRowHead(q, open, badge, sum){
     + '<i data-lucide="chevron-' + (open ? 'up' : 'down') + '" style="width:16px;height:16px;color:#808080;flex-shrink:0;"></i>'
     + '</div>';
 }
-/* 진단 리포트의 문항별 카드 — 읽기 전용. 고치는 곳은 설계(빈 활동지 등록 ③단) */
+/* 진단 화면의 문항별 채점기준 — 판정을 보면서 그 자리에서 연결을 고친다.
+   고친 뒤에는 판정이 낡으므로 '다시 진단' 1회로 갱신한다. */
 function renderQFit(){
   var el = document.getElementById('dg-qfit-list'); if (!el) return;
   el.innerHTML = QUESTIONS.map(function(q){
     var v = qVerdict(q);
-    var open = (_qOpen === q.no);
-    var body = '';
-    if (open){
-      var noteHtml = v.note
-        ? '<p style="font-size:14px;color:#9A5B00;margin:10px 0 0;line-height:1.6;">' + v.note + '</p>'
-        : '';
-      var fixBtn = (v.note && !S.scored)
-        ? '<div style="display:flex;justify-content:flex-end;margin-top:10px;">'
-          + '<button class="btn btn-ghost btn-sm" onclick="gotoQLinks()">빈 활동지 등록에서 고치기<i data-lucide="arrow-right" style="width:14px;height:14px;"></i></button></div>'
-        : '';
-      body = '<div style="padding:12px 16px 14px;border-top:1px solid #F5F5F5;">'
-        + '<div style="display:flex;flex-direction:column;gap:4px;">' + qFitTitles(q) + '</div>'
-        + noteHtml + fixBtn
-        + '</div>';
-    }
-    return '<div class="diag-card" style="padding:0;' + (open ? 'border-color:#D9C9FF;' : '') + '">'
-      + qRowHead(q, open, qBadge(v), '') + body + '</div>';
-  }).join('');
-  icons();
-}
-/* 설계 ③단 — 문항별 채점기준. 여기서만 연결을 편집한다 */
-function renderQLinks(){
-  var el = document.getElementById('ws-qlink-list'); if (!el) return;
-  el.innerHTML = QUESTIONS.map(function(q){
     var open = (_qOpen === q.no || _qEdit === q.no);
-    var sum = q.links.length
-      ? '<span style="font-size:13px;color:#808080;font-weight:700;flex-shrink:0;">기준 ' + q.links.length + '개</span>'
-      : '<span style="font-size:13px;color:#C2620A;font-weight:700;flex-shrink:0;">미연결</span>';
-    if (q._textEdited) sum = '<span class="badge b-orange" style="flex-shrink:0;">확인 필요</span>' + sum;
+    var badge = q._textEdited
+      ? '<span class="badge b-orange" style="flex-shrink:0;min-width:68px;">확인 필요</span>'
+      : qBadge(v);
     var body = '';
     if (open){
       if (_qEdit === q.no){
         body = '<div style="padding:0 16px 16px;border-top:1px solid #F5F5F5;">' + qFitEditBody(q) + '</div>';
       } else {
         var editBtn = S.scored ? '' :
-          '<button class="btn btn-ghost btn-sm" style="flex-shrink:0;" onclick="event.stopPropagation();qFitEdit(' + q.no + ')"><i data-lucide="square-pen" style="width:14px;height:14px;color:#808080;"></i>수정</button>';
-        var editedNote = q._textEdited
-          ? '<p style="font-size:14px;color:#9A5B00;margin:10px 0 0;line-height:1.6;">문항 내용이 바뀌었어요. 연결된 채점기준이 여전히 맞는지 확인해 주세요.</p>'
+          '<button class="btn btn-ghost btn-sm" style="flex-shrink:0;" onclick="event.stopPropagation();qFitEdit(' + q.no + ')"><i data-lucide="square-pen" style="width:14px;height:14px;color:#808080;"></i>연결 수정</button>';
+        var note = q._textEdited
+          ? '문항 내용이 바뀌었어요. 연결된 채점기준이 여전히 맞는지 확인해 주세요.'
+          : v.note;
+        var noteHtml = note
+          ? '<p style="font-size:14px;color:#9A5B00;margin:10px 0 0;line-height:1.6;">' + note + '</p>'
           : '';
         body = '<div style="padding:12px 16px 14px;border-top:1px solid #F5F5F5;">'
           + '<div style="display:flex;align-items:flex-start;gap:12px;">'
           +   '<div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:4px;">' + qFitTitles(q) + '</div>'
           +   editBtn
           + '</div>'
-          + editedNote
+          + noteHtml
           + '</div>';
       }
     }
     return '<div class="diag-card" style="padding:0;' + (open ? 'border-color:#D9C9FF;' : '') + '">'
-      + qRowHead(q, open, '', sum) + body + '</div>';
+      + qRowHead(q, open, badge, '') + body + '</div>';
   }).join('');
-  var sum3 = document.getElementById('ws-sum-3');
-  if (sum3){
-    var un = QUESTIONS.filter(function(q){ return !q.links.length; }).length;
-    var chk = QUESTIONS.filter(function(q){ return q._textEdited; }).length;
-    sum3.textContent = chk ? ('확인 필요 ' + chk + '개')
-      : (un ? ('미연결 ' + un + '개') : ('문항 ' + QUESTIONS.length + '개 연결됨'));
-  }
   icons();
 }
 function qRowToggle(no){
   if (_qEdit === no) return; // 편집 중 실수로 접혀 입력을 잃지 않게
   _qOpen = (_qOpen === no) ? null : no;
-  renderQFit(); renderQLinks();
-}
-function gotoQLinks(){
-  _qEdit = null;
-  gotoWorksheet();
-  var sec = document.getElementById('dg-s3l');
-  if (sec) setTimeout(function(){ sec.scrollIntoView({ behavior:'smooth', block:'start' }); }, 80);
+  renderQFit();
 }
 function qFitEditBody(q){
   var reason = q.aiReason
@@ -2078,7 +2031,7 @@ function qFitEditBody(q){
   return reason
     + '<div style="display:flex;flex-direction:column;gap:6px;">' + rows + '</div>'
     + '<div style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:14px;">'
-    +   '<span style="font-size:14px;color:#808080;">' + (S.diagDone ? '저장하면 지난 진단 결과와 달라질 수 있어요.' : '이 문항에 바로 반영돼요.') + '</span>'
+    +   '<span style="font-size:14px;color:#808080;">저장한 뒤 다시 진단하면 결과가 갱신돼요.</span>'
     +   '<div style="display:flex;gap:8px;">'
     +     '<button class="btn btn-outline btn-sm" onclick="qFitCancel()">취소</button>'
     +     '<button class="btn btn-primary btn-sm" onclick="qFitSave(' + q.no + ')">저장</button>'
@@ -2089,19 +2042,19 @@ function qFitEdit(no){
   if (S.scored){ showToast('error','AI 채점이 실행되어 연결을 바꿀 수 없어요.'); return; }
   var q = QUESTIONS.find(function(x){ return x.no === no; });
   _qEdit = no; _qOpen = no; _qBackup = q.links.slice();
-  renderQLinks();
+  renderQFit();
 }
 function qToggleLink(qno, rid){
   var q = QUESTIONS.find(function(x){ return x.no === qno; });
   var i = q.links.indexOf(rid);
   if (i === -1) q.links.push(rid); else q.links.splice(i, 1);
-  renderQLinks();
+  renderQFit();
 }
 function qFitCancel(){
   var q = QUESTIONS.find(function(x){ return x.no === _qEdit; });
   if (q && _qBackup) q.links = _qBackup.slice();
   _qEdit = null; _qBackup = null;
-  renderQLinks();
+  renderQFit();
 }
 /* 연결 저장은 설계 저장일 뿐 — 진단을 이미 마쳤다면 그 결과가 낡았다는 표시만 남긴다.
    "진단은 보는 곳, 고치는 곳은 설계, 고치면 다시 진단" 규칙의 설계 쪽 절반. */
@@ -2115,7 +2068,7 @@ function qFitSave(no){
     } else {
       showToast('success','문항 ' + q.label + '의 채점기준을 저장했어요.');
     }
-    renderQLinks(); renderDiagCard(); renderToc();
+    renderQFit(); renderDiagCard(); renderToc();
   };
   if (!q.links.length){
     openConfirm('연결 없이 저장할까요?',
@@ -2519,7 +2472,7 @@ var MP_MAIN = [
   { k:'scored',      label:'AI 채점 실행 후',         sub:'배점·삭제·세트 교체 잠김' },
   { cap:'빈 활동지 등록 화면' },
   { k:'upload',      label:'빈 활동지 업로드',        sub:'파일 올리기 전 · 드롭존' },
-  { k:'structure',   label:'문항 구조·채점기준 연결',   sub:'문항 4개 · 문항별 기준' },
+  { k:'structure',   label:'문항 구조 확인',          sub:'문항 4개 · 지시문 수정' },
   { k:'qfail',       label:'문항 구분 실패',          sub:'다시 올리기 · 활동지 없이 저장' },
   { cap:'적합성 진단 화면' },
   { k:'diagnosing',  label:'진단 중',                sub:'적합도 살펴보는 중' },
