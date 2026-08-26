@@ -481,7 +481,7 @@ body { margin: 0; background: #EDF1FC; min-width: 1280px; }
               <p style="font-size:16px;font-weight:800;color:#1B6B39;margin:0 0 4px;">설계를 저장했어요</p>
               <p style="font-size:14px;color:#3D6B4E;margin:0;line-height:1.6;">학생 답안 한 장을 올려 보면 AI가 이 기준으로 어떻게 채점하는지 미리 볼 수 있어요.</p>
             </div>
-            <button class="btn btn-primary" style="flex-shrink:0;" onclick="openPreview()"><i data-lucide="play" style="width:18px;height:18px;"></i>AI 채점 미리보기</button>
+            <button class="btn btn-primary" style="flex-shrink:0;" onclick="openPreview('detail')"><i data-lucide="play" style="width:18px;height:18px;"></i>AI 채점 미리보기</button>
             <button onclick="hideSavedBanner()" style="width:28px;height:28px;border:none;background:transparent;border-radius:6px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;">
               <i data-lucide="x" style="width:16px;height:16px;color:#8AA795;"></i>
             </button>
@@ -762,8 +762,8 @@ body { margin: 0; background: #EDF1FC; min-width: 1280px; }
   <div class="pvx-wrap">
     <!-- 상단 바 -->
     <div class="pvx-top">
-      <div class="pvx-back" onclick="backToDetail(null)">
-        <i data-lucide="arrow-left" style="width:18px;height:18px;"></i>설계로
+      <div class="pvx-back" onclick="pvBack()">
+        <i data-lucide="arrow-left" style="width:18px;height:18px;"></i><span id="pv-back-label">설계로</span>
       </div>
       <span style="font-size:17px;font-weight:800;color:#333;">AI 채점 미리보기</span>
       <span id="pv-file-name" style="font-size:14px;color:#808080;font-weight:700;"></span>
@@ -904,7 +904,7 @@ body { margin: 0; background: #EDF1FC; min-width: 1280px; }
   </header>
   <div style="background:linear-gradient(90deg,#6562F5 4%,#9B68F3 97.86%);height:86px;display:flex;align-items:center;padding:0 36px;">
     <div style="max-width:1200px;width:100%;margin:0 auto;padding:0 36px;display:flex;align-items:center;gap:12px;">
-      <div onclick="backToDetail('sec-diagnosis')" style="width:36px;height:36px;background:rgba(255,255,255,0.2);border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;">
+      <div onclick="openPreview()" style="width:36px;height:36px;background:rgba(255,255,255,0.2);border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;">
         <i data-lucide="arrow-left" style="width:20px;height:20px;color:white;"></i>
       </div>
       <span style="font-size:28px;font-weight:800;color:white;">1학년 국어</span>
@@ -1262,7 +1262,7 @@ function renderList(){
       +   '<div style="border-top:1px solid #F0F0F0;padding-top:10px;display:flex;align-items:center;gap:10px;">'
       +     '<span style="font-size:14px;color:#B3B3B3;">' + c.date + ' 수정됨</span>'
       +     (c.state === 'draft' ? '' :
-          '<button class="btn btn-ghost btn-sm" style="margin-left:auto;flex-shrink:0;" onclick="event.stopPropagation();openPreview()">'
+          '<button class="btn btn-ghost btn-sm" style="margin-left:auto;flex-shrink:0;" onclick="event.stopPropagation();pvFromCard(\'' + c.open + '\')">'
           + '<i data-lucide="play" style="width:14px;height:14px;color:#7E44FB;"></i>채점 미리보기</button>')
       +   '</div>'
       + '</div>';
@@ -1834,7 +1834,9 @@ function renderStuck(){
   icons();
 }
 
-function openPreview(){
+var _pvFrom = 'detail';                      // 미리보기에 어디서 들어왔는지 — 뒤로가기가 그리로 돌려보낸다
+function openPreview(from){
+  if (from) _pvFrom = from;
   showScreen('preview');
   if (S.pv === 'result'){ renderPreview(); setHash('#case=preview'); return; }
   S.pv = 'idle'; renderPreview(); setHash('#case=pv-upload');
@@ -1857,6 +1859,14 @@ function runPvScore(isRerun){
     showToast('success', isRerun ? '바뀐 채점기준으로 다시 채점했어요.' : '답안 한 장을 채점해 봤어요.');
   }, 1600);
 }
+function pvBack(){
+  if (_pvFrom === 'list'){ goList(); setHash('#list'); return; }
+  backToDetail(null);
+}
+function pvFromCard(k){
+  applyCase(k);
+  openPreview('list');
+}
 function pvSrc(ocr){ _pvSrc = !!ocr; renderPreview(); }
 function pvAiTab(t){ _pvAiTab = t; renderPreview(); }
 function pvFbMode(m){ _pvFbMode = m; renderPreview(); }
@@ -1873,6 +1883,8 @@ function renderPreview(){
   show('pv-result',  S.pv === 'result', 'flex');
   show('pv-swap',    S.pv === 'result', 'inline-flex');
   show('pv-rescore', S.pv === 'result', 'inline-flex');
+  var bl = document.getElementById('pv-back-label');
+  if (bl) bl.textContent = (_pvFrom === 'list') ? '목록으로' : '설계로';
   var fn = document.getElementById('pv-file-name');
   if (fn) fn.textContent = (S.pv === 'result') ? PV_FILE_NAME : '';
   if (S.pv !== 'result'){ icons(); return; }
