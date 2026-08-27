@@ -132,7 +132,7 @@
     <div class="h-flex">
       <div>
         <h1>AI 서·논술형 평가지원시스템 — 목업 화면 인덱스</h1>
-        <p>개선 예정 화면을 미리 볼 수 있는 목업 모음입니다. 버튼을 누르면 새 탭에서 화면이 열려요.<br>업데이트: 2026. 8. 25.</p>
+        <p>개선 예정 화면을 미리 볼 수 있는 목업 모음입니다. 버튼을 누르면 새 탭에서 화면이 열려요.<br>업데이트: 2026. 8. 27.</p>
       </div>
       <div class="slogan"><img src="../screens/slogan.jpg" alt="경기교육 대전환, 크게 제대로!"></div>
     </div>
@@ -151,6 +151,18 @@
 <script>
 // ── 데이터: 서비스 흐름 순서 ──
 const SECTIONS = [
+  {
+    title:'선생님 홈', color:'#2F77D5', note:'컬러톤 시안',
+    cards:[
+      { name:'선생님 홈', file:'home_v1.html', desc:'로그인 후 처음 만나는 화면 — 학교 정보와 공지 사항을 확인하고, 맡고 계신 수업 목록에서 평가로 들어갑니다',
+        states:[
+          {label:'수업 있는 상태', hash:'#default', def:true},
+          {label:'수업 없는 상태', hash:'#empty', tip:'첫 진입 · 등록된 수업이 없을 때'},
+          {label:'학교 전환', hash:'#school-open', tip:'현 소속·전 소속 학교 선택'},
+          {label:'수업 카드 더보기', hash:'#card-menu'},
+        ]},
+    ]
+  },
   {
     title:'평가 홈 / 설문조사', color:'#0950A0', note:'평가 홈 8/24 배포 완료',
     cards:[
