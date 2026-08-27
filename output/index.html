@@ -9,11 +9,11 @@
 <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
 <style>
   :root{
-    --primary:#7E44FB; --primary-50:#F7F4FF; --primary-100:#EFE8FF;
+    --primary:#0950A0; --primary-50:#F3F9FF; --primary-100:#D9EAFB;
     --text:#000; --muted:#494949; --subtle:#808080;
     --border:#D9D9D9; --border-soft:#ECECEC;
-    --bg:#F5F4F9; --card:#fff;
-    --green:#00AF3D; --orange:#FF8C4C; --blue:#5890FF; --red:#DB3E51;
+    --bg:#F4F7FB; --card:#fff;
+    --green:#00AF3D; --orange:#FF8C4C; --blue:#00778B; --red:#DB3E51;
   }
   *{box-sizing:border-box;}
   body{
@@ -26,7 +26,7 @@
 
   /* 헤더 */
   header{
-    background:linear-gradient(120deg,#7E44FB 0%,#9B6BFF 100%);
+    background:linear-gradient(120deg,#0950A0 0%,#2F77D5 100%);
     color:#fff; padding:36px 0 30px; margin-bottom:28px;
   }
   header .wrap{padding-bottom:0;}
@@ -73,7 +73,7 @@
   .section{margin-bottom:34px;}
   .sec-head{display:flex; align-items:center; gap:10px; margin-bottom:14px;}
   .sec-head .dot{width:10px; height:10px; border-radius:50%; flex-shrink:0;}
-  .sec-head h2{margin:0; font-size:20px; font-weight:800; color:#341761;}
+  .sec-head h2{margin:0; font-size:20px; font-weight:800; color:#0A2A5E;}
   .sec-note{
     display:inline-flex; align-items:center; justify-content:center; line-height:1;
     font-size:13px; font-weight:700; color:var(--primary);
@@ -152,7 +152,7 @@
 // ── 데이터: 서비스 흐름 순서 ──
 const SECTIONS = [
   {
-    title:'평가 홈 / 설문조사', color:'#7E44FB', note:'평가 홈 8/24 배포 완료',
+    title:'평가 홈 / 설문조사', color:'#0950A0', note:'평가 홈 8/24 배포 완료',
     cards:[
       { name:'평가 홈', file:'eval_home_v10.html', desc:'수업 정보·평가 대상·평가 진행 상황을 한 화면에서 확인할 수 있도록 개편<br><b>채점 만족도 설문은 문항 확정 후 반영 예정 — 아래 설문 화면은 가안</b>',
         states:[
@@ -236,7 +236,7 @@ const SECTIONS = [
     ]
   },
   {
-    title:'AI 채점 결과 개선', color:'#5890FF', note:'9~10월',
+    title:'AI 채점 결과 개선', color:'#00778B', note:'9~10월',
     cards:[
       { name:'학생 채점 상세', file:'scoring_highlight_v1.html', desc:'• 문항 단위 채점을 통한 <b>문항 단위 AI 피드백</b> 제공 (9~10월)<br>• 손글씨 답안 <b>글자 수 표시 및 분량 채점</b> (9~10월)<br>• AI가 생성한 채점 근거를 인식된 과제물 위에 <b>하이라이팅</b> 표시 (10월)',
         states:[
