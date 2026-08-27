@@ -1,0 +1,1729 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>채점 - 이준호 (blue) — 컬러톤 시안 | AI 서·논술형 평가지원시스템</title>
+  <link rel="icon" href="../screens/favicon_src.png?v=2" type="image/png">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+  <style>
+    @import url('https://cdn.rawgit.com/moonspam/NanumSquareRound/master/nanumsquareround.min.css');
+    * { font-family: 'NanumSquareRound', sans-serif; box-sizing: border-box; }
+    body { margin: 0; padding: 0; background: white; overflow: hidden; }
+    .ocr-popup-textarea:focus { border-color: #0950A0 !important; outline: none; }
+
+    .score-btn {
+      width: 28px; height: 28px; border-radius: 6px; font-size: 18px; font-weight: 700;
+      display: inline-flex; align-items: center; justify-content: center;
+      cursor: pointer; border: 1px solid #0950A0; color: #0950A0; background: white;
+      transition: all 0.15s;
+    }
+    .score-btn.selected {
+      background: #0950A0; color: white; border-color: #0950A0;
+    }
+    .score-btn.hatched {
+      background: repeating-linear-gradient(-45deg, transparent, transparent 3px, rgba(9,80,160,0.15) 3px, rgba(9,80,160,0.15) 4px);
+      border: 1px solid #0950A0; color: #0950A0;
+    }
+
+    .tab-toggle-btn {
+      flex: 1; height: 40px; display: flex; align-items: center; justify-content: center;
+      font-size: 16px; font-weight: 700; cursor: pointer; border-radius: 8px;
+      border: none; color: #494949; background: transparent;
+      transition: all 0.15s; font-family: inherit; line-height: 1;
+    }
+    .tab-toggle-btn.active { background: white; color: #0950A0; box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
+
+    .radio-item {
+      display: flex; align-items: center; gap: 6px; cursor: pointer;
+      font-size: 16px; font-weight: 700; color: #333;
+    }
+    .radio-circle {
+      width: 18px; height: 18px; border-radius: 50%; border: 2px solid #D9D9D9;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .radio-circle.selected {
+      border: 5px solid #0950A0;
+    }
+
+    .feedback-radio-item {
+      display: flex; align-items: center; gap: 6px; cursor: pointer;
+      font-size: 14px; font-weight: 700; color: #494949;
+    }
+    .feedback-radio-circle {
+      width: 16px; height: 16px; border-radius: 50%; border: 2px solid #D9D9D9;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .feedback-radio-circle.selected {
+      border: 4px solid #0950A0;
+    }
+
+    .main-content { display: flex; height: calc(100vh - 68px); overflow: hidden; }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: #D9D9D9; border-radius: 3px; }
+
+    .pill-btn {
+      background: white; border: 1px solid #999; border-radius: 9999px;
+      height: 32px; padding: 0 16px; font-size: 14px; font-weight: 700;
+      color: #494949; cursor: pointer; display: inline-flex; align-items: center; gap: 4px;
+    }
+    .pill-btn:hover { background: #f5f5f5; }
+
+    .purple-btn {
+      background: #0950A0; border: none; border-radius: 8px;
+      height: 40px; padding: 0 16px; font-size: 16px; font-weight: 700;
+      color: white; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;
+    }
+    .purple-btn:hover { background: #0A4A94; }
+
+    /* B안 좌측 OCR 뷰어 */
+    .ocr-b-tab-wrap {
+      display: flex; align-items: center; gap: 12px;
+      background: #FAFAFA; border-bottom: 1px solid #E5E5E5;
+      padding: 10px 20px; flex-shrink: 0;
+    }
+    .ocr-b-switch {
+      display: inline-flex; gap: 4px; background: #EBEBEB;
+      padding: 4px; border-radius: 10px;
+    }
+    .ocr-b-tab {
+      display: inline-flex; align-items: center; gap: 6px;
+      height: 34px; padding: 0 16px; border-radius: 7px; border: none; cursor: pointer;
+      font-size: 14px; font-weight: 700; color: #808080;
+      background: transparent; transition: all 0.15s; font-family: inherit;
+    }
+    .ocr-b-tab.active { background: #0950A0; color: white; }
+    .ocr-uncertain {
+      background: #FFF4CC; border-bottom: 2px solid #E07000;
+      cursor: pointer; position: relative; border-radius: 2px;
+    }
+    /* 툴팁 스킨: Figma MM23…FVJpB 1900:20405 (화이트 · 14px Bold #0A2A5E · 화살표 14px) */
+    .ocr-uncertain:hover::after {
+      content: attr(data-hint); position: absolute; bottom: calc(100% + 12px); left: 0;
+      background: #fff; color: #0A2A5E; font-size: 14px; font-weight: 700; line-height: 18px;
+      padding: 10px 20px; border-radius: 8px; white-space: nowrap; z-index: 10;
+      box-shadow: 0 4px 36px rgba(45,85,145,.16);
+    }
+    .ocr-uncertain:hover::before {
+      content: ''; position: absolute; bottom: calc(100% + 6px); left: 12px;
+      width: 14px; height: 14px; background: #fff; transform: rotate(45deg); z-index: 11;
+    }
+    .ocr-b-q-label {
+      display: inline-flex; align-items: center; background: #E7F2FF; color: #0950A0;
+      border-radius: 100px; padding: 3px 12px; font-size: 13px; font-weight: 800;
+    }
+    .ocr-b-q-desc { font-size: 13px; color: #808080; font-weight: 700; }
+    .ocr-b-q-text { font-size: 16px; color: #333; line-height: 1.85; }
+    .ocr-b-editable { cursor: text; border-radius: 8px; padding: 14px 16px; border: 1px solid transparent; transition: background 0.12s, border-color 0.12s; }
+    .ocr-b-editable:hover { background: #F8F8F8 !important; border-color: #D9D9D9 !important; }
+
+    /* OCR 문항 카드 */
+    .rubric-ocr-section{ border:1px solid #E6E6E6; border-radius:12px; margin-bottom:12px; overflow:hidden; }
+    .rubric-ocr-header{ display:flex; align-items:center; gap:8px; padding:10px 14px; background:#F8F8F8; border-bottom:1px solid #E6E6E6; flex-wrap:wrap; }
+    .rubric-ocr-desc{ font-size:13px; color:#808080; font-weight:700; flex:1; min-width:0; overflow:hidden; white-space:nowrap; text-overflow:ellipsis; }
+    .rubric-suspect-chip{ display:inline-flex; align-items:center; gap:4px; background:#FFF0F0; border:1px solid #FFBCBC; border-radius:100px; padding:2px 8px; font-size:12px; font-weight:800; color:#DB3E51; flex-shrink:0; }
+    .rubric-ocr-body{ padding:14px 16px; font-size:15px; line-height:1.85; color:#333; cursor:text; position:relative; }
+    .rubric-ocr-body:hover{ background:#FDFCFF; }
+    .section-editing{ border-color:#0950A0 !important; box-shadow:0 0 0 2px rgba(9,80,160,.12); }
+    .section-editing .rubric-ocr-header{ background:#F3F9FF; }
+    .editing-badge{ font-size:11px; font-weight:800; color:#0950A0; background:#D9EAFB; border-radius:100px; padding:2px 8px; }
+    .saved-badge{ font-size:11px; font-weight:800; color:#00AF3D; display:inline-flex; align-items:center; gap:3px; transition:opacity .4s; }
+    .ocr-uncertainty-note{ border-top:1px dashed #FFBCBC; background:#FFF5F5; padding:10px 14px; display:flex; flex-direction:column; gap:4px; }
+    .ocr-uncertainty-label{ font-size:12px; font-weight:800; color:#DB3E51; display:flex; align-items:center; gap:4px; }
+    .ocr-uncertainty-text{ font-size:13px; color:#494949; line-height:1.65; }
+    .badge-purple{ display:inline-flex;align-items:center;background:#F3F9FF;color:#0950A0;border-radius:100px;padding:3px 10px;font-size:12px;font-weight:800; }
+  </style>
+</head>
+<body>
+
+<!-- GNB 숨김 (채점 상세 전체화면) -->
+
+<!-- 상단 고정 타이틀바 -->
+<div style="position:sticky;top:0;z-index:50;height:68px;display:flex;align-items:stretch;background:#F8F8F8;border-top:1px solid #D9D9D9;border-bottom:1px solid #D9D9D9;">
+  <!-- 뒤로가기 버튼 -->
+  <button id="btn-back" onclick="goBack()" style="width:68px;height:68px;background:#0950A0;border:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;flex-shrink:0;padding:0;">
+    <i data-lucide="arrow-left" style="width:28px;height:28px;color:white;"></i>
+    <span style="font-size:14px;font-weight:700;color:white;line-height:1;">목록으로</span>
+  </button>
+
+  <!-- 나머지 타이틀바 영역 -->
+  <div style="flex:1;display:flex;align-items:center;justify-content:space-between;padding:0 24px;">
+    <!-- 좌측 -->
+    <div style="display:flex;align-items:center;gap:16px;">
+      <!-- 학생 드롭다운 -->
+      <div id="studentDropdownWrap" style="position:relative;">
+        <div id="studentDropdownBtn" style="background:white;border:1px solid #D4D3D1;border-radius:6px;padding:8px 12px 8px 16px;min-width:345px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;">
+          <span style="font-size:18px;font-weight:700;color:#333;line-height:1.25;">10101 김하나 (확인 필요)</span>
+          <i data-lucide="chevron-down" style="width:24px;height:24px;color:#333;flex-shrink:0;margin-left:8px;"></i>
+        </div>
+        <div id="studentDropdownList" style="display:none;position:absolute;top:calc(100% + 4px);left:0;min-width:345px;max-height:400px;overflow-y:auto;background:white;border-radius:6px;box-shadow:0 0 1px #494949, 0 8px 32px rgba(45,85,145,0.16);z-index:100;padding:4px;"></div>
+      </div>
+      <!-- 채점 진행 현황 (1751:4122) -->
+      <div style="display:inline-flex;align-items:center;gap:6px;">
+        <i data-lucide="check" style="width:16px;height:16px;color:#00AF3D;"></i>
+        <span style="font-size:16px;font-weight:700;color:#494949;line-height:1;">10명 중 5명 채점 완료</span>
+      </div>
+    </div>
+
+    <!-- 우측 -->
+    <div style="display:flex;align-items:center;gap:16px;">
+      <!-- 이전/다음 학생 -->
+      <div style="display:flex;align-items:center;gap:12px;">
+        <button style="background:none;border:none;font-size:16px;font-weight:700;color:#494949;cursor:pointer;padding:0;font-family:inherit;display:inline-flex;align-items:center;gap:4px;line-height:1;"><i data-lucide="chevron-left" style="width:20px;height:20px;"></i>이전 학생</button>
+        <div style="width:1px;height:13px;background:#D9D9D9;"></div>
+        <button style="background:none;border:none;font-size:16px;font-weight:700;color:#494949;cursor:pointer;padding:0;font-family:inherit;display:inline-flex;align-items:center;gap:4px;line-height:1;">다음 학생<i data-lucide="chevron-right" style="width:20px;height:20px;"></i></button>
+      </div>
+      <!-- 저장 버튼 (1751:4122 — 채점은 자동 저장 없이 저장 버튼으로 사용자 저장) -->
+      <button onclick="saveGrading()" style="display:inline-flex;align-items:center;justify-content:center;line-height:1;vertical-align:middle;gap:6px;height:40px;padding:0 16px;background:#0950A0;border:1px solid #0950A0;border-radius:8px;font-family:inherit;font-size:16px;font-weight:700;color:white;cursor:pointer;" onmouseover="this.style.background='#0A4A94'" onmouseout="this.style.background='#0950A0'">
+        <i data-lucide="check" style="width:20px;height:20px;"></i>
+        저장
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- 재채점 유도 배너 (needsRescoring=true일 때만 노출) — 개발 디자인 1819:5188 -->
+<div id="student-rescore-banner" style="display:none;align-items:center;gap:12px;padding:12px 24px;background:#FFF3EA;border-bottom:1px solid #FF9960;">
+  <i data-lucide="triangle-alert" style="width:16px;height:16px;color:#E4631C;flex-shrink:0;"></i>
+  <span style="font-size:14px;color:#333;font-weight:400;line-height:1.5;flex:1;">
+    <strong style="color:#E4631C;">답안 인식 내용이 변경되었어요.</strong>&nbsp;&nbsp;변경된 답안으로 다시 채점을 진행해 주세요.
+  </span>
+  <button onclick="rerunAiScoring()" style="flex-shrink:0;height:32px;padding:0 8px;background:none;color:#E4631C;border:none;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;display:inline-flex;align-items:center;justify-content:center;gap:5px;border-radius:8px;" onmouseover="this.style.background='rgba(228,99,28,0.08)'" onmouseout="this.style.background='none'"><i data-lucide="rotate-ccw" style="width:16px;height:16px;"></i>다시 채점</button>
+</div>
+
+<!-- 직접 채점(AI 제외) 문항 안내 — OCR 단계에서 제외한 문항이 있을 때만 노출 -->
+<div id="student-exclude-banner" style="display:none;align-items:center;gap:10px;padding:10px 20px;background:#F5F5F5;">
+  <i data-lucide="user-pen" style="width:15px;height:15px;color:#808080;flex-shrink:0;"></i>
+  <span style="font-size:13px;color:#494949;font-weight:700;line-height:1.5;flex:1;">
+    <strong style="color:#494949;">직접 채점 문항</strong> <strong id="exclude-banner-q" style="color:#494949;"></strong> — AI 채점에서 제외했어요. 해당 문항 점수는 직접 입력해 주세요.
+  </span>
+</div>
+
+<!-- (제거됨) 채점 결과 시점 회복 안내 — 2026-07-29 정책 판단으로 미도입.
+     이유: ①정확도 낮음·인식 실패는 고칠 인식 결과가 없어 화면 안내('직접 채점해 주세요')와 모순
+           ②확인 필요는 기존 'OCR 결과 확인 필요' 배너가 이미 같은 안내를 하고 있어 중복
+           ③첨삭은 되돌릴 수 없어 '첨삭 전 원본 재업로드'는 사실상 실행 불가
+     → 안내는 행동 가능한 예방 시점(평가 설계·업로드)에만 둔다. -->
+
+<!-- 메인 컨텐츠 -->
+<div class="main-content">
+
+  <!-- 좌측 A안: 이미지 뷰어 -->
+  <div id="left-panel-a" style="flex:1;min-width:0;display:flex;flex-direction:column;">
+
+    <!-- 툴바 -->
+    <div style="background:#494949;height:48px;padding:0 16px;display:flex;align-items:center;gap:16px;flex-shrink:0;">
+      <!-- 페이지 네비 -->
+      <button onclick="changeViewerPage(-1)" style="width:28px;height:28px;background:none;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;border-radius:4px;" onmouseover="this.style.background='rgba(255,255,255,0.1)'" onmouseout="this.style.background='none'">
+        <i data-lucide="chevron-left" style="width:18px;height:18px;color:white;"></i>
+      </button>
+      <span id="viewer-page-info" style="font-size:14px;color:white;min-width:36px;text-align:center;">1 / 2</span>
+      <button onclick="changeViewerPage(1)" style="width:28px;height:28px;background:none;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;border-radius:4px;" onmouseover="this.style.background='rgba(255,255,255,0.1)'" onmouseout="this.style.background='none'">
+        <i data-lucide="chevron-right" style="width:18px;height:18px;color:white;"></i>
+      </button>
+      <div style="width:1px;height:20px;background:rgba(255,255,255,0.2);"></div>
+      <!-- 회전 -->
+      <button onclick="rotateViewer(-90)" style="width:28px;height:28px;background:none;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;border-radius:4px;" onmouseover="this.style.background='rgba(255,255,255,0.1)'" onmouseout="this.style.background='none'">
+        <i data-lucide="rotate-ccw" style="width:16px;height:16px;color:white;"></i>
+      </button>
+      <button onclick="rotateViewer(90)" style="width:28px;height:28px;background:none;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;border-radius:4px;" onmouseover="this.style.background='rgba(255,255,255,0.1)'" onmouseout="this.style.background='none'">
+        <i data-lucide="rotate-cw" style="width:16px;height:16px;color:white;"></i>
+      </button>
+      <!-- 줌 컨트롤 -->
+      <div style="display:flex;align-items:center;gap:6px;margin-left:auto;">
+        <button onclick="changeViewerZoom(-10)" style="width:28px;height:28px;background:none;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;border-radius:4px;" onmouseover="this.style.background='rgba(255,255,255,0.1)'" onmouseout="this.style.background='none'">
+          <i data-lucide="minus" style="width:16px;height:16px;color:white;"></i>
+        </button>
+        <span id="viewer-zoom-info" onclick="resetViewerZoom()" style="font-size:13px;color:white;min-width:38px;text-align:center;cursor:pointer;">100%</span>
+        <button onclick="changeViewerZoom(10)" style="width:28px;height:28px;background:none;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;border-radius:4px;" onmouseover="this.style.background='rgba(255,255,255,0.1)'" onmouseout="this.style.background='none'">
+          <i data-lucide="plus" style="width:16px;height:16px;color:white;"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- 이미지 뷰어 -->
+    <div style="flex:1;overflow:auto;background:#EBEBEA;padding:24px;">
+      <img src="../screens/student_submission.png" style="width:100%;height:auto;display:block;" alt="학생 과제물">
+    </div>
+  </div>
+
+  <!-- 좌측 B안: Pensive OCR 뷰어 (eval=B일 때만 표시) -->
+  <div id="left-panel-b" style="flex:1;min-width:0;display:none;flex-direction:column;">
+    <!-- 탭 토글 바 -->
+    <div class="ocr-b-tab-wrap">
+      <div class="ocr-b-switch">
+        <button class="ocr-b-tab active" id="left-tab-original" onclick="switchLeftTab('original')">
+          <i data-lucide="file-image" style="width:14px;height:14px;"></i>원본 과제물
+        </button>
+        <button class="ocr-b-tab" id="left-tab-text" onclick="switchLeftTab('text')">
+          <i data-lucide="align-left" style="width:14px;height:14px;"></i>인식 결과
+        </button>
+      </div>
+      <span id="left-uncertain-chip" style="display:none;margin-left:auto;background:#FFF4CC;border:1px solid #E07000;border-radius:100px;padding:3px 12px;font-size:12px;font-weight:800;color:#E07000;align-items:center;gap:4px;">
+        <i data-lucide="triangle-alert" style="width:11px;height:11px;"></i>
+        <span id="left-uncertain-count"></span>개 불확실 구간
+      </span>
+      <!-- 우측 그룹: 학생 풀이와 답만 보기(전사 텍스트 + 인식 결과 있을 때만) + 인식 결과 수정 -->
+      <div style="margin-left:auto;display:flex;align-items:center;gap:16px;">
+        <label id="stu-answersonly-wrap" style="display:none;align-items:center;gap:8px;cursor:pointer;font-size:14px;font-weight:700;color:#333;user-select:none;">
+          <input type="checkbox" id="stu-answers-only" checked onchange="setStuAnswersOnly(this.checked)" style="width:14px;height:14px;accent-color:#0950A0;cursor:pointer;flex-shrink:0;">
+          학생 풀이와 답만 보기
+        </label>
+        <a id="left-ocr-review-link" href="#" onclick="return goEditOcr(event)" style="display:none;background:white;border:1px solid #7FB3E8;border-radius:8px;height:32px;padding:0 12px;font-size:13px;font-weight:700;color:#0950A0;cursor:pointer;align-items:center;gap:6px;text-decoration:none;" onmouseover="this.style.background='#F3F9FF'" onmouseout="this.style.background='white'">
+          <i data-lucide="scan-text" style="width:14px;height:14px;"></i>인식 결과 수정
+        </a>
+      </div>
+    </div>
+    <!-- 전사 텍스트 패널 — 회색 바탕 위 흰 카드 (개발 디자인 1752:7372) -->
+    <div id="left-text-panel" style="display:none;flex:1;overflow-y:auto;padding:24px;background:#F0F0F0;">
+      <div id="left-ocr-content" style="display:flex;flex-direction:column;gap:24px;background:white;border-radius:12px;padding:32px 36px;min-height:calc(100% - 0px);"></div>
+    </div>
+    <!-- 원본 과제물 패널 (기존 이미지 뷰어) -->
+    <div id="left-original-panel" style="display:flex;flex:1;flex-direction:column;">
+      <!-- 툴바 (Figma 2087:51336) -->
+      <div style="background:#494949;display:flex;align-items:center;gap:20px;padding:4px 20px;flex-shrink:0;min-height:44px;">
+        <div style="width:294px;font-size:16px;color:white;font-family:'NanumSquareRound',sans-serif;line-height:1.4;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">1학년1반과제파일.pdf</div>
+        <div style="display:flex;align-items:center;gap:20px;">
+          <div style="display:flex;align-items:center;gap:12px;">
+            <button onclick="stuOrigPageChange(-1)" style="background:#333;border:none;border-radius:4px;width:40px;padding:2px 8px;color:white;font-size:16px;font-family:inherit;line-height:1.4;cursor:pointer;text-align:center;"><span id="stu-orig-page-cur">4</span></button>
+            <span style="font-size:16px;color:white;line-height:1.4;">/</span>
+            <div style="background:transparent;display:flex;align-items:center;justify-content:center;border-radius:4px;width:40px;padding:2px 8px;color:white;font-size:16px;line-height:1.4;text-align:center;"><span id="stu-orig-page-total">120</span></div>
+          </div>
+          <div style="display:flex;align-items:center;gap:4px;">
+            <button onclick="stuOrigZoomChange(-10)" style="background:white;border:none;border-radius:100px;width:20px;height:20px;display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0;" aria-label="축소">
+              <i data-lucide="minus" style="width:14px;height:14px;color:#333;"></i>
+            </button>
+            <div style="padding:4px 8px;width:60px;text-align:center;"><span id="stu-orig-zoom-pct" style="font-size:16px;color:white;line-height:1.4;">100%</span></div>
+            <button onclick="stuOrigZoomChange(10)" style="background:white;border:none;border-radius:100px;width:20px;height:20px;display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0;" aria-label="확대">
+              <i data-lucide="plus" style="width:14px;height:14px;color:#333;"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+      <div style="flex:1;overflow:auto;background:#EBEBEA;padding:24px;">
+        <img id="stu-orig-scan-image" src="../screens/student_submission.png" style="width:100%;max-width:540px;height:auto;display:block;margin:0 auto;transform-origin:top center;transition:transform .15s;" alt="학생 원본 과제물">
+      </div>
+    </div>
+  </div>
+
+  <!-- 우측: 채점 패널 -->
+  <div style="width:612px;flex-shrink:0;overflow-y:auto;background:white;border-left:1px solid #D9D9D9;">
+
+    <!-- 미진행/인식실패 학생: 채점 불가 placeholder (단계형 정책 — OCR 인식 전엔 채점할 입력이 없음) -->
+    <div id="right-grading-empty" style="display:none;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:80px 32px;min-height:420px;">
+      <div style="width:64px;height:64px;border-radius:18px;background:#F2F2F2;display:flex;align-items:center;justify-content:center;margin-bottom:16px;"><i data-lucide="lock" style="width:28px;height:28px;color:#808080;"></i></div>
+      <div id="right-grading-empty-title" style="font-size:16px;font-weight:800;color:#222;margin-bottom:8px;">아직 채점할 수 없어요</div>
+      <div id="right-grading-empty-desc" style="font-size:13px;color:#494949;line-height:1.7;max-width:360px;">답안 인식(OCR)이 끝나면 AI 채점을 진행할 수 있어요. 왼쪽 안내에서 과제물 관리로 이동해 인식을 먼저 완료해 주세요.</div>
+      <button id="direct-grade-btn" onclick="enableDirectGrade()" style="display:none;margin-top:20px;height:40px;padding:0 18px;background:white;color:#0950A0;border:1.5px solid #7FB3E8;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;align-items:center;justify-content:center;gap:6px;" onmouseover="this.style.background='#F3F9FF'" onmouseout="this.style.background='white'"><i data-lucide="pencil-line" style="width:15px;height:15px;"></i>직접 채점하기</button>
+    </div>
+
+    <div id="right-grading-content">
+
+    <!-- 인식 실패 → 직접 채점 안내 (배경+아이콘, 좌측 띠 없음) -->
+    <div id="failed-direct-note" style="display:none;align-items:center;gap:10px;padding:10px 20px;background:#FFF5F5;">
+      <i data-lucide="circle-x" style="width:15px;height:15px;color:#DB3E51;flex-shrink:0;"></i>
+      <span style="font-size:13px;color:#494949;font-weight:700;"><strong style="color:#DB3E51;">AI 채점 불가 · 인식 실패</strong> — 원본 과제물을 보고 점수를 직접 선택해 채점해 주세요.</span>
+    </div>
+
+    <!-- OCR 미확인 경고 배너 -->
+    <div id="scoring-ocr-review-banner" style="display:none;align-items:center;gap:10px;padding:10px 20px;background:#FFF5F5;border-bottom:1px solid #FFBCBC;">
+      <i data-lucide="triangle-alert" style="width:15px;height:15px;color:#DB3E51;flex-shrink:0;"></i>
+      <span style="font-size:13px;color:#494949;font-weight:700;"><strong style="color:#DB3E51;">OCR 결과 확인 필요</strong> <span id="ocr-banner-count" style="font-size:11px;font-weight:700;background:#FFEFEF;border-radius:100px;padding:1px 6px;color:#DB3E51;margin:0 4px;"></span>— OCR 결과 확인 후 AI 채점을 재실행해 주세요.</span>
+    </div>
+
+    <!-- 섹션 1: 총점/채점상태 (Figma 736:10853) -->
+    <div style="padding:20px 24px;border-bottom:1px solid #D9D9D9;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;">
+      <!-- 총점 -->
+      <div style="display:flex;align-items:baseline;gap:4px;font-family:'NanumSquareRound',sans-serif;">
+        <span style="font-size:16px;font-weight:700;color:#333;line-height:1.25;">총점</span>
+        <span id="grading-total-val" style="font-size:18px;font-weight:700;color:#333;line-height:1.25;">30 / 50</span>
+        <span style="font-size:16px;font-weight:700;color:#333;line-height:1.25;">점</span>
+        <span id="score-plan-badge" style="font-size:18px;font-weight:700;color:#333;line-height:1.25;margin-left:4px;">(A)</span>
+      </div>
+      <!-- 채점 상태 라디오 -->
+      <div style="display:flex;gap:20px;align-items:center;">
+        <label class="radio-item" onclick="selectStatus(this)">
+          <div class="radio-circle selected"></div>
+          채점 진행
+        </label>
+        <label class="radio-item" onclick="selectStatus(this)">
+          <div class="radio-circle"></div>
+          미업로드
+        </label>
+        <label class="radio-item" onclick="selectStatus(this)">
+          <div class="radio-circle"></div>
+          미응시
+        </label>
+      </div>
+    </div>
+
+    <!-- 섹션 2: 채점결과 -->
+    <div style="padding:24px;border-bottom:1px solid #D9D9D9;">
+      <!-- 헤더 -->
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+        <i data-lucide="circle-check-big" style="width:20px;height:20px;color:#0950A0;flex-shrink:0;"></i>
+        <span style="font-size:18px;font-weight:700;color:#333;">채점 결과</span>
+        <i data-lucide="circle-help" title="채점 요소별 점수를 선택하면 총점이 계산돼요" style="width:18px;height:18px;color:#B3B3B3;flex-shrink:0;margin-left:auto;cursor:help;"></i>
+      </div>
+      <p style="font-size:14px;color:#808080;margin:0 0 20px;">AI는 채점을 보조하는 역할을 하며, 채점의 최종 권한은 선생님에게만 있습니다.</p>
+
+      <!-- 루브릭 행들 -->
+      <div style="display:flex;flex-direction:column;gap:0;">
+
+        <!-- 항목 1 -->
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid #D9D9D9;">
+          <span style="font-size:16px;font-weight:700;color:#333;">작성 내용의 구체성</span>
+          <div style="display:flex;gap:16px;align-items:center;" data-rubric="1">
+            <button class="score-btn selected" onclick="selectScore(this, 1)">15</button>
+            <button class="score-btn" onclick="selectScore(this, 1)">10</button>
+            <button class="score-btn hatched">5</button>
+          </div>
+        </div>
+
+        <!-- 항목 2 -->
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid #D9D9D9;">
+          <span style="font-size:16px;font-weight:700;color:#333;">작성 분량 수준</span>
+          <div style="display:flex;gap:16px;align-items:center;" data-rubric="2">
+            <button class="score-btn" onclick="selectScore(this, 2)">15</button>
+            <button class="score-btn selected" onclick="selectScore(this, 2)">10</button>
+            <button class="score-btn" onclick="selectScore(this, 2)">5</button>
+          </div>
+        </div>
+
+        <!-- 항목 3 -->
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 0;">
+          <span style="font-size:16px;font-weight:700;color:#333;">작성의 창의성</span>
+          <div style="display:flex;gap:16px;align-items:center;" data-rubric="3">
+            <button class="score-btn" onclick="selectScore(this, 3)">15</button>
+            <button class="score-btn selected" onclick="selectScore(this, 3)">10</button>
+            <button class="score-btn" onclick="selectScore(this, 3)">5</button>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- 하단 액션 버튼 -->
+      <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:16px;">
+        <button class="pill-btn" onclick="resetScores()">점수 초기화</button>
+        <button class="pill-btn" onclick="showToast('success','AI 점수를 그대로 적용했습니다.')">
+          <i data-lucide="check" style="width:14px;height:14px;"></i>
+          AI 점수 그대로 적용
+        </button>
+      </div>
+    </div>
+
+    <!-- 섹션 3: AI 채점 근거 및 피드백 -->
+    <div id="ai-feedback-section" style="padding:24px 24px 52px;border-bottom:1px solid #D9D9D9;">
+      <!-- 헤더 -->
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px;">
+        <i data-lucide="sparkles" style="width:20px;height:20px;color:#0950A0;"></i>
+        <span style="font-size:18px;font-weight:700;color:#333;">AI 채점 근거 및 피드백</span>
+        <i data-lucide="circle-help" title="AI가 과제물 분석 또는 루브릭 점수를 바탕으로 채점 근거와 피드백을 생성해요" style="width:18px;height:18px;color:#B3B3B3;flex-shrink:0;margin-left:auto;cursor:help;"></i>
+      </div>
+
+      <!-- 탭 토글 -->
+      <div style="height:48px;background:#F8F8F8;border-radius:8px;overflow:hidden;display:flex;gap:0;margin-bottom:16px;padding:4px;">
+        <button class="tab-toggle-btn active" id="tab-analysis" onclick="switchTab('analysis')">
+          과제물 분석 AI
+        </button>
+        <button class="tab-toggle-btn" id="tab-rubric" onclick="switchTab('rubric')">
+          루브릭 기반 AI<i data-lucide="circle-help" title="선생님이 체크한 채점 요소 점수만으로 기록을 생성해요" style="width:16px;height:16px;margin-left:6px;opacity:.6;"></i>
+        </button>
+      </div>
+
+      <!-- 컨텐츠 박스 (과제물 분석 AI — OCR 인식 텍스트 기반) -->
+      <div id="ai-content-analysis" style="background:white;border:1px solid #D9D9D9;border-radius:12px;padding:20px;display:flex;flex-direction:column;gap:24px;margin-bottom:12px;">
+        <!-- 뱃지 -->
+        <div>
+          <span style="background:#F0F0F0;color:#494949;border-radius:9999px;font-size:14px;font-weight:700;padding:3px 12px;display:inline-block;">기본 설정으로 채점</span>
+        </div>
+
+        <!-- AI 채점 근거 -->
+        <div>
+          <p style="font-size:16px;font-weight:700;color:#333;margin:0 0 10px;">AI 채점 근거</p>
+          <ol style="font-size:16px;color:#333;line-height:1.55;margin:0;padding-left:20px;">
+            <li style="margin-bottom:8px;">학생은 해수와 담수의 관점에서 지구상의 물 부족 현상을 설명함. 해수 담수화와 같은 현대 기술을 통해 물 부족 문제를 해결할 수 있는 방안을 제시함.</li>
+            <li>학생이 해수와 담수의 분포와 관련된 설명을 통해 물 부족의 원인을 서술함.</li>
+          </ol>
+        </div>
+
+        <!-- 구분선 -->
+        <div style="height:1px;background:#D9D9D9;"></div>
+
+        <!-- AI 피드백 -->
+        <div>
+          <div style="display:flex;align-items:center;gap:16px;margin-bottom:12px;flex-wrap:wrap;">
+            <span style="font-size:16px;font-weight:700;color:#333;">AI 피드백</span>
+            <div style="display:flex;gap:16px;align-items:center;margin-left:auto;">
+              <label class="feedback-radio-item" onclick="selectFeedbackMode(this)">
+                <div class="feedback-radio-circle selected"></div>
+                요약 보기
+              </label>
+              <label class="feedback-radio-item" onclick="selectFeedbackMode(this)">
+                <div class="feedback-radio-circle"></div>
+                채점요소별 보기
+              </label>
+            </div>
+          </div>
+          <p style="font-size:16px;color:#333;line-height:1.55;margin:0;white-space:pre-wrap;">해수 담수화 기술에 대해 더 구체적으로 연구하고, 그 기술이 실제로 적용될 때의 경제적 비용, 환경에 미치는 영향 등을 추가로 조사하여 근거를 더욱 강화시키면 좋겠음.
+
+[잘한 점]
+- 수권과 해수의 순환에 대한 이해를 바탕으로 물 부족에 대한 원인과 해결책을 잘 설명함.
+
+[보완할 점]
+- 현실적인 해결책을 제시한 것으로 보이나, 더 구체적인 기술적, 경제적, 환경적 측면의 근거 제시가 필요함.</p>
+        </div>
+
+        <!-- 푸터 -->
+        <div style="display:flex;align-items:center;justify-content:space-between;">
+          <span style="font-size:13px;color:#6D7381;">293자 / 713 byte</span>
+          <button class="pill-btn" style="height:36px;font-size:14px;">
+            <i data-lucide="download" style="width:14px;height:14px;"></i>
+            피드백 가져오기
+          </button>
+        </div>
+      </div>
+
+      <!-- 루브릭 기반 AI — OCR 없이 선생님 점수만으로 동작(직접 채점 케이스 포함) -->
+      <div id="ai-content-rubric" style="display:none;">
+        <div style="background:white;border:1px solid #D9D9D9;border-radius:12px;padding:40px 20px;text-align:center;margin-bottom:12px;">
+          <p style="font-size:16px;color:#808080;line-height:1.6;margin:0;">모든 채점요소 점수를 체크하면<br>점수에 맞는 루브릭 AI 기록을 생성할 수 있어요</p>
+        </div>
+        <div style="display:flex;align-items:flex-start;gap:6px;margin-bottom:12px;">
+          <i data-lucide="info" style="width:14px;height:14px;color:#6D7381;flex-shrink:0;margin-top:3px;"></i>
+          <span style="font-size:13px;color:#6D7381;line-height:1.6;">선생님께서 입력하신 채점 요소와 점수만으로 피드백을 생성합니다. 최대 5개의 AI 피드백 기록이 저장됩니다.</span>
+        </div>
+      </div>
+
+      <!-- AI 채점 재실행 버튼 -->
+      <div id="ai-rerun-wrap" style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+        <button onclick="openRerunModal()" style="background:#0950A0;border:none;border-radius:8px;height:36px;padding:0 12px;font-size:16px;font-weight:700;color:white;cursor:pointer;display:inline-flex;align-items:center;gap:6px;" onmouseover="this.style.background='#0A4A94'" onmouseout="this.style.background='#0950A0'">
+          <i data-lucide="wand-sparkles" style="width:16px;height:16px;"></i>
+          AI 채점 재실행
+        </button>
+      </div>
+
+      <!-- 안내 텍스트 -->
+      <div style="display:flex;align-items:flex-start;gap:6px;">
+        <i data-lucide="info" style="width:16px;height:16px;color:#494949;flex-shrink:0;margin-top:2px;"></i>
+        <span style="font-size:14px;color:#494949;line-height:1.5;">AI Assistant의 채점 결과는 부정확할 수 있습니다. 언제나 선생님의 최종 확인이 필요합니다.</span>
+      </div>
+    </div>
+
+    <!-- 섹션 4: 선생님 직접 피드백 (개발 디자인 — 글자수·수식 입력이 입력 박스 안) -->
+    <div style="background:white;padding:24px;padding-bottom:52px;">
+      <!-- 헤더 -->
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px;">
+        <i data-lucide="message-circle" style="width:20px;height:20px;color:#0950A0;"></i>
+        <span style="font-size:18px;font-weight:700;color:#333;">선생님 직접 피드백</span>
+        <!-- 도움말 (?) — 클릭 팝오버 (개발 디자인 2067:11957) -->
+        <div style="position:relative;margin-left:auto;flex-shrink:0;">
+          <button id="fbGuideBtn" onclick="toggleFeedbackGuide(event)" aria-label="선생님 피드백 가이드" style="width:28px;height:28px;border:none;background:none;border-radius:6px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;padding:0;" onmouseover="this.style.background='#F0F0F0'" onmouseout="this.style.background='none'">
+            <i data-lucide="circle-help" style="width:18px;height:18px;color:#B3B3B3;"></i>
+          </button>
+          <!-- 팝오버 박스 -->
+          <div id="fbGuidePop" style="display:none;position:absolute;top:calc(100% + 10px);right:0;width:300px;background:white;border-radius:8px;box-shadow:0 0 1px #494949, 0 8px 32px rgba(45,85,145,0.16);padding:16px;z-index:60;">
+            <div style="position:absolute;top:-6px;right:9px;width:12px;height:12px;background:white;transform:rotate(45deg);box-shadow:-1px -1px 2px rgba(45,85,145,0.08);"></div>
+            <div style="display:flex;flex-direction:column;gap:16px;">
+              <div style="font-size:16px;font-weight:700;color:#27272A;line-height:1.25;">선생님 피드백 가이드</div>
+              <div style="font-size:14px;font-weight:400;color:#27272A;line-height:1.55;">이 피드백은 결과지 출력·배부에서 학생에게 공개할지 선택할 수 있어요.<br>AI 채점 근거와 피드백은 선생님 참고용으로, 학생에게 공개되지 않아요.</div>
+              <div style="display:flex;justify-content:flex-end;">
+                <button onclick="closeFeedbackGuide()" style="height:36px;padding:0 12px;background:#2F77D5;color:white;border:none;border-radius:8px;font-size:16px;font-weight:700;font-family:inherit;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;line-height:1;">확인</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 입력 박스 (텍스트 + 하단 글자수·수식 버튼) -->
+      <div id="teacherFeedbackBox" style="background:white;border:1px solid #D9D9D9;border-radius:12px;padding:16px 20px 12px;margin-bottom:16px;transition:border-color .15s;">
+        <textarea id="teacherFeedback" oninput="updateCharCount()"
+          onfocus="document.getElementById('teacherFeedbackBox').style.borderColor='#0950A0'"
+          onblur="document.getElementById('teacherFeedbackBox').style.borderColor='#D9D9D9'"
+          style="width:100%;background:transparent;border:none;height:140px;resize:none;font-size:16px;font-family:'NanumSquareRound',sans-serif;color:#333;outline:none;line-height:1.55;display:block;"
+          placeholder="채점 완료 시, 학생에게 제공되는 과제 피드백 내용입니다.&#10;AI 생성 기록을 참고하여 피드백을 작성해 보세요."
+        ></textarea>
+        <div style="display:flex;align-items:center;justify-content:space-between;padding-top:8px;">
+          <span id="charCount" style="font-size:14px;color:#494949;">0자 / 0 byte</span>
+          <button onclick="showToast('success','수식 입력은 실제 서비스에서 제공돼요.')" style="display:inline-flex;align-items:center;justify-content:center;line-height:1;vertical-align:middle;gap:4px;height:28px;padding:0 10px;background:white;border:1px solid #7FB3E8;border-radius:8px;color:#0950A0;font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;" onmouseover="this.style.background='#F3F9FF'" onmouseout="this.style.background='white'"><i data-lucide="sigma" style="width:14px;height:14px;"></i>수식 입력</button>
+        </div>
+      </div>
+
+      <!-- 저장 후 다음 학생 버튼 -->
+      <div style="display:flex;justify-content:flex-end;">
+        <button class="purple-btn" style="height:40px;font-size:16px;" onclick="showToast('success','저장되었습니다. 다음 학생으로 이동합니다.')">
+          <i data-lucide="check" style="width:20px;height:20px;"></i>
+          저장 후 다음 학생
+        </button>
+      </div>
+    </div>
+
+    </div><!-- /right-grading-content -->
+
+  </div><!-- /채점 패널 -->
+</div><!-- /main-content -->
+
+<!-- AI 채점 재실행 모달 -->
+<div id="rerun-overlay" onclick="closeRerunModal()" style="display:none;position:fixed;inset:0;z-index:1000;background:rgba(0,0,0,0.4);"></div>
+<div id="rerun-modal" style="display:none;position:fixed;z-index:1001;width:752px;background:white;border-radius:24px;box-shadow:0 4px 12px rgba(45,85,145,0.16);top:50%;left:50%;transform:translate(-50%,-50%);">
+  <!-- 헤더 -->
+  <div style="padding:24px 24px 16px;position:relative;">
+    <span style="font-size:20px;font-weight:700;color:#222631;">AI 채점 재실행</span>
+    <button onclick="closeRerunModal()" style="position:absolute;top:11px;right:11px;width:36px;height:36px;background:none;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;border-radius:6px;" onmouseover="this.style.background='#F0F0F0'" onmouseout="this.style.background='none'">
+      <i data-lucide="x" style="width:20px;height:20px;color:#494949;"></i>
+    </button>
+  </div>
+  <!-- 바디 -->
+  <div style="padding:0 24px 24px;display:flex;flex-direction:column;gap:24px;">
+    <p style="font-size:14px;color:#333;line-height:1.55;margin:0;">AI Assistant 자동 채점을 진행할 학생과 AI 채점 수준을 선택해 주세요.<br>AI 채점 결과를 기반으로 채점 수준을 조정하여 해당 학생에 대한 AI Assistant 자동 채점을 재실행합니다.<br>AI는 선생님을 보조하는 역할을 하며 채점의 최종 권한은 선생님에게만 있습니다.</p>
+    <!-- AI 채점 대상 -->
+    <div style="display:flex;flex-direction:column;gap:12px;">
+      <span style="font-size:16px;font-weight:700;color:#333;">AI 채점 대상</span>
+      <div style="border:1px solid #D9D9D9;border-radius:8px;overflow:hidden;">
+        <!-- 반 행 -->
+        <div style="border-bottom:1px solid #D9D9D9;height:52px;padding:0 20px;display:flex;align-items:center;gap:8px;cursor:pointer;">
+          <div style="width:20px;height:20px;background:#0950A0;border-radius:2px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+            <i data-lucide="check" style="width:14px;height:14px;color:white;"></i>
+          </div>
+          <span style="flex:1;font-size:16px;font-weight:700;color:#333;">1-1반 (1/4명)</span>
+          <span style="font-size:14px;color:#494949;">0 / 20</span>
+          <i data-lucide="chevron-down" style="width:20px;height:20px;color:#333;"></i>
+        </div>
+        <!-- 학생 목록 -->
+        <div style="padding:12px 20px;display:flex;flex-direction:column;gap:16px;">
+          <div style="display:flex;align-items:center;justify-content:space-between;">
+            <div style="display:flex;align-items:center;gap:10px;">
+              <div style="width:20px;height:20px;background:#0950A0;border-radius:2px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                <i data-lucide="check" style="width:14px;height:14px;color:white;"></i>
+              </div>
+              <span style="font-size:16px;font-weight:700;color:#333;">10101 김하나</span>
+            </div>
+            <span style="font-size:14px;color:#333;">AI 채점결과 30점</span>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between;opacity:0.4;">
+            <div style="display:flex;align-items:center;gap:10px;">
+              <div style="width:20px;height:20px;border:1px solid #B3B3B3;border-radius:2px;flex-shrink:0;"></div>
+              <span style="font-size:16px;font-weight:700;color:#333;">10102 이지은</span>
+            </div>
+            <span style="font-size:14px;color:#333;">과제 미업로드</span>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between;opacity:0.4;">
+            <div style="display:flex;align-items:center;gap:10px;">
+              <div style="width:20px;height:20px;border:1px solid #B3B3B3;border-radius:2px;flex-shrink:0;"></div>
+              <span style="font-size:16px;font-weight:700;color:#333;">10103 박수진</span>
+            </div>
+            <span style="font-size:14px;color:#333;">과제 미업로드</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- AI 채점 수준 -->
+    <div style="display:flex;flex-direction:column;gap:12px;" id="rerun-level">
+      <span style="font-size:16px;font-weight:700;color:#333;">AI 채점 수준</span>
+      <label style="display:flex;align-items:center;gap:10px;cursor:pointer;" onclick="selectRerunLevel(this)">
+        <div class="rerun-radio rerun-radio-selected" style="width:20px;height:20px;border-radius:50%;border:5px solid #0950A0;flex-shrink:0;"></div>
+        <span style="font-size:16px;font-weight:700;color:#333;">이전과 동일하게 채점</span>
+      </label>
+      <label style="display:flex;align-items:center;gap:10px;cursor:pointer;" onclick="selectRerunLevel(this)">
+        <div class="rerun-radio" style="width:20px;height:20px;border-radius:50%;border:2px solid #B3B3B3;background:white;flex-shrink:0;"></div>
+        <span style="font-size:16px;font-weight:700;color:#333;">이전보다 관대하게 채점</span>
+      </label>
+      <label style="display:flex;align-items:center;gap:10px;cursor:pointer;" onclick="selectRerunLevel(this)">
+        <div class="rerun-radio" style="width:20px;height:20px;border-radius:50%;border:2px solid #B3B3B3;background:white;flex-shrink:0;"></div>
+        <span style="font-size:16px;font-weight:700;color:#333;">이전보다 엄격하게 채점</span>
+      </label>
+    </div>
+  </div>
+  <!-- 푸터 -->
+  <div style="padding:8px 24px 24px;display:flex;justify-content:flex-end;gap:12px;">
+    <button onclick="closeRerunModal()" style="background:#F0F0F0;border:none;border-radius:8px;height:40px;padding:0 16px;font-size:16px;font-weight:700;color:#494949;cursor:pointer;" onmouseover="this.style.background='#E0E0E0'" onmouseout="this.style.background='#F0F0F0'">취소</button>
+    <button onclick="runRerun()" style="background:#0950A0;border:none;border-radius:8px;height:40px;padding:0 20px;font-size:16px;font-weight:700;color:white;cursor:pointer;" onmouseover="this.style.background='#0A4A94'" onmouseout="this.style.background='#0950A0'">AI 채점 재실행</button>
+  </div>
+</div>
+
+<!-- 토스트 -->
+<div id="toast" style="display:none;position:fixed;bottom:80px;left:50%;transform:translateX(-50%);z-index:9999;width:384px;padding:16px 24px;border-radius:8px;box-shadow:0 0 1px #494949,0 8px 32px rgba(45,85,145,0.16);display:none;align-items:center;gap:12px;font-size:16px;font-weight:700;line-height:1.55;transition:opacity 0.2s ease,transform 0.2s ease;opacity:0;">
+  <i id="toast-icon" data-lucide="circle-check-big" style="width:20px;height:20px;color:white;flex-shrink:0;"></i>
+  <span id="toast-msg"></span>
+</div>
+
+<!-- OCR 결과 팝업 (드래그 가능) -->
+<div id="ocr-popup" style="display:none;position:fixed;z-index:200;width:540px;height:calc(100vh - 88px);background:white;border-radius:16px;box-shadow:-4px 0 24px rgba(0,0,0,0.10),0 8px 40px rgba(45,85,145,0.22),0 0 0 1px rgba(0,0,0,0.05);overflow:hidden;top:44px;right:20px;">
+  <!-- 팝업 헤더 (드래그 핸들) -->
+  <div id="ocr-popup-header" style="background:#F8F8F8;border-bottom:1px solid #D9D9D9;height:52px;padding:0 20px;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;cursor:grab;flex-shrink:0;user-select:none;">
+    <div style="display:flex;align-items:center;gap:8px;">
+      <i data-lucide="scan-text" style="width:18px;height:18px;color:#0950A0;"></i>
+      <span style="font-size:16px;font-weight:700;color:#333;">인식 결과 수정</span>
+    </div>
+    <div title="드래그하여 이동" style="display:flex;flex-direction:column;gap:3px;align-items:center;padding:0 12px;">
+      <div style="display:flex;gap:3px;">
+        <div style="width:3px;height:3px;border-radius:50%;background:#C0C0C0;"></div>
+        <div style="width:3px;height:3px;border-radius:50%;background:#C0C0C0;"></div>
+        <div style="width:3px;height:3px;border-radius:50%;background:#C0C0C0;"></div>
+      </div>
+      <div style="display:flex;gap:3px;">
+        <div style="width:3px;height:3px;border-radius:50%;background:#C0C0C0;"></div>
+        <div style="width:3px;height:3px;border-radius:50%;background:#C0C0C0;"></div>
+        <div style="width:3px;height:3px;border-radius:50%;background:#C0C0C0;"></div>
+      </div>
+    </div>
+    <div style="display:flex;justify-content:flex-end;">
+      <button onclick="closeOcrPopup()" style="width:32px;height:32px;background:none;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;border-radius:6px;" onmouseover="this.style.background='#F0F0F0'" onmouseout="this.style.background='none'">
+        <i data-lucide="x" style="width:18px;height:18px;color:#494949;"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- 팝업 바디 -->
+  <div style="display:flex;flex-direction:column;height:calc(100% - 52px);">
+    <!-- OCR 확인 필요 배너 -->
+    <div id="ocr-popup-review-banner" style="display:none;padding:10px 16px;background:#FFF5F5;border-bottom:1px solid #FFBCBC;flex-shrink:0;align-items:center;gap:8px;">
+      <i data-lucide="triangle-alert" style="width:14px;height:14px;color:#DB3E51;flex-shrink:0;"></i>
+      <span style="font-size:13px;color:#494949;line-height:1.5;font-weight:700;"><strong style="color:#DB3E51;">확인 필요 문항이 있습니다.</strong> 아래 표시된 문항을 원본과 대조해 주세요.</span>
+    </div>
+
+    <!-- 문항 카드 영역 -->
+    <div id="ocr-popup-questions" style="flex:1;overflow-y:auto;padding:16px;"></div>
+
+    <!-- 하단 버튼 -->
+    <div style="padding:12px 16px;border-top:1px solid #D9D9D9;display:flex;justify-content:flex-end;gap:8px;flex-shrink:0;">
+      <button onclick="closeOcrPopup()" style="background:white;border:1px solid #7FB3E8;border-radius:8px;height:36px;padding:0 16px;font-size:14px;font-weight:700;color:#0950A0;cursor:pointer;display:inline-flex;align-items:center;gap:6px;" onmouseover="this.style.background='#F3F9FF'" onmouseout="this.style.background='white'">
+        저장
+      </button>
+      <button onclick="saveAndRerun()" style="background:#0950A0;border:none;border-radius:8px;height:36px;padding:0 16px;font-size:14px;font-weight:700;color:white;cursor:pointer;display:inline-flex;align-items:center;gap:6px;" onmouseover="this.style.background='#0A4A94'" onmouseout="this.style.background='#0950A0'">
+        <i data-lucide="wand-sparkles" style="width:14px;height:14px;"></i>
+        저장 후 AI 채점 재실행
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // ── 뒤로가기: from 파라미터 처리 ──
+  function goBack() {
+    var params = new URLSearchParams(location.search);
+    var from = params.get('from');
+    var evalType = params.get('eval') || 'A';
+    var classNum = params.get('classNum') || '1';
+    if ((evalType === 'B' || evalType === 'C') && from === 'scoring_list_v1.html') {
+      location.href = 'scoring_list_v1.html?showClass=' + classNum + '&eval=' + evalType;
+    } else if (from) {
+      location.href = from;
+    } else {
+      location.href = 'scoring_detail_v1.html';
+    }
+  }
+
+  // ── B안 OCR 데이터 (독후 활동 보고서 — 사라진 스푼) ──
+  var OCR_DATA_B = {
+    '10101': { needsReview: false, questions: [
+      { label:'문항 1', desc:'이 책의 핵심 내용 요약', spans:[{text:'원소 주기율표에 얽힌 과학자들의 이야기를 통해 원소들이 발견된 역사를 흥미롭게 풀어낸 책이다. 각 원소는 독특한 성질을 가지고 있으며 그 발견 과정에는 경쟁과 헌신의 역사가 담겨 있다.'}]},
+      { label:'문항 2', desc:'인상 깊었던 과학자 또는 원소의 발견 이야기 소개', spans:[{text:'마리 퀴리가 방사성 원소인 폴로늄과 라듐을 발견하는 이야기가 가장 인상 깊었다. 그녀는 두 개의 노벨상을 수상했지만 방사선에 의한 건강 문제로 고통받았다.'}]},
+      { label:'문항 3', desc:'다룬 원소 중 하나와 우리 삶의 연관성 설명', spans:[{text:'리튬은 현재 스마트폰과 전기차 배터리의 핵심 소재로, 일상 속 전자기기 사용과 직결되어 있다. 재생 가능 에너지 저장에도 필수적인 원소다.'}]},
+      { label:'문항 4', desc:'과학 발전에서 국가 간 경쟁이 미친 영향 서술', spans:[{text:'냉전 시대 미국과 소련의 우주 경쟁은 새로운 소재와 원소 연구를 촉진시켰다. 경쟁이 없었다면 과학 발전의 속도는 훨씬 더뎠을 것이다.'}]},
+      { label:'문항 5', desc:'이 책을 읽고 더 알고 싶어진 점', spans:[{text:'주기율표에서 아직 발견되지 않은 원소가 있는지, 그리고 인공 원소를 실용적으로 활용할 수 있는지 더 알아보고 싶다.'}]}
+    ]},
+    '10102': { needsReview: true, questions: [
+      { label:'문항 1', desc:'이 책의 핵심 내용 요약', spans:[{text:'이 책은 원소 주기율표를 중심으로 과학자들이 원소를 발견해 온 역사를 흥미롭게 서술한다. 단순한 화학 지식이 아닌 인간의 도전과 실수를 통해 과학이 발전해 온 과정을 보여준다.'}]},
+      { label:'문항 2', desc:'인상 깊었던 과학자 또는 원소의 발견 이야기 소개', spans:[
+        {text:'빌헬름 뢴트겐이 X선을 발견한 이야기가 기억에 남는다. 실험 중 우연히 X선의 존재를 알게 되었는데, '},
+        {text:'처음에는 그 원인을', uncertain:true, hint:'\'처음에는 그 원인을\' — 필기 불명확, 원본 확인 필요'},
+        {text:' 이해하지 못했지만 지속적인 연구로 사상 최초로 내부 신체를 들여다볼 수 있는 기술을 만들어냈다.'}
+      ]},
+      { label:'문항 3', desc:'다룬 원소 중 하나와 우리 삶의 연관성 설명', spans:[
+        {text:'수은은 과거 체온계와 형광등에 쓰였지만 독성이 밝혀지면서 규제되었다. '},
+        {text:'일본 미나마타', uncertain:true, hint:'\'일본 미나마타\' — 고유명사 인식 불확실'},
+        {text:' 병 사례처럼 수은 중독은 신경계에 심각한 피해를 주며, 현재는 '},
+        {text:'부작용을 동반할 수 있다는', uncertain:true, hint:'\'부작용을 동반할 수 있다는\' — 필기 흐릿함, 원본 대조 필요'},
+        {text:' 점에서 대체 소재 연구가 활발하다.'}
+      ]},
+      { label:'문항 4', desc:'과학 발전에서 국가 간 경쟁이 미친 영향 서술', spans:[{text:'과학 경쟁이 항상 나쁜 것은 아니다. 서로 다른 국가의 과학자들이 경쟁하면서도 논문과 학술대회를 통해 지식을 공유했기에 과학이 빠르게 발전할 수 있었다.'}]},
+      { label:'문항 5', desc:'이 책을 읽고 더 알고 싶어진 점', spans:[{text:'주기율표에 아직 빈자리가 남아 있는지, 그리고 이론적으로 존재할 수 있는 가장 무거운 원소의 한계는 무엇인지 더 공부해보고 싶다.'}]}
+    ]},
+    '10103': { needsReview: true, questions: [
+      { label:'문항 1', desc:'이 책의 핵심 내용 요약', spans:[{text:'원소 발견의 역사를 통해 인류가 물질 세계를 어떻게 이해해 왔는지를 보여주는 책이다. 과학자들의 경쟁과 협력, 실수와 성공이 어우러진 흥미로운 이야기다.', uncertain:true, hint:'필기 전반이 흐릿해 판독 어려움 — 원본 확인 필요'}]},
+      { label:'문항 2', desc:'인상 깊었던 과학자 또는 원소의 발견 이야기 소개', spans:[{text:'드미트리 멘델레예프가 꿈에서 주기율표의 완성된 모습을 보고 깨어나 그것을 기록했다는 일화가 인상 깊었다. 직관과 논리가 결합된 위대한 발견이었다.', uncertain:true, hint:'필기 흐릿 — 원본 확인 필요'}]},
+      { label:'문항 3', desc:'다룬 원소 중 하나와 우리 삶의 연관성 설명', spans:[{text:'실리콘은 반도체의 핵심 원소로, 현대 디지털 문명 전체를 지탱하는 소재다. 컴퓨터와 스마트폰이 없는 일상은 상상하기 어렵다.', uncertain:true, hint:'필기 흐릿 — 원본 확인 필요'}]},
+      { label:'문항 4', desc:'과학 발전에서 국가 간 경쟁이 미친 영향 서술', spans:[{text:'2차 세계대전 당시 핵무기 개발 경쟁은 원자물리학의 급격한 발전을 이끌었다. 과학의 군사적 활용이라는 윤리 문제도 함께 제기했다.', uncertain:true, hint:'필기 흐릿 — 원본 확인 필요'}]},
+      { label:'문항 5', desc:'이 책을 읽고 더 알고 싶어진 점', spans:[{text:'미래에 새로운 원소가 더 발견될 수 있는지, 그리고 현재 주기율표 118번 이후의 원소들은 어떤 성질을 가질지 궁금하다.'}]}
+    ]},
+    '10105': { ocrCase: 'pending' },  // OCR 미진행
+    '10106': { ocrCase: 'failed' },   // OCR 인식 실패
+    '10109': { ocrCase: 'legacy' },   // 업데이트 전 과제 — 채점됨 + 인식 결과 없음
+    'default': { needsReview: false, questions: [
+      { label:'문항 1', desc:'이 책의 핵심 내용 요약', spans:[{text:'원소 주기율표에 얽힌 과학자들의 이야기를 통해 원소들이 발견된 역사를 흥미롭게 풀어낸 책이다. 각 원소는 독특한 성질을 가지고 있으며 그 발견 과정에는 경쟁과 헌신의 역사가 담겨 있다.'}]},
+      { label:'문항 2', desc:'인상 깊었던 과학자 또는 원소의 발견 이야기 소개', spans:[{text:'헨리 모즐리의 이야기가 슬프면서도 인상 깊었다. 원자번호 개념을 확립한 천재 과학자였지만 1차 세계대전에 참전해 27세의 나이로 전사했다.'}]},
+      { label:'문항 3', desc:'다룬 원소 중 하나와 우리 삶의 연관성 설명', spans:[{text:'탄소는 생명체의 근간이 되는 원소로, 다이아몬드부터 흑연까지 다양한 형태로 존재한다. 최근 탄소 나노튜브 등 신소재 연구에서도 핵심적인 역할을 한다.'}]},
+      { label:'문항 4', desc:'과학 발전에서 국가 간 경쟁이 미친 영향 서술', spans:[{text:'국가 간 경쟁은 과학 발전을 가속화하기도 하지만 연구 결과의 공유를 막아 오히려 발전을 저해하기도 한다. 균형 있는 협력이 필요하다.'}]},
+      { label:'문항 5', desc:'이 책을 읽고 더 알고 싶어진 점', spans:[{text:'책에서 다루지 않은 원소들의 이야기와, 현재 연구 중인 새로운 합성 원소들이 실제로 어떤 성질을 보이는지 더 알아보고 싶다.'}]}
+    ]}
+  };
+
+  // ── URL 딥링크: ?exclude=1 → 직접 채점(AI 제외) 케이스 (까망이 mpExclude와 동일 상태 세팅) ──
+  (function(){
+    try {
+      var _p = new URLSearchParams(location.search);
+      if (_p.get('exclude') === '1') {
+        var _eid = _p.get('id') || '10101';
+        var em = JSON.parse(sessionStorage.getItem('hiai_ocr_exclude') || '{}');
+        em[_eid] = em[_eid] || {}; em[_eid][2] = true;
+        sessionStorage.setItem('hiai_ocr_exclude', JSON.stringify(em));
+      }
+    } catch(e){}
+  })();
+
+  // ── B안 좌측 패널 초기화 ──
+  function initLeftPanelB(studentId) {
+    // 학생별 OCR 케이스 적용 (정상/확인 필요/정확도 낮음/인식 실패/미진행). 데이터 없으면 default(정상 인식).
+    var data = OCR_DATA_B[studentId] || OCR_DATA_B['default'];
+    // 직접 채점(AI 제외)으로 표시된 문항 — OCR 단계에서 설정, 세션으로 공유
+    var _excl = {};
+    try { var _em = JSON.parse(sessionStorage.getItem('hiai_ocr_exclude') || '{}'); _excl = _em[studentId] || {}; } catch(e){}
+    // 정확도 낮음 판정 — 확인 필요 문항 비율 ≥ 임계치(70%)면 인식 결과 신뢰 어려움 → AI 채점 제외(직접 채점)
+    var _lowT = (data.questions || []).length;
+    var _lowU = (data.questions || []).filter(function(q){ return q.uncertain || (q.spans && q.spans.some(function(s){ return s.uncertain; })); }).length;
+    var isLowAcc = (_lowT > 0 && _lowU / _lowT >= 0.7);
+    // 우측 채점 패널 기본 복원
+    var _rGrade = document.getElementById('right-grading-content');
+    var _rEmpty = document.getElementById('right-grading-empty');
+    if (_rGrade) _rGrade.style.display = '';
+    if (_rEmpty) _rEmpty.style.display = 'none';
+    // 인식 실패 / OCR 미진행 — 인식 결과가 없어 전사 대신 안내만 표시 + 우측 채점 패널 비활성(채점할 입력 없음)
+    var _note = document.getElementById('failed-direct-note');
+    var _aiSec = document.getElementById('ai-feedback-section');
+    var _totVal = document.getElementById('grading-total-val');
+    var _dgb = document.getElementById('direct-grade-btn');
+    if (data.ocrCase === 'legacy') {
+      // 업데이트 전 과제물 — 채점 결과는 있음(점수 그대로 유지) + 인식 결과 없음
+      if (_rGrade) _rGrade.style.display = '';
+      if (_rEmpty) _rEmpty.style.display = 'none';
+      if (_note) _note.style.display = 'none';
+      // 과제물 분석 AI 비활성 (인식 결과 없음) — 채점 점수는 그대로 노출
+      if (_aiSec) _aiSec.style.display = '';
+      var _taLg = document.getElementById('tab-analysis');
+      if (_taLg) { _taLg.disabled = true; _taLg.style.opacity = '0.4'; _taLg.style.cursor = 'not-allowed'; _taLg.title = '인식 결과가 없어 과제물 분석 AI는 사용할 수 없어요'; }
+      // AI 채점 재실행은 인식 후 가능 → 숨김(배너에서 인식 유도)
+      var _rrLg = document.getElementById('ai-rerun-wrap');
+      if (_rrLg) _rrLg.style.display = 'none';
+      if (typeof switchTab === 'function') switchTab('rubric');
+      if (_dgb) _dgb.style.display = 'none';
+      // 점수는 유지(채점됨) — resetScores 호출하지 않음
+      var _contLg = document.getElementById('left-ocr-content');
+      if (_contLg) {
+        _contLg.innerHTML = '<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:48px 24px;min-height:300px;">'
+          + '<div style="width:64px;height:64px;border-radius:18px;background:#E7F2FF;display:flex;align-items:center;justify-content:center;margin-bottom:16px;"><i data-lucide="history" style="width:30px;height:30px;color:#0950A0;"></i></div>'
+          + '<div style="font-size:16px;font-weight:800;color:#222;margin-bottom:8px;">업데이트 전 과제물이라 인식 결과가 없어요</div>'
+          + '<div style="font-size:13px;color:#494949;line-height:1.7;max-width:380px;margin-bottom:20px;">이 과제물은 과제물 인식 기능 업데이트 전에 채점됐어요. 점수는 오른쪽에서 볼 수 있지만, 대조할 인식 결과가 없어요. 인식하면 원본과 대조하고 재채점할 수 있어요.</div>'
+          + '<a href="task_ocr_review_v1.html#ocr-b=' + studentId + '" style="display:inline-flex;align-items:center;justify-content:center;line-height:1;gap:8px;height:36px;padding:0 16px;border-radius:8px;background:white;color:#0950A0;border:1px solid #7FB3E8;font-size:14px;font-weight:800;text-decoration:none;cursor:pointer;"><i data-lucide="scan-line" style="width:18px;height:18px;"></i>과제물 관리에서 인식하기</a>'
+          + '</div>';
+        lucide.createIcons();
+      }
+      return;
+    }
+    if (data.ocrCase === 'pending' || data.ocrCase === 'failed' || isLowAcc) {
+      // OCR 미진행·인식 실패·정확도 낮음 — AI 채점 불가. 잠그거나 '직접 채점하기'를 한 번 더 누르게 하지 않고
+      // 바로 직접 채점 UI 노출(점수 미체크·AI 기록 숨김). 좌측엔 상태별 안내(OCR 권장/실패/결과 미표시).
+      if (_rGrade) _rGrade.style.display = '';
+      if (_rEmpty) _rEmpty.style.display = 'none';
+      if (_note) _note.style.display = 'none';
+      // AI 섹션은 유지 — 루브릭 기반 AI는 OCR 없이 선생님 점수만으로 동작. 과제물 분석 AI만 비활성(인식 결과 없음).
+      if (_aiSec) _aiSec.style.display = '';
+      var _taD = document.getElementById('tab-analysis');
+      if (_taD) { _taD.disabled = true; _taD.style.opacity = '0.4'; _taD.style.cursor = 'not-allowed'; _taD.title = '인식 결과가 없어 과제물 분석 AI는 사용할 수 없어요'; }
+      var _rrD = document.getElementById('ai-rerun-wrap');
+      if (_rrD) _rrD.style.display = 'none'; // AI 채점 재실행은 OCR 필요 → 직접 채점 케이스에선 숨김
+      if (typeof switchTab === 'function') switchTab('rubric');
+      if (_totVal) _totVal.textContent = '- / 50';
+      if (_dgb) _dgb.style.display = 'none';
+      if (typeof resetScores === 'function') resetScores();
+    } else {
+      // 정상/확인 필요/정확도 낮음 — 노트·AI 기록 정상(과제물 분석 AI 기본)
+      if (_note) _note.style.display = 'none';
+      if (_aiSec) _aiSec.style.display = '';
+      var _taN = document.getElementById('tab-analysis');
+      if (_taN) { _taN.disabled = false; _taN.style.opacity = ''; _taN.style.cursor = ''; _taN.title = ''; }
+      var _rrN = document.getElementById('ai-rerun-wrap');
+      if (_rrN) _rrN.style.display = 'flex';
+      if (typeof switchTab === 'function') switchTab('analysis');
+      if (_dgb) _dgb.style.display = 'none';
+    }
+    if (data.ocrCase === 'failed' || data.ocrCase === 'pending') {
+      var _cont = document.getElementById('left-ocr-content');
+      if (_cont) {
+        if (data.ocrCase === 'failed') {
+          // 인식 실패 — 개발 디자인 1817:4184
+          _cont.innerHTML = '<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:120px 24px;min-height:300px;">'
+            + '<div style="width:64px;height:64px;border-radius:16px;background:#FFEFEF;display:flex;align-items:center;justify-content:center;margin-bottom:20px;"><i data-lucide="file-x" style="width:32px;height:32px;color:#ED4458;"></i></div>'
+            + '<div style="font-size:18px;font-weight:700;color:#333;margin-bottom:10px;">과제물 인식에 실패했어요</div>'
+            + '<div style="font-size:14px;color:#494949;line-height:1.7;max-width:400px;margin-bottom:24px;">네트워크 오류 등으로 답안을 인식하지 못했어요.<br>원본 과제물을 보고 직접 채점해 주세요.</div>'
+            + '<button onclick="switchLeftTab(\'original\')" style="display:inline-flex;align-items:center;justify-content:center;line-height:1;vertical-align:middle;gap:6px;height:40px;padding:0 16px;border-radius:8px;background:white;color:#0950A0;border:1px solid #7FB3E8;font-size:16px;font-weight:700;cursor:pointer;font-family:inherit;"><i data-lucide="image" style="width:20px;height:20px;"></i>원본으로 보기</button>'
+            + '</div>';
+        } else {
+          // 미인식 — 개발 디자인 1817:4659
+          _cont.innerHTML = '<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:120px 24px;min-height:300px;">'
+            + '<div style="width:64px;height:64px;border-radius:16px;background:#FFF3EA;display:flex;align-items:center;justify-content:center;margin-bottom:20px;"><i data-lucide="circle-alert" style="width:32px;height:32px;color:#E4631C;"></i></div>'
+            + '<div style="font-size:18px;font-weight:700;color:#333;margin-bottom:10px;">아직 답안을 인식하지 않았어요</div>'
+            + '<div style="font-size:14px;color:#494949;line-height:1.7;max-width:400px;margin-bottom:24px;">과제물 관리에서 과제물 인식을 먼저 진행해 주세요.<br>인식이 끝나면 AI 채점이 가능해요.</div>'
+            + '<a href="task_ocr_review_v1.html#ocr-b=' + studentId + '" style="display:inline-flex;align-items:center;justify-content:center;line-height:1;vertical-align:middle;gap:6px;height:40px;padding:0 16px;border-radius:8px;background:white;color:#0950A0;border:1px solid #7FB3E8;font-size:16px;font-weight:700;text-decoration:none;cursor:pointer;">과제물 관리로 이동<i data-lucide="chevron-right" style="width:20px;height:20px;"></i></a>'
+            + '</div>';
+        }
+        lucide.createIcons();
+      }
+      return;
+    }
+    // C안(평가명 최종)은 확인 필요 표시 모두 숨김 + OCR 결과 확인 새탭 링크 노출
+    var _sdEvalInit = (new URLSearchParams(location.search)).get('eval');
+    var isReadOnlyInit = true; // 채점 화면 전사 = 항상 읽기 전용(수정은 'OCR 결과 수정' 버튼 → 과제물 관리)
+    if (isReadOnlyInit) {
+      var ocrLink = document.getElementById('left-ocr-review-link');
+      if (ocrLink) {
+        ocrLink.href = 'task_ocr_review_v1.html#ocr-b=' + studentId;
+        _ocrEditUrl = 'task_ocr_review_v1.html#ocr-b=' + studentId;
+        _leftCtrlAvail.ocrLink = true;   // 노출 여부는 탭 상태와 함께 syncLeftCtrls()가 결정
+      }
+    }
+    // OCR 텍스트 렌더
+    var container = document.getElementById('left-ocr-content');
+    var html = '';
+    // 인식 정확도 낮음(확인 필요 문항 ≥70%, 가변) — 결과 숨기고 통째로 직접 채점 안내(문항 토글 없음)
+    var _total = data.questions.length;
+    var _unc = data.questions.filter(function(q){ return q.spans.some(function(s){ return s.uncertain; }); }).length;
+    if (_total > 0 && _unc / _total >= 0.7) {
+      container.innerHTML = '<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:48px 24px;min-height:300px;">'
+        + '<div style="width:64px;height:64px;border-radius:16px;background:#FFEFEF;display:flex;align-items:center;justify-content:center;margin-bottom:16px;"><i data-lucide="triangle-alert" style="width:30px;height:30px;color:#ED4458;"></i></div>'
+        + '<div style="font-size:18px;font-weight:700;color:#333;margin-bottom:8px;">과제물 인식 정확도가 너무 낮아요</div>'
+        + '<div style="font-size:14px;color:#494949;line-height:1.7;max-width:400px;">확인이 필요한 문항이 대부분이라 인식 결과를 표시하지 않았어요. <strong>원본 과제물</strong> 탭을 보고 직접 채점해 주세요.</div>'
+        + '</div>';
+      // 정확도 낮음 — 수정할 인식 결과가 없으므로 보기 옵션·인식 결과 수정 모두 미노출
+      _leftCtrlAvail.answers = false;
+      _leftCtrlAvail.ocrLink = false;
+      syncLeftCtrls();
+      lucide.createIcons();
+      return;
+    }
+    // '학생 풀이와 답만 보기' 체크박스 — 인식 결과가 있을 때만 노출 + 상태 동기화 (OCR 화면과 공유)
+    _leftCtrlAvail.answers = true;
+    syncLeftCtrls();
+    var _aoC = document.getElementById('stu-answers-only');
+    if (_aoC) _aoC.checked = stuAnswersOnly;
+    var answersOnly = stuAnswersOnly;
+
+    // ── 공통지시문 (문항 밖 영역 — '풀이와 답만 보기' 시 숨김) ──
+    if (!answersOnly) {
+      html += '<div>'
+        + '<span style="display:inline-flex;align-items:center;border:1px solid #D9D9D9;border-radius:6px;padding:3px 10px;font-size:13px;font-weight:700;color:#494949;margin-bottom:10px;">공통지시문</span>'
+        + '<div style="font-size:16px;color:#494949;line-height:1.6;">' + STU_OCR_COMMON + '</div>'
+        + '</div>';
+      html += '<hr style="border:none;border-top:1px dashed #D9D9D9;margin:0;">';
+    }
+
+    data.questions.forEach(function(q, qi) {
+      var hasUncertain = q.spans.some(function(sp){ return sp.uncertain; });
+      var fullText = q.spans.map(function(sp){ return sp.text; }).join('');
+      var isExcl = !!_excl[qi];
+      html += '<div style="display:flex;flex-direction:column;gap:12px;">';
+      // 문항 헤더 — 보라 pill + 문항명
+      html += '<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">'
+        + '<span class="ocr-b-q-label">' + q.label + '</span>'
+        + '<span style="font-size:16px;font-weight:700;color:#333;">' + q.desc + '</span>'
+        + '</div>';
+      // 발문 ('풀이와 답만 보기' 시 숨김)
+      if (!answersOnly) {
+        html += '<div style="font-size:16px;color:#494949;line-height:1.6;">' + (STU_OCR_PROMPTS[q.desc] || q.desc) + '</div>';
+      }
+      // 학생 답안 라벨 (+ 직접 채점 문항이면 인라인 배지) — 개발 디자인 1819:5188
+      html += '<div style="display:flex;flex-direction:column;gap:8px;">';
+      html += '<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">'
+        + '<span style="font-size:14px;font-weight:700;color:#333;">학생 답안</span>'
+        + (isExcl ? '<span style="display:inline-flex;align-items:center;gap:3px;font-size:12px;font-weight:700;color:#0950A0;border:1px solid #7FB3E8;border-radius:100px;padding:2px 9px;"><i data-lucide="pencil-line" style="width:11px;height:11px;"></i>직접 채점 (AI 제외)</span>' : '')
+        + '</div>';
+      // 확인 필요(불확실) 문항 — 답 박스 위 빨간 안내 한 줄 (직접 채점 문항은 AI 제외라 생략)
+      if (hasUncertain && !isExcl) {
+        html += '<div style="display:flex;align-items:center;gap:6px;font-size:14px;font-weight:700;color:#ED4458;"><i data-lucide="triangle-alert" style="width:16px;height:16px;flex-shrink:0;"></i>AI 인식이 불확실해요. 과제물 원본을 보고 채점해 주세요.</div>';
+      }
+      // 답 박스 — 읽기 전용(수정은 '과제물 인식 결과 수정' → 과제물 관리). 직접 채점 문항은 흐리게(AI 제외)
+      html += '<div style="background:#F8F8F8;border-radius:8px;padding:14px 16px;">'
+        + '<div id="left-ocr-body-' + qi + '" style="font-size:16px;line-height:1.6;color:' + (isExcl ? '#B3B3B3' : '#333') + ';">' + fullText + '</div>'
+        + '</div>';
+      html += '</div>';
+      html += '</div>';
+      html += '<hr style="border:none;border-top:1px dashed #D9D9D9;margin:0;">';
+    });
+
+    // ── 시각 자료 (문항 밖 영역 — 데이터 있을 때만 · '풀이와 답만 보기' 시 숨김) ──
+    if (!answersOnly) {
+      var _vis = [];
+      data.questions.forEach(function(q){ (q.visual || []).forEach(function(layer, li){ _vis.push({ t: 'layer ' + (li + 1) + ' · ' + q.label, b: layer }); }); });
+      if (_vis.length) {
+        html += '<div>'
+          + '<span style="display:inline-flex;align-items:center;border:1px solid #D9D9D9;border-radius:6px;padding:3px 10px;font-size:13px;font-weight:700;color:#494949;margin-bottom:10px;">시각 자료</span>'
+          + _vis.map(function(v){ return '<div style="margin-bottom:12px;"><div style="font-size:14px;font-weight:700;color:#333;margin-bottom:4px;">[' + v.t + ']</div><div style="font-size:16px;color:#494949;line-height:1.6;">' + v.b + '</div></div>'; }).join('')
+          + '</div>';
+      }
+    }
+
+    // 마지막 dashed 구분선 제거 (문항이 목록 끝일 때)
+    var _HR = '<hr style="border:none;border-top:1px dashed #D9D9D9;margin:0;">';
+    if (html.slice(-_HR.length) === _HR) html = html.slice(0, -_HR.length);
+    container.innerHTML = html;
+    lucide.createIcons();
+  }
+
+  // ── '학생 풀이와 답만 보기' — 체크가 디폴트 · OCR 화면과 세션 공유 ──
+  var stuAnswersOnly = true;
+  try { var _sao = sessionStorage.getItem('hiai_ocr_answers_only'); if (_sao !== null) stuAnswersOnly = _sao === '1'; } catch(e) {}
+  function setStuAnswersOnly(v) {
+    stuAnswersOnly = !!v;
+    try { sessionStorage.setItem('hiai_ocr_answers_only', stuAnswersOnly ? '1' : '0'); } catch(e) {}
+    var sid = (new URLSearchParams(location.search)).get('id') || '10101';
+    initLeftPanelB(sid);
+  }
+
+  // 공통지시문·발문 전문 (과제물 관리 화면과 동일 데이터)
+  var STU_OCR_COMMON = '문제지의 해당란에 학년·반·번호·성명을 정확히 쓰시오. 각 문항의 답안은 완성된 문장으로 서술하시오.';
+  var STU_OCR_PROMPTS = {
+    '이 책의 핵심 내용 요약': '『사라진 스푼』의 핵심 내용을 세 문장 이상으로 요약하시오.',
+    '인상 깊었던 과학자 또는 원소의 발견 이야기 소개': '책에서 인상 깊었던 과학자 또는 원소의 발견 이야기를 하나 골라 소개하시오.',
+    '다룬 원소 중 하나와 우리 삶의 연관성 설명': '책에서 다룬 원소 중 하나를 골라 우리 삶과의 연관성을 설명하시오.',
+    '과학 발전에서 국가 간 경쟁이 미친 영향 서술': '과학 발전 과정에서 국가 간 경쟁이 미친 영향을 서술하시오.',
+    '이 책을 읽고 더 알고 싶어진 점': '이 책을 읽고 더 알고 싶어진 점을 쓰시오.'
+  };
+
+  // 직접 채점(AI 제외) 문항 — 인식 결과 접기/펼치기 (기본 접음)
+  function toggleExclBody(qi, btn){
+    var b = document.getElementById('left-ocr-body-' + qi);
+    if (!b) return;
+    var open = b.style.display !== 'none';
+    b.style.display = open ? 'none' : 'block';
+    btn.innerHTML = '<i data-lucide="chevron-' + (open ? 'down' : 'up') + '" style="width:13px;height:13px;"></i>인식 결과 ' + (open ? '보기' : '접기');
+    if (window.lucide) lucide.createIcons();
+  }
+
+  // ── B안 좌측 OCR 인라인 편집 ──
+  var _leftEditingIdx = null;
+
+  function leftOcrEdit(qi) {
+    if (_leftEditingIdx === qi) return;
+    if (_leftEditingIdx !== null) leftOcrSave(_leftEditingIdx);
+    var body = document.getElementById('left-ocr-body-' + qi);
+    var ta   = document.getElementById('left-ocr-ta-' + qi);
+    if (!body || !ta) return;
+    ta.value = body.innerText.trim();
+    body.style.display = 'none';
+    ta.style.display = 'block';
+    ta.style.height = 'auto';
+    ta.style.height = Math.max(ta.scrollHeight, 80) + 'px';
+    ta.oninput = function(){ this.style.height = 'auto'; this.style.height = this.scrollHeight + 'px'; };
+    // 편집 중 칩 교체
+    var chip = document.getElementById('left-unc-chip-' + qi);
+    if (chip) chip.innerHTML = '<i data-lucide="pencil" style="width:11px;height:11px;"></i>편집 중';
+    lucide.createIcons();
+    _leftEditingIdx = qi;
+    ta.focus();
+  }
+
+  function leftOcrSave(qi) {
+    var body = document.getElementById('left-ocr-body-' + qi);
+    var ta   = document.getElementById('left-ocr-ta-' + qi);
+    if (!ta || ta.style.display === 'none') return;
+    _leftEditingIdx = null;
+    body.textContent = ta.value;
+    body.style.display = 'block';
+    ta.style.display = 'none';
+    var chip = document.getElementById('left-unc-chip-' + qi);
+    if (chip) {
+      // 불확실 문항: 칩을 초록 "저장됨" → "확인 완료"로 전환
+      chip.style.background = '#F1F9F3'; chip.style.borderColor = '#00AF3D'; chip.style.color = '#00AF3D';
+      chip.innerHTML = '<i data-lucide="check" style="width:11px;height:11px;"></i>저장됨';
+      lucide.createIcons();
+      setTimeout(function(){
+        chip.style.background = '#FFF4CC'; chip.style.borderColor = '#E07000'; chip.style.color = '#E07000';
+        chip.innerHTML = '<i data-lucide="triangle-alert" style="width:11px;height:11px;"></i>확인 완료';
+        lucide.createIcons();
+      }, 1500);
+    } else {
+      // 일반 문항: 텍스트 옆에 "저장됨" 뱃지 잠깐 표시
+      var row = body.closest('div');
+      var badge = document.createElement('span');
+      badge.style.cssText = 'font-size:12px;font-weight:800;color:#00AF3D;display:inline-flex;align-items:center;gap:3px;margin-left:8px;';
+      badge.innerHTML = '✓ 저장됨';
+      body.insertAdjacentElement('afterend', badge);
+      setTimeout(function(){ badge.style.opacity = '0'; badge.style.transition = 'opacity .4s'; }, 1200);
+      setTimeout(function(){ badge.remove(); }, 1700);
+    }
+  }
+
+  var _stuOrigZoom = 100;
+  function stuOrigZoomChange(delta) {
+    _stuOrigZoom = Math.max(50, Math.min(200, _stuOrigZoom + delta));
+    var pct = document.getElementById('stu-orig-zoom-pct');
+    var img = document.getElementById('stu-orig-scan-image');
+    if (pct) pct.textContent = _stuOrigZoom + '%';
+    if (img) img.style.transform = 'scale(' + (_stuOrigZoom / 100) + ')';
+  }
+  function stuOrigPageChange(delta) {
+    var el = document.getElementById('stu-orig-page-cur');
+    if (!el) return;
+    var cur = parseInt(el.textContent, 10) || 1;
+    var total = parseInt((document.getElementById('stu-orig-page-total')||{}).textContent, 10) || 120;
+    cur = Math.max(1, Math.min(total, cur + delta));
+    el.textContent = cur;
+  }
+
+  // ── 보기 옵션·인식 결과 수정 노출 동기화 — 인식 결과 탭에서만 + 데이터 조건 ──
+  var _leftCtrlAvail = { answers: false, ocrLink: false };
+  function syncLeftCtrls() {
+    var tabText = document.getElementById('left-tab-text');
+    var isText = tabText && tabText.classList.contains('active');
+    var aoW = document.getElementById('stu-answersonly-wrap');
+    if (aoW) aoW.style.display = (isText && _leftCtrlAvail.answers) ? 'inline-flex' : 'none';
+    var link = document.getElementById('left-ocr-review-link');
+    if (link) link.style.display = (isText && _leftCtrlAvail.ocrLink) ? 'inline-flex' : 'none';
+  }
+
+  function switchLeftTab(tab) {
+    var textPanel = document.getElementById('left-text-panel');
+    var origPanel = document.getElementById('left-original-panel');
+    var tabText = document.getElementById('left-tab-text');
+    var tabOrig = document.getElementById('left-tab-original');
+    if (tab === 'text') {
+      textPanel.style.display = 'block';
+      origPanel.style.display = 'none';
+      tabText.classList.add('active');
+      tabOrig.classList.remove('active');
+    } else {
+      textPanel.style.display = 'none';
+      origPanel.style.display = 'flex';
+      tabText.classList.remove('active');
+      tabOrig.classList.add('active');
+    }
+    syncLeftCtrls();
+  }
+
+  // ── 페이지 진입 시 A/B 패널 전환 ──
+  (function() {
+    var params = new URLSearchParams(location.search);
+    var evalType = params.get('eval') || 'A';
+    var studentId = params.get('id') || '10101';
+    var studentName = params.get('name');
+    // 플랜 배지 (A/B/C) 업데이트 — Figma 736:10853
+    var planBadge = document.getElementById('score-plan-badge');
+    if (planBadge) planBadge.textContent = '(' + evalType + ')';
+    // 재채점 유도(stale) — OCR이 수정/재인식됐는데 채점 재실행 안 한 학생
+    // 실제 흐름: 과제물 관리에서 OCR 저장/재인식 시 sessionStorage에 학생ID 적재 → 채점 화면에서 감지
+    var _needRescore = (params.get('rescore') === '1');
+    try { var _rs = JSON.parse(sessionStorage.getItem('hiai_rescore') || '[]'); if (_rs.indexOf(studentId) >= 0) _needRescore = true; } catch(e){}
+    if (_needRescore) {
+      var rb = document.getElementById('student-rescore-banner');
+      if (rb) {
+        rb.style.display = 'flex';
+        var mc = document.querySelector('.main-content');
+        if (mc) mc.style.height = 'calc(100vh - 68px - 42px)';
+      }
+    }
+    // 직접 채점(AI 제외) 문항 안내 — OCR 단계에서 제외한 문항이 있으면 표시
+    try {
+      var _emAll = JSON.parse(sessionStorage.getItem('hiai_ocr_exclude') || '{}');
+      var _exObj = _emAll[studentId] || {};
+      var _exIdx = Object.keys(_exObj).filter(function(k){ return _exObj[k]; }).map(function(k){ return parseInt(k,10)+1; }).sort(function(a,b){ return a-b; });
+      if (_exIdx.length) {
+        var eb = document.getElementById('student-exclude-banner');
+        if (eb) {
+          var lab = document.getElementById('exclude-banner-q');
+          if (lab) lab.textContent = '(문항 ' + _exIdx.join(', ') + ')';
+          eb.style.display = 'flex';
+          var mc2 = document.querySelector('.main-content');
+          if (mc2) mc2.style.height = 'calc(100vh - 68px - 42px)';
+        }
+      }
+    } catch(e){}
+    // AI 채점 재실행 (개별) — 데모: 배너 감추고 토스트
+    window.rerunAiScoring = function() {
+      showToast('loading', '이 학생의 AI 채점을 재실행합니다...');
+      setTimeout(function(){
+        showToast('success', 'AI 채점이 재실행되어 결과가 갱신되었습니다.');
+        var rb = document.getElementById('student-rescore-banner');
+        if (rb) rb.style.display = 'none';
+        var mc = document.querySelector('.main-content');
+        if (mc) mc.style.height = 'calc(100vh - 68px)';
+        // stale 해소 — 세션 플래그에서 이 학생 제거
+        try { var sid=(new URLSearchParams(location.search)).get('id'); var rs=JSON.parse(sessionStorage.getItem('hiai_rescore')||'[]'); var i=rs.indexOf(sid); if(i>=0){ rs.splice(i,1); sessionStorage.setItem('hiai_rescore', JSON.stringify(rs)); } } catch(e){}
+      }, 1400);
+    };
+    if (true) { // 항상 전사 텍스트+원본 과제물 탭(B안)만 표시. 이전 A안(원본 이미지 뷰어)은 코드 보존하되 미표시 — 필요 시 이 조건만 되돌리면 복원됨.
+      // 좌측: B안 OCR 뷰어 표시 (C안은 읽기 전용)
+      document.getElementById('left-panel-a').style.display = 'none';
+      var lb = document.getElementById('left-panel-b');
+      lb.style.display = 'flex';
+      initLeftPanelB(studentId);
+      switchLeftTab('text'); // 기본 탭 = 인식 결과 (전 케이스 공통 — 인식 없음 케이스도 이 탭에 안내 표시)
+      // 오른쪽 OCR 결과 확인 버튼 숨기기 (B안은 왼쪽에서 직접 수정)
+      var ocrBtn = document.querySelector('button[onclick="openOcrPopup()"]');
+      if (ocrBtn) ocrBtn.closest('div').style.display = 'none';
+      // 타이틀바 학생명 업데이트
+      if (studentName) {
+        var nameEl = document.querySelector('#studentDropdownBtn span');
+        if (nameEl) nameEl.textContent = studentId + ' ' + studentName;
+      }
+    }
+  })();
+
+  // Lucide 아이콘 초기화
+  lucide.createIcons();
+
+  // ── 학생 드롭다운 ──
+  // 상태색 — 개발 토큰(1900:18560 셀렉트): 완료=초록 / 진행 중·확인 필요=주황 / 미채점=기본색
+  var STUDENT_LIST = [
+    {id:'10101', name:'김서윤', status:'진행 중', statusCls:'#EF6E25', link:'scoring_student_v1.html'},
+    {id:'10102', name:'이준호', status:'완료', statusCls:'#00AF3D', link:'scoring_student_v1.html'},
+    {id:'10103', name:'박지민', status:'완료', statusCls:'#00AF3D', link:'scoring_student_v1.html'},
+    {id:'10104', name:'최유진', status:'완료', statusCls:'#00AF3D', link:'scoring_student_v1.html'},
+    {id:'10105', name:'정현우', status:'미채점', statusCls:'#333', link:'scoring_student_v1.html'},
+    {id:'10106', name:'한가람', status:'미채점', statusCls:'#333', link:'scoring_student_v1.html'},
+    {id:'10107', name:'오세훈', status:'미채점', statusCls:'#333', link:'scoring_student_v1.html'},
+    {id:'10108', name:'한지우', status:'확인 필요', statusCls:'#EF6E25', link:'scoring_student_v1.html'},
+    {id:'10130', name:'김문항', status:'완료', statusCls:'#00AF3D', link:'scoring_student_kimmh_v1.html'},
+    {id:'10131', name:'김하이', status:'완료', statusCls:'#00AF3D', link:'scoring_student_kimhi_v1.html'}
+  ];
+  var _sdParams = new URLSearchParams(location.search);
+  var CURRENT_STUDENT_ID = _sdParams.get('id') || '10101';
+  (function initStudentDropdown(){
+    var list = document.getElementById('studentDropdownList');
+    list.innerHTML = STUDENT_LIST.map(function(s){
+      var isCurrent = s.id === CURRENT_STUDENT_ID;
+      // "학번 이름 (상태)" 한 줄 — 개발 셀렉트 디자인(1900:18560)과 동일 (OCR 화면과 공통)
+      return '<div class="sd-item" data-link="'+s.link+'" data-id="'+s.id+'" data-name="'+s.name+'" style="padding:10px 12px;display:flex;align-items:center;cursor:pointer;border-radius:4px;'+(isCurrent?'background:#F2F7FF;':'')+'font-size:16px;line-height:1.25;color:#333;">'
+        +s.id+' '+s.name+' <span style="color:'+s.statusCls+';">('+s.status+')</span>'
+        +'</div>';
+    }).join('');
+    // hover
+    list.querySelectorAll('.sd-item').forEach(function(el){
+      el.addEventListener('mouseenter',function(){if(!this.style.background.includes('F2F5FF'))this.style.background='#F8F8F8';});
+      el.addEventListener('mouseleave',function(){if(!this.style.background.includes('F2F5FF'))this.style.background='';});
+      el.addEventListener('click',function(){
+        var link = this.getAttribute('data-link');
+        var sid = this.getAttribute('data-id');
+        var sname = this.getAttribute('data-name');
+        var p = new URLSearchParams(location.search);
+        // 현재 컨텍스트(eval/from/classNum) 유지하고 학생 id/name만 갱신
+        p.set('id', sid);
+        p.set('name', sname);
+        // 같은 페이지면 기존 쿼리 유지 + id/name 갱신, 다른 페이지면 해당 파일로 이동
+        if (link && link.indexOf('scoring_student_v1.html') !== 0) {
+          // 별도 파일(예: kimmh, kimhi) — id/name 제외한 컨텍스트(eval/from/classNum)는 유지
+          var p2 = new URLSearchParams(location.search);
+          p2.delete('id'); p2.delete('name');
+          var qs = p2.toString();
+          location.href = link + (qs ? '?' + qs : '');
+        } else {
+          location.href = 'scoring_student_v1.html?' + p.toString();
+        }
+      });
+    });
+    // toggle
+    document.getElementById('studentDropdownBtn').addEventListener('click',function(e){
+      e.stopPropagation();
+      var l=document.getElementById('studentDropdownList');
+      l.style.display=l.style.display==='none'?'block':'none';
+    });
+    document.addEventListener('click',function(){document.getElementById('studentDropdownList').style.display='none';});
+    // 헤더 학생명·상태를 STUDENT_LIST(id) 기준으로 정렬 (잘못된 ?name 파라미터 무시)
+    var _cur = STUDENT_LIST.filter(function(s){ return s.id === CURRENT_STUDENT_ID; })[0];
+    if (_cur) {
+      var _hd = document.querySelector('#studentDropdownBtn span');
+      if (_hd) _hd.innerHTML = _cur.id + ' ' + _cur.name + ' <span style="color:' + _cur.statusCls + ';font-weight:700;">(' + _cur.status + ')</span>';
+    }
+  })();
+
+  // 채점 상태 라디오
+  // OCR 결과 수정 이동 — 미저장 변경 가드
+  var _isDirty = false;
+  var _ocrEditUrl = 'task_ocr_review_v1.html';
+  function goEditOcr(e){
+    if(e) e.preventDefault();
+    if(_isDirty){ var m=document.getElementById('leaveGuardModal'); if(m){ m.style.display='flex'; if(window.lucide) lucide.createIcons(); } }
+    else { location.href=_ocrEditUrl; }
+    return false;
+  }
+  function leaveSaveAndGo(){ _isDirty=false; location.href=_ocrEditUrl; }
+  function leaveWithoutSave(){ _isDirty=false; location.href=_ocrEditUrl; }
+  function closeLeaveGuard(){ var m=document.getElementById('leaveGuardModal'); if(m) m.style.display='none'; }
+
+  // 미진행 → '직접 채점하기': 잠금 해제하고 채점 UI 노출(점수 미체크·AI 기록 숨김)
+  function enableDirectGrade(){
+    var rg=document.getElementById('right-grading-content');
+    var re=document.getElementById('right-grading-empty');
+    var ai=document.getElementById('ai-feedback-section');
+    var note=document.getElementById('failed-direct-note');
+    var tot=document.getElementById('grading-total-val');
+    if(re) re.style.display='none';
+    if(rg) rg.style.display='';
+    if(ai) ai.style.display='none';
+    if(note) note.style.display='none';
+    if(tot) tot.textContent='- / 50';
+    if(typeof resetScores==='function') resetScores();
+    if(window.lucide) lucide.createIcons();
+  }
+
+  function selectStatus(el) {
+    _isDirty = true;
+    const items = document.querySelectorAll('.radio-item');
+    items.forEach(item => {
+      item.querySelector('.radio-circle').classList.remove('selected');
+    });
+    el.querySelector('.radio-circle').classList.add('selected');
+  }
+
+  // 저장 — 채점은 자동 저장 없이 저장 버튼으로만 저장 (1751:4122)
+  function saveGrading() {
+    showToast('success', '저장되었습니다.');
+  }
+
+  // 점수 버튼 토글 (같은 행 내)
+  function selectScore(btn, rubricId) {
+    // hatched 버튼은 클릭 무시
+    if (btn.classList.contains('hatched')) return;
+    _isDirty = true;
+
+    const container = btn.closest('[data-rubric]');
+    const allBtns = container.querySelectorAll('.score-btn:not(.hatched)');
+    allBtns.forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+  }
+
+  // 점수 초기화
+  function resetScores() {
+    const allBtns = document.querySelectorAll('.score-btn:not(.hatched)');
+    allBtns.forEach(b => b.classList.remove('selected'));
+  }
+
+  // AI 피드백 탭 토글
+  function switchTab(tab) {
+    document.getElementById('tab-analysis').classList.toggle('active', tab === 'analysis');
+    document.getElementById('tab-rubric').classList.toggle('active', tab === 'rubric');
+    var a = document.getElementById('ai-content-analysis');
+    var r = document.getElementById('ai-content-rubric');
+    if (a) a.style.display = (tab === 'analysis') ? 'flex' : 'none';
+    if (r) r.style.display = (tab === 'rubric') ? 'block' : 'none';
+    if (window.lucide) lucide.createIcons();
+  }
+
+  // AI 피드백 모드 라디오
+  function selectFeedbackMode(el) {
+    const items = document.querySelectorAll('.feedback-radio-item');
+    items.forEach(item => {
+      item.querySelector('.feedback-radio-circle').classList.remove('selected');
+    });
+    el.querySelector('.feedback-radio-circle').classList.add('selected');
+  }
+
+  // textarea 글자수 카운트
+  function updateCharCount() {
+    const textarea = document.getElementById('teacherFeedback');
+    const text = textarea.value;
+    _isDirty = true;
+    const charLen = text.length;
+    const byteLen = new TextEncoder().encode(text).length;
+    document.getElementById('charCount').textContent = `${charLen}자 / ${byteLen} byte`;
+  }
+
+  // ── 선생님 피드백 가이드 팝오버 ──
+  function toggleFeedbackGuide(e) {
+    if (e) e.stopPropagation();
+    var pop = document.getElementById('fbGuidePop');
+    if (pop) pop.style.display = (pop.style.display === 'none' || !pop.style.display) ? 'block' : 'none';
+  }
+  function closeFeedbackGuide() {
+    var pop = document.getElementById('fbGuidePop');
+    if (pop) pop.style.display = 'none';
+  }
+  document.addEventListener('click', function(e) {
+    var pop = document.getElementById('fbGuidePop');
+    var btn = document.getElementById('fbGuideBtn');
+    if (pop && pop.style.display === 'block' && !pop.contains(e.target) && btn && !btn.contains(e.target)) {
+      pop.style.display = 'none';
+    }
+  });
+
+  // ── 뷰어 컨트롤 ──
+  var viewerZoom = 100, viewerRotation = 0, viewerPage = 1, viewerTotal = 2;
+  function applyViewerTransform() {
+    var el = document.querySelector('.main-content .viewer-img');
+    if (el) el.style.transform = 'rotate(' + viewerRotation + 'deg) scale(' + (viewerZoom / 100) + ')';
+    document.getElementById('viewer-zoom-info').textContent = viewerZoom + '%';
+    document.getElementById('viewer-page-info').textContent = viewerPage + ' / ' + viewerTotal;
+  }
+  function changeViewerZoom(d) { viewerZoom = Math.max(30, Math.min(300, viewerZoom + d)); applyViewerTransform(); }
+  function resetViewerZoom() { viewerZoom = 100; viewerRotation = 0; applyViewerTransform(); }
+  function rotateViewer(d) { viewerRotation = (viewerRotation + d + 360) % 360; applyViewerTransform(); }
+  function changeViewerPage(d) { viewerPage = Math.max(1, Math.min(viewerTotal, viewerPage + d)); applyViewerTransform(); }
+
+  // ── OCR 팝업 ──
+  var OCR_NEEDS_REVIEW = false;
+  var OCR_REVIEW_COUNT = 0;
+
+  // 문항별 OCR 데이터 (목업)
+  var OCR_QUESTIONS = [
+    { id:'q1', label:'문항 1', desc:'관심 분야 선정', text:'해양 환경 오염 문제' },
+    { id:'q2', label:'문항 2', desc:'탐구 주제 및 이유', text:'해양 미세플라스틱이 생태계에 미치는 영향을 탐구하고자 합니다. 최근 해양 오염이 심각해지면서 먹이사슬을 통해 인체에도 영향을 미친다는 연구 결과가 있기 때문입니다.',
+      uncertainty:'문항 2에서 "먹이사슬"이 "먹이사을"로 인식되었을 가능성이 있습니다. 원본 손글씨와 대조하여 확인해 주세요.' },
+    { id:'q3', label:'문항 3', desc:'탐구 방법', text:'문헌 조사 및 실험을 통해 미세플라스틱 농도를 측정하고, 생물 표본을 채집하여 분석합니다.' },
+    { id:'q4', label:'문항 4', desc:'예상 결론', text:'미세플라스틱 농도가 높은 해역일수록 해양 생물의 체내 플라스틱 잔류물이 많을 것으로 예상됩니다.',
+      uncertainty:'문항 4의 마지막 문장에서 "잔류물" 부분의 글씨가 불명확하여 "잔유물"로 인식되었을 수 있습니다.' },
+    { id:'q5', label:'문항 5', desc:'참고 자료', text:'환경부 해양오염 실태조사 보고서 (2023), 해양수산부 미세플라스틱 연구논문 3편' }
+  ];
+
+  var _ocrEditingSection = null;
+
+  function renderOcrQuestions() {
+    var area = document.getElementById('ocr-popup-questions');
+    var html = '';
+    OCR_QUESTIONS.forEach(function(q, gi) {
+      var hasUnc = !!q.uncertainty;
+      var chip = hasUnc ? '<span class="rubric-suspect-chip"><i data-lucide="triangle-alert" style="width:11px;height:11px;"></i>인식 불확실</span>' : '';
+      html += '<div class="rubric-ocr-section">';
+      html += '<div class="rubric-ocr-header">';
+      html += '<span class="badge-purple">' + q.label + '</span>';
+      html += '<span class="rubric-ocr-desc">' + q.desc + '</span>';
+      html += chip;
+      html += '<button onclick="ocrEditSection(this,' + gi + ')" title="편집" style="background:none;border:none;cursor:pointer;color:#B3B3B3;padding:2px 4px;flex-shrink:0;display:flex;align-items:center;" onmouseover="this.style.color=\'#0950A0\'" onmouseout="this.style.color=\'#B3B3B3\'"><i data-lucide="pencil" style="width:13px;height:13px;"></i></button>';
+      html += '</div>';
+      html += '<div class="rubric-ocr-body" id="ocr-body-' + gi + '" onclick="ocrEditByBody(this,' + gi + ')"><span style="color:#333;">' + q.text + '</span></div>';
+      html += '<textarea id="ocr-ta-' + gi + '" onblur="ocrSaveSection(this,' + gi + ')" style="display:none;width:100%;border:none;border-top:1px solid #B9D5F5;padding:12px 15px;font-family:inherit;font-size:15px;line-height:1.8;color:#333;outline:none;resize:none;overflow:hidden;box-sizing:border-box;" rows="3">' + q.text + '</textarea>';
+      if (hasUnc) {
+        html += '<div class="ocr-uncertainty-note"><span class="ocr-uncertainty-label"><i data-lucide="triangle-alert" style="width:12px;height:12px;"></i>AI 인식 불확실</span><span class="ocr-uncertainty-text">' + q.uncertainty + '</span></div>';
+      }
+      html += '</div>';
+    });
+    area.innerHTML = html;
+    lucide.createIcons();
+  }
+
+  function ocrEditByBody(bodyEl, gi) { ocrOpenEdit(gi); }
+  function ocrEditSection(btn, gi) { ocrOpenEdit(gi); }
+
+  function ocrOpenEdit(gi) {
+    if (_ocrEditingSection !== null && _ocrEditingSection !== gi) {
+      var pt = document.getElementById('ocr-ta-' + _ocrEditingSection);
+      if (pt && pt.style.display !== 'none') ocrSaveSection(pt, _ocrEditingSection);
+    }
+    if (_ocrEditingSection === gi) return;
+    var body = document.getElementById('ocr-body-' + gi);
+    var ta = document.getElementById('ocr-ta-' + gi);
+    if (!body || !ta) return;
+    ta.value = body.innerText.trim();
+    body.style.display = 'none';
+    ta.style.display = 'block';
+    ta.style.height = 'auto';
+    ta.style.height = Math.max(ta.scrollHeight, 80) + 'px';
+    ta.oninput = function(){ this.style.height='auto'; this.style.height=this.scrollHeight+'px'; };
+    var sec = ta.closest('.rubric-ocr-section');
+    sec.classList.add('section-editing');
+    var btn = sec.querySelector('button[onclick^="ocrEditSection"]');
+    if (btn && !document.getElementById('ocr-ebadge-' + gi)) {
+      var badge = document.createElement('span');
+      badge.className = 'editing-badge'; badge.id = 'ocr-ebadge-' + gi; badge.textContent = '편집 중';
+      btn.parentElement.insertBefore(badge, btn);
+    }
+    _ocrEditingSection = gi;
+    ta.focus();
+  }
+
+  function ocrSaveSection(ta, gi) {
+    if (ta.style.display === 'none') return;
+    _ocrEditingSection = null;
+    var body = document.getElementById('ocr-body-' + gi);
+    if (!body) return;
+    OCR_QUESTIONS[gi].text = ta.value;
+    body.innerHTML = '<span style="color:#333;">' + ta.value.replace(/\n/g,'<br>') + '</span>';
+    body.style.display = '';
+    ta.style.display = 'none';
+    var sec = ta.closest('.rubric-ocr-section');
+    if (sec) sec.classList.remove('section-editing');
+    var eb = document.getElementById('ocr-ebadge-' + gi); if (eb) eb.remove();
+    var btn = sec ? sec.querySelector('button[onclick^="ocrEditSection"]') : null;
+    var saved = document.createElement('span');
+    saved.className = 'saved-badge';
+    saved.innerHTML = '✓ 저장됨';
+    if (btn) { btn.parentElement.insertBefore(saved, btn); }
+    setTimeout(function(){ saved.style.opacity='0'; }, 1200);
+    setTimeout(function(){ saved.remove(); }, 1700);
+  }
+
+  function openOcrPopup() {
+    var popup = document.getElementById('ocr-popup');
+    popup.style.display = 'block';
+    var banner = document.getElementById('ocr-popup-review-banner');
+    banner.style.display = OCR_NEEDS_REVIEW ? 'flex' : 'none';
+    renderOcrQuestions();
+  }
+  function closeOcrPopup() {
+    document.getElementById('ocr-popup').style.display = 'none';
+  }
+
+  // ── AI 채점 재실행 모달 ──
+  function openRerunModal() {
+    document.getElementById('rerun-overlay').style.display = 'block';
+    document.getElementById('rerun-modal').style.display = 'block';
+    lucide.createIcons();
+  }
+  function closeRerunModal() {
+    document.getElementById('rerun-overlay').style.display = 'none';
+    document.getElementById('rerun-modal').style.display = 'none';
+  }
+  function selectRerunLevel(el) {
+    document.querySelectorAll('#rerun-level .rerun-radio').forEach(function(r) {
+      r.style.border = '2px solid #B3B3B3';
+    });
+    var radio = el.querySelector('.rerun-radio');
+    radio.style.border = '5px solid #0950A0';
+  }
+  function runRerun() {
+    closeRerunModal();
+    showToast('loading', 'AI 채점을 진행 중입니다...');
+    setTimeout(function() {
+      showToast('success', 'AI 채점이 완료되었습니다.');
+    }, 2000);
+  }
+
+  // OCR 저장 후 채점 재실행 (모달 없이 바로)
+  function saveAndRerun() {
+    closeOcrPopup();
+    showToast('loading', 'AI 채점을 진행 중입니다...');
+    setTimeout(function() {
+      showToast('success', 'AI 채점이 완료되었습니다.');
+    }, 2000);
+  }
+
+  // ── 토스트 ──
+  var toastTimer;
+  function showToast(type, msg) {
+    var t = document.getElementById('toast');
+    clearTimeout(toastTimer);
+    // 타입별 스타일
+    if (type === 'success') {
+      t.style.background = '#00AF3D'; t.style.color = 'white';
+      document.getElementById('toast-icon').setAttribute('data-lucide', 'circle-check-big');
+      document.getElementById('toast-icon').style.display = 'block';
+    } else if (type === 'loading') {
+      t.style.background = '#0950A0'; t.style.color = 'white';
+      document.getElementById('toast-icon').setAttribute('data-lucide', 'loader');
+      document.getElementById('toast-icon').style.display = 'block';
+    }
+    document.getElementById('toast-msg').textContent = msg;
+    t.style.display = 'flex';
+    t.style.opacity = '0';
+    t.style.transform = 'translateX(-50%) translateY(12px)';
+    lucide.createIcons();
+    requestAnimationFrame(function() {
+      t.style.opacity = '1';
+      t.style.transform = 'translateX(-50%) translateY(0)';
+    });
+    if (type !== 'loading') {
+      toastTimer = setTimeout(function() {
+        t.style.opacity = '0';
+        setTimeout(function() { t.style.display = 'none'; }, 200);
+      }, 2500);
+    }
+  }
+
+  // ── 드래그 ──
+  (function() {
+    var popup, header, dragging = false, ox, oy, px, py;
+    document.addEventListener('DOMContentLoaded', function() {
+      // OCR 패널 배너 초기화 (C안은 확인 필요 표시 모두 숨김)
+      var _sdEvalBanner = (new URLSearchParams(location.search)).get('eval');
+      var _hideReviewBanner = (_sdEvalBanner === 'C');
+      var panelBanner = document.getElementById('scoring-ocr-review-banner');
+      if (panelBanner) {
+        panelBanner.style.display = (OCR_NEEDS_REVIEW && !_hideReviewBanner) ? 'flex' : 'none';
+        var countBadge = document.getElementById('ocr-banner-count');
+        if (countBadge) countBadge.textContent = OCR_REVIEW_COUNT + '개 문항';
+      }
+
+      popup = document.getElementById('ocr-popup');
+      header = document.getElementById('ocr-popup-header');
+      header.addEventListener('mousedown', function(e) {
+        if (e.target.closest('button')) return;
+        dragging = true;
+        var rect = popup.getBoundingClientRect();
+        px = rect.left; py = rect.top;
+        // 팝업을 fixed + 명시적 left/top으로 전환
+        popup.style.transform = 'none';
+        popup.style.left = px + 'px';
+        popup.style.top = py + 'px';
+        ox = e.clientX - px;
+        oy = e.clientY - py;
+        header.style.cursor = 'grabbing';
+        e.preventDefault();
+      });
+    });
+    document.addEventListener('mousemove', function(e) {
+      if (!dragging) return;
+      popup.style.left = (e.clientX - ox) + 'px';
+      popup.style.top = (e.clientY - oy) + 'px';
+    });
+    document.addEventListener('mouseup', function() {
+      dragging = false;
+      if (header) header.style.cursor = 'grab';
+    });
+  })();
+</script>
+
+<!-- ===== 까망이 목업 화면 선택기 (AI 채점) ===== -->
+<style>
+  #mockpick{ position:fixed; left:24px; bottom:24px; z-index:3000; background:#1F2233; border-radius:14px; padding:8px; box-shadow:0 10px 30px rgba(0,0,0,.35); width:max-content; max-width:380px; cursor:move; user-select:none; font-family:'NanumSquareRound',-apple-system,sans-serif; }
+  #mockpick .mp-head{ font-size:11px; font-weight:800; color:#8A8FB0; letter-spacing:.04em; display:flex; align-items:center; justify-content:space-between; gap:16px; padding:6px 8px; cursor:pointer; }
+  #mockpick .mp-body{ display:flex; flex-direction:column; gap:6px; margin-top:6px; }
+  #mockpick .mp-cap{ font-size:10px; font-weight:800; color:#6B6F8C; letter-spacing:.05em; padding:7px 8px 2px; }
+  #mockpick .mp-btn{ width:100%; text-align:left; white-space:nowrap; padding:9px 12px; border-radius:9px; border:1px solid #3A3F58; background:#2A2E44; color:#C9CCE0; font-size:13px; font-weight:700; font-family:inherit; cursor:pointer; line-height:1.35; }
+  #mockpick .mp-btn:hover{ background:#33384f; }
+  #mockpick .mp-btn.on{ background:#0950A0; color:#fff; border-color:#0950A0; }
+  #mockpick .mp-sub{ font-size:11px; font-weight:600; color:#8A8FB0; margin-left:8px; }
+  #mockpick .mp-btn.on .mp-sub{ color:#D9EAFB; }
+</style>
+<div id="mockpick">
+  <div class="mp-head" onclick="mpToggle()">
+    <span style="display:inline-flex;align-items:center;gap:6px;"><i data-lucide="layout-grid" style="width:13px;height:13px;"></i>MOCKUP · AI 채점 (blue 시안)</span>
+    <i id="mp-caret" data-lucide="chevron-down" style="width:14px;height:14px;transform:rotate(180deg);"></i>
+  </div>
+  <div id="mp-body" class="mp-body" style="display:none">
+    <div class="mp-cap">화면</div>
+    <button class="mp-btn" data-f="scoring_list_v1.html" onclick="mpNav('scoring_list_v1.html')">채점 목록</button>
+    <div class="mp-cap">AI 채점 실행 모달 · OCR 상태별</div>
+    <button class="mp-btn" data-run="ok" onclick="mpRun('ok')">OCR 완료 <span class="mp-sub">채점 가능·불가 표</span></button>
+    <button class="mp-btn" data-run="few" onclick="mpRun('few')">OCR 일부 미확인</button>
+    <button class="mp-btn" data-run="first" onclick="mpRun('first')">OCR 인식 전</button>
+    <div class="mp-cap">학생 채점 상세 · 케이스별</div>
+    <button class="mp-btn" data-id="10101" onclick="mpNavClearExcl('scoring_student_v1.html?id=10101&name=김서윤')">채점 진행 <span class="mp-sub">AI 결과 검토</span></button>
+    <button class="mp-btn" data-id="10102" onclick="mpNav('scoring_student_v1.html?id=10102&name=이준호')">확인 필요 <span class="mp-sub">불확실 구간</span></button>
+    <button class="mp-btn" data-id="10103" onclick="mpNav('scoring_student_v1.html?id=10103&name=박지민')">정확도 낮음 <span class="mp-sub">결과 미표시·직접 채점</span></button>
+    <button class="mp-btn" data-id="10105" onclick="mpNav('scoring_student_v1.html?id=10105&name=정현우')">OCR 미진행 <span class="mp-sub">채점 불가</span></button>
+    <button class="mp-btn" data-id="10106" onclick="mpNav('scoring_student_v1.html?id=10106&name=한가람')">OCR 인식 실패 <span class="mp-sub">채점 불가</span></button>
+    <button class="mp-btn" data-rescore="1" onclick="mpNav('scoring_student_v1.html?id=10101&name=김서윤&rescore=1')">재채점 필요 <span class="mp-sub">완료 후 OCR 수정됨</span></button>
+    <button class="mp-btn" data-id="10109" onclick="mpNav('scoring_student_v1.html?id=10109&name=임도윤')">업데이트 전 과제 <span class="mp-sub">채점됨 · 인식 결과 없음</span></button>
+    <button class="mp-btn" data-exclude="1" onclick="mpExclude()">문항 직접 채점 <span class="mp-sub">AI 채점 제외 문항</span></button>
+    <button class="mp-btn" data-f="scoring_student_elementary_v1.html" onclick="mpNav('scoring_student_elementary_v1.html')">문항 단위 채점 <span class="mp-sub">10월 기능</span></button>
+    <button class="mp-btn" data-f="scoring_highlight_v1.html" onclick="mpNav('scoring_highlight_v1.html')">하이라이팅 <span class="mp-sub">10월 기능</span></button>
+  </div>
+</div>
+<script>
+  function mpToggle(){ var b=document.getElementById('mp-body'); var c=document.getElementById('mp-caret'); var open=b.style.display!=='none'; if(!open){ var el=document.getElementById('mockpick'); var r=el.getBoundingClientRect(); el.style.top='auto'; el.style.bottom=Math.max(16, window.innerHeight-r.bottom)+'px'; } b.style.display=open?'none':'flex'; if(c)c.style.transform=open?'rotate(180deg)':''; }
+  function mpNav(url){ if(location.pathname.split('/').pop()!==url) location.href=url; }
+  // 문항 직접 채점(AI 제외) 데모 — 10101의 문항 3(index 2)을 제외로 설정 후 이동
+  function mpExclude(){ try{ var em=JSON.parse(sessionStorage.getItem('hiai_ocr_exclude')||'{}'); em['10101']=em['10101']||{}; em['10101'][2]=true; sessionStorage.setItem('hiai_ocr_exclude',JSON.stringify(em)); }catch(e){} location.href='scoring_student_v1.html?id=10101&name=김서윤'; }
+  // 채점 진행(정상) 데모 — 10101 제외 상태를 비우고 이동 (두 케이스를 깨끗한 반대 상태로)
+  function mpNavClearExcl(url){ try{ var em=JSON.parse(sessionStorage.getItem('hiai_ocr_exclude')||'{}'); delete em['10101']; sessionStorage.setItem('hiai_ocr_exclude',JSON.stringify(em)); }catch(e){} location.href=url; }
+  function mpRun(k){
+    if (typeof openRunModal==='function'){
+      document.querySelectorAll('.modal-overlay').forEach(function(m){ m.classList.remove('open'); });
+      if (typeof closeOcrFirstModal==='function') closeOcrFirstModal();
+      if(k==='ok') openRunModal();
+      else if(k==='few') openOcrReviewFew();
+      else if(k==='first') openOcrFirstModal();
+    } else { location.href='scoring_list_v1.html?run='+k; }
+  }
+  function mpSyncActiveScoring(){
+    var cur=location.pathname.split('/').pop();
+    var sp=new URLSearchParams(location.search);
+    var qid=sp.get('id');
+    var isRescore=(sp.get('rescore')==='1');
+    var om=document.querySelector('.modal-overlay.open');
+    var runKey=om?({runModal:'ok',ocrFewModal:'few',ocrFirstModal:'first'}[om.id]||''):'';
+    var hasExcl=false; try{ var em=JSON.parse(sessionStorage.getItem('hiai_ocr_exclude')||'{}'); hasExcl=!!(em[qid]&&Object.keys(em[qid]).some(function(k){return em[qid][k];})); }catch(e){}
+    document.querySelectorAll('#mockpick .mp-btn').forEach(function(b){
+      var on=false;
+      if(b.dataset.run) on=(b.dataset.run===runKey);
+      else if(runKey) on=false;
+      else if(b.dataset.rescore) on=(cur==='scoring_student_v1.html'&&isRescore);
+      else if(b.dataset.exclude) on=(cur==='scoring_student_v1.html'&&hasExcl&&!isRescore);
+      else if(b.dataset.id) on=(cur==='scoring_student_v1.html'&&b.dataset.id===qid&&!isRescore&&!hasExcl);
+      else if(b.dataset.f) on=(b.dataset.f===cur);
+      b.classList.toggle('on', on);
+    });
+  }
+  (function(){
+    mpSyncActiveScoring();
+    var el=document.getElementById('mockpick'); var dx=0,dy=0,drag=false;
+    el.addEventListener('mousedown',function(e){ if(e.target.closest('button'))return; drag=true; var r=el.getBoundingClientRect(); dx=e.clientX-r.left; dy=e.clientY-r.top; el.style.right='auto'; el.style.bottom='auto'; el.style.left=r.left+'px'; el.style.top=r.top+'px'; e.preventDefault(); });
+    document.addEventListener('mousemove',function(e){ if(!drag)return; el.style.left=(e.clientX-dx)+'px'; el.style.top=(e.clientY-dy)+'px'; });
+    document.addEventListener('mouseup',function(){ drag=false; });
+    if(window.lucide) lucide.createIcons();
+  })();
+</script>
+
+<!-- 미저장 변경 이탈 확인 모달 (OCR 결과 수정 이동 시) -->
+<div id="leaveGuardModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:1300;align-items:center;justify-content:center;" onclick="if(event.target===this)closeLeaveGuard()">
+  <div style="background:white;border-radius:24px;box-shadow:0 4px 12px rgba(45,85,145,0.16);width:460px;max-width:92vw;position:relative;" onclick="event.stopPropagation()">
+    <button onclick="closeLeaveGuard()" style="position:absolute;top:11px;right:11px;width:36px;height:36px;background:none;border:none;cursor:pointer;border-radius:6px;display:flex;align-items:center;justify-content:center;" onmouseover="this.style.background='#F8F8F8'" onmouseout="this.style.background='none'"><i data-lucide="x" style="width:18px;height:18px;color:#808080;"></i></button>
+    <div style="padding:24px 24px 8px;"><h3 style="font-size:18px;font-weight:800;color:#222631;margin:0;">저장하지 않은 변경사항이 있어요</h3></div>
+    <div style="padding:0 24px 20px;"><p style="font-size:15px;color:#494949;line-height:1.6;margin:0;">채점 내용을 저장하지 않고 인식 결과 수정 화면으로 이동하면 변경사항이 사라져요. 저장하고 이동할까요?</p></div>
+    <div style="padding:0 24px 20px;display:flex;justify-content:flex-end;gap:10px;">
+      <button onclick="leaveWithoutSave()" style="height:40px;padding:0 18px;background:white;color:#494949;border:1px solid #D9D9D9;border-radius:8px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;">저장 안 하고 이동</button>
+      <button onclick="leaveSaveAndGo()" style="height:40px;padding:0 18px;background:#0950A0;color:white;border:none;border-radius:8px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;">저장하고 이동</button>
+    </div>
+  </div>
+</div>
+<!-- ===== 까망이 공통 보정 (mp-fix-v2) — 화면 밖 이탈 방지 · 접힌 채 드래그 ===== -->
+<script>
+(function(){
+  var el = document.getElementById('mockpick');
+  if (!el) return;
+  var down = false, moved = false, swallow = false, sx = 0, sy = 0;
+
+  // 패널이 항상 화면 안에 남도록 보정 (범위 안이면 아무것도 바꾸지 않음)
+  function clamp(){
+    if (!window.innerWidth || !window.innerHeight) return;   // 렌더 전/숨김 탭 보호
+    var r = el.getBoundingClientRect();
+    if (!r.width || !r.height) return;
+    var maxL = Math.max(8, window.innerWidth  - r.width  - 8);
+    var maxT = Math.max(8, window.innerHeight - r.height - 8);
+    var l = Math.min(Math.max(8, r.left), maxL);
+    var t = Math.min(Math.max(8, r.top),  maxT);
+    if (Math.abs(l - r.left) > 0.5 || Math.abs(t - r.top) > 0.5) {
+      el.style.right = 'auto'; el.style.bottom = 'auto';
+      el.style.left = l + 'px'; el.style.top = t + 'px';
+    }
+  }
+
+  document.addEventListener('mousedown', function(e){
+    if (!el.contains(e.target) || e.target.closest('button')) return;
+    down = true; moved = false; sx = e.clientX; sy = e.clientY;
+  }, true);
+
+  document.addEventListener('mousemove', function(e){
+    if (!down) return;
+    if (Math.abs(e.clientX - sx) > 3 || Math.abs(e.clientY - sy) > 3) moved = true;
+    if (moved) clamp();
+  });
+
+  document.addEventListener('mouseup', function(){
+    if (!down) return;
+    down = false; swallow = moved;
+    if (moved) clamp();
+  });
+
+  // 끌고 난 직후의 click은 펼치기/접기로 취급하지 않는다
+  // (접은 채로 끌면 mouseup 뒤 click이 mpToggle을 호출해 위치가 되돌아가던 문제)
+  document.addEventListener('click', function(e){
+    if (swallow && el.contains(e.target)) { e.stopPropagation(); e.preventDefault(); }
+    swallow = false;
+  }, true);
+
+  // 펼치기/접기로 높이가 바뀐 뒤 화면 밖으로 나가면 되돌린다
+  el.addEventListener('click', function(){
+    requestAnimationFrame(function(){ requestAnimationFrame(clamp); });
+  });
+
+  window.addEventListener('resize', clamp);
+})();
+</script>
+<!-- 준비 팁 모달은 이 화면에서 미사용 — 안내는 평가 설계·업로드 시점에만 (2026-07-29 정책) -->
+</body>
+</html>
