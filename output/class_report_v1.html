@@ -166,7 +166,7 @@ function GNB(){
           <img src={LOGO.kg} alt="AI 서·논술형 평가지원시스템" style={{height:42,width:"auto",display:"block",flexShrink:0}}/>
         </div>
         <div style={{display:"flex",alignItems:"center",gap:52,fontSize:20}}>
-          <span style={{color:"#0950A0",fontWeight:800}}>나의 평가</span>
+          <span style={{color:"#0950A0",fontWeight:700,cursor:"pointer"}} onClick={()=>{location.href='home_v1.html'}}>나의 평가</span>
           <span style={{color:"#000",fontWeight:700}}>평가 자료실</span>
           <span style={{color:"#000",fontWeight:700}}>고객센터</span>
         </div>
@@ -185,7 +185,7 @@ function TitleBar(){
   return (
     <div style={{background:"linear-gradient(to right,#0950A0 4%,#2F77D5 97.86%)",height:86,display:"flex",alignItems:"center",justifyContent:"center",padding:"0 36px"}}>
       <div style={{flex:1,maxWidth:1200,minWidth:960,padding:"0 36px"}}>
-        <span style={{fontSize:28,fontWeight:800,color:"#fff"}}>1학년 국어</span>
+        <span style={{fontSize:28,fontWeight:700,color:"#fff"}}>1학년 국어</span>
       </div>
     </div>
   );
@@ -205,7 +205,7 @@ function Tabs(){
       {tabs.map((x,i)=>(
         <div key={i} className={i===5?"tab-active":"tab-inactive"}
           onClick={()=>{ if(x.href) window.location.href=x.href; }}>
-          <span style={{fontSize:20,fontWeight:i===5?800:700,color:i===5?"#0A2A5E":"#000"}}>{x.t}</span>
+          <span style={{fontSize:20,fontWeight:700,color:i===5?"#0A2A5E":"#000"}}>{x.t}</span>
         </div>
       ))}
     </div>
@@ -245,10 +245,10 @@ function ClusterCard({cluster, students, selectedIds, aiStatus}){
           </span>
         </div>
         <div style={{display:"flex",gap:24}}>
-          <div><div style={{fontSize:13,color:"#808080",fontWeight:800}}>그룹 평균</div>
+          <div><div style={{fontSize:13,color:"#808080",fontWeight:700}}>그룹 평균</div>
             <div style={{fontSize:24,fontWeight:900,color:cluster.color}}>{avgScore}<span style={{fontSize:14,color:"#B3B3B3"}}> / {maxScore}점</span></div>
           </div>
-          <div><div style={{fontSize:13,color:"#808080",fontWeight:800}}>달성률</div>
+          <div><div style={{fontSize:13,color:"#808080",fontWeight:700}}>달성률</div>
             <div style={{fontSize:24,fontWeight:900,color:cluster.color}}>{avgPct}<span style={{fontSize:14,color:"#B3B3B3"}}>%</span></div>
           </div>
         </div>
@@ -258,7 +258,7 @@ function ClusterCard({cluster, students, selectedIds, aiStatus}){
         {/* 과제별 평균 미니바 */}
         {count>0 && (
           <div style={{marginBottom:14}}>
-            <div style={{fontSize:13,color:"#808080",fontWeight:800,marginBottom:10}}>과제별 그룹 평균</div>
+            <div style={{fontSize:13,color:"#808080",fontWeight:700,marginBottom:10}}>과제별 그룹 평균</div>
             {miniData.map((d,i)=>(
               <div key={i} style={{marginBottom:12}}>
                 {/* 과제명 — 전체 너비, 말줄임 + 툴팁 */}
@@ -301,7 +301,7 @@ function ClusterCard({cluster, students, selectedIds, aiStatus}){
 
           {aiStatus==="generating" && (
             <div style={{padding:"18px 4px",textAlign:"center"}}>
-              <div style={{display:"inline-flex",alignItems:"center",gap:8,fontSize:14,color:"#0950A0",fontWeight:800}}>
+              <div style={{display:"inline-flex",alignItems:"center",gap:8,fontSize:14,color:"#0950A0",fontWeight:700}}>
                 <span style={{display:"inline-block",width:14,height:14,border:"2px solid #DBF1FF",borderTopColor:"#0950A0",borderRadius:"50%",animation:"spin 0.8s linear infinite"}}/>
                 AI가 그룹 패턴을 분석 중입니다…
               </div>
@@ -326,8 +326,8 @@ function ClusterCard({cluster, students, selectedIds, aiStatus}){
 
         {/* 학생 목록 토글 */}
         <button onClick={()=>setOpen(!open)} style={{width:"100%",background:"none",border:"1px solid #E6E6E6",borderRadius:8,padding:"10px 14px",display:"flex",alignItems:"center",justifyContent:"space-between",cursor:"pointer",fontFamily:"inherit"}}>
-          <span style={{fontSize:15,fontWeight:800,color:"#494949"}}>학생 목록 {count}명</span>
-          <span style={{fontSize:14,color:"#0950A0",fontWeight:800}}>{open?"▲ 닫기":"▼ 펼치기"}</span>
+          <span style={{fontSize:15,fontWeight:700,color:"#494949"}}>학생 목록 {count}명</span>
+          <span style={{fontSize:14,color:"#0950A0",fontWeight:700}}>{open?"▲ 닫기":"▼ 펼치기"}</span>
         </button>
         {open && (
           <div style={{marginTop:8,border:"1px solid #F0F0F0",borderRadius:8,overflow:"hidden"}}>
@@ -337,8 +337,8 @@ function ClusterCard({cluster, students, selectedIds, aiStatus}){
                 <div key={s.id} className="student-row">
                   <div style={{display:"flex",alignItems:"center",gap:10}}>
                     <span style={{fontSize:13,color:"#808080"}}>{s.cls}</span>
-                    <span style={{fontSize:15,fontWeight:800}}>{s.name}</span>
-                    {s.hasNull && <span style={{fontSize:12,background:"#FFEFEF",color:"#DB3E51",padding:"2px 6px",borderRadius:4,fontWeight:800}}>미제출</span>}
+                    <span style={{fontSize:15,fontWeight:700}}>{s.name}</span>
+                    {s.hasNull && <span style={{fontSize:12,background:"#FFEFEF",color:"#DB3E51",padding:"2px 6px",borderRadius:4,fontWeight:700}}>미제출</span>}
                   </div>
                   <div style={{display:"flex",alignItems:"center",gap:14}}>
                     <span style={{fontSize:15,fontWeight:900,color:cluster.color}}>
@@ -405,7 +405,7 @@ function StudentListView({selectedClass, setSelectedClass}){
       <div style={{border:"1px solid #E6E6E6",borderRadius:12,overflow:"hidden"}}>
         {/* 헤더 */}
         <div style={{display:"grid",gridTemplateColumns:"80px 80px 1fr 1fr 140px 120px 80px",
-          background:"#F8F8F8",padding:"12px 16px",fontSize:14,fontWeight:800,color:"#494949",borderBottom:"1px solid #E6E6E6"}}>
+          background:"#F8F8F8",padding:"12px 16px",fontSize:14,fontWeight:700,color:"#494949",borderBottom:"1px solid #E6E6E6"}}>
           <div>학급</div>
           <div>학번</div>
           <div>이름</div>
@@ -425,8 +425,8 @@ function StudentListView({selectedClass, setSelectedClass}){
                   <div style={{color:"#808080"}}>{r.cls}</div>
                   <div style={{color:"#808080"}}>{r.id}</div>
                   <div style={{display:"flex",alignItems:"center",gap:8}}>
-                    <span style={{fontWeight:800}}>{r.name}</span>
-                    {r.missing>0 && <span style={{fontSize:12,background:"#FFEFEF",color:"#DB3E51",padding:"2px 6px",borderRadius:4,fontWeight:800}}>미제출 {r.missing}</span>}
+                    <span style={{fontWeight:700}}>{r.name}</span>
+                    {r.missing>0 && <span style={{fontSize:12,background:"#FFEFEF",color:"#DB3E51",padding:"2px 6px",borderRadius:4,fontWeight:700}}>미제출 {r.missing}</span>}
                   </div>
                   <div style={{fontWeight:900,color:meta.color}}>
                     {r.total}<span style={{color:"#B3B3B3",fontWeight:700,fontSize:13}}> / {maxTotal}점</span>
@@ -438,16 +438,16 @@ function StudentListView({selectedClass, setSelectedClass}){
                     <span style={{fontSize:14,fontWeight:900,color:meta.color,minWidth:36}}>{r.pct}%</span>
                   </div>
                   <div>
-                    <span style={{fontSize:13,fontWeight:800,color:meta.color,background:meta.bg,padding:"4px 10px",borderRadius:100}}>
+                    <span style={{fontSize:13,fontWeight:700,color:meta.color,background:meta.bg,padding:"4px 10px",borderRadius:100}}>
                       {meta.label}
                     </span>
                   </div>
                   <div style={{textAlign:"right"}}>
                     {r.hasReport
                       ? <a href={`student_report_v1.html?id=${r.id}&name=${encodeURIComponent(r.name)}&cls=${r.cls}`}
-                           style={{color:"#0950A0",fontWeight:800,fontSize:14,textDecoration:"none"}}>상세 ›</a>
+                           style={{color:"#0950A0",fontWeight:700,fontSize:14,textDecoration:"none"}}>상세 ›</a>
                       : <a href={`student_report_v1.html?id=${r.id}&name=${encodeURIComponent(r.name)}&cls=${r.cls}&noReport=1&reason=${r.missing>0?"unscored":"pending"}`}
-                           style={{display:"inline-flex",alignItems:"center",gap:4,color:"#B3B3B3",fontWeight:800,fontSize:12,textDecoration:"none",
+                           style={{display:"inline-flex",alignItems:"center",gap:4,color:"#B3B3B3",fontWeight:700,fontSize:12,textDecoration:"none",
                              background:"#F8F8F8",border:"1px solid #E6E6E6",borderRadius:6,padding:"4px 10px"}}>
                            미생성
                         </a>
@@ -472,7 +472,7 @@ function DistributionChart({selectedIds, studentData}){
     const aIdx = ASSIGNMENTS.findIndex(x=>x.id===selectedIds[0]);
     return (
       <div>
-        <div title={a.title} style={{fontSize:14,color:"#808080",fontWeight:800,marginBottom:10,
+        <div title={a.title} style={{fontSize:14,color:"#808080",fontWeight:700,marginBottom:10,
           whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis",maxWidth:"100%"}}>
           {axisLabel(aIdx)} · {a.title} 점수 분포
         </div>
@@ -508,7 +508,7 @@ function DistributionChart({selectedIds, studentData}){
   const data = buildStackData(selectedIds, studentData);
   return (
     <div>
-      <div style={{fontSize:14,color:"#808080",fontWeight:800,marginBottom:10}}>과제별 군집 구성 변화</div>
+      <div style={{fontSize:14,color:"#808080",fontWeight:700,marginBottom:10}}>과제별 군집 구성 변화</div>
       <ResponsiveContainer width="100%" height={180}>
         <BarChart data={data} margin={{top:4,right:4,left:-20,bottom:0}}>
           <CartesianGrid strokeDasharray="3 3" stroke="#F0F0F0" vertical={false}/>
@@ -681,7 +681,7 @@ function App(){
                       <div key={c.key} style={{background:c.bg,borderRadius:12,padding:"16px 18px",flex:1,display:"flex",alignItems:"center",gap:14}}>
                         <span style={{fontSize:24}}>{c.icon}</span>
                         <div>
-                          <div style={{fontSize:14,fontWeight:800,color:"#808080"}}>{c.label}</div>
+                          <div style={{fontSize:14,fontWeight:700,color:"#808080"}}>{c.label}</div>
                           <div style={{fontSize:24,fontWeight:900,color:c.color}}>
                             {cnt}<span style={{fontSize:14,color:"#B3B3B3",fontWeight:700}}>명</span>
                             <span style={{fontSize:14,color:c.color,fontWeight:700,marginLeft:6}}>{Math.round(cnt/STUDENTS.length*100)}%</span>
@@ -712,7 +712,7 @@ function App(){
                 </div>
                 <div style={{display:"flex",alignItems:"center",gap:10}}>
                   {aiStatus==="stale" && (
-                    <span style={{fontSize:12,fontWeight:800,color:"#FF8C4C",background:"#FFE8D6",padding:"4px 10px",borderRadius:100}}>업데이트 필요</span>
+                    <span style={{fontSize:12,fontWeight:700,color:"#FF8C4C",background:"#FFE8D6",padding:"4px 10px",borderRadius:100}}>업데이트 필요</span>
                   )}
                   {aiStatus==="idle"       && <button className="btn-pri" onClick={handleGenerateAi}><Icon name="wand-sparkles" size={16}/>AI 코멘트 생성하기</button>}
                   {aiStatus==="generating" && <button className="btn-pri" disabled style={{opacity:0.6,cursor:"default"}}><Icon name="wand-sparkles" size={16}/>분석 중…</button>}

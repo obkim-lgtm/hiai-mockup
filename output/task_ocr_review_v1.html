@@ -256,7 +256,7 @@
       <img src="../screens/logo_kg.png" style="height:42px; width:auto; display:block; flex-shrink:0;" alt="AI 서·논술형 평가지원시스템">
     </div>
     <nav style="display:flex; gap:52px; align-items:center;">
-      <span style="font-size:20px; font-weight:700; color:#0950A0; cursor:pointer;">나의 평가</span>
+      <span style="font-size:20px; font-weight:700; color:#0950A0; cursor:pointer;" onclick="location.href='home_v1.html'">나의 평가</span>
       <span style="font-size:20px; font-weight:700; color:#000; cursor:pointer;">평가 자료실</span>
       <span style="font-size:20px; font-weight:700; color:#000; cursor:pointer;">고객센터</span>
     </nav>
@@ -2633,7 +2633,7 @@ function renderOCRView() {
     }
     if (clickable && ocrIdx !== -1) {
       var isActive = s.id === currentId;
-      listHtml += '<div onclick="selectStudent(' + ocrIdx + ')" style="display:flex;align-items:center;gap:10px;padding:10px 14px;cursor:pointer;background:' + (isActive ? '#F3F9FF' : 'white') + ';font-size:15px;font-weight:' + (isActive ? '800' : '700') + ';color:' + (isActive ? '#0A2A5E' : '#333') + ';" onmouseover="this.style.background=\'' + (isActive ? '#F3F9FF' : '#F8F8F8') + '\'" onmouseout="this.style.background=\'' + (isActive ? '#F3F9FF' : 'white') + '\'">'
+      listHtml += '<div onclick="selectStudent(' + ocrIdx + ')" style="display:flex;align-items:center;gap:10px;padding:10px 14px;cursor:pointer;background:' + (isActive ? '#F3F9FF' : 'white') + ';font-size:15px;font-weight:' + (isActive ? '700' : '700') + ';color:' + (isActive ? '#0A2A5E' : '#333') + ';" onmouseover="this.style.background=\'' + (isActive ? '#F3F9FF' : '#F8F8F8') + '\'" onmouseout="this.style.background=\'' + (isActive ? '#F3F9FF' : 'white') + '\'">'
         + icon
         + '<span>' + s.name + ' (' + s.id + ')</span>'
         + (isActive ? '<span style="margin-left:auto;font-size:11px;color:#0950A0;font-weight:700;">현재</span>' : '')

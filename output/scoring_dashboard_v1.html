@@ -105,7 +105,7 @@
       <img src="../screens/logo_kg.png" style="height:42px; width:auto; display:block; flex-shrink:0;" alt="AI 서·논술형 평가지원시스템">
     </div>
     <div class="gnb-menu">
-      <span style="color:#0950A0;font-weight:700">나의 평가</span>
+      <span style="color:#0950A0;font-weight:700 cursor:pointer;" onclick="location.href='home_v1.html'">나의 평가</span>
       <span style="color:#000;font-weight:700">평가 자료실</span>
       <span style="color:#000;font-weight:700">고객센터</span>
     </div>
@@ -338,7 +338,7 @@ function DistributionChart(){
             {data.map((d,i)=>(
               <Cell key={i} fill={GRADE_COLORS[d.grade]}/>
             ))}
-            <LabelList dataKey="count" position="top" style={{fontSize:13,fontWeight:800,fill:'#333'}} formatter={v => v ? v + '명' : ''}/>
+            <LabelList dataKey="count" position="top" style={{fontSize:13,fontWeight:700,fill:'#333'}} formatter={v => v ? v + '명' : ''}/>
           </Bar>
         </BarChart>
       </ResponsiveContainer>
@@ -373,7 +373,7 @@ function RubricsChart(){
               const fill = d.pct >= 0.8 ? '#00AF3D' : d.pct >= 0.6 ? '#0950A0' : '#FF8C4C';
               return <Cell key={i} fill={fill}/>;
             })}
-            <LabelList dataKey="avg" position="right" style={{fontSize:13,fontWeight:800,fill:'#333'}}/>
+            <LabelList dataKey="avg" position="right" style={{fontSize:13,fontWeight:700,fill:'#333'}}/>
           </Bar>
         </BarChart>
       </ResponsiveContainer>
@@ -417,7 +417,7 @@ function QuestionsChart(){
               const fill = d.pct >= 0.8 ? '#00AF3D' : d.pct >= 0.6 ? '#0950A0' : '#FF8C4C';
               return <Cell key={i} fill={fill}/>;
             })}
-            <LabelList dataKey="avg" position="top" style={{fontSize:13,fontWeight:800,fill:'#333'}}/>
+            <LabelList dataKey="avg" position="top" style={{fontSize:13,fontWeight:700,fill:'#333'}}/>
           </Bar>
         </BarChart>
       </ResponsiveContainer>
@@ -506,7 +506,7 @@ function StudentTable(){
 
   function SortIndicator({k}){
     if(sortKey !== k) return <span style={{color:'#D0D0D0',marginLeft:4,fontSize:11}}>↕</span>;
-    return <span style={{color:'#0950A0',marginLeft:4,fontSize:11,fontWeight:800}}>{sortDir === 'asc' ? '↑' : '↓'}</span>;
+    return <span style={{color:'#0950A0',marginLeft:4,fontSize:11,fontWeight:700}}>{sortDir === 'asc' ? '↑' : '↓'}</span>;
   }
 
   return (
@@ -541,7 +541,7 @@ function StudentTable(){
             <tr key={s.id} onClick={()=>gotoStudent(s)}>
               <td style={{color:'#494949',fontWeight:600}}>{s.id}</td>
               <td style={{color:'#222',fontWeight:700}}>{s.name}</td>
-              <td style={{fontWeight:800,color:'#222'}}>{s.total !== null ? `${s.total}/${MAX_TOTAL}` : <span style={{color:'#B3B3B3'}}>—</span>}</td>
+              <td style={{fontWeight:700,color:'#222'}}>{s.total !== null ? `${s.total}/${MAX_TOTAL}` : <span style={{color:'#B3B3B3'}}>—</span>}</td>
               <td>{gradeBadge(s.total)}</td>
               <td style={{color:s.rubrics ? '#494949' : '#B3B3B3'}}>{s.rubrics ? s.rubrics[0] : '—'}</td>
               <td style={{color:s.rubrics ? '#494949' : '#B3B3B3'}}>{s.rubrics ? s.rubrics[1] : '—'}</td>
