@@ -26,7 +26,7 @@
       width: 18px; height: 18px; border-radius: 50%; border: 2px solid #D9D9D9;
       display: flex; align-items: center; justify-content: center; flex-shrink: 0;
     }
-    .radio-circle.selected { border: 5px solid #7E44FB; }
+    .radio-circle.selected { border: 5px solid #0950A0; }
 
     .feedback-radio-item {
       display: flex; align-items: center; gap: 6px; cursor: pointer;
@@ -36,14 +36,14 @@
       width: 16px; height: 16px; border-radius: 50%; border: 2px solid #D9D9D9;
       display: flex; align-items: center; justify-content: center; flex-shrink: 0;
     }
-    .feedback-radio-circle.selected { border: 4px solid #7E44FB; }
+    .feedback-radio-circle.selected { border: 4px solid #0950A0; }
 
     .purple-btn {
-      background: #7E44FB; border: none; border-radius: 8px;
+      background: #0950A0; border: none; border-radius: 8px;
       height: 40px; padding: 0 16px; font-size: 16px; font-weight: 700;
       color: white; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; line-height: 1; vertical-align: middle; gap: 6px;
     }
-    .purple-btn:hover { background: #6c35e0; }
+    .purple-btn:hover { background: #0A4A94; }
 
     .pill-btn {
       background: white; border: 1px solid #999; border-radius: 9999px;
@@ -56,15 +56,15 @@
     .score-btn {
       width: 28px; height: 28px; border-radius: 6px; font-size: 18px; font-weight: 700;
       display: inline-flex; align-items: center; justify-content: center; line-height: 1; vertical-align: middle;
-      cursor: pointer; border: 1px solid #7E44FB; color: #7E44FB; background: white;
+      cursor: pointer; border: 1px solid #0950A0; color: #0950A0; background: white;
       transition: all 0.15s;
     }
-    .score-btn.selected { background: #7E44FB; color: white; border-color: #7E44FB; }
+    .score-btn.selected { background: #0950A0; color: white; border-color: #0950A0; }
     .score-btn.hatched {
       background: repeating-linear-gradient(-45deg, transparent, transparent 3px, rgba(126,68,251,0.15) 3px, rgba(126,68,251,0.15) 4px);
-      border: 1px solid #7E44FB; color: #7E44FB;
+      border: 1px solid #0950A0; color: #0950A0;
     }
-    .score-btn.hatched.selected { background: #7E44FB; color: white; }
+    .score-btn.hatched.selected { background: #0950A0; color: white; }
 
     /* AI 근거/피드백 탭 토글 */
     .tab-toggle-btn {
@@ -73,7 +73,7 @@
       border: none; color: #494949; background: transparent;
       transition: all 0.15s; font-family: inherit; line-height: 1;
     }
-    .tab-toggle-btn.active { background: white; color: #7E44FB; box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
+    .tab-toggle-btn.active { background: white; color: #0950A0; box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
 
     /* ── 좌측 탭 바 ── */
     .ocr-b-tab-wrap {
@@ -88,20 +88,20 @@
       font-size: 14px; font-weight: 700; color: #808080;
       background: transparent; transition: all 0.15s; font-family: inherit;
     }
-    .ocr-b-tab.active { background: #7E44FB; color: white; }
+    .ocr-b-tab.active { background: #0950A0; color: white; }
 
     /* 보기 옵션 체크박스 (기존 '학생 풀이와 답만 보기'와 동일 문법) */
     .view-check {
       display: inline-flex; align-items: center; gap: 8px; cursor: pointer;
       font-size: 14px; font-weight: 700; color: #333; user-select: none; white-space: nowrap;
     }
-    .view-check input[type="checkbox"] { width: 14px; height: 14px; accent-color: #7E44FB; cursor: pointer; flex-shrink: 0; }
+    .view-check input[type="checkbox"] { width: 14px; height: 14px; accent-color: #0950A0; cursor: pointer; flex-shrink: 0; }
 
     /* ── 전사 텍스트 문항 블록 ── */
     .ocr-b-q-label {
       display: inline-flex; align-items: center; justify-content: center; line-height: 1; vertical-align: middle;
-      background: #F0EAFF; color: #7E44FB;
-      border-radius: 100px; padding: 5px 12px; font-size: 13px; font-weight: 800;
+      background: #E7F2FF; color: #0950A0;
+      border-radius: 100px; padding: 5px 12px; font-size: 13px; font-weight:700;
     }
     .ocr-b-q-desc { font-size: 13px; color: #808080; font-weight: 700; }
     .ocr-b-q-text { font-size: 16px; color: #333; line-height: 1.95; white-space: pre-line; }
@@ -125,7 +125,7 @@
     .hl-num {
       display: inline-flex; align-items: center; justify-content: center; line-height: 1; vertical-align: 3px;
       width: 17px; height: 17px; border-radius: 50%; margin-left: 3px;
-      font-size: 11px; font-weight: 800; color: white;
+      font-size: 11px; font-weight:700; color: white;
     }
     .hl-good .hl-num { background: #00AF3D; }
     .hl-weak .hl-num { background: #FF8C4C; }
@@ -137,7 +137,7 @@
     }
     #hl-tip .hl-tip-label {
       display: inline-flex; align-items: center; justify-content: center; line-height: 1; vertical-align: middle;
-      background: #00AF3D; color: white; font-size: 11px; font-weight: 800;
+      background: #00AF3D; color: white; font-size: 11px; font-weight:700;
       padding: 4px 9px; border-radius: 100px; white-space: nowrap; margin-bottom: 5px;
     }
     #hl-tip.weak .hl-tip-label { background: #FF8C4C; }
@@ -157,7 +157,7 @@
       font-size: 16px; line-height: 1.55; color: #333;
       border-radius: 8px; transition: background 0.12s; cursor: pointer;
     }
-    .reason-bullet:hover, .reason-bullet.linked { background: #F7F4FF; }
+    .reason-bullet:hover, .reason-bullet.linked { background: #F3F9FF; }
     .reason-bullet.no-span { cursor: default; }
     .reason-bullet.no-span:hover { background: transparent; }
     .reason-bullet.flash { animation: bulletFlash 1.2s ease 2; }
@@ -168,7 +168,7 @@
     .bullet-num {
       width: 22px; height: 22px; border-radius: 50%; flex-shrink: 0;
       display: flex; align-items: center; justify-content: center; margin-top: 2px;
-      font-size: 12px; font-weight: 800; color: white; line-height: 1;
+      font-size: 12px; font-weight:700; color: white; line-height: 1;
     }
     .reason-bullet.good .bullet-num { background: #00AF3D; }
     .reason-bullet.weak .bullet-num { background: #FF8C4C; }
@@ -176,11 +176,11 @@
     .no-span-chip {
       display: inline-flex; align-items: center; justify-content: center; line-height: 1; vertical-align: middle;
       background: #F0F0F0; color: #808080; border-radius: 100px; padding: 3px 8px;
-      font-size: 11px; font-weight: 800; margin-left: 6px; white-space: nowrap;
+      font-size: 11px; font-weight:700; margin-left: 6px; white-space: nowrap;
     }
     .goto-hint {
       display: none; align-items: center; gap: 3px; margin-left: auto; flex-shrink: 0;
-      font-size: 12px; font-weight: 700; color: #7E44FB; white-space: nowrap; padding-top: 4px;
+      font-size: 12px; font-weight: 700; color: #0950A0; white-space: nowrap; padding-top: 4px;
     }
     .reason-bullet:hover .goto-hint { display: inline-flex; }
     .reason-bullet.no-span:hover .goto-hint { display: none; }
@@ -190,7 +190,7 @@
 
 <!-- 상단 고정 타이틀바 -->
 <div style="position:sticky;top:0;z-index:50;height:68px;display:flex;align-items:stretch;background:#F8F8F8;border-top:1px solid #D9D9D9;border-bottom:1px solid #D9D9D9;">
-  <button onclick="location.href='scoring_list_v1.html'" style="width:68px;height:68px;background:#7E44FB;border:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;flex-shrink:0;padding:0;">
+  <button onclick="location.href='scoring_list_v1.html'" style="width:68px;height:68px;background:#0950A0;border:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;flex-shrink:0;padding:0;">
     <i data-lucide="arrow-left" style="width:28px;height:28px;color:white;"></i>
     <span style="font-size:14px;font-weight:700;color:white;line-height:1;">목록으로</span>
   </button>
@@ -246,7 +246,7 @@
           <input type="checkbox" id="hl-visible" checked onchange="setHlVisible(this.checked)">
           채점 근거 보기
         </label>
-        <a id="ocr-review-link" href="task_ocr_review_v1.html" target="_blank" rel="noopener" style="background:white;border:1px solid #B28FFD;border-radius:8px;height:32px;padding:0 12px;font-size:13px;font-weight:700;color:#7E44FB;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;line-height:1;vertical-align:middle;gap:6px;text-decoration:none;" onmouseover="this.style.background='#F7F4FF'" onmouseout="this.style.background='white'">
+        <a id="ocr-review-link" href="task_ocr_review_v1.html" target="_blank" rel="noopener" style="background:white;border:1px solid #7FB3E8;border-radius:8px;height:32px;padding:0 12px;font-size:13px;font-weight:700;color:#0950A0;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;line-height:1;vertical-align:middle;gap:6px;text-decoration:none;" onmouseover="this.style.background='#F3F9FF'" onmouseout="this.style.background='white'">
           <i data-lucide="scan-text" style="width:14px;height:14px;"></i>인식 결과 수정
         </a>
       </div>
@@ -260,9 +260,9 @@
     <!-- 원본 과제물 패널 -->
     <div id="left-original-panel" style="display:none;flex:1;flex-direction:column;min-height:0;">
       <!-- 원본에서는 하이라이트 미제공 안내 -->
-      <div style="display:flex;align-items:center;gap:8px;padding:10px 20px;background:#F2F5FF;flex-shrink:0;">
-        <i data-lucide="info" style="width:14px;height:14px;color:#5890FF;flex-shrink:0;"></i>
-        <span style="font-size:13px;color:#494949;font-weight:700;line-height:1.5;">채점 근거는 <strong style="color:#5890FF;">인식 결과</strong>에서 확인할 수 있어요.</span>
+      <div style="display:flex;align-items:center;gap:8px;padding:10px 20px;background:#F2F7FF;flex-shrink:0;">
+        <i data-lucide="info" style="width:14px;height:14px;color:#00778B;flex-shrink:0;"></i>
+        <span style="font-size:13px;color:#494949;font-weight:700;line-height:1.5;">채점 근거는 <strong style="color:#00778B;">인식 결과</strong>에서 확인할 수 있어요.</span>
       </div>
       <div style="background:#494949;display:flex;align-items:center;gap:20px;padding:4px 20px;flex-shrink:0;min-height:44px;">
         <div style="width:294px;font-size:16px;color:white;line-height:1.4;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">1학년1반과제파일.pdf</div>
@@ -287,7 +287,7 @@
         <span style="font-size:16px;font-weight:700;color:#333;line-height:1.25;">총점</span>
         <span style="font-size:18px;font-weight:700;color:#333;line-height:1.25;"><span id="total-score">35</span> / 45</span>
         <span style="font-size:16px;font-weight:700;color:#333;line-height:1.25;">점</span>
-        <span id="score-plan-badge" style="font-size:18px;font-weight:700;color:#7E44FB;line-height:1.25;margin-left:4px;">(B)</span>
+        <span id="score-plan-badge" style="font-size:18px;font-weight:700;color:#0950A0;line-height:1.25;margin-left:4px;">(B)</span>
       </div>
       <div style="display:flex;gap:20px;align-items:center;">
         <label class="radio-item" onclick="selectStatus(this)"><div class="radio-circle selected"></div>채점 진행</label>
@@ -299,7 +299,7 @@
     <!-- 섹션 2: 채점 결과 (채점기준별 점수 체크) -->
     <div style="padding:24px;border-bottom:1px solid #D9D9D9;">
       <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
-        <i data-lucide="circle-check-big" style="width:20px;height:20px;color:#7E44FB;flex-shrink:0;"></i>
+        <i data-lucide="circle-check-big" style="width:20px;height:20px;color:#0950A0;flex-shrink:0;"></i>
         <span style="font-size:18px;font-weight:700;color:#333;">채점 결과</span>
         <i data-lucide="circle-help" title="채점 요소별 점수를 선택하면 총점이 계산돼요" style="width:18px;height:18px;color:#B3B3B3;flex-shrink:0;margin-left:auto;cursor:help;"></i>
       </div>
@@ -318,7 +318,7 @@
     <div id="ai-feedback-section" style="padding:24px 24px 52px;border-bottom:1px solid #D9D9D9;">
       <!-- 헤더 -->
       <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px;">
-        <i data-lucide="sparkles" style="width:20px;height:20px;color:#7E44FB;"></i>
+        <i data-lucide="sparkles" style="width:20px;height:20px;color:#0950A0;"></i>
         <span style="font-size:18px;font-weight:700;color:#333;">AI 채점 근거 및 피드백</span>
         <i data-lucide="circle-help" title="AI가 과제물 분석 또는 루브릭 점수를 바탕으로 채점 근거와 피드백을 생성해요" style="width:18px;height:18px;color:#B3B3B3;flex-shrink:0;margin-left:auto;cursor:help;"></i>
       </div>
@@ -391,7 +391,7 @@
 
       <!-- AI 채점 재실행 버튼 -->
       <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
-        <button onclick="showToast('success','AI 채점을 재실행합니다.')" style="background:#7E44FB;border:none;border-radius:8px;height:36px;padding:0 12px;font-size:16px;font-weight:700;color:white;cursor:pointer;display:inline-flex;align-items:center;gap:6px;" onmouseover="this.style.background='#6c35e0'" onmouseout="this.style.background='#7E44FB'">
+        <button onclick="showToast('success','AI 채점을 재실행합니다.')" style="background:#0950A0;border:none;border-radius:8px;height:36px;padding:0 12px;font-size:16px;font-weight:700;color:white;cursor:pointer;display:inline-flex;align-items:center;gap:6px;" onmouseover="this.style.background='#0A4A94'" onmouseout="this.style.background='#0950A0'">
           <i data-lucide="wand-sparkles" style="width:16px;height:16px;"></i>
           AI 채점 재실행
         </button>
@@ -408,7 +408,7 @@
     <div style="background:white;padding:24px;padding-bottom:52px;">
       <!-- 헤더 -->
       <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px;">
-        <i data-lucide="message-circle" style="width:20px;height:20px;color:#7E44FB;"></i>
+        <i data-lucide="message-circle" style="width:20px;height:20px;color:#0950A0;"></i>
         <span style="font-size:18px;font-weight:700;color:#333;">선생님 직접 피드백</span>
         <!-- 도움말 (?) — 클릭 팝오버 -->
         <div style="position:relative;margin-left:auto;flex-shrink:0;">
@@ -421,7 +421,7 @@
               <div style="font-size:16px;font-weight:700;color:#27272A;line-height:1.25;">선생님 피드백 가이드</div>
               <div style="font-size:14px;font-weight:400;color:#27272A;line-height:1.55;">이 피드백은 결과지 출력·배부에서 학생에게 공개할지 선택할 수 있어요.<br>AI 채점 근거와 피드백은 선생님 참고용으로, 학생에게 공개되지 않아요.</div>
               <div style="display:flex;justify-content:flex-end;">
-                <button onclick="closeFeedbackGuide()" style="height:36px;padding:0 12px;background:#8751FA;color:white;border:none;border-radius:8px;font-size:16px;font-weight:700;font-family:inherit;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;line-height:1;">확인</button>
+                <button onclick="closeFeedbackGuide()" style="height:36px;padding:0 12px;background:#2F77D5;color:white;border:none;border-radius:8px;font-size:16px;font-weight:700;font-family:inherit;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;line-height:1;">확인</button>
               </div>
             </div>
           </div>
@@ -431,14 +431,14 @@
       <!-- 입력 박스 (텍스트 + 하단 글자수·수식 버튼) -->
       <div id="teacherFeedbackBox" style="background:white;border:1px solid #D9D9D9;border-radius:12px;padding:16px 20px 12px;margin-bottom:16px;transition:border-color .15s;">
         <textarea id="teacherFeedback" oninput="updateCharCount()"
-          onfocus="document.getElementById('teacherFeedbackBox').style.borderColor='#7E44FB'"
+          onfocus="document.getElementById('teacherFeedbackBox').style.borderColor='#0950A0'"
           onblur="document.getElementById('teacherFeedbackBox').style.borderColor='#D9D9D9'"
           style="width:100%;background:transparent;border:none;height:140px;resize:none;font-size:16px;font-family:'NanumSquareRound',sans-serif;color:#333;outline:none;line-height:1.55;display:block;"
           placeholder="채점 완료 시, 학생에게 제공되는 과제 피드백 내용입니다.&#10;AI 생성 기록을 참고하여 피드백을 작성해 보세요."
         ></textarea>
         <div style="display:flex;align-items:center;justify-content:space-between;padding-top:8px;">
           <span id="charCount" style="font-size:14px;color:#494949;">0자 / 0 byte</span>
-          <button onclick="showToast('success','수식 입력은 실제 서비스에서 제공돼요.')" style="display:inline-flex;align-items:center;justify-content:center;line-height:1;vertical-align:middle;gap:4px;height:28px;padding:0 10px;background:white;border:1px solid #B28FFD;border-radius:8px;color:#7E44FB;font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;" onmouseover="this.style.background='#F7F4FF'" onmouseout="this.style.background='white'"><i data-lucide="sigma" style="width:14px;height:14px;"></i>수식 입력</button>
+          <button onclick="showToast('success','수식 입력은 실제 서비스에서 제공돼요.')" style="display:inline-flex;align-items:center;justify-content:center;line-height:1;vertical-align:middle;gap:4px;height:28px;padding:0 10px;background:white;border:1px solid #7FB3E8;border-radius:8px;color:#0950A0;font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;" onmouseover="this.style.background='#F3F9FF'" onmouseout="this.style.background='white'"><i data-lucide="sigma" style="width:14px;height:14px;"></i>수식 입력</button>
         </div>
       </div>
 
@@ -599,7 +599,7 @@
       if (!answersOnly) {
         html += '<div style="background:#F8F8F8;border-radius:8px;padding:10px 14px;font-size:14px;color:#494949;line-height:1.6;margin-bottom:10px;">' + q.prompt + '</div>';
       }
-      html += '<div style="font-size:13px;font-weight:800;color:#808080;margin-bottom:6px;">학생 답안</div>';
+      html += '<div style="font-size:13px;font-weight:700;color:#808080;margin-bottom:6px;">학생 답안</div>';
       html += '<div class="ocr-b-q-text">';
       q.spans.forEach(function(sp) {
         if (sp.ev) {

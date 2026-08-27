@@ -116,7 +116,7 @@
     }
     .ocr-b-q-label {
       display: inline-flex; align-items: center; background: #E7F2FF; color: #0950A0;
-      border-radius: 100px; padding: 3px 12px; font-size: 13px; font-weight: 800;
+      border-radius: 100px; padding: 3px 12px; font-size: 13px; font-weight:700;
     }
     .ocr-b-q-desc { font-size: 13px; color: #808080; font-weight: 700; }
     .ocr-b-q-text { font-size: 16px; color: #333; line-height: 1.85; }
@@ -127,17 +127,17 @@
     .rubric-ocr-section{ border:1px solid #E6E6E6; border-radius:12px; margin-bottom:12px; overflow:hidden; }
     .rubric-ocr-header{ display:flex; align-items:center; gap:8px; padding:10px 14px; background:#F8F8F8; border-bottom:1px solid #E6E6E6; flex-wrap:wrap; }
     .rubric-ocr-desc{ font-size:13px; color:#808080; font-weight:700; flex:1; min-width:0; overflow:hidden; white-space:nowrap; text-overflow:ellipsis; }
-    .rubric-suspect-chip{ display:inline-flex; align-items:center; gap:4px; background:#FFF0F0; border:1px solid #FFBCBC; border-radius:100px; padding:2px 8px; font-size:12px; font-weight:800; color:#DB3E51; flex-shrink:0; }
+    .rubric-suspect-chip{ display:inline-flex; align-items:center; gap:4px; background:#FFF0F0; border:1px solid #FFBCBC; border-radius:100px; padding:2px 8px; font-size:12px; font-weight:700; color:#DB3E51; flex-shrink:0; }
     .rubric-ocr-body{ padding:14px 16px; font-size:15px; line-height:1.85; color:#333; cursor:text; position:relative; }
     .rubric-ocr-body:hover{ background:#FDFCFF; }
     .section-editing{ border-color:#0950A0 !important; box-shadow:0 0 0 2px rgba(9,80,160,.12); }
     .section-editing .rubric-ocr-header{ background:#F3F9FF; }
-    .editing-badge{ font-size:11px; font-weight:800; color:#0950A0; background:#D9EAFB; border-radius:100px; padding:2px 8px; }
-    .saved-badge{ font-size:11px; font-weight:800; color:#00AF3D; display:inline-flex; align-items:center; gap:3px; transition:opacity .4s; }
+    .editing-badge{ font-size:11px; font-weight:700; color:#0950A0; background:#D9EAFB; border-radius:100px; padding:2px 8px; }
+    .saved-badge{ font-size:11px; font-weight:700; color:#00AF3D; display:inline-flex; align-items:center; gap:3px; transition:opacity .4s; }
     .ocr-uncertainty-note{ border-top:1px dashed #FFBCBC; background:#FFF5F5; padding:10px 14px; display:flex; flex-direction:column; gap:4px; }
-    .ocr-uncertainty-label{ font-size:12px; font-weight:800; color:#DB3E51; display:flex; align-items:center; gap:4px; }
+    .ocr-uncertainty-label{ font-size:12px; font-weight:700; color:#DB3E51; display:flex; align-items:center; gap:4px; }
     .ocr-uncertainty-text{ font-size:13px; color:#494949; line-height:1.65; }
-    .badge-purple{ display:inline-flex;align-items:center;background:#F3F9FF;color:#0950A0;border-radius:100px;padding:3px 10px;font-size:12px;font-weight:800; }
+    .badge-purple{ display:inline-flex;align-items:center;background:#F3F9FF;color:#0950A0;border-radius:100px;padding:3px 10px;font-size:12px;font-weight:700; }
   </style>
 </head>
 <body>
@@ -265,7 +265,7 @@
           <i data-lucide="align-left" style="width:14px;height:14px;"></i>인식 결과
         </button>
       </div>
-      <span id="left-uncertain-chip" style="display:none;margin-left:auto;background:#FFF4CC;border:1px solid #E07000;border-radius:100px;padding:3px 12px;font-size:12px;font-weight:800;color:#E07000;align-items:center;gap:4px;">
+      <span id="left-uncertain-chip" style="display:none;margin-left:auto;background:#FFF4CC;border:1px solid #E07000;border-radius:100px;padding:3px 12px;font-size:12px;font-weight:700;color:#E07000;align-items:center;gap:4px;">
         <i data-lucide="triangle-alert" style="width:11px;height:11px;"></i>
         <span id="left-uncertain-count"></span>개 불확실 구간
       </span>
@@ -318,7 +318,7 @@
     <!-- 미진행/인식실패 학생: 채점 불가 placeholder (단계형 정책 — OCR 인식 전엔 채점할 입력이 없음) -->
     <div id="right-grading-empty" style="display:none;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:80px 32px;min-height:420px;">
       <div style="width:64px;height:64px;border-radius:18px;background:#F2F2F2;display:flex;align-items:center;justify-content:center;margin-bottom:16px;"><i data-lucide="lock" style="width:28px;height:28px;color:#808080;"></i></div>
-      <div id="right-grading-empty-title" style="font-size:16px;font-weight:800;color:#222;margin-bottom:8px;">아직 채점할 수 없어요</div>
+      <div id="right-grading-empty-title" style="font-size:16px;font-weight:700;color:#222;margin-bottom:8px;">아직 채점할 수 없어요</div>
       <div id="right-grading-empty-desc" style="font-size:13px;color:#494949;line-height:1.7;max-width:360px;">답안 인식(OCR)이 끝나면 AI 채점을 진행할 수 있어요. 왼쪽 안내에서 과제물 관리로 이동해 인식을 먼저 완료해 주세요.</div>
       <button id="direct-grade-btn" onclick="enableDirectGrade()" style="display:none;margin-top:20px;height:40px;padding:0 18px;background:white;color:#0950A0;border:1.5px solid #7FB3E8;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;align-items:center;justify-content:center;gap:6px;" onmouseover="this.style.background='#F3F9FF'" onmouseout="this.style.background='white'"><i data-lucide="pencil-line" style="width:15px;height:15px;"></i>직접 채점하기</button>
     </div>
@@ -818,9 +818,9 @@
       if (_contLg) {
         _contLg.innerHTML = '<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:48px 24px;min-height:300px;">'
           + '<div style="width:64px;height:64px;border-radius:18px;background:#E7F2FF;display:flex;align-items:center;justify-content:center;margin-bottom:16px;"><i data-lucide="history" style="width:30px;height:30px;color:#0950A0;"></i></div>'
-          + '<div style="font-size:16px;font-weight:800;color:#222;margin-bottom:8px;">업데이트 전 과제물이라 인식 결과가 없어요</div>'
+          + '<div style="font-size:16px;font-weight:700;color:#222;margin-bottom:8px;">업데이트 전 과제물이라 인식 결과가 없어요</div>'
           + '<div style="font-size:13px;color:#494949;line-height:1.7;max-width:380px;margin-bottom:20px;">이 과제물은 과제물 인식 기능 업데이트 전에 채점됐어요. 점수는 오른쪽에서 볼 수 있지만, 대조할 인식 결과가 없어요. 인식하면 원본과 대조하고 재채점할 수 있어요.</div>'
-          + '<a href="task_ocr_review_v1.html#ocr-b=' + studentId + '" style="display:inline-flex;align-items:center;justify-content:center;line-height:1;gap:8px;height:36px;padding:0 16px;border-radius:8px;background:white;color:#0950A0;border:1px solid #7FB3E8;font-size:14px;font-weight:800;text-decoration:none;cursor:pointer;"><i data-lucide="scan-line" style="width:18px;height:18px;"></i>과제물 관리에서 인식하기</a>'
+          + '<a href="task_ocr_review_v1.html#ocr-b=' + studentId + '" style="display:inline-flex;align-items:center;justify-content:center;line-height:1;gap:8px;height:36px;padding:0 16px;border-radius:8px;background:white;color:#0950A0;border:1px solid #7FB3E8;font-size:14px;font-weight:700;text-decoration:none;cursor:pointer;"><i data-lucide="scan-line" style="width:18px;height:18px;"></i>과제물 관리에서 인식하기</a>'
           + '</div>';
         lucide.createIcons();
       }
@@ -1051,7 +1051,7 @@
       // 일반 문항: 텍스트 옆에 "저장됨" 뱃지 잠깐 표시
       var row = body.closest('div');
       var badge = document.createElement('span');
-      badge.style.cssText = 'font-size:12px;font-weight:800;color:#00AF3D;display:inline-flex;align-items:center;gap:3px;margin-left:8px;';
+      badge.style.cssText = 'font-size:12px;font-weight:700;color:#00AF3D;display:inline-flex;align-items:center;gap:3px;margin-left:8px;';
       badge.innerHTML = '✓ 저장됨';
       body.insertAdjacentElement('afterend', badge);
       setTimeout(function(){ badge.style.opacity = '0'; badge.style.transition = 'opacity .4s'; }, 1200);
@@ -1662,7 +1662,7 @@
 <div id="leaveGuardModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:1300;align-items:center;justify-content:center;" onclick="if(event.target===this)closeLeaveGuard()">
   <div style="background:white;border-radius:24px;box-shadow:0 4px 12px rgba(45,85,145,0.16);width:460px;max-width:92vw;position:relative;" onclick="event.stopPropagation()">
     <button onclick="closeLeaveGuard()" style="position:absolute;top:11px;right:11px;width:36px;height:36px;background:none;border:none;cursor:pointer;border-radius:6px;display:flex;align-items:center;justify-content:center;" onmouseover="this.style.background='#F8F8F8'" onmouseout="this.style.background='none'"><i data-lucide="x" style="width:18px;height:18px;color:#808080;"></i></button>
-    <div style="padding:24px 24px 8px;"><h3 style="font-size:18px;font-weight:800;color:#222631;margin:0;">저장하지 않은 변경사항이 있어요</h3></div>
+    <div style="padding:24px 24px 8px;"><h3 style="font-size:18px;font-weight:700;color:#222631;margin:0;">저장하지 않은 변경사항이 있어요</h3></div>
     <div style="padding:0 24px 20px;"><p style="font-size:15px;color:#494949;line-height:1.6;margin:0;">채점 내용을 저장하지 않고 인식 결과 수정 화면으로 이동하면 변경사항이 사라져요. 저장하고 이동할까요?</p></div>
     <div style="padding:0 24px 20px;display:flex;justify-content:flex-end;gap:10px;">
       <button onclick="leaveWithoutSave()" style="height:40px;padding:0 18px;background:white;color:#494949;border:1px solid #D9D9D9;border-radius:8px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;">저장 안 하고 이동</button>

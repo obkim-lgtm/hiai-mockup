@@ -9,7 +9,7 @@
 <style>
   @import url('../screens/fonts.css');
   *{font-family:'NanumSquareRound',-apple-system,sans-serif;box-sizing:border-box}
-  body{margin:0;background:#EDF1FC;color:#222;font-size:16px;min-width:1280px}
+  body{margin:0;background:#EDF3FC;color:#222;font-size:16px;min-width:1280px}
   a{text-decoration:none;color:inherit}
 
   /* GNB */
@@ -18,16 +18,16 @@
   .gnb-menu{display:flex;align-items:center;gap:52px;font-size:20px}
 
   /* Page header */
-  .page-head{background:linear-gradient(90deg,#6562F5 4%,#9B68F3 98%);height:86px;display:flex;align-items:center;justify-content:center;padding:0 36px}
+  .page-head{background:linear-gradient(90deg,#0950A0 4%,#2F77D5 98%);height:86px;display:flex;align-items:center;justify-content:center;padding:0 36px}
   .page-head-inner{flex:1;max-width:1280px;display:flex;align-items:center;gap:12px;padding:0 36px;color:#fff}
-  .page-head-inner h1{font-size:28px;font-weight:800;margin:0}
+  .page-head-inner h1{font-size:28px;font-weight:700;margin:0}
   .page-head-inner .sep{width:1px;height:24px;background:rgba(255,255,255,.5)}
 
   /* Tabs — 디자인 시스템 기준 */
   .wrap{max-width:1200px;margin:0 auto;padding:40px 36px 80px}
   .tabs{display:flex;gap:12px}
-  .tab{flex:1;height:60px;background:#CBD6F4;border-radius:20px 20px 0 0;display:flex;align-items:center;justify-content:center;color:#000;font-weight:700;font-size:20px;cursor:pointer}
-  .tab.on{background:#fff;color:#341761;font-weight:800}
+  .tab{flex:1;height:60px;background:#CBDCF4;border-radius:20px 20px 0 0;display:flex;align-items:center;justify-content:center;color:#000;font-weight:700;font-size:20px;cursor:pointer}
+  .tab.on{background:#fff;color:#0A2A5E;font-weight:700}
 
   .panel{background:#fff;border-radius:0 0 20px 20px;padding:28px 24px;box-shadow:0 4px 36px rgba(95,102,178,.16)}
 
@@ -39,16 +39,16 @@
   /* Action group */
   .action-group{display:flex;align-items:center;gap:10px;flex-shrink:0}
   .btn{display:inline-flex;align-items:center;gap:8px;height:36px;padding:0 16px;border-radius:8px;font-size:16px;font-weight:700;cursor:pointer;border:1px solid transparent;white-space:nowrap}
-  .btn-pri{background:#7E44FB;color:#fff;border:none}
-  .btn-pri:hover{background:#6D34EB}
-  .btn-sec{background:#fff;color:#7E44FB;border-color:#B28FFD}
+  .btn-pri{background:#0950A0;color:#fff;border:none}
+  .btn-pri:hover{background:#0E5090}
+  .btn-sec{background:#fff;color:#0950A0;border-color:#7FB3E8}
   .btn-icon{width:36px;height:36px;padding:0;justify-content:center;background:#fff;border:1px solid #D9D9D9;color:#494949;border-radius:8px;display:inline-flex;align-items:center;cursor:pointer}
   .btn-pri.glow{box-shadow:0 4px 14px rgba(126,68,251,.35)}
 
   /* Card section */
   .section{margin-top:24px;border:1px solid #E6E6E6;border-radius:16px;background:#fff;overflow:hidden}
   .section-head{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;border-bottom:1px solid #F0F0F0;background:#F8F8F8}
-  .section-head h3{margin:0;font-size:18px;font-weight:800;color:#222}
+  .section-head h3{margin:0;font-size:18px;font-weight:700;color:#222}
   .section-head .right{display:flex;align-items:center;gap:8px}
 
   /* Table */
@@ -57,22 +57,22 @@
   tbody td{padding:14px 12px;border-bottom:1px solid #F0F0F0;text-align:center;color:#222;white-space:nowrap}
   tbody tr:hover{background:#FAFAFE}
 
-  .badge{display:inline-flex;align-items:center;padding:3px 12px;border-radius:100px;font-size:12px;font-weight:800;white-space:nowrap}
+  .badge{display:inline-flex;align-items:center;padding:3px 12px;border-radius:100px;font-size:12px;font-weight:700;white-space:nowrap}
   .b-doing{background:#FFF8F3;color:#FF8C4C}
   .b-done{background:#F1F9F3;color:#00AF3D}
   .b-todo{background:#FFF4E6;color:#E07000}
   .b-check{background:#FFEFEF;color:#DB3E51}
 
-  .link{color:#7E44FB;font-weight:700;display:inline-flex;align-items:center;gap:4px;cursor:pointer}
+  .link{color:#0950A0;font-weight:700;display:inline-flex;align-items:center;gap:4px;cursor:pointer}
 
   /* Callout */
-  .callout{display:flex;align-items:center;gap:14px;background:#F7F4FF;border:1px solid #E0D2FF;border-radius:12px;padding:14px 20px;margin-top:18px}
-  .callout .ic{width:36px;height:36px;border-radius:50%;background:#7E44FB;color:#fff;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-  .callout .txt{flex:1;font-size:14px;color:#341761;line-height:1.5}
-  .callout strong{color:#7E44FB}
+  .callout{display:flex;align-items:center;gap:14px;background:#F3F9FF;border:1px solid #BDDEFF;border-radius:12px;padding:14px 20px;margin-top:18px}
+  .callout .ic{width:36px;height:36px;border-radius:50%;background:#0950A0;color:#fff;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+  .callout .txt{flex:1;font-size:14px;color:#0A2A5E;line-height:1.5}
+  .callout strong{color:#0950A0}
 
   /* Toast */
-  .toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(12px);background:#00AF3D;color:#fff;padding:16px 24px 16px 16px;border-radius:8px;display:flex;align-items:center;gap:12px;font-weight:800;box-shadow:0 8px 32px rgba(95,102,178,.16);opacity:0;transition:opacity .2s,transform .2s;z-index:9999;pointer-events:none;width:384px}
+  .toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(12px);background:#00AF3D;color:#fff;padding:16px 24px 16px 16px;border-radius:8px;display:flex;align-items:center;gap:12px;font-weight:700;box-shadow:0 8px 32px rgba(95,102,178,.16);opacity:0;transition:opacity .2s,transform .2s;z-index:9999;pointer-events:none;width:384px}
   .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 
   /* ── 피드백 모달 ── */
@@ -81,10 +81,10 @@
   .fb-box{background:#fff;border-radius:24px;width:520px;max-width:90vw;box-shadow:0 4px 12px rgba(95,102,178,.16);overflow:hidden}
   .fb-box.lg{width:560px}
   .fb-emoji-card{flex:1;height:72px;border-radius:12px;border:1.5px solid #E6E6E6;background:#fff;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;font-family:inherit;transition:border-color .15s,background .15s}
-  .fb-emoji-card:hover{border-color:#B28FFD;background:#FAF7FF}
-  .fb-emoji-card.selected{border-color:#7E44FB;background:#F7F4FF}
-  .fb-info-row{display:flex;align-items:flex-start;gap:12px;padding:12px 14px;background:#FAF7FF;border:1px solid #EADCFF;border-radius:10px}
-  .fb-info-row .ic{flex-shrink:0;width:28px;height:28px;border-radius:50%;background:#7E44FB;color:#fff;display:flex;align-items:center;justify-content:center}
+  .fb-emoji-card:hover{border-color:#7FB3E8;background:#F7FBFF}
+  .fb-emoji-card.selected{border-color:#0950A0;background:#F3F9FF}
+  .fb-info-row{display:flex;align-items:flex-start;gap:12px;padding:12px 14px;background:#F7FBFF;border:1px solid #D5E7FF;border-radius:10px}
+  .fb-info-row .ic{flex-shrink:0;width:28px;height:28px;border-radius:50%;background:#0950A0;color:#fff;display:flex;align-items:center;justify-content:center}
   .fb-box.lg{max-height:90vh;overflow-y:auto}
   .fb-type-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 0;border-bottom:1px solid #F0F0F0}
   .fb-type-row:last-child{border-bottom:none}
@@ -101,12 +101,12 @@
   .item-modal-overlay.show{display:flex}
   .item-modal{background:#fff;border-radius:16px;width:440px;box-shadow:0 8px 32px rgba(0,0,0,.18);overflow:hidden}
   .item-modal-head{display:flex;align-items:center;justify-content:space-between;padding:24px 24px 12px}
-  .item-modal-head h4{margin:0;font-size:20px;font-weight:800;color:#222}
+  .item-modal-head h4{margin:0;font-size:20px;font-weight:700;color:#222}
   .item-modal-desc{padding:0 24px 20px;font-size:15px;color:#494949;line-height:1.55}
   .item-modal-body{padding:0 24px 8px;display:flex;flex-direction:column;gap:0}
   .check-row{display:flex;align-items:center;gap:12px;padding:9px 0;border-bottom:1px solid #F0F0F0;cursor:pointer}
   .check-row:last-child{border-bottom:none}
-  .check-row input[type=checkbox]{width:20px;height:20px;accent-color:#7E44FB;cursor:pointer;flex-shrink:0}
+  .check-row input[type=checkbox]{width:20px;height:20px;accent-color:#0950A0;cursor:pointer;flex-shrink:0}
   .check-row label{font-size:16px;font-weight:700;color:#222;cursor:pointer;flex:1}
   .item-modal-foot{display:flex;justify-content:flex-end;gap:12px;padding:16px 24px 20px}
 
@@ -115,26 +115,26 @@
   .stu-select-overlay.show{display:flex}
   .stu-select-modal{background:#fff;border-radius:20px;width:520px;height:min(720px,86vh);display:flex;flex-direction:column;box-shadow:0 8px 40px rgba(0,0,0,.22);overflow:hidden}
   .stu-select-head{display:flex;align-items:center;justify-content:space-between;padding:22px 24px 0;flex-shrink:0}
-  .stu-select-head h4{margin:0;font-size:20px;font-weight:800;color:#222}
+  .stu-select-head h4{margin:0;font-size:20px;font-weight:700;color:#222}
   .stu-select-subhead{display:flex;align-items:center;justify-content:space-between;padding:10px 24px 12px;flex-shrink:0}
   .stu-select-subhead span{font-size:14px;color:#808080}
-  .stu-select-subhead strong{font-size:14px;color:#7E44FB;font-weight:800}
+  .stu-select-subhead strong{font-size:14px;color:#0950A0;font-weight:700}
   .stu-select-all{display:flex;align-items:center;gap:10px;padding:11px 24px;border-top:1px solid #E6E6E6;border-bottom:1px solid #E6E6E6;flex-shrink:0;cursor:pointer;background:#F8F8F8}
-  .stu-select-all label{font-size:14px;font-weight:800;color:#333;cursor:pointer;flex:1}
-  .stu-select-count{font-size:13px;color:#7E44FB;font-weight:700;white-space:nowrap}
+  .stu-select-all label{font-size:14px;font-weight:700;color:#333;cursor:pointer;flex:1}
+  .stu-select-count{font-size:13px;color:#0950A0;font-weight:700;white-space:nowrap}
   .stu-select-list{overflow-y:auto;flex:1;padding:0 24px;scrollbar-width:thin;scrollbar-color:#D9D9D9 transparent}
   .stu-select-list::-webkit-scrollbar{width:4px}
   .stu-select-list::-webkit-scrollbar-thumb{background:#D9D9D9;border-radius:4px}
   .stu-row{display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid #F0F0F0;cursor:pointer}
   .stu-row:last-child{border-bottom:none}
   .stu-row:hover{background:#FAFAFE;margin:0 -24px;padding-left:24px;padding-right:24px}
-  .stu-row input[type=checkbox]{width:18px;height:18px;accent-color:#7E44FB;cursor:pointer;flex-shrink:0}
+  .stu-row input[type=checkbox]{width:18px;height:18px;accent-color:#0950A0;cursor:pointer;flex-shrink:0}
   .stu-row-num{font-size:13px;color:#808080;font-weight:700;width:40px;flex-shrink:0}
   .stu-row-name{font-size:15px;font-weight:700;color:#222;flex:1}
-  .stu-row-badge{font-size:11px;font-weight:800;padding:2px 8px;border-radius:100px}
+  .stu-row-badge{font-size:11px;font-weight:700;padding:2px 8px;border-radius:100px}
   .stu-select-foot{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:14px 24px 18px;border-top:1px solid #F0F0F0;flex-shrink:0;background:#fff}
   .stu-select-foot-left{font-size:14px;color:#808080}
-  .stu-select-foot-left strong{color:#341761;font-weight:800}
+  .stu-select-foot-left strong{color:#0A2A5E;font-weight:700}
 
   /* ── 출력 오버레이 ── */
   .print-overlay{position:fixed;inset:0;background:#494949;z-index:2000;display:none;flex-direction:column}
@@ -151,8 +151,8 @@
   .student-dropdown.open{display:block}
   .student-dropdown-item{padding:12px 16px;font-size:16px;cursor:pointer;color:#333;border-bottom:1px solid #F0F0F0}
   .student-dropdown-item:last-child{border-bottom:none}
-  .student-dropdown-item:hover{background:#F7F4FF;color:#7E44FB}
-  .student-dropdown-item.active{color:#7E44FB;font-weight:800}
+  .student-dropdown-item:hover{background:#F3F9FF;color:#0950A0}
+  .student-dropdown-item.active{color:#0950A0;font-weight:700}
 
   /* 출력 스크롤 영역 */
   .print-scroll{flex:1;overflow:auto;padding:28px 24px}
@@ -165,11 +165,11 @@
   .paper-meta .divider{width:1px;height:12px;background:#B3B3B3}
 
   /* 용지 헤더 (보라 상단선) */
-  .paper-header{border-top:5px solid #7E44FB;background:#F7F4FF;padding:56px 28px 28px;margin-top:16px}
+  .paper-header{border-top:5px solid #0950A0;background:#F3F9FF;padding:56px 28px 28px;margin-top:16px}
   .paper-header .label{font-size:16px;font-weight:700;color:#333;margin-bottom:12px}
-  .paper-header .title{font-size:32px;font-weight:800;line-height:1.25}
+  .paper-header .title{font-size:32px;font-weight:700;line-height:1.25}
   .paper-header .title .gray{color:#333}
-  .paper-header .title .purple{color:#7E44FB}
+  .paper-header .title .purple{color:#0950A0}
 
   /* 섹션 구분 (dashed) */
   .paper-section{padding:32px 0;border-bottom:1px dashed #D9D9D9}
@@ -178,7 +178,7 @@
 
   /* 성취기준 카드 */
   .standard-card{background:#F8F8F8;border-radius:8px;padding:16px 20px;display:flex;gap:20px;align-items:center;margin-bottom:8px}
-  .standard-num{font-size:18px;font-weight:800;color:#7E44FB;width:24px;text-align:center;flex-shrink:0}
+  .standard-num{font-size:18px;font-weight:700;color:#0950A0;width:24px;text-align:center;flex-shrink:0}
   .standard-text{font-size:16px;font-weight:700;color:#333;line-height:1.25}
 
   /* 채점기준 테이블 */
@@ -193,17 +193,17 @@
   /* 채점 결과 테이블 */
   .result-header-row{display:flex;margin-bottom:0}
   .result-table{width:100%;border-collapse:collapse;font-size:16px}
-  .result-table .th{background:#F7F4FF;border-top:2px solid #7E44FB;padding:20px;font-size:16px;font-weight:700;color:#7E44FB;text-align:center}
+  .result-table .th{background:#F3F9FF;border-top:2px solid #0950A0;padding:20px;font-size:16px;font-weight:700;color:#0950A0;text-align:center}
   .result-table td{padding:14px 12px;border-bottom:1px solid #D9D9D9;text-align:center;color:#494949;font-weight:700}
   .result-table td.left{text-align:left;color:#333}
   .result-table tfoot td{border-bottom:none}
 
   /* 채점 결과 헤더 행 */
   .result-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
-  .result-total{font-size:18px;font-weight:700;color:#7E44FB}
+  .result-total{font-size:18px;font-weight:700;color:#0950A0}
 
   /* 피드백 박스 */
-  .feedback-box{background:#F7F4FF;border-radius:8px;padding:20px;font-size:16px;color:#333;line-height:1.55;white-space:pre-wrap}
+  .feedback-box{background:#F3F9FF;border-radius:8px;padding:20px;font-size:16px;color:#333;line-height:1.55;white-space:pre-wrap}
 </style>
 </head>
 <body>
@@ -215,12 +215,12 @@
       <img src="../screens/logo_kg.png" style="height:42px; width:auto; display:block; flex-shrink:0;" alt="AI 서·논술형 평가지원시스템">
     </div>
     <div class="gnb-menu">
-      <span style="color:#7E44FB;font-weight:800">나의 평가</span>
+      <span style="color:#0950A0;font-weight:700">나의 평가</span>
       <span style="color:#000;font-weight:700">평가 자료실</span>
       <span style="color:#000;font-weight:700">고객센터</span>
     </div>
     <div style="display:flex;align-items:center;gap:12px">
-      <div style="width:36px;height:36px;background:#F0EAFF;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><i data-lucide="bot" style="width:20px;height:20px;color:#7E44FB;"></i></div>
+      <div style="width:36px;height:36px;background:#E7F2FF;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><i data-lucide="bot" style="width:20px;height:20px;color:#0950A0;"></i></div>
       <span style="font-size:20px;font-weight:700">김동* 님</span>
     </div>
   </div>
@@ -542,7 +542,7 @@
     </div>
     <!-- 전체 선택 -->
     <div class="stu-select-all" onclick="toggleAllStu()">
-      <input type="checkbox" id="chk-all-stu" style="width:18px;height:18px;accent-color:#7E44FB;cursor:pointer;flex-shrink:0" onclick="event.stopPropagation();toggleAllStu()">
+      <input type="checkbox" id="chk-all-stu" style="width:18px;height:18px;accent-color:#0950A0;cursor:pointer;flex-shrink:0" onclick="event.stopPropagation();toggleAllStu()">
       <label for="chk-all-stu">전체 선택</label>
     </div>
     <!-- 학생 목록 (스크롤) -->
@@ -670,7 +670,7 @@ function openStuSelect(){
   list.innerHTML = PRINT_STUDENTS.map((s,i)=>`
     <div class="stu-row" onclick="toggleStuRow(${i})">
       <input type="checkbox" id="stu-chk-${i}" ${i===currentStudentIdx?'checked':''}
-        style="width:18px;height:18px;accent-color:#7E44FB;cursor:pointer;flex-shrink:0"
+        style="width:18px;height:18px;accent-color:#0950A0;cursor:pointer;flex-shrink:0"
         onclick="event.stopPropagation();toggleStuRow(${i})">
       <span class="stu-row-num">${s.name.split(' ')[0]}</span>
       <span class="stu-row-name">${s.name.split(' ')[1]||s.name}</span>
@@ -782,7 +782,7 @@ function submitFb(){closeFbForm();fbToast('의견이 전송되었습니다. 감�
       <div class="fb-info-row"><div class="ic"><i data-lucide="home" style="width:16px;height:16px"></i></div><div style="font-size:14px;color:#222631;line-height:1.55">지금 건너뛰셔도 <b>평가 홈</b>에서 언제든 남기실 수 있어요.</div></div>
     </div>
     <div style="padding:8px 24px 20px;display:flex;justify-content:flex-end;gap:12px">
-      <button class="btn" style="height:40px;background:#fff;color:#7E44FB;border:1px solid #B28FFD" onclick="downloadWithoutFeedback()">의견 없이 다운로드</button>
+      <button class="btn" style="height:40px;background:#fff;color:#0950A0;border:1px solid #7FB3E8" onclick="downloadWithoutFeedback()">의견 없이 다운로드</button>
       <button class="btn btn-pri" style="height:40px" onclick="openFbForm()">의견 남기고 다운로드</button>
     </div>
   </div>
@@ -845,7 +845,7 @@ function submitFb(){closeFbForm();fbToast('의견이 전송되었습니다. 감�
       <textarea placeholder="추가로 하고 싶은 말씀이 있으시면 남겨주세요. (선택)" style="width:100%;height:88px;border:1px solid #D9D9D9;border-radius:8px;padding:10px 12px;font-family:inherit;font-size:14px;resize:none;margin-top:14px;box-sizing:border-box"></textarea>
     </div>
     <div style="padding:8px 24px 20px;display:flex;justify-content:flex-end;gap:12px">
-      <button class="btn" style="height:40px;background:#fff;color:#7E44FB;border:1px solid #B28FFD" onclick="closeFbForm()">취소</button>
+      <button class="btn" style="height:40px;background:#fff;color:#0950A0;border:1px solid #7FB3E8" onclick="closeFbForm()">취소</button>
       <button class="btn btn-pri" style="height:40px" onclick="submitFb()">의견 보내고 다운로드</button>
     </div>
   </div>
@@ -912,17 +912,17 @@ function submitFb(){closeFbForm();fbToast('의견이 전송되었습니다. 감�
     <!-- Footer -->
     <div style="padding:8px 24px 24px 24px;display:flex;justify-content:flex-end;gap:12px;">
       <button onclick="closeAiRunModal()" style="background:#F0F0F0;color:#494949;border:none;border-radius:8px;height:40px;padding:0 20px;font-size:16px;font-weight:700;cursor:pointer;font-family:inherit;">취소</button>
-      <button onclick="closeAiRunModal()" style="background:#7E44FB;color:white;border:none;border-radius:8px;height:40px;padding:0 20px;font-size:16px;font-weight:700;cursor:pointer;font-family:inherit;">AI 채점 실행</button>
+      <button onclick="closeAiRunModal()" style="background:#0950A0;color:white;border:none;border-radius:8px;height:40px;padding:0 20px;font-size:16px;font-weight:700;cursor:pointer;font-family:inherit;">AI 채점 실행</button>
     </div>
   </div>
 </div>
 
 <style>
   .ai-chk { width:20px;height:20px;border-radius:2px;border:1px solid #B3B3B3;flex-shrink:0;display:flex;align-items:center;justify-content:center;cursor:pointer; }
-  .ai-chk.checked { background:#7E44FB;border-color:#7E44FB; }
+  .ai-chk.checked { background:#0950A0;border-color:#0950A0; }
   .ai-chk.checked::after { content:'';display:block;width:6px;height:10px;border:solid white;border-width:0 2px 2px 0;transform:rotate(45deg) translateY(-1px); }
   .ai-radio { width:20px;height:20px;border-radius:50%;border:1.5px solid #B3B3B3;flex-shrink:0;background:white; }
-  .ai-radio.selected { border-color:#7E44FB;border-width:5px; }
+  .ai-radio.selected { border-color:#0950A0;border-width:5px; }
 </style>
 
 <script>

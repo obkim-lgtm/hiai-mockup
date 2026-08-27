@@ -10,7 +10,7 @@
 <style>
 @import url('../screens/fonts.css');
 * { font-family: 'NanumSquareRound', -apple-system, sans-serif; box-sizing: border-box; }
-body { margin: 0; background: #EDF1FC; min-width: 1280px; }
+body { margin: 0; background: #EDF3FC; min-width: 1280px; }
 .screen { display: none; }
 .screen.active { display: block; }
 @keyframes spin { to { transform: rotate(360deg); } }
@@ -20,10 +20,10 @@ body { margin: 0; background: #EDF1FC; min-width: 1280px; }
 .btn { display:inline-flex; align-items:center; justify-content:center; line-height:1; vertical-align:middle; gap:8px;
        height:40px; padding:0 16px; border-radius:8px; font-family:inherit; font-size:16px; font-weight:700; cursor:pointer; border:1px solid transparent; }
 .btn-sm { height:32px; padding:0 12px; font-size:14px; gap:6px; }
-.btn-primary { background:#7E44FB; color:#fff; }
-.btn-primary:hover { background:#6C33E8; }
-.btn-secondary { background:#fff; color:#7E44FB; border-color:#B28FFD; }
-.btn-secondary:hover { background:#FAF8FF; }
+.btn-primary { background:#0950A0; color:#fff; }
+.btn-primary:hover { background:#10508F; }
+.btn-secondary { background:#fff; color:#0950A0; border-color:#7FB3E8; }
+.btn-secondary:hover { background:#F7FBFF; }
 .btn-outline { background:#fff; color:#494949; border-color:#D9D9D9; }
 .btn-outline:hover { background:#F8F8F8; border-color:#B3B3B3; }
 .btn-ghost { background:transparent; color:#494949; border-color:transparent; }
@@ -37,13 +37,13 @@ body { margin: 0; background: #EDF1FC; min-width: 1280px; }
 .sec { scroll-margin-top:130px; padding-bottom:24px; margin-bottom:24px; border-bottom:1px solid #F0F0F0; }
 .sec:last-child { border-bottom:none; }
 .sec-head { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:14px; }
-.sec-title { font-size:18px; font-weight:800; color:#341761; display:flex; align-items:center; gap:8px; }
+.sec-title { font-size:18px; font-weight:700; color:#0A2A5E; display:flex; align-items:center; gap:8px; }
 .sec-desc { font-size:14px; color:#808080; font-weight:400; line-height:1.55; margin:0 0 14px; }
 
 /* ── 안내 박스 (좌측 컬러 띠 금지 — 배경 + 아이콘만) ── */
 .note { display:flex; gap:10px; align-items:flex-start; border-radius:10px; padding:14px 16px; font-size:14px; line-height:1.65; }
 .note i { width:17px; height:17px; flex-shrink:0; margin-top:2px; }
-.note-info  { background:#F2F5FF; color:#2B4C96; }
+.note-info  { background:#F2F7FF; color:#2B4C96; }
 .note-warn  { background:#FFF8F0; color:#7A4A00; }
 .note-lock  { background:#F8F8F8; color:#5A5A5A; }
 .note-ok    { background:#F1F9F3; color:#0A6B2C; }
@@ -51,16 +51,16 @@ body { margin: 0; background: #EDF1FC; min-width: 1280px; }
 /* ── 뱃지 ── */
 .badge { display:inline-flex; align-items:center; justify-content:center; gap:4px; border-radius:100px; padding:3px 10px; font-size:12px; font-weight:700; white-space:nowrap; line-height:1.3; }
 .b-gray   { background:#F8F8F8; color:#808080; }
-.b-purple { background:#F7F4FF; color:#7E44FB; }
+.b-purple { background:#F3F9FF; color:#0950A0; }
 .b-green  { background:#F1F9F3; color:#00AF3D; }
 .b-orange { background:#FFF3E0; color:#C2620A; }
 .b-red    { background:#FFEFEF; color:#DB3E51; }
-.b-blue   { background:#F2F5FF; color:#5890FF; }
+.b-blue   { background:#F2F7FF; color:#00778B; }
 
 /* 3단계 문항 목록 아이템 (v4 이식) */
 .s3-q-item { display:flex; align-items:center; cursor:pointer; }
-.s3-q-item:hover { background:#F7F4FF; }
-.s3-q-item.active { background:#EDE7FF; border-left:3px solid #7E44FB; }
+.s3-q-item:hover { background:#F3F9FF; }
+.s3-q-item.active { background:#D9EAFB; border-left:3px solid #0950A0; }
 .s3-q-item:not(.active) { border-left:3px solid transparent; }
 
 /* 성취기준 카드 — 개발 화면(MM23…JpB 736:9920) 준수 */
@@ -71,7 +71,7 @@ body { margin: 0; background: #EDF1FC; min-width: 1280px; }
 .std-check { display:flex; align-items:center; gap:8px; cursor:pointer; user-select:none; }
 .std-box { width:14px; height:14px; border:1px solid #B3B3B3; border-radius:2px; background:#fff; flex-shrink:0;
            display:inline-flex; align-items:center; justify-content:center; }
-.std-check.on .std-box { background:#7E44FB; border-color:#7E44FB; }
+.std-check.on .std-box { background:#0950A0; border-color:#0950A0; }
 .std-check-label { font-size:14px; font-weight:700; color:#333; white-space:nowrap; }
 .std-help { font-size:12px; color:#494949; line-height:1.25; }
 .std-combo { height:40px; border:1px solid #D9D9D9; border-radius:8px; background:#fff;
@@ -80,7 +80,7 @@ body { margin: 0; background: #EDF1FC; min-width: 1280px; }
 .std-combo .val { flex:1; min-width:0; font-size:16px; color:#333; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
 .std-input { width:100%; height:44px; border:1px solid #D9D9D9; border-radius:8px; padding:0 16px;
              font-size:16px; font-family:inherit; color:#333; outline:none; box-sizing:border-box; }
-.std-input:focus, .std-lv input:focus { border-color:#7E44FB; }
+.std-input:focus, .std-lv input:focus { border-color:#0950A0; }
 .std-lv { width:100%; border:1px solid #D9D9D9; border-radius:8px; overflow:hidden; }
 .std-lv-row { display:flex; align-items:stretch; border-bottom:1px solid #D9D9D9; min-height:44px; }
 .std-lv-row:last-child { border-bottom:none; }
@@ -91,9 +91,9 @@ body { margin: 0; background: #EDF1FC; min-width: 1280px; }
 .std-lv-name input { text-align:center; }
 /* 목록 아래 성취기준 추가 — Basic_button */
 .std-add { display:inline-flex; align-items:center; justify-content:center; line-height:1; vertical-align:middle; gap:4px;
-           height:32px; padding:0 12px; background:#F2EDFF; border:1px solid #BDA4F6; border-radius:8px;
-           color:#6C2DF4; font-size:14px; font-weight:700; font-family:inherit; cursor:pointer; }
-.std-add:hover { background:#E9E0FE; }
+           height:32px; padding:0 12px; background:#EAF4FF; border:1px solid #89C0F3; border-radius:8px;
+           color:#0A4A94; font-size:14px; font-weight:700; font-family:inherit; cursor:pointer; }
+.std-add:hover { background:#D6EBFE; }
 
 /* ── 채점기준 카드 ── */
 .rubric-card { background:#fff; border:1px solid #D9D9D9; border-radius:12px; }
@@ -101,7 +101,7 @@ body { margin: 0; background: #EDF1FC; min-width: 1280px; }
 .rubric-ta-wrap { width:198px; flex-shrink:0; display:flex; flex-direction:column; }
 .rubric-ta-wrap textarea { flex:1; min-height:132px; width:100%; border:1px solid #D9D9D9; border-radius:6px; padding:8px 12px;
                            font-size:16px; font-family:inherit; resize:none; outline:none; color:#333; line-height:1.55; }
-.rubric-ta-wrap textarea:focus { border-color:#7E44FB; }
+.rubric-ta-wrap textarea:focus { border-color:#0950A0; }
 .rt { width:100%; border-collapse:separate; border-spacing:0; }
 .rt th { background:#F8F8F8; padding:8px 12px; font-size:14px; font-weight:700; color:#808080; border-bottom:1px solid #D9D9D9; text-align:center; }
 .rt td { padding:9px 12px; border-bottom:1px solid #D9D9D9; text-align:center; }
@@ -110,43 +110,43 @@ body { margin: 0; background: #EDF1FC; min-width: 1280px; }
 .rt input { border:none; font-size:16px; font-family:inherit; outline:none; color:#333; background:transparent; width:100%; text-align:center; }
 .rt td:last-child input { text-align:left; }
 
-/* 수식(시그마) 버튼 — 개발 화면 Icon_button 준수 (24px · #F2EDFF · #BDA4F6 · radius 6) */
+/* 수식(시그마) 버튼 — 개발 화면 Icon_button 준수 (24px · #EAF4FF · #89C0F3 · radius 6) */
 .rt td.c-crit { display:flex; align-items:center; gap:8px; }
 .sigma-btn { display:inline-flex; align-items:center; justify-content:center; line-height:1; vertical-align:middle;
-             width:24px; height:24px; background:#F2EDFF; border:1px solid #BDA4F6; border-radius:6px; color:#6C2DF4; cursor:pointer; flex-shrink:0; }
-.sigma-btn:hover { background:#E9E0FE; }
+             width:24px; height:24px; background:#EAF4FF; border:1px solid #89C0F3; border-radius:6px; color:#0A4A94; cursor:pointer; flex-shrink:0; }
+.sigma-btn:hover { background:#D6EBFE; }
 
 /* 채점기준 추가 진입점 — 개발 화면(MM23…JpB 736:9578) 채점기준_card 초기 상태 준수 */
 .rubric-add-outer { border:1px solid #D9D9D9; border-radius:12px; padding:16px 20px; }
-.rubric-add-dashed { background:#F7F4FF; border:2px dashed #BDA4F6; border-radius:8px; padding:32px 20px;
+.rubric-add-dashed { background:#F3F9FF; border:2px dashed #89C0F3; border-radius:8px; padding:32px 20px;
                      display:flex; flex-direction:column; align-items:center; justify-content:center; gap:12px; }
 .btn-ai-gen { display:inline-flex; align-items:center; justify-content:center; line-height:1; vertical-align:middle; gap:4px;
-              height:32px; padding:0 12px; border:none; border-radius:8px; background:#8751FA; color:#fff;
+              height:32px; padding:0 12px; border:none; border-radius:8px; background:#2F77D5; color:#fff;
               font-family:inherit; font-size:14px; font-weight:700; cursor:pointer; }
-.btn-ai-gen:hover { background:#6C2DF4; }
+.btn-ai-gen:hover { background:#0A4A94; }
 .btn-direct-add { display:inline-flex; align-items:center; justify-content:center; line-height:1; vertical-align:middle; gap:4px;
-                  height:32px; padding:0 12px; border:1px solid #BDA4F6; border-radius:8px; background:#fff; color:#6C2DF4;
+                  height:32px; padding:0 12px; border:1px solid #89C0F3; border-radius:8px; background:#fff; color:#0A4A94;
                   font-family:inherit; font-size:14px; font-weight:700; cursor:pointer; }
-.btn-direct-add:hover { background:#FAF8FF; }
+.btn-direct-add:hover { background:#F7FBFF; }
 /* 채점기준이 1개 이상일 때 — 안내 문구·점선 박스 없이 버튼만 (개발 화면 입력 완료 상태) */
 .rubric-add-row { display:flex; align-items:center; gap:8px; }
 .rubric-add-row .btn-ai-gen,
 .rubric-add-row .btn-direct-add { height:40px; padding:0 16px; gap:6px; }
-.rubric-add-row .btn-direct-add { background:#F7F4FF; }
-.rubric-add-row .btn-direct-add:hover { background:#EFE9FF; }
+.rubric-add-row .btn-direct-add { background:#F3F9FF; }
+.rubric-add-row .btn-direct-add:hover { background:#E1F1FF; }
 
 /* 모범답안 · 답변 유형 (v4 4단계 원본) */
 .s4-card { background:white; border:1px solid #E6E6E6; border-radius:10px; overflow:hidden; }
 .s4-type-btn { display:inline-flex; flex-direction:row; align-items:center; justify-content:center; line-height:1; vertical-align:middle; gap:8px; border:1px solid #E6E6E6; background:white; border-radius:8px; height:44px; padding:0 14px; cursor:pointer; font-family:inherit; text-align:left; transition:border-color .12s, background .12s; }
-.s4-type-btn:hover { border-color:#B28FFD; }
-.s4-type-btn.active { border:1.5px solid #7E44FB; background:#FAF8FF; }
-.s4-type-title { font-size:14px; font-weight:800; color:#494949; line-height:1; }
-.s4-type-btn.active .s4-type-title { color:#7E44FB; }
+.s4-type-btn:hover { border-color:#7FB3E8; }
+.s4-type-btn.active { border:1.5px solid #0950A0; background:#F7FBFF; }
+.s4-type-title { font-size:14px; font-weight:700; color:#494949; line-height:1; }
+.s4-type-btn.active .s4-type-title { color:#0950A0; }
 .s4-type-desc { font-size:14px; font-weight:400; color:#808080; line-height:1.35; }
 .s4-sum-btn { display:inline-flex; align-items:center; justify-content:center; line-height:1; vertical-align:middle; gap:4px; border:1px solid #D9D9D9; background:white; border-radius:6px; height:32px; padding:0 10px; cursor:pointer; font-size:14px; font-weight:700; color:#494949; font-family:inherit; flex-shrink:0; }
 .s4-del-btn { width:32px; height:32px; border:none; background:transparent; border-radius:6px; cursor:pointer; display:inline-flex; align-items:center; justify-content:center; line-height:1; vertical-align:middle; color:#B3B3B3; flex-shrink:0; }
 .s4-del-btn:hover { background:#FFF0F0; color:#DB3E51; }
-.s4-model textarea:focus { border-color:#7E44FB; }
+.s4-model textarea:focus { border-color:#0950A0; }
 .s4-field { display:flex; flex-direction:column; gap:6px; }
 .s4-lab { display:flex; align-items:center; gap:8px; min-height:32px; }
 .s4-lab-t { font-size:14px; font-weight:700; color:#333; white-space:nowrap; }
@@ -156,16 +156,16 @@ body { margin: 0; background: #EDF1FC; min-width: 1280px; }
 .s4-ansblock { display:flex; flex-direction:column; gap:8px; padding-top:12px; border-top:1px solid #EFEFEF; }
 .s4-guide textarea { width:100%; min-height:60px; border:1px solid #D9D9D9; border-radius:8px; padding:10px 12px;
                      font-size:16px; font-family:inherit; resize:none; overflow:hidden; outline:none; color:#333; line-height:1.55; box-sizing:border-box; }
-.s4-guide textarea:focus { border-color:#7E44FB; }
+.s4-guide textarea:focus { border-color:#0950A0; }
 .s4-model textarea { width:100%; min-height:72px; border:1px solid #D9D9D9; border-radius:8px; padding:10px 12px; font-size:16px; font-family:inherit; resize:none; overflow:hidden; outline:none; color:#333; line-height:1.55; box-sizing:border-box; }
 
 /* 누적 카드 — 앞 카드를 끝내면 다음 카드가 아래에 나타난다(단계 바 없음) */
 .stage-card { border:1px solid #E6E6E6; border-radius:12px; padding:20px 22px; margin-bottom:16px; background:#fff; }
 .stage-card.is-done { background:#FBFBFC; }
 .stage-head { display:flex; align-items:center; gap:10px; margin-bottom:8px; }
-.stage-num { width:26px; height:26px; border-radius:50%; background:#7E44FB; color:#fff; font-size:13px; font-weight:800;
+.stage-num { width:26px; height:26px; border-radius:50%; background:#0950A0; color:#fff; font-size:13px; font-weight:700;
              display:flex; align-items:center; justify-content:center; flex-shrink:0; }
-.stage-title { font-size:18px; font-weight:800; color:#341761; }
+.stage-title { font-size:18px; font-weight:700; color:#0A2A5E; }
 .stage-sum { font-size:14px; color:#808080; font-weight:700; margin-left:auto; }
 /* 완료한 단은 머리만 남기고 접는다 — 단이 늘어도 화면이 길어지지 않게 */
 .stage-head { cursor:pointer; }
@@ -179,7 +179,7 @@ body { margin: 0; background: #EDF1FC; min-width: 1280px; }
 /* 같은 평가에 활동지가 여러 종류일 때 — 드문 경우라 필요한 사람만 펼쳐 보게 */
 .ws-help-link { display:inline-flex; align-items:center; justify-content:center; line-height:1; vertical-align:middle; gap:4px;
                 background:none; border:none; padding:0; cursor:pointer;
-                font-family:inherit; font-size:14px; font-weight:700; color:#6C2DF4; }
+                font-family:inherit; font-size:14px; font-weight:700; color:#0A4A94; }
 .ws-help-link:hover { text-decoration:underline; }
 .ws-help-wrap { position:relative; display:inline-block; }
 .ws-pop { position:absolute; top:calc(100% + 10px); left:0; width:420px; max-width:80vw; z-index:60;
@@ -201,39 +201,39 @@ body { margin: 0; background: #EDF1FC; min-width: 1280px; }
 /* 현재 ↔ AI 제안 병렬 비교 — 요소 개수가 달라도 되도록 매칭선 없이 세트 대 세트로 본다 */
 .cmp-wrap { display:grid; grid-template-columns:1fr 1fr; gap:16px; align-items:start; }
 .cmp-col { border:1px solid #E6E6E6; border-radius:12px; background:#FBFBFC; padding:14px; min-width:0; }
-.cmp-col.is-new { border-color:#DCCDFB; background:#FAF8FF; }
+.cmp-col.is-new { border-color:#B5D6F9; background:#F7FBFF; }
 .cmp-head { display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:10px; }
-.cmp-title { font-size:16px; font-weight:800; color:#494949; }
+.cmp-title { font-size:16px; font-weight:700; color:#494949; }
 .cmp-meta { font-size:14px; color:#808080; font-weight:700; }
 .cmp-body { display:flex; flex-direction:column; gap:10px; }
 .cmp-item { background:#fff; border:1px solid #E6E6E6; border-radius:10px; padding:12px; }
 .cmp-item-title { font-size:16px; font-weight:700; color:#333; line-height:1.5; margin:0 0 8px; }
 .cmp-item textarea { width:100%; border:1px solid #D9D9D9; border-radius:6px; padding:8px 10px; font-size:16px; font-family:inherit; color:#333; line-height:1.5; resize:vertical; min-height:56px; outline:none; box-sizing:border-box; margin:0 0 8px; }
-.cmp-item textarea:focus { border-color:#7E44FB; }
+.cmp-item textarea:focus { border-color:#0950A0; }
 @media (max-width:900px){ .cmp-wrap { grid-template-columns:1fr; } }
 
 /* 수정안 일괄 적용 밴드 — 카드를 다 읽은 자리에서 결정하도록 목록 뒤에 둔다 */
 .apply-band { display:flex; align-items:center; justify-content:space-between; gap:20px; flex-wrap:wrap;
-              background:#F7F4FF; border:1px solid #DCCDFB; border-radius:12px; padding:20px 22px; margin-top:16px; }
+              background:#F3F9FF; border:1px solid #B5D6F9; border-radius:12px; padding:20px 22px; margin-top:16px; }
 .btn-lg { height:48px; padding:0 22px; font-size:16px; }
 
 /* ── AI 채점 미리보기 — 개발 채점 화면(Figma 1752:7372) 구조를 따른다 ── */
 .pvx-wrap  { position:fixed; inset:0; background:#fff; display:flex; flex-direction:column; z-index:40; }
 .pvx-top   { height:64px; flex-shrink:0; border-bottom:1px solid #E6E6E6; display:flex; align-items:center; gap:14px; padding:0 18px; background:#fff; }
-.pvx-back  { width:64px; height:64px; margin-left:-18px; background:#7E44FB; color:#fff; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px; cursor:pointer; flex-shrink:0; font-size:11px; font-weight:700; }
+.pvx-back  { width:64px; height:64px; margin-left:-18px; background:#0950A0; color:#fff; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px; cursor:pointer; flex-shrink:0; font-size:11px; font-weight:700; }
 .pvx-body  { flex:1; display:flex; min-height:0; }
 .pvx-left  { width:56%; flex-shrink:0; border-right:1px solid #E6E6E6; display:flex; flex-direction:column; min-width:0; background:#F4F4F6; }
 .pvx-ltop  { height:52px; flex-shrink:0; display:flex; align-items:center; gap:8px; padding:0 18px; background:#fff; border-bottom:1px solid #EFEFEF; }
 .pvx-seg   { display:inline-flex; border:1px solid #E6E6E6; border-radius:8px; overflow:hidden; }
 .pvx-seg button { display:inline-flex; align-items:center; justify-content:center; line-height:1; vertical-align:middle; gap:6px;
                   height:34px; padding:0 14px; border:none; background:#fff; cursor:pointer; font-family:inherit; font-size:14px; font-weight:700; color:#808080; }
-.pvx-seg button.on { background:#7E44FB; color:#fff; }
+.pvx-seg button.on { background:#0950A0; color:#fff; }
 .pvx-scroll{ flex:1; overflow-y:auto; padding:18px; }
 .pvx-paper { background:#fff; border-radius:10px; padding:24px 26px; }
 .pvx-lab   { display:inline-flex; align-items:center; justify-content:center; line-height:1; vertical-align:middle;
              background:#F0F0F2; border-radius:6px; padding:5px 10px; font-size:13px; font-weight:700; color:#494949; }
 .pvx-qno   { display:inline-flex; align-items:center; justify-content:center; line-height:1; vertical-align:middle;
-             background:#7E44FB; color:#fff; border-radius:100px; padding:5px 11px; font-size:13px; font-weight:800; }
+             background:#0950A0; color:#fff; border-radius:100px; padding:5px 11px; font-size:13px; font-weight:700; }
 .pvx-box   { background:#F7F7F9; border-radius:10px; padding:14px 16px; margin-top:10px; }
 .pvx-box-t { font-size:13px; font-weight:700; color:#494949; margin:0 0 6px; }
 .pvx-hr    { border:none; border-top:1px dashed #D9D9D9; margin:22px 0; }
@@ -241,17 +241,17 @@ body { margin: 0; background: #EDF1FC; min-width: 1280px; }
 .pvx-rtop  { height:52px; flex-shrink:0; display:flex; align-items:center; gap:10px; padding:0 20px; border-bottom:1px solid #EFEFEF; }
 .pvx-rscroll { flex:1; overflow-y:auto; padding:20px; }
 .pvx-sec   { margin-bottom:24px; }
-.pvx-sec-t { display:flex; align-items:center; gap:8px; font-size:17px; font-weight:800; color:#333; margin-bottom:4px; }
+.pvx-sec-t { display:flex; align-items:center; gap:8px; font-size:17px; font-weight:700; color:#333; margin-bottom:4px; }
 .pvx-rub   { display:flex; align-items:center; gap:12px; padding:13px 0; border-bottom:1px solid #F0F0F0; }
 .pvx-chip  { display:inline-flex; align-items:center; justify-content:center; line-height:1; vertical-align:middle;
              min-width:34px; height:30px; padding:0 8px; border:1px solid #D9D9D9; border-radius:7px;
              font-size:14px; font-weight:700; color:#B3B3B3; background:#fff; }
-.pvx-chip.on { border-color:#7E44FB; background:#7E44FB; color:#fff; }
+.pvx-chip.on { border-color:#0950A0; background:#0950A0; color:#fff; }
 .pvx-tabs  { display:flex; border:1px solid #E6E6E6; border-radius:10px; overflow:hidden; margin:12px 0 14px; }
 .pvx-tabs button { flex:1; height:44px; border:none; background:#fff; cursor:pointer; font-family:inherit;
                    display:inline-flex; align-items:center; justify-content:center; line-height:1; vertical-align:middle; gap:6px;
                    font-size:15px; font-weight:700; color:#494949; }
-.pvx-tabs button.on { background:#F3EDFF; color:#5B2EBE; }
+.pvx-tabs button.on { background:#EAF4FF; color:#1C4874; }
 .pvx-card  { border:1px solid #E6E6E6; border-radius:12px; padding:18px; }
 .pvx-tag   { display:inline-flex; align-items:center; justify-content:center; line-height:1; vertical-align:middle;
              background:#F0F0F2; border-radius:6px; padding:5px 10px; font-size:12px; font-weight:700; color:#494949; }
@@ -265,32 +265,32 @@ body { margin: 0; background: #EDF1FC; min-width: 1280px; }
 .tn-tabs button { flex:1; height:46px; border:none; background:#fff; cursor:pointer; font-family:inherit;
                   display:inline-flex; align-items:center; justify-content:center; line-height:1; vertical-align:middle; gap:7px;
                   font-size:15px; font-weight:700; color:#808080; }
-.tn-tabs button.on { background:#F3EDFF; color:#5B2EBE; }
+.tn-tabs button.on { background:#EAF4FF; color:#1C4874; }
 .tn-tabs .tn-cnt { font-size:12px; font-weight:700; color:#B3B3B3; }
-.tn-tabs button.on .tn-cnt { color:#7E44FB; }
+.tn-tabs button.on .tn-cnt { color:#0950A0; }
 
 /* ①단 좌측 문항 목록 아이템 */
 .s3-q-item { display:flex; align-items:center; cursor:pointer; }
-.s3-q-item:hover { background:#F7F4FF; }
-.s3-q-item.active { background:#EDE7FF; border-left:3px solid #7E44FB; }
+.s3-q-item:hover { background:#F3F9FF; }
+.s3-q-item.active { background:#D9EAFB; border-left:3px solid #0950A0; }
 .s3-q-item:not(.active) { border-left:3px solid transparent; }
 
 /* ── 진단 결과 카드 ── */
 .diag-card { border:1px solid #E6E6E6; border-radius:12px; padding:16px 18px; background:#fff; }
 .diag-card.warn { border-color:#FFD9B0; background:#FFFCF8; }
-.suggest { background:#F7F4FF; border-radius:10px; padding:14px 16px; margin-top:12px; }
+.suggest { background:#F3F9FF; border-radius:10px; padding:14px 16px; margin-top:12px; }
 
 /* ── 연결 표 ── */
 .link-tb { width:100%; border-collapse:separate; border-spacing:0; }
 .link-tb th { background:#F8F8F8; padding:10px 12px; font-size:14px; font-weight:700; color:#808080; border-bottom:1px solid #D9D9D9; text-align:center; }
 .link-tb td { padding:12px; border-bottom:1px solid #F0F0F0; font-size:16px; color:#333; text-align:center; vertical-align:middle; }
 .link-tb tr:last-child td { border-bottom:none; }
-.rchip { display:inline-flex; align-items:center; justify-content:center; gap:5px; background:#F7F4FF; color:#5B3AA6; border:1px solid #E2D5FF;
+.rchip { display:inline-flex; align-items:center; justify-content:center; gap:5px; background:#F3F9FF; color:#244768; border:1px solid #C2E1FF;
          border-radius:100px; padding:4px 10px; font-size:14px; font-weight:700; line-height:1; }
-.rchip button { border:none; background:transparent; cursor:pointer; color:#9B84C7; display:flex; align-items:center; padding:0; }
+.rchip button { border:none; background:transparent; cursor:pointer; color:#5380B1; display:flex; align-items:center; padding:0; }
 
 /* ── 드롭존 ── */
-.dropzone { border:1.5px dashed #C4AAFD; border-radius:12px; background:#FAF8FF; padding:30px 24px;
+.dropzone { border:1.5px dashed #94C9FC; border-radius:12px; background:#F7FBFF; padding:30px 24px;
             display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px; }
 
 /* ── 토스트 ── */
@@ -307,7 +307,7 @@ body { margin: 0; background: #EDF1FC; min-width: 1280px; }
 .ov.open { display:flex; }
 .dlg { background:#fff; border-radius:24px; box-shadow:0 4px 12px rgba(95,102,178,.16); width:460px; max-width:92vw; }
 .dlg-head { padding:24px 24px 16px; position:relative; }
-.dlg-title { font-size:18px; font-weight:800; color:#222631; margin:0; }
+.dlg-title { font-size:18px; font-weight:700; color:#222631; margin:0; }
 .dlg-body { padding:0 24px 24px; font-size:16px; color:#494949; line-height:1.65; }
 .dlg-foot { padding:8px 24px 16px; display:flex; justify-content:flex-end; gap:12px; }
 
@@ -343,13 +343,13 @@ body { margin: 0; background: #EDF1FC; min-width: 1280px; }
         <img src="../screens/logo_kg.png" style="height:42px; width:auto; display:block; flex-shrink:0;" alt="AI 서·논술형 평가지원시스템">
       </div>
       <nav style="display:flex;gap:52px;align-items:center;">
-        <a href="#" style="font-size:20px;font-weight:800;color:#7E44FB;text-decoration:none;">나의 평가</a>
+        <a href="#" style="font-size:20px;font-weight:700;color:#0950A0;text-decoration:none;">나의 평가</a>
         <a href="#" style="font-size:20px;font-weight:700;color:#000;text-decoration:none;">평가 자료실</a>
         <a href="#" style="font-size:20px;font-weight:700;color:#000;text-decoration:none;">고객센터</a>
       </nav>
       <div style="display:flex;align-items:center;gap:12px;">
-        <div style="width:36px;height:36px;background:#EDF1FC;border-radius:50%;display:flex;align-items:center;justify-content:center;">
-          <i data-lucide="user" style="width:20px;height:20px;color:#7E44FB;"></i>
+        <div style="width:36px;height:36px;background:#EDF3FC;border-radius:50%;display:flex;align-items:center;justify-content:center;">
+          <i data-lucide="user" style="width:20px;height:20px;color:#0950A0;"></i>
         </div>
         <span style="font-size:20px;font-weight:700;">김동* 님</span>
       </div>
@@ -357,9 +357,9 @@ body { margin: 0; background: #EDF1FC; min-width: 1280px; }
   </header>
 
   <!-- 타이틀바 -->
-  <div style="background:linear-gradient(90deg,#6562F5 4%,#9B68F3 97.86%);height:86px;display:flex;align-items:center;padding:0 36px;">
+  <div style="background:linear-gradient(90deg,#0950A0 4%,#2F77D5 97.86%);height:86px;display:flex;align-items:center;padding:0 36px;">
     <div style="max-width:1200px;width:100%;margin:0 auto;padding:0 36px;">
-      <span style="font-size:28px;font-weight:800;color:white;">1학년 국어</span>
+      <span style="font-size:28px;font-weight:700;color:white;">1학년 국어</span>
     </div>
   </div>
 
@@ -368,12 +368,12 @@ body { margin: 0; background: #EDF1FC; min-width: 1280px; }
 
       <!-- 탭 -->
       <div style="padding-top:40px;display:flex;gap:12px;">
-        <div style="flex:1;height:60px;background:#CBD6F4;border-radius:20px 20px 0 0;display:flex;align-items:center;justify-content:center;cursor:pointer;" onclick="location.href='eval_home_v10.html'"><span style="font-size:20px;font-weight:700;color:#000;">평가 홈</span></div>
-        <div style="flex:1;height:60px;background:#CBD6F4;border-radius:20px 20px 0 0;display:flex;align-items:center;justify-content:center;cursor:pointer;"><span style="font-size:20px;font-weight:700;color:#000;">평가 대상</span></div>
-        <div style="flex:1;height:60px;background:white;border-radius:20px 20px 0 0;display:flex;align-items:center;justify-content:center;cursor:pointer;"><span style="font-size:20px;font-weight:800;color:#341761;">평가 설계</span></div>
-        <div style="flex:1;height:60px;background:#CBD6F4;border-radius:20px 20px 0 0;display:flex;align-items:center;justify-content:center;cursor:pointer;" onclick="location.href='task_ocr_review_v2.html'"><span style="font-size:20px;font-weight:700;color:#000;">과제물 관리</span></div>
-        <div style="flex:1;height:60px;background:#CBD6F4;border-radius:20px 20px 0 0;display:flex;align-items:center;justify-content:center;cursor:pointer;" onclick="location.href='scoring_list_v1.html'"><span style="font-size:20px;font-weight:700;color:#000;">AI 채점</span></div>
-        <div style="flex:1;height:60px;background:#CBD6F4;border-radius:20px 20px 0 0;display:flex;align-items:center;justify-content:center;cursor:pointer;" onclick="location.href='report_v2.html'"><span style="font-size:20px;font-weight:700;color:#000;">평가 리포트</span></div>
+        <div style="flex:1;height:60px;background:#CBDCF4;border-radius:20px 20px 0 0;display:flex;align-items:center;justify-content:center;cursor:pointer;" onclick="location.href='eval_home_v10.html'"><span style="font-size:20px;font-weight:700;color:#000;">평가 홈</span></div>
+        <div style="flex:1;height:60px;background:#CBDCF4;border-radius:20px 20px 0 0;display:flex;align-items:center;justify-content:center;cursor:pointer;"><span style="font-size:20px;font-weight:700;color:#000;">평가 대상</span></div>
+        <div style="flex:1;height:60px;background:white;border-radius:20px 20px 0 0;display:flex;align-items:center;justify-content:center;cursor:pointer;"><span style="font-size:20px;font-weight:700;color:#0A2A5E;">평가 설계</span></div>
+        <div style="flex:1;height:60px;background:#CBDCF4;border-radius:20px 20px 0 0;display:flex;align-items:center;justify-content:center;cursor:pointer;" onclick="location.href='task_ocr_review_v2.html'"><span style="font-size:20px;font-weight:700;color:#000;">과제물 관리</span></div>
+        <div style="flex:1;height:60px;background:#CBDCF4;border-radius:20px 20px 0 0;display:flex;align-items:center;justify-content:center;cursor:pointer;" onclick="location.href='scoring_list_v1.html'"><span style="font-size:20px;font-weight:700;color:#000;">AI 채점</span></div>
+        <div style="flex:1;height:60px;background:#CBDCF4;border-radius:20px 20px 0 0;display:flex;align-items:center;justify-content:center;cursor:pointer;" onclick="location.href='report_v2.html'"><span style="font-size:20px;font-weight:700;color:#000;">평가 리포트</span></div>
       </div>
 
       <!-- 패널 -->
@@ -381,7 +381,7 @@ body { margin: 0; background: #EDF1FC; min-width: 1280px; }
 
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
           <div>
-            <h2 style="font-size:24px;font-weight:800;color:#000;margin:0 0 4px;">평가 설계</h2>
+            <h2 style="font-size:24px;font-weight:700;color:#000;margin:0 0 4px;">평가 설계</h2>
             <p style="font-size:14px;color:#494949;margin:0;font-weight:400;line-height:1.55;">성취기준과 채점기준을 정하고, AI가 그 기준대로 채점할 수 있는지 미리 확인해 보세요.</p>
           </div>
           <div style="position:relative;">
@@ -396,11 +396,11 @@ body { margin: 0; background: #EDF1FC; min-width: 1280px; }
 
         <!-- 빈 상태 -->
         <div id="list-empty" style="display:none;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:80px 24px 90px;">
-          <div style="width:72px;height:72px;border-radius:50%;background:#F7F4FF;display:flex;align-items:center;justify-content:center;">
-            <i data-lucide="clipboard-pen-line" style="width:32px;height:32px;color:#7E44FB;"></i>
+          <div style="width:72px;height:72px;border-radius:50%;background:#F3F9FF;display:flex;align-items:center;justify-content:center;">
+            <i data-lucide="clipboard-pen-line" style="width:32px;height:32px;color:#0950A0;"></i>
           </div>
           <div style="text-align:center;">
-            <p style="font-size:18px;font-weight:800;color:#341761;margin:0 0 6px;">아직 만든 평가 설계가 없어요</p>
+            <p style="font-size:18px;font-weight:700;color:#0A2A5E;margin:0 0 6px;">아직 만든 평가 설계가 없어요</p>
             <p style="font-size:16px;color:#808080;margin:0;font-weight:400;line-height:1.6;">평가할 내용과 채점기준을 설계하면 과제 제출과 AI 채점을 시작할 수 있어요.</p>
           </div>
           <button class="btn btn-primary" style="margin-top:6px;" onclick="openDetail('new')"><i data-lucide="plus" style="width:20px;height:20px;"></i>설계 추가</button>
@@ -420,8 +420,8 @@ body { margin: 0; background: #EDF1FC; min-width: 1280px; }
               <p style="font-size:15px;color:#494949;margin:0;line-height:1.7;">AI가 채점한 결과를 보고 선생님 의도대로 채점하는지 확인해 보세요. 생각과 다르게 나왔다면 AI와 함께 채점기준을 고칠 수 있어요.</p>
             </div>
             <div style="padding:8px 24px 16px;display:flex;justify-content:flex-end;gap:12px;">
-              <button onclick="closeSavedModal()" style="display:inline-flex;align-items:center;justify-content:center;line-height:1;vertical-align:middle;height:40px;padding:0 18px;border:1px solid #B28FFD;color:#7E44FB;background:transparent;border-radius:8px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;">나중에</button>
-              <button onclick="closeSavedModal();openPreview('list')" style="display:inline-flex;align-items:center;justify-content:center;line-height:1;vertical-align:middle;height:40px;padding:0 18px;border:none;background:#7E44FB;color:white;border-radius:8px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;gap:7px;"><i data-lucide="play" style="width:16px;height:16px;"></i>AI 채점 미리보기</button>
+              <button onclick="closeSavedModal()" style="display:inline-flex;align-items:center;justify-content:center;line-height:1;vertical-align:middle;height:40px;padding:0 18px;border:1px solid #7FB3E8;color:#0950A0;background:transparent;border-radius:8px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;">나중에</button>
+              <button onclick="closeSavedModal();openPreview('list')" style="display:inline-flex;align-items:center;justify-content:center;line-height:1;vertical-align:middle;height:40px;padding:0 18px;border:none;background:#0950A0;color:white;border-radius:8px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;gap:7px;"><i data-lucide="play" style="width:16px;height:16px;"></i>AI 채점 미리보기</button>
             </div>
           </div>
         </div>
@@ -447,13 +447,13 @@ body { margin: 0; background: #EDF1FC; min-width: 1280px; }
         <img src="../screens/logo_kg.png" style="height:42px; width:auto; display:block; flex-shrink:0;" alt="AI 서·논술형 평가지원시스템">
       </div>
       <nav style="display:flex;gap:52px;align-items:center;">
-        <a href="#" style="font-size:20px;font-weight:800;color:#7E44FB;text-decoration:none;">나의 평가</a>
+        <a href="#" style="font-size:20px;font-weight:700;color:#0950A0;text-decoration:none;">나의 평가</a>
         <a href="#" style="font-size:20px;font-weight:700;color:#000;text-decoration:none;">평가 자료실</a>
         <a href="#" style="font-size:20px;font-weight:700;color:#000;text-decoration:none;">고객센터</a>
       </nav>
       <div style="display:flex;align-items:center;gap:12px;">
-        <div style="width:36px;height:36px;background:#EDF1FC;border-radius:50%;display:flex;align-items:center;justify-content:center;">
-          <i data-lucide="user" style="width:20px;height:20px;color:#7E44FB;"></i>
+        <div style="width:36px;height:36px;background:#EDF3FC;border-radius:50%;display:flex;align-items:center;justify-content:center;">
+          <i data-lucide="user" style="width:20px;height:20px;color:#0950A0;"></i>
         </div>
         <span style="font-size:20px;font-weight:700;">김동* 님</span>
       </div>
@@ -461,12 +461,12 @@ body { margin: 0; background: #EDF1FC; min-width: 1280px; }
   </header>
 
   <!-- 타이틀바 -->
-  <div style="background:linear-gradient(90deg,#6562F5 4%,#9B68F3 97.86%);height:86px;display:flex;align-items:center;padding:0 36px;">
+  <div style="background:linear-gradient(90deg,#0950A0 4%,#2F77D5 97.86%);height:86px;display:flex;align-items:center;padding:0 36px;">
     <div style="max-width:1200px;width:100%;margin:0 auto;padding:0 36px;display:flex;align-items:center;gap:12px;">
       <div onclick="goList()" style="width:36px;height:36px;background:rgba(255,255,255,0.2);border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;">
         <i data-lucide="arrow-left" style="width:20px;height:20px;color:white;"></i>
       </div>
-      <span style="font-size:28px;font-weight:800;color:white;">1학년 국어</span>
+      <span style="font-size:28px;font-weight:700;color:white;">1학년 국어</span>
       <div style="width:1px;height:24px;background:rgba(255,255,255,0.4);margin:0 4px;"></div>
       <span class="hero-name" style="font-size:24px;font-weight:700;color:white;"></span>
     </div>
@@ -477,12 +477,12 @@ body { margin: 0; background: #EDF1FC; min-width: 1280px; }
 
       <!-- 탭 -->
       <div style="padding-top:40px;display:flex;gap:12px;">
-        <div style="flex:1;height:60px;background:#CBD6F4;border-radius:20px 20px 0 0;display:flex;align-items:center;justify-content:center;cursor:pointer;" onclick="location.href='eval_home_v10.html'"><span style="font-size:20px;font-weight:700;color:#000;">평가 홈</span></div>
-        <div style="flex:1;height:60px;background:#CBD6F4;border-radius:20px 20px 0 0;display:flex;align-items:center;justify-content:center;cursor:pointer;"><span style="font-size:20px;font-weight:700;color:#000;">평가 대상</span></div>
-        <div style="flex:1;height:60px;background:white;border-radius:20px 20px 0 0;display:flex;align-items:center;justify-content:center;cursor:pointer;"><span style="font-size:20px;font-weight:800;color:#341761;">평가 설계</span></div>
-        <div style="flex:1;height:60px;background:#CBD6F4;border-radius:20px 20px 0 0;display:flex;align-items:center;justify-content:center;cursor:pointer;" onclick="location.href='task_ocr_review_v2.html'"><span style="font-size:20px;font-weight:700;color:#000;">과제물 관리</span></div>
-        <div style="flex:1;height:60px;background:#CBD6F4;border-radius:20px 20px 0 0;display:flex;align-items:center;justify-content:center;cursor:pointer;" onclick="location.href='scoring_list_v1.html'"><span style="font-size:20px;font-weight:700;color:#000;">AI 채점</span></div>
-        <div style="flex:1;height:60px;background:#CBD6F4;border-radius:20px 20px 0 0;display:flex;align-items:center;justify-content:center;cursor:pointer;" onclick="location.href='report_v2.html'"><span style="font-size:20px;font-weight:700;color:#000;">평가 리포트</span></div>
+        <div style="flex:1;height:60px;background:#CBDCF4;border-radius:20px 20px 0 0;display:flex;align-items:center;justify-content:center;cursor:pointer;" onclick="location.href='eval_home_v10.html'"><span style="font-size:20px;font-weight:700;color:#000;">평가 홈</span></div>
+        <div style="flex:1;height:60px;background:#CBDCF4;border-radius:20px 20px 0 0;display:flex;align-items:center;justify-content:center;cursor:pointer;"><span style="font-size:20px;font-weight:700;color:#000;">평가 대상</span></div>
+        <div style="flex:1;height:60px;background:white;border-radius:20px 20px 0 0;display:flex;align-items:center;justify-content:center;cursor:pointer;"><span style="font-size:20px;font-weight:700;color:#0A2A5E;">평가 설계</span></div>
+        <div style="flex:1;height:60px;background:#CBDCF4;border-radius:20px 20px 0 0;display:flex;align-items:center;justify-content:center;cursor:pointer;" onclick="location.href='task_ocr_review_v2.html'"><span style="font-size:20px;font-weight:700;color:#000;">과제물 관리</span></div>
+        <div style="flex:1;height:60px;background:#CBDCF4;border-radius:20px 20px 0 0;display:flex;align-items:center;justify-content:center;cursor:pointer;" onclick="location.href='scoring_list_v1.html'"><span style="font-size:20px;font-weight:700;color:#000;">AI 채점</span></div>
+        <div style="flex:1;height:60px;background:#CBDCF4;border-radius:20px 20px 0 0;display:flex;align-items:center;justify-content:center;cursor:pointer;" onclick="location.href='report_v2.html'"><span style="font-size:20px;font-weight:700;color:#000;">평가 리포트</span></div>
       </div>
 
       <!-- 패널 -->
@@ -491,7 +491,7 @@ body { margin: 0; background: #EDF1FC; min-width: 1280px; }
         <!-- 패널 헤딩 -->
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;">
           <div>
-            <h2 style="font-size:20px;font-weight:800;color:#000;margin:0 0 4px;">평가 설계</h2>
+            <h2 style="font-size:20px;font-weight:700;color:#000;margin:0 0 4px;">평가 설계</h2>
             <p style="font-size:14px;color:#494949;margin:0;font-weight:400;line-height:1.55;">어떤 기준으로 채점할지 설계하는 화면이에요. 빈 활동지 등록·진단·채점 가이드까지 더하면 AI 채점이 더 정확해져요.</p>
           </div>
         </div>
@@ -514,13 +514,13 @@ body { margin: 0; background: #EDF1FC; min-width: 1280px; }
                 <label style="display:block;font-size:16px;font-weight:700;color:#333;margin-bottom:8px;">평가(과제)명</label>
                 <input id="f-name" type="text" placeholder="평가(과제)명을 입력해 주세요." oninput="onBasicInput()"
                        style="width:100%;height:48px;border:1px solid #D9D9D9;border-radius:8px;padding:0 12px;font-size:16px;font-family:inherit;outline:none;color:#333;"
-                       onfocus="this.style.borderColor='#7E44FB'" onblur="this.style.borderColor='#D9D9D9'">
+                       onfocus="this.style.borderColor='#0950A0'" onblur="this.style.borderColor='#D9D9D9'">
               </div>
               <div>
                 <label style="display:block;font-size:16px;font-weight:700;color:#333;margin-bottom:12px;">공개 여부</label>
                 <div style="display:flex;gap:20px;">
                   <label style="display:flex;align-items:center;gap:12px;cursor:pointer;">
-                    <div style="width:24px;height:24px;border-radius:50%;border:2px solid #7E44FB;background:#7E44FB;display:flex;align-items:center;justify-content:center;"><div style="width:10px;height:10px;background:white;border-radius:50%;"></div></div>
+                    <div style="width:24px;height:24px;border-radius:50%;border:2px solid #0950A0;background:#0950A0;display:flex;align-items:center;justify-content:center;"><div style="width:10px;height:10px;background:white;border-radius:50%;"></div></div>
                     <span style="font-size:16px;color:#000;">교내 공개</span>
                   </label>
                   <label style="display:flex;align-items:center;gap:12px;cursor:pointer;">
@@ -569,7 +569,7 @@ body { margin: 0; background: #EDF1FC; min-width: 1280px; }
               <!-- HowToUse (개발 화면 하단 행 준수) -->
               <div style="display:flex;align-items:center;gap:12px;padding:12px 0 0;">
                 <span style="font-size:16px;font-weight:700;color:#333;">어떻게 입력해야 하나요?</span>
-                <span style="font-size:16px;font-weight:700;color:#6C2DF4;cursor:pointer;" onclick="showToast('info','채점기준 입력 예시를 보여주는 화면입니다.')">채점기준 입력 예시</span>
+                <span style="font-size:16px;font-weight:700;color:#0A4A94;cursor:pointer;" onclick="showToast('info','채점기준 입력 예시를 보여주는 화면입니다.')">채점기준 입력 예시</span>
               </div>
             </section>
 
@@ -578,7 +578,7 @@ body { margin: 0; background: #EDF1FC; min-width: 1280px; }
               <div class="sec-head"><div class="sec-title">점수 계산 방식<i data-lucide="circle-help" style="width:18px;height:18px;color:#B3B3B3;cursor:pointer;"></i></div></div>
               <div style="display:flex;gap:20px;margin-bottom:14px;">
                 <label style="display:flex;align-items:center;gap:12px;cursor:pointer;">
-                  <div style="width:24px;height:24px;border-radius:50%;border:2px solid #7E44FB;background:#7E44FB;display:flex;align-items:center;justify-content:center;"><div style="width:10px;height:10px;background:white;border-radius:50%;"></div></div>
+                  <div style="width:24px;height:24px;border-radius:50%;border:2px solid #0950A0;background:#0950A0;display:flex;align-items:center;justify-content:center;"><div style="width:10px;height:10px;background:white;border-radius:50%;"></div></div>
                   <span style="font-size:16px;color:#000;">채점기준 배점 그대로 적용</span>
                 </label>
                 <label style="display:flex;align-items:center;gap:12px;cursor:pointer;">
@@ -669,24 +669,24 @@ body { margin: 0; background: #EDF1FC; min-width: 1280px; }
         <img src="../screens/logo_kg.png" style="height:42px; width:auto; display:block; flex-shrink:0;" alt="AI 서·논술형 평가지원시스템">
       </div>
       <nav style="display:flex;gap:52px;align-items:center;">
-        <a href="#" style="font-size:20px;font-weight:800;color:#7E44FB;text-decoration:none;">나의 평가</a>
+        <a href="#" style="font-size:20px;font-weight:700;color:#0950A0;text-decoration:none;">나의 평가</a>
         <a href="#" style="font-size:20px;font-weight:700;color:#000;text-decoration:none;">평가 자료실</a>
         <a href="#" style="font-size:20px;font-weight:700;color:#000;text-decoration:none;">고객센터</a>
       </nav>
       <div style="display:flex;align-items:center;gap:12px;">
-        <div style="width:36px;height:36px;background:#EDF1FC;border-radius:50%;display:flex;align-items:center;justify-content:center;">
-          <i data-lucide="user" style="width:20px;height:20px;color:#7E44FB;"></i>
+        <div style="width:36px;height:36px;background:#EDF3FC;border-radius:50%;display:flex;align-items:center;justify-content:center;">
+          <i data-lucide="user" style="width:20px;height:20px;color:#0950A0;"></i>
         </div>
         <span style="font-size:20px;font-weight:700;">김동* 님</span>
       </div>
     </div>
   </header>
-  <div style="background:linear-gradient(90deg,#6562F5 4%,#9B68F3 97.86%);height:86px;display:flex;align-items:center;padding:0 36px;">
+  <div style="background:linear-gradient(90deg,#0950A0 4%,#2F77D5 97.86%);height:86px;display:flex;align-items:center;padding:0 36px;">
     <div style="max-width:1200px;width:100%;margin:0 auto;padding:0 36px;display:flex;align-items:center;gap:12px;">
       <div onclick="backToDetail('sec-worksheet')" style="width:36px;height:36px;background:rgba(255,255,255,0.2);border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;">
         <i data-lucide="arrow-left" style="width:20px;height:20px;color:white;"></i>
       </div>
-      <span style="font-size:28px;font-weight:800;color:white;">1학년 국어</span>
+      <span style="font-size:28px;font-weight:700;color:white;">1학년 국어</span>
       <div style="width:1px;height:24px;background:rgba(255,255,255,0.4);margin:0 4px;"></div>
       <span class="hero-name" style="font-size:24px;font-weight:700;color:white;"></span>
     </div>
@@ -694,25 +694,25 @@ body { margin: 0; background: #EDF1FC; min-width: 1280px; }
   <div style="padding-bottom:100px;">
     <div style="max-width:1200px;width:100%;margin:0 auto;padding:0 36px;">
       <div style="padding-top:40px;display:flex;gap:12px;">
-        <div style="flex:1;height:60px;background:#CBD6F4;border-radius:20px 20px 0 0;display:flex;align-items:center;justify-content:center;cursor:pointer;" onclick="location.href='eval_home_v10.html'"><span style="font-size:20px;font-weight:700;color:#000;">평가 홈</span></div>
-        <div style="flex:1;height:60px;background:#CBD6F4;border-radius:20px 20px 0 0;display:flex;align-items:center;justify-content:center;cursor:pointer;"><span style="font-size:20px;font-weight:700;color:#000;">평가 대상</span></div>
-        <div style="flex:1;height:60px;background:white;border-radius:20px 20px 0 0;display:flex;align-items:center;justify-content:center;cursor:pointer;"><span style="font-size:20px;font-weight:800;color:#341761;">평가 설계</span></div>
-        <div style="flex:1;height:60px;background:#CBD6F4;border-radius:20px 20px 0 0;display:flex;align-items:center;justify-content:center;cursor:pointer;" onclick="location.href='task_ocr_review_v2.html'"><span style="font-size:20px;font-weight:700;color:#000;">과제물 관리</span></div>
-        <div style="flex:1;height:60px;background:#CBD6F4;border-radius:20px 20px 0 0;display:flex;align-items:center;justify-content:center;cursor:pointer;" onclick="location.href='scoring_list_v1.html'"><span style="font-size:20px;font-weight:700;color:#000;">AI 채점</span></div>
-        <div style="flex:1;height:60px;background:#CBD6F4;border-radius:20px 20px 0 0;display:flex;align-items:center;justify-content:center;cursor:pointer;" onclick="location.href='report_v2.html'"><span style="font-size:20px;font-weight:700;color:#000;">평가 리포트</span></div>
+        <div style="flex:1;height:60px;background:#CBDCF4;border-radius:20px 20px 0 0;display:flex;align-items:center;justify-content:center;cursor:pointer;" onclick="location.href='eval_home_v10.html'"><span style="font-size:20px;font-weight:700;color:#000;">평가 홈</span></div>
+        <div style="flex:1;height:60px;background:#CBDCF4;border-radius:20px 20px 0 0;display:flex;align-items:center;justify-content:center;cursor:pointer;"><span style="font-size:20px;font-weight:700;color:#000;">평가 대상</span></div>
+        <div style="flex:1;height:60px;background:white;border-radius:20px 20px 0 0;display:flex;align-items:center;justify-content:center;cursor:pointer;"><span style="font-size:20px;font-weight:700;color:#0A2A5E;">평가 설계</span></div>
+        <div style="flex:1;height:60px;background:#CBDCF4;border-radius:20px 20px 0 0;display:flex;align-items:center;justify-content:center;cursor:pointer;" onclick="location.href='task_ocr_review_v2.html'"><span style="font-size:20px;font-weight:700;color:#000;">과제물 관리</span></div>
+        <div style="flex:1;height:60px;background:#CBDCF4;border-radius:20px 20px 0 0;display:flex;align-items:center;justify-content:center;cursor:pointer;" onclick="location.href='scoring_list_v1.html'"><span style="font-size:20px;font-weight:700;color:#000;">AI 채점</span></div>
+        <div style="flex:1;height:60px;background:#CBDCF4;border-radius:20px 20px 0 0;display:flex;align-items:center;justify-content:center;cursor:pointer;" onclick="location.href='report_v2.html'"><span style="font-size:20px;font-weight:700;color:#000;">평가 리포트</span></div>
       </div>
       <div style="background:white;border-radius:0 0 20px 20px;box-shadow:0 4px 36px rgba(95,102,178,0.16);padding:28px 24px;">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;">
           <div>
-            <h2 style="font-size:20px;font-weight:800;color:#000;margin:0 0 4px;">빈 활동지 등록</h2>
+            <h2 style="font-size:20px;font-weight:700;color:#000;margin:0 0 4px;">빈 활동지 등록</h2>
             <p style="font-size:14px;color:#494949;margin:0;font-weight:400;line-height:1.55;">문항만 인쇄된 빈 활동지를 올려 주세요. AI가 활동지의 문항 구조를 익혀 문항별 채점과 피드백이 더 정확해져요.</p>
           </div>
         </div>
 
         <!-- 단계 전환 로딩 -->
         <div id="ws-loading" style="display:none;flex-direction:column;align-items:center;gap:14px;padding:56px 24px;">
-          <div style="width:44px;height:44px;border:4px solid #E7DDFF;border-top-color:#7E44FB;border-radius:50%;animation:spin .9s linear infinite;"></div>
-          <p id="ws-load-title" style="font-size:18px;font-weight:800;color:#341761;margin:0;"></p>
+          <div style="width:44px;height:44px;border:4px solid #D5EBFF;border-top-color:#0950A0;border-radius:50%;animation:spin .9s linear infinite;"></div>
+          <p id="ws-load-title" style="font-size:18px;font-weight:700;color:#0A2A5E;margin:0;"></p>
           <p style="font-size:16px;color:#808080;margin:0;">이 화면을 벗어나도 진행은 계속돼요.</p>
         </div>
 
@@ -720,8 +720,8 @@ body { margin: 0; background: #EDF1FC; min-width: 1280px; }
         <div id="dg-s1" style="display:none;">
           <input type="file" id="ws-file" accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/*" style="display:none;" onchange="onWsFile(this)">
           <div id="dz-empty" class="dropzone">
-            <i data-lucide="file-up" style="width:34px;height:34px;color:#7E44FB;"></i>
-            <p style="font-size:16px;font-weight:700;color:#341761;margin:0;">빈 활동지를 끌어다 놓거나 파일을 선택해 주세요</p>
+            <i data-lucide="file-up" style="width:34px;height:34px;color:#0950A0;"></i>
+            <p style="font-size:16px;font-weight:700;color:#0A2A5E;margin:0;">빈 활동지를 끌어다 놓거나 파일을 선택해 주세요</p>
             <p style="font-size:14px;color:#808080;margin:0;">PDF · JPG · PNG · 20MB 이하</p>
             <button class="btn btn-secondary btn-sm" style="margin-top:4px;" onclick="pickWorksheet()">파일 선택</button>
           </div>
@@ -735,8 +735,8 @@ body { margin: 0; background: #EDF1FC; min-width: 1280px; }
           </div>
           <div id="dz-filled" style="display:none;">
             <div style="display:flex;align-items:center;gap:12px;border:1px solid #D9D9D9;border-radius:12px;padding:14px 16px;">
-              <div style="width:40px;height:40px;border-radius:8px;background:#F7F4FF;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-                <i data-lucide="file-text" style="width:20px;height:20px;color:#7E44FB;"></i>
+              <div style="width:40px;height:40px;border-radius:8px;background:#F3F9FF;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                <i data-lucide="file-text" style="width:20px;height:20px;color:#0950A0;"></i>
               </div>
               <div style="flex:1;min-width:0;">
                 <p id="ws-file-name" style="font-size:16px;font-weight:700;color:#333;margin:0 0 2px;"></p>
@@ -751,7 +751,7 @@ body { margin: 0; background: #EDF1FC; min-width: 1280px; }
           <!-- 문항 구조 확인 -->
           <div id="dg-s2" style="display:none;margin-top:26px;padding-top:22px;border-top:1px solid #F0F0F0;">
             <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;">
-              <h3 style="font-size:16px;font-weight:800;color:#341761;margin:0;">문항 구조</h3>
+              <h3 style="font-size:16px;font-weight:700;color:#0A2A5E;margin:0;">문항 구조</h3>
               <span class="stage-sum" id="ws-sum-2"></span>
             </div>
             <p class="sec-desc" id="dg-s2-intro" style="margin-bottom:16px;"></p>
@@ -780,7 +780,7 @@ body { margin: 0; background: #EDF1FC; min-width: 1280px; }
       <div class="pvx-back" onclick="pvBack()">
         <i data-lucide="arrow-left" style="width:18px;height:18px;"></i><span id="pv-back-label">설계로</span>
       </div>
-      <span style="font-size:17px;font-weight:800;color:#333;">AI 채점 미리보기</span>
+      <span style="font-size:17px;font-weight:700;color:#333;">AI 채점 미리보기</span>
       <span id="pv-file-name" style="font-size:14px;color:#808080;font-weight:700;"></span>
       <button class="btn btn-ghost btn-sm" id="pv-swap" style="display:none;" onclick="document.getElementById('pv-file').click()"><i data-lucide="refresh-cw" style="width:14px;height:14px;color:#808080;"></i>다른 답안으로</button>
       <div style="margin-left:auto;display:flex;align-items:center;gap:10px;">
@@ -793,11 +793,11 @@ body { margin: 0; background: #EDF1FC; min-width: 1280px; }
     <div id="pv-upload" style="display:none;flex:1;align-items:center;justify-content:center;padding:40px;">
       <div style="width:100%;max-width:560px;">
         <input type="file" id="pv-file" accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/*" style="display:none;" onchange="onPvFile(this)">
-        <h2 style="font-size:22px;font-weight:800;color:#341761;margin:0 0 6px;text-align:center;">답안 한 장으로 미리 채점해 보세요</h2>
+        <h2 style="font-size:22px;font-weight:700;color:#0A2A5E;margin:0 0 6px;text-align:center;">답안 한 장으로 미리 채점해 보세요</h2>
         <p style="font-size:15px;color:#808080;margin:0 0 22px;text-align:center;line-height:1.6;">지금 설계로 AI가 어떻게 채점하는지 볼 수 있어요.<br>채점 결과는 저장되지 않고, 학생 점수에도 반영되지 않아요.</p>
         <div class="dropzone" style="padding:52px 24px;">
-          <i data-lucide="file-up" style="width:34px;height:34px;color:#7E44FB;"></i>
-          <p style="font-size:16px;font-weight:700;color:#341761;margin:0;">학생이 작성한 답안을 끌어다 놓거나 파일을 선택해 주세요</p>
+          <i data-lucide="file-up" style="width:34px;height:34px;color:#0950A0;"></i>
+          <p style="font-size:16px;font-weight:700;color:#0A2A5E;margin:0;">학생이 작성한 답안을 끌어다 놓거나 파일을 선택해 주세요</p>
           <p style="font-size:14px;color:#808080;margin:0;">아무 학생 것이나 괜찮아요 · PDF · JPG · PNG</p>
           <button class="btn btn-secondary btn-sm" style="margin-top:4px;" onclick="document.getElementById('pv-file').click()">파일 선택</button>
         </div>
@@ -806,8 +806,8 @@ body { margin: 0; background: #EDF1FC; min-width: 1280px; }
 
     <!-- 채점 중 -->
     <div id="pv-loading" style="display:none;flex:1;flex-direction:column;align-items:center;justify-content:center;gap:14px;">
-      <div style="width:44px;height:44px;border:4px solid #E7DDFF;border-top-color:#7E44FB;border-radius:50%;animation:spin .9s linear infinite;"></div>
-      <p style="font-size:18px;font-weight:800;color:#341761;margin:0;">올리신 답안을 채점해 보고 있어요</p>
+      <div style="width:44px;height:44px;border:4px solid #D5EBFF;border-top-color:#0950A0;border-radius:50%;animation:spin .9s linear infinite;"></div>
+      <p style="font-size:18px;font-weight:700;color:#0A2A5E;margin:0;">올리신 답안을 채점해 보고 있어요</p>
       <p style="font-size:16px;color:#808080;margin:0;">3분 정도 걸려요. <strong style="color:#494949;">이 화면을 벗어나면 처음부터 다시 해야 하니 잠시 기다려 주세요.</strong></p>
     </div>
 
@@ -830,35 +830,35 @@ body { margin: 0; background: #EDF1FC; min-width: 1280px; }
       <!-- 우: 채점 결과 -->
       <div class="pvx-right">
         <div class="pvx-rtop">
-          <span style="font-size:17px;font-weight:800;color:#333;">총점 <span id="pv-total">-</span></span>
+          <span style="font-size:17px;font-weight:700;color:#333;">총점 <span id="pv-total">-</span></span>
           <span id="pv-grade" style="font-size:14px;color:#808080;font-weight:700;"></span>
         </div>
         <div class="pvx-rscroll">
           <div id="pv-rerun-note" class="note note-info" style="display:none;margin-bottom:18px;">
-            <i data-lucide="wand-sparkles" style="color:#5890FF;"></i>
+            <i data-lucide="wand-sparkles" style="color:#00778B;"></i>
             <div><strong>바뀐 채점기준으로 다시 채점했어요.</strong> 앞서 본 결과와 어떻게 달라졌는지 확인해 보세요.</div>
           </div>
 
           <div class="pvx-sec">
-            <div class="pvx-sec-t"><i data-lucide="circle-check-big" style="width:19px;height:19px;color:#7E44FB;"></i>채점 결과</div>
+            <div class="pvx-sec-t"><i data-lucide="circle-check-big" style="width:19px;height:19px;color:#0950A0;"></i>채점 결과</div>
             <p style="font-size:14px;color:#808080;margin:0 0 8px;">AI는 채점을 보조하는 역할을 하며, 채점의 최종 권한은 선생님에게만 있습니다.</p>
             <div id="pv-rubrics"></div>
           </div>
 
           <div class="pvx-sec">
-            <div class="pvx-sec-t"><i data-lucide="bot" style="width:19px;height:19px;color:#7E44FB;"></i>AI 채점 근거 및 피드백</div>
+            <div class="pvx-sec-t"><i data-lucide="bot" style="width:19px;height:19px;color:#0950A0;"></i>AI 채점 근거 및 피드백</div>
             <div class="pvx-tabs">
               <button id="pv-ai-task" class="on" onclick="pvAiTab('task')">과제물 분석 AI</button>
               <button id="pv-ai-rub" onclick="pvAiTab('rub')">루브릭 기반 AI</button>
             </div>
             <div class="pvx-card">
               <span class="pvx-tag" id="pv-ai-tag">기본 설정으로 채점</span>
-              <p style="font-size:15px;font-weight:800;color:#333;margin:14px 0 0;">AI 채점 근거</p>
+              <p style="font-size:15px;font-weight:700;color:#333;margin:14px 0 0;">AI 채점 근거</p>
               <ol class="pvx-ol" id="pv-why"></ol>
               <div style="border-top:1px solid #F0F0F0;margin:16px 0 12px;"></div>
               <div style="display:flex;align-items:center;gap:16px;margin-bottom:10px;">
-                <span style="font-size:15px;font-weight:800;color:#333;">AI 피드백</span>
-                <label class="pvx-radio" style="margin-left:auto;" onclick="pvFbMode('sum')"><i data-lucide="circle-dot" id="pv-fb-sum-i" style="color:#7E44FB;"></i>요약 보기</label>
+                <span style="font-size:15px;font-weight:700;color:#333;">AI 피드백</span>
+                <label class="pvx-radio" style="margin-left:auto;" onclick="pvFbMode('sum')"><i data-lucide="circle-dot" id="pv-fb-sum-i" style="color:#0950A0;"></i>요약 보기</label>
                 <label class="pvx-radio" onclick="pvFbMode('each')"><i data-lucide="circle" id="pv-fb-each-i" style="color:#B3B3B3;"></i>채점요소별 보기</label>
               </div>
               <p class="pvx-fb" id="pv-fb"></p>
@@ -873,7 +873,7 @@ body { margin: 0; background: #EDF1FC; min-width: 1280px; }
           <div id="pv-trial-band" style="display:none;border:1px solid #C9E7D3;background:#F4FBF6;border-radius:14px;padding:18px 20px;margin-bottom:8px;">
             <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
               <i data-lucide="flask-conical" style="width:18px;height:18px;color:#00AF3D;"></i>
-              <span style="font-size:16px;font-weight:800;color:#1B6B39;">다듬은 채점기준으로 채점해 봤어요</span>
+              <span style="font-size:16px;font-weight:700;color:#1B6B39;">다듬은 채점기준으로 채점해 봤어요</span>
               <span class="badge b-gray" style="margin-left:auto;">아직 저장 전</span>
             </div>
             <p style="font-size:14px;color:#3D6B4E;margin:0 0 14px;line-height:1.6;">지금 쓰는 기준으로는 <strong id="pv-trial-before">-</strong>이었어요. 이 결과가 선생님 생각과 더 가깝다면 채점기준을 바꿔 두세요.</p>
@@ -887,8 +887,8 @@ body { margin: 0; background: #EDF1FC; min-width: 1280px; }
           <!-- 결과를 본 뒤의 갈림길 -->
           <div class="apply-band" id="pv-choose-band" style="margin-bottom:8px;">
             <div style="flex:1;min-width:220px;">
-              <p style="font-size:16px;font-weight:800;color:#341761;margin:0 0 6px;line-height:1.3;">채점 결과가 생각하신 기준과 맞나요?</p>
-              <p style="font-size:14px;color:#5B4B7A;margin:0;line-height:1.6;">다르게 채점됐다면 채점기준을 다듬을 수 있어요. AI가 어디를 고치면 좋을지 함께 살펴봐요.</p>
+              <p style="font-size:16px;font-weight:700;color:#0A2A5E;margin:0 0 6px;line-height:1.3;">채점 결과가 생각하신 기준과 맞나요?</p>
+              <p style="font-size:14px;color:#324151;margin:0;line-height:1.6;">다르게 채점됐다면 채점기준을 다듬을 수 있어요. AI가 어디를 고치면 좋을지 함께 살펴봐요.</p>
             </div>
             <button class="btn btn-primary" style="flex-shrink:0;" onclick="openTune()"><i data-lucide="stethoscope" style="width:18px;height:18px;"></i>채점기준 다듬기</button>
           </div>
@@ -905,24 +905,24 @@ body { margin: 0; background: #EDF1FC; min-width: 1280px; }
         <img src="../screens/logo_kg.png" style="height:42px; width:auto; display:block; flex-shrink:0;" alt="AI 서·논술형 평가지원시스템">
       </div>
       <nav style="display:flex;gap:52px;align-items:center;">
-        <a href="#" style="font-size:20px;font-weight:800;color:#7E44FB;text-decoration:none;">나의 평가</a>
+        <a href="#" style="font-size:20px;font-weight:700;color:#0950A0;text-decoration:none;">나의 평가</a>
         <a href="#" style="font-size:20px;font-weight:700;color:#000;text-decoration:none;">평가 자료실</a>
         <a href="#" style="font-size:20px;font-weight:700;color:#000;text-decoration:none;">고객센터</a>
       </nav>
       <div style="display:flex;align-items:center;gap:12px;">
-        <div style="width:36px;height:36px;background:#EDF1FC;border-radius:50%;display:flex;align-items:center;justify-content:center;">
-          <i data-lucide="user" style="width:20px;height:20px;color:#7E44FB;"></i>
+        <div style="width:36px;height:36px;background:#EDF3FC;border-radius:50%;display:flex;align-items:center;justify-content:center;">
+          <i data-lucide="user" style="width:20px;height:20px;color:#0950A0;"></i>
         </div>
         <span style="font-size:20px;font-weight:700;">김동* 님</span>
       </div>
     </div>
   </header>
-  <div style="background:linear-gradient(90deg,#6562F5 4%,#9B68F3 97.86%);height:86px;display:flex;align-items:center;padding:0 36px;">
+  <div style="background:linear-gradient(90deg,#0950A0 4%,#2F77D5 97.86%);height:86px;display:flex;align-items:center;padding:0 36px;">
     <div style="max-width:1200px;width:100%;margin:0 auto;padding:0 36px;display:flex;align-items:center;gap:12px;">
       <div onclick="openPreview()" style="width:36px;height:36px;background:rgba(255,255,255,0.2);border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;">
         <i data-lucide="arrow-left" style="width:20px;height:20px;color:white;"></i>
       </div>
-      <span style="font-size:28px;font-weight:800;color:white;">1학년 국어</span>
+      <span style="font-size:28px;font-weight:700;color:white;">1학년 국어</span>
       <div style="width:1px;height:24px;background:rgba(255,255,255,0.4);margin:0 4px;"></div>
       <span class="hero-name" style="font-size:24px;font-weight:700;color:white;"></span>
     </div>
@@ -930,30 +930,30 @@ body { margin: 0; background: #EDF1FC; min-width: 1280px; }
   <div style="padding-bottom:100px;">
     <div style="max-width:1200px;width:100%;margin:0 auto;padding:0 36px;">
       <div style="padding-top:40px;display:flex;gap:12px;">
-        <div style="flex:1;height:60px;background:#CBD6F4;border-radius:20px 20px 0 0;display:flex;align-items:center;justify-content:center;cursor:pointer;" onclick="location.href='eval_home_v10.html'"><span style="font-size:20px;font-weight:700;color:#000;">평가 홈</span></div>
-        <div style="flex:1;height:60px;background:#CBD6F4;border-radius:20px 20px 0 0;display:flex;align-items:center;justify-content:center;cursor:pointer;"><span style="font-size:20px;font-weight:700;color:#000;">평가 대상</span></div>
-        <div style="flex:1;height:60px;background:white;border-radius:20px 20px 0 0;display:flex;align-items:center;justify-content:center;cursor:pointer;"><span style="font-size:20px;font-weight:800;color:#341761;">평가 설계</span></div>
-        <div style="flex:1;height:60px;background:#CBD6F4;border-radius:20px 20px 0 0;display:flex;align-items:center;justify-content:center;cursor:pointer;" onclick="location.href='task_ocr_review_v2.html'"><span style="font-size:20px;font-weight:700;color:#000;">과제물 관리</span></div>
-        <div style="flex:1;height:60px;background:#CBD6F4;border-radius:20px 20px 0 0;display:flex;align-items:center;justify-content:center;cursor:pointer;" onclick="location.href='scoring_list_v1.html'"><span style="font-size:20px;font-weight:700;color:#000;">AI 채점</span></div>
-        <div style="flex:1;height:60px;background:#CBD6F4;border-radius:20px 20px 0 0;display:flex;align-items:center;justify-content:center;cursor:pointer;" onclick="location.href='report_v2.html'"><span style="font-size:20px;font-weight:700;color:#000;">평가 리포트</span></div>
+        <div style="flex:1;height:60px;background:#CBDCF4;border-radius:20px 20px 0 0;display:flex;align-items:center;justify-content:center;cursor:pointer;" onclick="location.href='eval_home_v10.html'"><span style="font-size:20px;font-weight:700;color:#000;">평가 홈</span></div>
+        <div style="flex:1;height:60px;background:#CBDCF4;border-radius:20px 20px 0 0;display:flex;align-items:center;justify-content:center;cursor:pointer;"><span style="font-size:20px;font-weight:700;color:#000;">평가 대상</span></div>
+        <div style="flex:1;height:60px;background:white;border-radius:20px 20px 0 0;display:flex;align-items:center;justify-content:center;cursor:pointer;"><span style="font-size:20px;font-weight:700;color:#0A2A5E;">평가 설계</span></div>
+        <div style="flex:1;height:60px;background:#CBDCF4;border-radius:20px 20px 0 0;display:flex;align-items:center;justify-content:center;cursor:pointer;" onclick="location.href='task_ocr_review_v2.html'"><span style="font-size:20px;font-weight:700;color:#000;">과제물 관리</span></div>
+        <div style="flex:1;height:60px;background:#CBDCF4;border-radius:20px 20px 0 0;display:flex;align-items:center;justify-content:center;cursor:pointer;" onclick="location.href='scoring_list_v1.html'"><span style="font-size:20px;font-weight:700;color:#000;">AI 채점</span></div>
+        <div style="flex:1;height:60px;background:#CBDCF4;border-radius:20px 20px 0 0;display:flex;align-items:center;justify-content:center;cursor:pointer;" onclick="location.href='report_v2.html'"><span style="font-size:20px;font-weight:700;color:#000;">평가 리포트</span></div>
       </div>
       <div style="background:white;border-radius:0 0 20px 20px;box-shadow:0 4px 36px rgba(95,102,178,0.16);padding:28px 24px;">
         <div style="margin-bottom:18px;">
-          <h2 style="font-size:20px;font-weight:800;color:#000;margin:0 0 4px;">채점기준 다듬기</h2>
+          <h2 style="font-size:20px;font-weight:700;color:#000;margin:0 0 4px;">채점기준 다듬기</h2>
           <p style="font-size:14px;color:#494949;margin:0;font-weight:400;line-height:1.55;" id="tn-desc">방금 채점에서 AI가 막힌 지점을 보고 채점기준을 다시 써 봤어요. 바꾸기 전에 이 기준으로 먼저 채점해 볼 수 있어요.</p>
         </div>
 
         <!-- 분석 중 — 제안 채점기준과 문항 연결을 만드는 동안 -->
         <div id="tn-loading" style="display:none;flex-direction:column;align-items:center;gap:14px;padding:72px 24px;">
-          <div style="width:44px;height:44px;border:4px solid #E7DDFF;border-top-color:#7E44FB;border-radius:50%;animation:spin .9s linear infinite;"></div>
-          <p style="font-size:18px;font-weight:800;color:#341761;margin:0;">채점 결과를 보고 채점기준을 다시 쓰고 있어요</p>
+          <div style="width:44px;height:44px;border:4px solid #D5EBFF;border-top-color:#0950A0;border-radius:50%;animation:spin .9s linear infinite;"></div>
+          <p style="font-size:18px;font-weight:700;color:#0A2A5E;margin:0;">채점 결과를 보고 채점기준을 다시 쓰고 있어요</p>
           <p style="font-size:16px;color:#808080;margin:0;">1분 정도 걸려요. <strong style="color:#494949;">이 화면을 벗어나면 처음부터 다시 해야 하니 잠시 기다려 주세요.</strong></p>
         </div>
 
         <div id="tn-body">
         <!-- AI 진단 의견 — 방금 채점 결과에서 가져온 것 -->
         <div style="margin-bottom:26px;">
-          <h4 style="font-size:16px;font-weight:800;color:#341761;margin:0 0 4px;">AI 진단 의견</h4>
+          <h4 style="font-size:16px;font-weight:700;color:#0A2A5E;margin:0 0 4px;">AI 진단 의견</h4>
           <p class="sec-desc" style="margin-bottom:12px;">방금 채점 결과를 보고 AI가 남긴 의견이에요.</p>
           <div id="tn-stuck" class="diag-card" style="padding:18px 20px;"></div>
         </div>
@@ -971,7 +971,7 @@ body { margin: 0; background: #EDF1FC; min-width: 1280px; }
           <div id="dg-lock-text"></div>
         </div>
         <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:6px;">
-          <h4 id="dg-draft-title" style="font-size:16px;font-weight:800;color:#341761;margin:0;">AI 제안 채점기준</h4>
+          <h4 id="dg-draft-title" style="font-size:16px;font-weight:700;color:#0A2A5E;margin:0;">AI 제안 채점기준</h4>
           <span id="dg-draft-meta" style="font-size:14px;color:#808080;font-weight:700;"></span>
         </div>
         <p class="sec-desc" id="dg-draft-desc"></p>
@@ -989,14 +989,14 @@ body { margin: 0; background: #EDF1FC; min-width: 1280px; }
         <!-- 탭 B: 문항 연결 — AI가 먼저 연결하고 교사가 문항별로 고친다 -->
         <div id="tn-pane-link" style="display:none;">
           <div class="note note-info" id="tn-relink-note" style="display:none;margin-bottom:16px;">
-            <i data-lucide="wand-sparkles" style="color:#5890FF;"></i>
+            <i data-lucide="wand-sparkles" style="color:#00778B;"></i>
             <div><strong>채점기준을 고쳐서 문항 연결을 다시 만들었어요.</strong> AI가 새로 연결한 결과를 확인하고, 맞지 않으면 고쳐 주세요.</div>
           </div>
           <p class="sec-desc" style="margin-bottom:14px;">문항마다 볼 채점기준을 AI가 골라 뒀어요. 왼쪽에서 문항을 고르고, 맞지 않으면 체크를 바꿔 주세요.</p>
           <div style="display:flex;gap:0;background:white;border-radius:16px;overflow:hidden;min-height:420px;border:1px solid #E6E6E6;">
             <div style="width:220px;flex-shrink:0;border-right:1px solid #E6E6E6;display:flex;flex-direction:column;background:white;">
               <div style="padding:12px 14px 8px;border-bottom:1px solid #EFEFEF;">
-                <span style="font-size:14px;font-weight:800;color:#808080;">문항 목록</span>
+                <span style="font-size:14px;font-weight:700;color:#808080;">문항 목록</span>
               </div>
               <div style="flex:1;overflow-y:auto;"><div id="tn-qlist"></div></div>
             </div>
@@ -1009,8 +1009,8 @@ body { margin: 0; background: #EDF1FC; min-width: 1280px; }
         <!-- 저장이 아니라 '먼저 채점해 보기' — 확정은 결과를 본 뒤에 -->
         <div class="apply-band" id="dg-apply-band" style="margin-top:20px;">
           <div style="flex:1;min-width:260px;">
-            <p style="font-size:16px;font-weight:800;color:#341761;margin:0 0 6px;line-height:1.3;">이 설정으로 먼저 채점해 볼까요?</p>
-            <p style="font-size:14px;color:#5B4B7A;margin:0;line-height:1.6;">아직 저장하지 않아요. 고친 채점기준과 문항 연결로 같은 답안을 채점해 보고, 결과가 마음에 들면 그때 바꾸면 돼요.</p>
+            <p style="font-size:16px;font-weight:700;color:#0A2A5E;margin:0 0 6px;line-height:1.3;">이 설정으로 먼저 채점해 볼까요?</p>
+            <p style="font-size:14px;color:#324151;margin:0;line-height:1.6;">아직 저장하지 않아요. 고친 채점기준과 문항 연결로 같은 답안을 채점해 보고, 결과가 마음에 들면 그때 바꾸면 돼요.</p>
           </div>
           <button class="btn btn-primary btn-lg" style="flex-shrink:0;" onclick="tryDraft()"><i data-lucide="play" style="width:18px;height:18px;"></i>이 설정으로 채점해 보기</button>
         </div>
@@ -1037,24 +1037,24 @@ body { margin: 0; background: #EDF1FC; min-width: 1280px; }
         <img src="../screens/logo_kg.png" style="height:42px; width:auto; display:block; flex-shrink:0;" alt="AI 서·논술형 평가지원시스템">
       </div>
       <nav style="display:flex;gap:52px;align-items:center;">
-        <a href="#" style="font-size:20px;font-weight:800;color:#7E44FB;text-decoration:none;">나의 평가</a>
+        <a href="#" style="font-size:20px;font-weight:700;color:#0950A0;text-decoration:none;">나의 평가</a>
         <a href="#" style="font-size:20px;font-weight:700;color:#000;text-decoration:none;">평가 자료실</a>
         <a href="#" style="font-size:20px;font-weight:700;color:#000;text-decoration:none;">고객센터</a>
       </nav>
       <div style="display:flex;align-items:center;gap:12px;">
-        <div style="width:36px;height:36px;background:#EDF1FC;border-radius:50%;display:flex;align-items:center;justify-content:center;">
-          <i data-lucide="user" style="width:20px;height:20px;color:#7E44FB;"></i>
+        <div style="width:36px;height:36px;background:#EDF3FC;border-radius:50%;display:flex;align-items:center;justify-content:center;">
+          <i data-lucide="user" style="width:20px;height:20px;color:#0950A0;"></i>
         </div>
         <span style="font-size:20px;font-weight:700;">김동* 님</span>
       </div>
     </div>
   </header>
-  <div style="background:linear-gradient(90deg,#6562F5 4%,#9B68F3 97.86%);height:86px;display:flex;align-items:center;padding:0 36px;">
+  <div style="background:linear-gradient(90deg,#0950A0 4%,#2F77D5 97.86%);height:86px;display:flex;align-items:center;padding:0 36px;">
     <div style="max-width:1200px;width:100%;margin:0 auto;padding:0 36px;display:flex;align-items:center;gap:12px;">
       <div onclick="backToDetail('sec-answer')" style="width:36px;height:36px;background:rgba(255,255,255,0.2);border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;">
         <i data-lucide="arrow-left" style="width:20px;height:20px;color:white;"></i>
       </div>
-      <span style="font-size:28px;font-weight:800;color:white;">1학년 국어</span>
+      <span style="font-size:28px;font-weight:700;color:white;">1학년 국어</span>
       <div style="width:1px;height:24px;background:rgba(255,255,255,0.4);margin:0 4px;"></div>
       <span class="hero-name" style="font-size:24px;font-weight:700;color:white;"></span>
     </div>
@@ -1062,17 +1062,17 @@ body { margin: 0; background: #EDF1FC; min-width: 1280px; }
   <div style="padding-bottom:100px;">
     <div style="max-width:1200px;width:100%;margin:0 auto;padding:0 36px;">
       <div style="padding-top:40px;display:flex;gap:12px;">
-        <div style="flex:1;height:60px;background:#CBD6F4;border-radius:20px 20px 0 0;display:flex;align-items:center;justify-content:center;cursor:pointer;" onclick="location.href='eval_home_v10.html'"><span style="font-size:20px;font-weight:700;color:#000;">평가 홈</span></div>
-        <div style="flex:1;height:60px;background:#CBD6F4;border-radius:20px 20px 0 0;display:flex;align-items:center;justify-content:center;cursor:pointer;"><span style="font-size:20px;font-weight:700;color:#000;">평가 대상</span></div>
-        <div style="flex:1;height:60px;background:white;border-radius:20px 20px 0 0;display:flex;align-items:center;justify-content:center;cursor:pointer;"><span style="font-size:20px;font-weight:800;color:#341761;">평가 설계</span></div>
-        <div style="flex:1;height:60px;background:#CBD6F4;border-radius:20px 20px 0 0;display:flex;align-items:center;justify-content:center;cursor:pointer;" onclick="location.href='task_ocr_review_v2.html'"><span style="font-size:20px;font-weight:700;color:#000;">과제물 관리</span></div>
-        <div style="flex:1;height:60px;background:#CBD6F4;border-radius:20px 20px 0 0;display:flex;align-items:center;justify-content:center;cursor:pointer;" onclick="location.href='scoring_list_v1.html'"><span style="font-size:20px;font-weight:700;color:#000;">AI 채점</span></div>
-        <div style="flex:1;height:60px;background:#CBD6F4;border-radius:20px 20px 0 0;display:flex;align-items:center;justify-content:center;cursor:pointer;" onclick="location.href='report_v2.html'"><span style="font-size:20px;font-weight:700;color:#000;">평가 리포트</span></div>
+        <div style="flex:1;height:60px;background:#CBDCF4;border-radius:20px 20px 0 0;display:flex;align-items:center;justify-content:center;cursor:pointer;" onclick="location.href='eval_home_v10.html'"><span style="font-size:20px;font-weight:700;color:#000;">평가 홈</span></div>
+        <div style="flex:1;height:60px;background:#CBDCF4;border-radius:20px 20px 0 0;display:flex;align-items:center;justify-content:center;cursor:pointer;"><span style="font-size:20px;font-weight:700;color:#000;">평가 대상</span></div>
+        <div style="flex:1;height:60px;background:white;border-radius:20px 20px 0 0;display:flex;align-items:center;justify-content:center;cursor:pointer;"><span style="font-size:20px;font-weight:700;color:#0A2A5E;">평가 설계</span></div>
+        <div style="flex:1;height:60px;background:#CBDCF4;border-radius:20px 20px 0 0;display:flex;align-items:center;justify-content:center;cursor:pointer;" onclick="location.href='task_ocr_review_v2.html'"><span style="font-size:20px;font-weight:700;color:#000;">과제물 관리</span></div>
+        <div style="flex:1;height:60px;background:#CBDCF4;border-radius:20px 20px 0 0;display:flex;align-items:center;justify-content:center;cursor:pointer;" onclick="location.href='scoring_list_v1.html'"><span style="font-size:20px;font-weight:700;color:#000;">AI 채점</span></div>
+        <div style="flex:1;height:60px;background:#CBDCF4;border-radius:20px 20px 0 0;display:flex;align-items:center;justify-content:center;cursor:pointer;" onclick="location.href='report_v2.html'"><span style="font-size:20px;font-weight:700;color:#000;">평가 리포트</span></div>
       </div>
       <div style="background:white;border-radius:0 0 20px 20px;box-shadow:0 4px 36px rgba(95,102,178,0.16);padding:28px 24px;">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;">
           <div>
-            <h2 style="font-size:20px;font-weight:800;color:#000;margin:0 0 4px;">채점 가이드·모범답안</h2>
+            <h2 style="font-size:20px;font-weight:700;color:#000;margin:0 0 4px;">채점 가이드·모범답안</h2>
             <p style="font-size:14px;color:#494949;margin:0;font-weight:400;line-height:1.55;">문항마다 답변 유형을 고르고 답안을 적은 뒤, 채점할 때 참고할 점을 가이드로 남겨 주세요. 비워 둔 문항이 있어도 저장할 수 있어요.</p>
           </div>
         </div>
@@ -1259,7 +1259,7 @@ function showToast(type, msg){
   document.getElementById('toast-msg').textContent = msg;
   var ic = document.getElementById('toast-icon');
   ic.setAttribute('data-lucide', type==='success' ? 'circle-check-big' : type==='error' ? 'circle-alert' : 'info');
-  ic.style.color = (type==='info') ? '#7E44FB' : '#fff';
+  ic.style.color = (type==='info') ? '#0950A0' : '#fff';
   icons();
   clearTimeout(_toastTimer);
   _toastTimer = setTimeout(function(){ t.className = t.className.replace(' show',''); }, 2500);
@@ -1296,9 +1296,9 @@ function renderList(){
     var b = STATE_BADGE[c.state];
     return ''
       + '<div onclick="openDetail(\'' + c.open + '\')" style="border:1px solid #D9D9D9;border-radius:16px;padding:20px;cursor:pointer;background:white;transition:border-color .12s, background .12s;position:relative;"'
-      + ' onmouseover="this.style.borderColor=\'#7E44FB\';this.style.background=\'#F7F4FF\'" onmouseout="this.style.borderColor=\'#D9D9D9\';this.style.background=\'white\'">'
+      + ' onmouseover="this.style.borderColor=\'#0950A0\';this.style.background=\'#F3F9FF\'" onmouseout="this.style.borderColor=\'#D9D9D9\';this.style.background=\'white\'">'
       +   '<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:12px;">'
-      +     '<span style="font-size:18px;font-weight:800;color:#000;line-height:1.4;word-break:keep-all;">' + esc(c.name) + '</span>'
+      +     '<span style="font-size:18px;font-weight:700;color:#000;line-height:1.4;word-break:keep-all;">' + esc(c.name) + '</span>'
       +     '<button onclick="event.stopPropagation();openConfirm(\'평가 삭제\',\'<strong>' + esc(c.name) + '</strong> 설계를 삭제할까요?<br>삭제하면 되돌릴 수 없습니다.\',\'삭제\',function(){showToast(\'success\',\'설계를 삭제했어요.\');})"'
       +       ' style="width:28px;height:28px;border:none;background:transparent;border-radius:6px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;">'
       +       '<i data-lucide="ellipsis-vertical" style="width:18px;height:18px;color:#808080;"></i></button>'
@@ -1311,7 +1311,7 @@ function renderList(){
       +     '<span style="font-size:14px;color:#B3B3B3;">' + c.date + ' 수정됨</span>'
       +     (c.state === 'draft' ? '' :
           '<button class="btn btn-ghost btn-sm" style="margin-left:auto;flex-shrink:0;" onclick="event.stopPropagation();pvFromCard(\'' + c.open + '\')">'
-          + '<i data-lucide="play" style="width:14px;height:14px;color:#7E44FB;"></i>채점 미리보기</button>')
+          + '<i data-lucide="play" style="width:14px;height:14px;color:#0950A0;"></i>채점 미리보기</button>')
       +   '</div>'
       + '</div>';
   }).join('');
@@ -1758,7 +1758,7 @@ function renderWsCard(){
       + '<p style="font-size:16px;color:#494949;margin:0 0 14px;line-height:1.6;">활동지를 문항 ' + QUESTIONS.length + '개로 나눴어요.</p>'
       + '<button class="btn btn-secondary" onclick="gotoWorksheet()"><i data-lucide="list-checks" style="width:20px;height:20px;"></i>' + (S.locked ? '문항 보기' : '문항 확인·수정') + '</button>';
   } else if (S.ws === 'file' || S.ws === 'load'){
-    h = '<div class="note note-info" style="margin-bottom:14px;"><i data-lucide="loader" style="color:#5890FF;"></i><div><strong>활동지를 올렸어요.</strong> 문항 구조 분석을 이어서 진행해 주세요.</div></div>'
+    h = '<div class="note note-info" style="margin-bottom:14px;"><i data-lucide="loader" style="color:#00778B;"></i><div><strong>활동지를 올렸어요.</strong> 문항 구조 분석을 이어서 진행해 주세요.</div></div>'
       + '<button class="btn btn-secondary" onclick="gotoWorksheet()">이어서 하기</button>';
   } else {
     h = '<button class="btn btn-secondary" onclick="gotoWorksheet()"><i data-lucide="file-up" style="width:20px;height:20px;"></i>빈 활동지 올리기</button>';
@@ -1862,7 +1862,7 @@ var PV_OPINION = '3번 문항은 반론과 반박을 묻는데, 연결된 채점
 function renderStuck(){
   var el = document.getElementById('tn-stuck'); if (!el) return;
   el.innerHTML = '<div style="display:flex;gap:12px;align-items:flex-start;">'
-    + '<i data-lucide="wand-sparkles" style="width:18px;height:18px;color:#9B68F3;flex-shrink:0;margin-top:3px;"></i>'
+    + '<i data-lucide="wand-sparkles" style="width:18px;height:18px;color:#2F77D5;flex-shrink:0;margin-top:3px;"></i>'
     + '<p style="flex:1;min-width:0;font-size:15px;color:#494949;margin:0;line-height:1.75;white-space:pre-wrap;">' + esc(PV_OPINION) + '</p>'
     + '</div>';
   icons();
@@ -1988,9 +1988,9 @@ function renderPreview(){
 
   var sum = (_pvFbMode === 'sum');
   document.getElementById('pv-fb-sum-i').setAttribute('data-lucide', sum ? 'circle-dot' : 'circle');
-  document.getElementById('pv-fb-sum-i').style.color = sum ? '#7E44FB' : '#B3B3B3';
+  document.getElementById('pv-fb-sum-i').style.color = sum ? '#0950A0' : '#B3B3B3';
   document.getElementById('pv-fb-each-i').setAttribute('data-lucide', sum ? 'circle' : 'circle-dot');
-  document.getElementById('pv-fb-each-i').style.color = sum ? '#B3B3B3' : '#7E44FB';
+  document.getElementById('pv-fb-each-i').style.color = sum ? '#B3B3B3' : '#0950A0';
   document.getElementById('pv-fb').textContent = sum ? set.fbSum : set.fbEach;
   icons();
 }
@@ -2057,7 +2057,7 @@ function renderTune(){
       ? '<span style="flex-shrink:0;background:#F1F9F3;border-radius:100px;padding:2px 7px;font-size:12px;font-weight:700;color:#00AF3D;white-space:nowrap;margin-left:auto;">기준 ' + cnt + '개</span>'
       : '<span style="flex-shrink:0;background:#FFF0EF;border:1px solid #F0C0C4;border-radius:100px;padding:2px 7px;font-size:12px;font-weight:700;color:#DB3E51;white-space:nowrap;margin-left:auto;">미연결</span>';
     return '<div class="s3-q-item' + (q.no === _dLinkCur ? ' active' : '') + '" onclick="tnPickQ(' + q.no + ')" style="padding:11px 12px;border-bottom:1px solid #F5F5F5;">'
-      + '<span style="font-size:14px;font-weight:800;color:#333;">' + esc(q.label) + '</span>' + badge + '</div>';
+      + '<span style="font-size:14px;font-weight:700;color:#333;">' + esc(q.label) + '</span>' + badge + '</div>';
   }).join('');
 
   /* 우: 선택 문항의 채점기준 체크 */
@@ -2075,12 +2075,12 @@ function renderTune(){
       +   '<p style="font-size:17px;color:#222;margin:0;line-height:1.6;">' + esc(q.text) + '</p>'
       + '</div>'
       + '<div style="display:flex;gap:10px;align-items:flex-start;background:#FBFBFC;border:1px solid #F0F0F2;border-radius:8px;padding:14px 16px;margin-bottom:18px;">'
-      +   '<i data-lucide="wand-sparkles" style="width:15px;height:15px;color:#9B68F3;flex-shrink:0;margin-top:3px;"></i>'
+      +   '<i data-lucide="wand-sparkles" style="width:15px;height:15px;color:#2F77D5;flex-shrink:0;margin-top:3px;"></i>'
       +   '<div style="flex:1;font-size:14px;color:#494949;line-height:1.65;"><strong style="display:block;font-weight:700;margin-bottom:2px;">AI가 채점기준을 고른 이유</strong>' + esc(why) + '</div>'
       + '</div>'
       + '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">'
       +   '<div style="display:flex;align-items:center;gap:10px;">'
-      +     '<button onclick="tnSelectAll(true)" style="display:inline-flex;align-items:center;justify-content:center;line-height:1;vertical-align:middle;border:none;background:transparent;padding:0;cursor:pointer;font-size:14px;font-weight:700;color:#7E44FB;font-family:inherit;">모두 선택</button>'
+      +     '<button onclick="tnSelectAll(true)" style="display:inline-flex;align-items:center;justify-content:center;line-height:1;vertical-align:middle;border:none;background:transparent;padding:0;cursor:pointer;font-size:14px;font-weight:700;color:#0950A0;font-family:inherit;">모두 선택</button>'
       +     '<div style="width:1px;height:12px;background:#D9D9D9;"></div>'
       +     '<button onclick="tnSelectAll(false)" style="display:inline-flex;align-items:center;justify-content:center;line-height:1;vertical-align:middle;border:none;background:transparent;padding:0;cursor:pointer;font-size:14px;font-weight:700;color:#808080;font-family:inherit;">모두 해제</button>'
       +   '</div>'
@@ -2091,18 +2091,18 @@ function renderTune(){
           var on = picks.indexOf(i) !== -1;
           var max = Math.max.apply(null, r.rows.map(function(x){ var v = Number(x[0]); return isFinite(v) ? v : 0; }));
           var box = on
-            ? 'width:18px;height:18px;border-radius:4px;background:#7E44FB;border:1.5px solid #7E44FB;display:flex;align-items:center;justify-content:center;flex-shrink:0;pointer-events:none;'
+            ? 'width:18px;height:18px;border-radius:4px;background:#0950A0;border:1.5px solid #0950A0;display:flex;align-items:center;justify-content:center;flex-shrink:0;pointer-events:none;'
             : 'width:18px;height:18px;border-radius:4px;background:white;border:1.5px solid #D9D9D9;display:flex;align-items:center;justify-content:center;flex-shrink:0;pointer-events:none;';
           var inner = on ? '<svg width="11" height="11" viewBox="0 0 11 11" fill="none"><polyline points="1.5,5.5 4.5,8 9.5,2.5" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>' : '';
           var lab = on
-            ? 'display:flex;align-items:center;gap:10px;padding:12px 14px;border:1.5px solid #7E44FB;border-radius:8px;background:#FAF8FF;cursor:pointer;'
+            ? 'display:flex;align-items:center;gap:10px;padding:12px 14px;border:1.5px solid #0950A0;border-radius:8px;background:#F7FBFF;cursor:pointer;'
             : 'display:flex;align-items:center;gap:10px;padding:12px 14px;border:1px solid #E6E6E6;border-radius:8px;background:white;cursor:pointer;';
           var txt = on ? 'font-size:14px;font-weight:700;color:#333;' : 'font-size:14px;color:#808080;';
           return '<label onclick="tnToggleLink(' + q.no + ',' + i + ')" style="' + lab + '">'
             + '<div style="' + box + '">' + inner + '</div>'
             + '<div style="flex:1;"><span style="' + txt + '">' + esc(r.title || '(내용 없음)') + '</span>'
             +   '<span style="font-size:14px;color:#808080;margin-left:6px;">' + max + '점</span></div>'
-            + '<span style="font-size:11px;font-weight:700;color:#7E44FB;background:#EDE7FF;border-radius:100px;padding:2px 7px;flex-shrink:0;">AI</span>'
+            + '<span style="font-size:11px;font-weight:700;color:#0950A0;background:#D9EAFB;border-radius:100px;padding:2px 7px;flex-shrink:0;">AI</span>'
             + '</label>';
         }).join('')
       + '</div>'
@@ -2328,8 +2328,8 @@ function renderQuestionList(){
     return '<div class="q-row" data-qi="' + i + '" style="border:1px solid #E6E6E6;border-radius:12px;overflow:hidden;background:white;">'
       + '<div style="display:flex;align-items:center;gap:6px;padding:10px 10px 10px 12px;background:#FBFBFC;border-bottom:1px solid #F0F0F0;">'
       +   '<input class="q-label-in" data-qi="' + i + '" value="' + esc(q.label) + '" placeholder="문항 번호" oninput="onQuestionLabel(this)" '
-      +     'style="width:220px;border:1px solid #D9D9D9;border-radius:6px;padding:9px 10px;font-size:16px;font-weight:700;color:#7E44FB;background:white;outline:none;font-family:inherit;" '
-      +     'onfocus="this.style.borderColor=\'#7E44FB\'" onblur="this.style.borderColor=\'#D9D9D9\'">'
+      +     'style="width:220px;border:1px solid #D9D9D9;border-radius:6px;padding:9px 10px;font-size:16px;font-weight:700;color:#0950A0;background:white;outline:none;font-family:inherit;" '
+      +     'onfocus="this.style.borderColor=\'#0950A0\'" onblur="this.style.borderColor=\'#D9D9D9\'">'
       +   '<span style="flex:1;"></span>'
       +   '<button onclick="moveQuestion(' + i + ',-1)" title="위로 이동" style="width:28px;height:28px;border:none;background:transparent;border-radius:6px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;line-height:1;vertical-align:middle;" onmouseover="this.style.background=\'#F0F0F0\'" onmouseout="this.style.background=\'transparent\'"><i data-lucide="chevron-up" style="width:16px;height:16px;color:#808080;"></i></button>'
       +   '<button onclick="moveQuestion(' + i + ',1)" title="아래로 이동" style="width:28px;height:28px;border:none;background:transparent;border-radius:6px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;line-height:1;vertical-align:middle;" onmouseover="this.style.background=\'#F0F0F0\'" onmouseout="this.style.background=\'transparent\'"><i data-lucide="chevron-down" style="width:16px;height:16px;color:#808080;"></i></button>'
@@ -2339,7 +2339,7 @@ function renderQuestionList(){
       + '<div style="padding:10px 12px;display:flex;flex-direction:column;gap:6px;">'
       +   '<textarea class="q-content-ta" data-qi="' + i + '" oninput="onQuestionInput(this)" placeholder="문항 지시문을 적어 주세요." '
       +     'style="width:100%;min-height:56px;border:1px solid #D9D9D9;border-radius:6px;padding:9px 10px;font-size:16px;font-family:inherit;resize:vertical;outline:none;color:#333;line-height:1.55;background:white;" '
-      +     'onfocus="this.style.borderColor=\'#7E44FB\'" onblur="this.style.borderColor=\'#D9D9D9\'">' + esc(q.text) + '</textarea>'
+      +     'onfocus="this.style.borderColor=\'#0950A0\'" onblur="this.style.borderColor=\'#D9D9D9\'">' + esc(q.text) + '</textarea>'
       +   '<span><button onclick="openFormulaTip()" style="display:inline-flex;align-items:center;justify-content:center;line-height:1;vertical-align:middle;gap:4px;border:1px solid #D9D9D9;background:white;border-radius:6px;height:30px;padding:0 10px;cursor:pointer;font-size:14px;font-weight:700;color:#494949;font-family:inherit;"><span style="font-size:15px;">∑</span> 수식</button></span>'
       + '</div>'
       + '</div>';
@@ -2492,7 +2492,7 @@ function renderFitCards(){
     document.getElementById('dg-draft-meta').textContent = roList.length + '개 · 만점 ' + fullScore(roList) + '점';
     document.getElementById('dg-draft-list').innerHTML = roList.map(function(r, i){
       return '<div class="diag-card" style="padding:0 0 16px;">'
-        + '<div style="padding:14px 16px 0;"><span style="font-size:16px;font-weight:800;color:#341761;">채점기준 ' + (i+1) + '</span></div>'
+        + '<div style="padding:14px 16px 0;"><span style="font-size:16px;font-weight:700;color:#0A2A5E;">채점기준 ' + (i+1) + '</span></div>'
         + '<div style="display:flex;gap:12px;align-items:stretch;margin:12px 16px 0;">'
         +   '<div class="ro-title">' + esc(r.title) + '</div>'
         +   '<div style="flex:1;min-width:0;">' + roTableHtml(r.rows) + '</div>'
@@ -2560,7 +2560,7 @@ function renderAnswers(){
     var g = S.answersFilled ? (GUIDE_SEED[q.no] || '') : '';
     return '<div class="s4-card" data-qno="' + q.no + '">'
       + '<div style="background:#FBFBFC;padding:12px 16px;border-bottom:1px solid #EFEFEF;display:flex;align-items:center;gap:10px;">'
-      +   '<span style="font-size:12px;font-weight:800;background:#F7F4FF;color:#7E44FB;border-radius:100px;padding:3px 10px;white-space:nowrap;flex-shrink:0;">' + esc(q.label) + '</span>'
+      +   '<span style="font-size:12px;font-weight:700;background:#F3F9FF;color:#0950A0;border-radius:100px;padding:3px 10px;white-space:nowrap;flex-shrink:0;">' + esc(q.label) + '</span>'
       +   '<span style="font-size:14px;color:#333;font-weight:400;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + esc(q.text) + '</span>'
       + '</div>'
       + '<div style="padding:14px 16px;display:flex;flex-direction:column;gap:10px;">'

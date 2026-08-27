@@ -10,36 +10,36 @@
 <style>
   @import url('../screens/fonts.css');
   *{font-family:'NanumSquareRound',-apple-system,sans-serif;box-sizing:border-box}
-  body{margin:0;background:#EDF1FC;color:#222}
+  body{margin:0;background:#EDF3FC;color:#222}
   .tab-active{flex:1;height:60px;background:white;border-radius:20px 20px 0 0;display:flex;align-items:center;justify-content:center;cursor:default;}
-  .tab-inactive{flex:1;height:60px;background:#CBD6F4;border-radius:20px 20px 0 0;display:flex;align-items:center;justify-content:center;cursor:pointer;}
+  .tab-inactive{flex:1;height:60px;background:#CBDCF4;border-radius:20px 20px 0 0;display:flex;align-items:center;justify-content:center;cursor:pointer;}
   .tab-inactive:hover{background:#b9c8f0}
-  .btn-pri{background:#7E44FB;color:#fff;border:0;border-radius:8px;height:36px;padding:0 16px;font-size:13px;font-weight:800;cursor:pointer;display:inline-flex;align-items:center;gap:6px}
-  .btn-pri:hover{background:#6B35E8}
-  .btn-out{background:#fff;color:#7E44FB;border:1px solid #B28FFD;border-radius:8px;height:36px;padding:0 12px;font-size:13px;font-weight:800;cursor:pointer;display:inline-flex;align-items:center;gap:6px}
-  .section-title{font-size:18px;font-weight:800;color:#222;display:flex;align-items:center;gap:10px;margin-bottom:16px}
-  .section-title::before{content:'';display:inline-block;width:4px;height:20px;background:#7E44FB;border-radius:2px;flex-shrink:0}
+  .btn-pri{background:#0950A0;color:#fff;border:0;border-radius:8px;height:36px;padding:0 16px;font-size:13px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:6px}
+  .btn-pri:hover{background:#10518F}
+  .btn-out{background:#fff;color:#0950A0;border:1px solid #7FB3E8;border-radius:8px;height:36px;padding:0 12px;font-size:13px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:6px}
+  .section-title{font-size:18px;font-weight:700;color:#222;display:flex;align-items:center;gap:10px;margin-bottom:16px}
+  .section-title::before{content:'';display:inline-block;width:4px;height:20px;background:#0950A0;border-radius:2px;flex-shrink:0}
   .tbl{width:100%;border-collapse:collapse}
-  .tbl th{background:#F8F8F8;font-size:13px;font-weight:800;color:#494949;padding:11px 12px;text-align:center;border-bottom:1px solid #E6E6E6}
+  .tbl th{background:#F8F8F8;font-size:13px;font-weight:700;color:#494949;padding:11px 12px;text-align:center;border-bottom:1px solid #E6E6E6}
   .tbl th.left{text-align:left;padding-left:20px}
   .tbl td{font-size:13px;font-weight:700;color:#222;padding:11px 12px;text-align:center;border-bottom:1px solid #F0F0F0;vertical-align:middle}
   .tbl td.left{text-align:left;padding-left:20px}
   .tbl tbody tr:last-child td{border-bottom:none}
   .tbl tbody tr:hover td{background:#FAFAFF}
   .group-sep td{border-bottom:1.5px solid #E6E6E6 !important}
-  .avg-val{font-size:15px;font-weight:900;color:#7E44FB}
-  .diff-up{color:#00AF3D;font-weight:800}
-  .diff-dn{color:#DB3E51;font-weight:800}
-  .diff-eq{color:#808080;font-weight:800}
+  .avg-val{font-size:15px;font-weight:900;color:#0950A0}
+  .diff-up{color:#00AF3D;font-weight:700}
+  .diff-dn{color:#DB3E51;font-weight:700}
+  .diff-eq{color:#808080;font-weight:700}
   select.filter-sel{border:1px solid #D9D9D9;border-radius:8px;height:36px;padding:0 12px;font-size:13px;font-weight:700;color:#222;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23808080' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") no-repeat right 10px center;padding-right:32px;cursor:pointer;outline:none;-webkit-appearance:none;font-family:'NanumSquareRound',-apple-system,sans-serif}
   .page-btn{width:32px;height:32px;border:1px solid #D9D9D9;border-radius:8px;background:#fff;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#494949;transition:all .15s}
-  .page-btn:hover{border-color:#7E44FB;color:#7E44FB}
-  .page-btn.active{background:#7E44FB;color:#fff;border-color:#7E44FB}
-  .report-link{color:#7E44FB;font-weight:800;text-decoration:none;display:inline-flex;align-items:center;gap:2px;font-size:13px;float:right}
+  .page-btn:hover{border-color:#0950A0;color:#0950A0}
+  .page-btn.active{background:#0950A0;color:#fff;border-color:#0950A0}
+  .report-link{color:#0950A0;font-weight:700;text-decoration:none;display:inline-flex;align-items:center;gap:2px;font-size:13px;float:right}
   .report-link:hover{text-decoration:underline}
-  .badge-miss{background:#FFEFEF;color:#DB3E51;border-radius:100px;padding:2px 10px;font-size:12px;font-weight:800;display:inline-block}
+  .badge-miss{background:#FFEFEF;color:#DB3E51;border-radius:100px;padding:2px 10px;font-size:12px;font-weight:700;display:inline-block}
   .gnb-menu span{cursor:pointer;transition:color .15s}
-  .gnb-menu span:hover{color:#7E44FB}
+  .gnb-menu span:hover{color:#0950A0}
 </style>
 </head>
 <body>
@@ -53,14 +53,14 @@
     </div>
     <!-- Nav -->
     <div class="gnb-menu" style="display:flex;align-items:center;gap:52px;font-size:20px">
-      <span style="color:#7E44FB;font-weight:800">나의 평가</span>
+      <span style="color:#0950A0;font-weight:700">나의 평가</span>
       <span style="color:#000;font-weight:700">평가 자료실</span>
       <span style="color:#000;font-weight:700">고객센터</span>
     </div>
     <!-- User -->
     <div style="display:flex;align-items:center;gap:12px">
-      <div style="width:36px;height:36px;background:#F0EAFF;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0">
-        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#7E44FB" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <div style="width:36px;height:36px;background:#E7F2FF;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0950A0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M12 8V4H8"/><rect width="16" height="12" x="4" y="8" rx="2"/>
           <path d="M2 14h2"/><path d="M20 14h2"/><path d="M15 13v2"/><path d="M9 13v2"/>
         </svg>
@@ -71,9 +71,9 @@
 </div>
 
 <!-- ── TitleBar ── -->
-<div style="background:linear-gradient(to right,#6562F5 4%,#9B68F3 97.86%);height:86px;display:flex;align-items:center;justify-content:center;padding:0 36px">
+<div style="background:linear-gradient(to right,#0950A0 4%,#2F77D5 97.86%);height:86px;display:flex;align-items:center;justify-content:center;padding:0 36px">
   <div style="flex:1;max-width:1200px;min-width:960px;padding:0 36px">
-    <span style="font-size:28px;font-weight:800;color:#fff">1학년 국어</span>
+    <span style="font-size:28px;font-weight:700;color:#fff">1학년 국어</span>
   </div>
 </div>
 
@@ -99,7 +99,7 @@
         <span style="font-size:20px;font-weight:700;color:#000">AI 채점</span>
       </div>
       <div class="tab-active">
-        <span style="font-size:20px;font-weight:800;color:#341761">평가 리포트</span>
+        <span style="font-size:20px;font-weight:700;color:#0A2A5E">평가 리포트</span>
       </div>
     </div>
 
@@ -109,7 +109,7 @@
       <!-- Panel header -->
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:32px">
         <div>
-          <div style="font-size:24px;font-weight:800;color:#222;margin-bottom:6px">평가 리포트</div>
+          <div style="font-size:24px;font-weight:700;color:#222;margin-bottom:6px">평가 리포트</div>
           <div style="font-size:14px;color:#808080;font-weight:700">실시된 평가 결과를 확인하고 엑셀로 다운받을 수 있습니다.</div>
         </div>
         <button class="btn-pri">
@@ -137,7 +137,7 @@
             <tbody>
               <!-- 미래 사회 예측 시나리오 -->
               <tr>
-                <td class="left" rowspan="3" style="border-right:1px solid #F0F0F0;font-size:14px;font-weight:800">
+                <td class="left" rowspan="3" style="border-right:1px solid #F0F0F0;font-size:14px;font-weight:700">
                   미래 사회 예측 시나리오
                 </td>
                 <td rowspan="3" class="avg-val" style="border-right:1px solid #F0F0F0">26.1</td>
@@ -163,7 +163,7 @@
               </tr>
               <!-- 독후감 1차 과제 -->
               <tr>
-                <td class="left" rowspan="3" style="border-right:1px solid #F0F0F0;font-size:14px;font-weight:800">
+                <td class="left" rowspan="3" style="border-right:1px solid #F0F0F0;font-size:14px;font-weight:700">
                   독후감 1차 과제
                 </td>
                 <td rowspan="3" class="avg-val" style="border-right:1px solid #F0F0F0">26.4</td>
@@ -189,7 +189,7 @@
               </tr>
               <!-- 독후감 2차 과제 -->
               <tr>
-                <td class="left" rowspan="3" style="border-right:1px solid #F0F0F0;font-size:14px;font-weight:800">
+                <td class="left" rowspan="3" style="border-right:1px solid #F0F0F0;font-size:14px;font-weight:700">
                   독후감 2차 과제
                 </td>
                 <td rowspan="3" class="avg-val" style="border-right:1px solid #F0F0F0">24.8</td>
@@ -255,8 +255,8 @@
               <tr>
                 <td>1-2</td>
                 <td>10201</td>
-                <td style="font-weight:800">김하나</td>
-                <td style="font-weight:900;color:#7E44FB">30</td>
+                <td style="font-weight:700">김하나</td>
+                <td style="font-weight:900;color:#0950A0">30</td>
                 <td>30</td>
                 <td style="color:#B3B3B3">—</td>
                 <td style="color:#B3B3B3">—</td>
@@ -269,8 +269,8 @@
               <tr>
                 <td>1-2</td>
                 <td>10202</td>
-                <td style="font-weight:800">최민지</td>
-                <td style="font-weight:900;color:#7E44FB">60</td>
+                <td style="font-weight:700">최민지</td>
+                <td style="font-weight:900;color:#0950A0">60</td>
                 <td>30</td>
                 <td>20</td>
                 <td>10</td>
@@ -283,7 +283,7 @@
               <tr>
                 <td>1-2</td>
                 <td>10203</td>
-                <td style="font-weight:800">이하린</td>
+                <td style="font-weight:700">이하린</td>
                 <td style="color:#B3B3B3">—</td>
                 <td style="color:#B3B3B3">—</td>
                 <td style="color:#B3B3B3">—</td>
@@ -297,8 +297,8 @@
               <tr>
                 <td>1-2</td>
                 <td>10204</td>
-                <td style="font-weight:800">한아영</td>
-                <td style="font-weight:900;color:#7E44FB">60</td>
+                <td style="font-weight:700">한아영</td>
+                <td style="font-weight:900;color:#0950A0">60</td>
                 <td>30</td>
                 <td>20</td>
                 <td>10</td>
@@ -311,8 +311,8 @@
               <tr>
                 <td>1-2</td>
                 <td>10205</td>
-                <td style="font-weight:800">김민경</td>
-                <td style="font-weight:900;color:#7E44FB">60</td>
+                <td style="font-weight:700">김민경</td>
+                <td style="font-weight:900;color:#0950A0">60</td>
                 <td>30</td>
                 <td>20</td>
                 <td>10</td>

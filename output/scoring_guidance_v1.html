@@ -9,33 +9,33 @@
   <style>
     @import url('../screens/fonts.css');
     *{ font-family:'NanumSquareRound',-apple-system,sans-serif; box-sizing:border-box; }
-    body{ margin:0; background:#EDF1FC; color:#222; font-size:16px; min-width:1280px; }
+    body{ margin:0; background:#EDF3FC; color:#222; font-size:16px; min-width:1280px; }
     a{ text-decoration:none; color:inherit; }
 
     /* 탭 */
     .tabs{ display:flex; gap:12px; }
-    .tab{ flex:1; height:60px; background:#CBD6F4; border-radius:20px 20px 0 0; display:flex; align-items:center; justify-content:center; color:#000; font-weight:700; font-size:20px; cursor:pointer; }
-    .tab.on{ background:#fff; color:#341761; }
+    .tab{ flex:1; height:60px; background:#CBDCF4; border-radius:20px 20px 0 0; display:flex; align-items:center; justify-content:center; color:#000; font-weight:700; font-size:20px; cursor:pointer; }
+    .tab.on{ background:#fff; color:#0A2A5E; }
     .panel{ background:#fff; border-radius:0 0 20px 20px; padding:28px 24px; box-shadow:0 4px 36px rgba(95,102,178,.16); }
 
     /* 버튼 */
     .btn{ height:40px; border-radius:8px; font-weight:700; font-size:16px; font-family:inherit; cursor:pointer; display:inline-flex; align-items:center; justify-content:center; line-height:1; vertical-align:middle; gap:8px; padding:0 16px; border:none; transition:opacity .15s; }
     .btn:hover{ opacity:.88; }
-    .btn-primary{ background:#7E44FB; color:white; }
-    .btn-secondary{ background:white; color:#7E44FB; border:1.5px solid #B28FFD; }
+    .btn-primary{ background:#0950A0; color:white; }
+    .btn-secondary{ background:white; color:#0950A0; border:1.5px solid #7FB3E8; }
     .btn-sm{ height:36px; font-size:14px; padding:0 12px; }
 
     /* 개인정보 비식별화 미니 안내 (접힌 상태) */
     .deid-mini{ display:inline-flex; align-items:center; gap:6px; font-size:13px; font-weight:700; color:#808080; }
-    .deid-mini i{ width:15px; height:15px; color:#9869fc; }
+    .deid-mini i{ width:15px; height:15px; color:#3C9BFB; }
 
     /* 업로드 전 안내 스트립 (인라인) */
-    .guide-strip{ background:#F2F5FF; border-radius:10px; padding:14px 16px; display:flex; align-items:center; gap:12px; margin-bottom:16px; }
+    .guide-strip{ background:#F2F7FF; border-radius:10px; padding:14px 16px; display:flex; align-items:center; gap:12px; margin-bottom:16px; }
     .guide-strip-ico{ width:36px; height:36px; border-radius:9px; background:#E3ECFF; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
-    .guide-strip-ico i{ width:20px; height:20px; color:#5890FF; }
-    .guide-strip-title{ font-size:15px; font-weight:800; color:#28407A; line-height:1.4; margin:0 0 3px; }
+    .guide-strip-ico i{ width:20px; height:20px; color:#00778B; }
+    .guide-strip-title{ font-size:15px; font-weight:700; color:#28407A; line-height:1.4; margin:0 0 3px; }
     .guide-strip-desc{ font-size:14px; font-weight:600; color:#5A6C99; line-height:1.5; margin:0; }
-    .guide-strip-btn{ flex-shrink:0; height:36px; padding:0 14px; background:white; color:#5890FF; border:1px solid #BBD0FF; border-radius:8px; font-family:inherit; font-size:14px; font-weight:700; cursor:pointer; display:inline-flex; align-items:center; justify-content:center; line-height:1; vertical-align:middle; gap:6px; }
+    .guide-strip-btn{ flex-shrink:0; height:36px; padding:0 14px; background:white; color:#00778B; border:1px solid #BBD0FF; border-radius:8px; font-family:inherit; font-size:14px; font-weight:700; cursor:pointer; display:inline-flex; align-items:center; justify-content:center; line-height:1; vertical-align:middle; gap:6px; }
     .guide-strip-btn:hover{ background:#F7FAFF; }
 
     /* 안내 모달 스타일은 scoring_guide_modal.js가 주입 */
@@ -49,7 +49,7 @@
     .rubric-tool:hover{ background:#F8F8F8; }
     .rubric-body{ padding:12px 14px 16px 34px; display:flex; flex-direction:column; gap:12px; }
     .rubric-ta{ width:100%; min-height:46px; border:1px solid #D9D9D9; border-radius:8px; padding:10px 12px; font-size:16px; font-family:inherit; resize:none; outline:none; color:#333; line-height:1.55; overflow:hidden; display:block; }
-    .rubric-ta:focus{ border-color:#7E44FB; }
+    .rubric-ta:focus{ border-color:#0950A0; }
     .rubric-ta.warn{ border-color:#E4631C; background:#FFFBF8; }
     .rubric-tbl{ border:1px solid #D9D9D9; border-radius:8px; overflow:hidden; }
     .rubric-tbl table{ width:100%; border-collapse:separate; border-spacing:0; }
@@ -93,12 +93,12 @@
       <img src="../screens/logo_kg.png" style="height:42px; width:auto; display:block; flex-shrink:0;" alt="AI 서·논술형 평가지원시스템">
     </div>
     <nav style="display:flex; gap:52px; align-items:center;">
-      <span style="font-size:20px; font-weight:800; color:#7E44FB; cursor:pointer;">나의 평가</span>
+      <span style="font-size:20px; font-weight:700; color:#0950A0; cursor:pointer;">나의 평가</span>
       <span style="font-size:20px; font-weight:700; color:#000; cursor:pointer;">평가 자료실</span>
       <span style="font-size:20px; font-weight:700; color:#000; cursor:pointer;">고객센터</span>
     </nav>
     <div style="display:flex; align-items:center; gap:12px; flex-shrink:0;">
-      <div style="width:36px;height:36px;background:#F0EAFF;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><i data-lucide="bot" style="width:20px;height:20px;color:#7E44FB;"></i></div>
+      <div style="width:36px;height:36px;background:#E7F2FF;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><i data-lucide="bot" style="width:20px;height:20px;color:#0950A0;"></i></div>
       <span style="font-size:20px; font-weight:700; color:#000;">김동* 님</span>
     </div>
   </div>
@@ -109,10 +109,10 @@
 ================================================================= -->
 <div id="screen-upload" class="screen">
   <!-- 타이틀 바 -->
-  <div style="background:linear-gradient(to right,#6562f5 4%,#9b68f3 97.86%);height:86px;display:flex;align-items:center;justify-content:center;padding:0 36px;">
+  <div style="background:linear-gradient(to right,#0950A0 4%,#2F77D5 97.86%);height:86px;display:flex;align-items:center;justify-content:center;padding:0 36px;">
     <div style="width:100%;max-width:1200px;padding:0 36px;display:flex;align-items:center;gap:12px;">
       <i data-lucide="arrow-left" style="width:28px;height:28px;color:white;cursor:pointer;"></i>
-      <span style="font-size:28px;font-weight:800;color:white;">1학년 국어</span>
+      <span style="font-size:28px;font-weight:700;color:white;">1학년 국어</span>
       <div style="width:1px;height:28px;background:rgba(255,255,255,.4);margin:0 4px;"></div>
       <span style="font-size:20px;font-weight:700;color:rgba(255,255,255,.9);">학급 PDF 업로드</span>
     </div>
@@ -130,13 +130,13 @@
       </div>
       <div class="panel" style="min-height:500px;">
         <div style="margin-bottom:20px;">
-          <h2 style="font-size:24px;font-weight:800;color:#222;margin:0 0 6px;">1학년 1반 학급 PDF 일괄 업로드</h2>
+          <h2 style="font-size:24px;font-weight:700;color:#222;margin:0 0 6px;">1학년 1반 학급 PDF 일괄 업로드</h2>
           <p style="font-size:16px;color:#494949;margin:0;line-height:1.55;">학생의 과제를 스캔해서 한 번에 업로드할 수 있습니다.</p>
         </div>
 
         <!-- 개인정보 비식별화 (접힌 상태) -->
         <div style="margin-bottom:12px;">
-          <span class="deid-mini"><i data-lucide="shield-check"></i>개인정보 비식별화 적용 중<span style="color:#9869fc;cursor:pointer;margin-left:4px;">자세히</span></span>
+          <span class="deid-mini"><i data-lucide="shield-check"></i>개인정보 비식별화 적용 중<span style="color:#3C9BFB;cursor:pointer;margin-left:4px;">자세히</span></span>
         </div>
 
         <!-- ★ 업로드 전 안내 스트립 (영향 필드 앞 · 인라인) -->
@@ -176,9 +176,9 @@
 ================================================================= -->
 <div id="screen-rubric" class="screen">
   <!-- 타이틀 바 -->
-  <div style="background:linear-gradient(to right,#6562f5 4%,#9b68f3 97.86%);height:86px;display:flex;align-items:center;justify-content:center;padding:0 36px;">
+  <div style="background:linear-gradient(to right,#0950A0 4%,#2F77D5 97.86%);height:86px;display:flex;align-items:center;justify-content:center;padding:0 36px;">
     <div style="width:100%;max-width:1200px;padding:0 36px;">
-      <span style="font-size:28px;font-weight:800;color:white;line-height:1.35;">1학년 과학</span>
+      <span style="font-size:28px;font-weight:700;color:white;line-height:1.35;">1학년 과학</span>
     </div>
   </div>
 
@@ -194,14 +194,14 @@
       </div>
       <div class="panel" style="min-height:500px;">
         <div style="margin-bottom:24px;">
-          <h2 style="font-size:24px;font-weight:800;color:#222;margin:0 0 6px;">주기율표 서술형 평가</h2>
+          <h2 style="font-size:24px;font-weight:700;color:#222;margin:0 0 6px;">주기율표 서술형 평가</h2>
           <p style="font-size:16px;color:#494949;margin:0;line-height:1.55;">성취기준과 채점기준, 점수 계산 방식을 입력해 주세요.</p>
         </div>
 
         <!-- STEP: 채점기준 -->
         <div>
           <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
-            <span style="font-size:18px;font-weight:800;color:#341761;">채점기준 입력</span>
+            <span style="font-size:18px;font-weight:700;color:#0A2A5E;">채점기준 입력</span>
             <i data-lucide="circle-help" style="width:18px;height:18px;color:#B3B3B3;cursor:pointer;"></i>
           </div>
 
@@ -216,7 +216,7 @@
               <i data-lucide="grip-vertical" style="width:13px;height:13px;color:#B3B3B3;"></i>
               <span style="font-size:14px;color:#808080;font-weight:400;">핸들을 드래그하면 순서를 바꿀 수 있어요</span>
             </div>
-            <span style="font-size:14px;font-weight:700;color:#7E44FB;cursor:pointer;text-decoration:underline;text-underline-offset:2px;">채점기준 입력 예시</span>
+            <span style="font-size:14px;font-weight:700;color:#0950A0;cursor:pointer;text-decoration:underline;text-underline-offset:2px;">채점기준 입력 예시</span>
           </div>
 
           <div style="display:flex;flex-direction:column;gap:12px;margin-bottom:14px;">
@@ -271,7 +271,7 @@
 
           </div>
 
-          <button class="rubric-tool" style="color:#7E44FB;"><i data-lucide="plus" style="width:14px;height:14px;"></i> 채점기준 추가</button>
+          <button class="rubric-tool" style="color:#0950A0;"><i data-lucide="plus" style="width:14px;height:14px;"></i> 채점기준 추가</button>
         </div>
       </div>
     </div>

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>채점 - 김하나 | AI 서·논술형 평가지원시스템</title>
+  <title>채점 - 이준호 | AI 서·논술형 평가지원시스템</title>
   <link rel="icon" href="../screens/favicon_src.png?v=2" type="image/png">
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
@@ -11,20 +11,20 @@
     @import url('../screens/fonts.css');
     * { font-family: 'NanumSquareRound', sans-serif; box-sizing: border-box; }
     body { margin: 0; padding: 0; background: white; overflow: hidden; }
-    .ocr-popup-textarea:focus { border-color: #7E44FB !important; outline: none; }
+    .ocr-popup-textarea:focus { border-color: #0950A0 !important; outline: none; }
 
     .score-btn {
       width: 28px; height: 28px; border-radius: 6px; font-size: 18px; font-weight: 700;
       display: inline-flex; align-items: center; justify-content: center;
-      cursor: pointer; border: 1px solid #7E44FB; color: #7E44FB; background: white;
+      cursor: pointer; border: 1px solid #0950A0; color: #0950A0; background: white;
       transition: all 0.15s;
     }
     .score-btn.selected {
-      background: #7E44FB; color: white; border-color: #7E44FB;
+      background: #0950A0; color: white; border-color: #0950A0;
     }
     .score-btn.hatched {
-      background: repeating-linear-gradient(-45deg, transparent, transparent 3px, rgba(126,68,251,0.15) 3px, rgba(126,68,251,0.15) 4px);
-      border: 1px solid #7E44FB; color: #7E44FB;
+      background: repeating-linear-gradient(-45deg, transparent, transparent 3px, rgba(9,80,160,0.15) 3px, rgba(9,80,160,0.15) 4px);
+      border: 1px solid #0950A0; color: #0950A0;
     }
 
     .tab-toggle-btn {
@@ -33,7 +33,7 @@
       border: none; color: #494949; background: transparent;
       transition: all 0.15s; font-family: inherit; line-height: 1;
     }
-    .tab-toggle-btn.active { background: white; color: #7E44FB; box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
+    .tab-toggle-btn.active { background: white; color: #0950A0; box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
 
     .radio-item {
       display: flex; align-items: center; gap: 6px; cursor: pointer;
@@ -45,7 +45,7 @@
       flex-shrink: 0;
     }
     .radio-circle.selected {
-      border: 5px solid #7E44FB;
+      border: 5px solid #0950A0;
     }
 
     .feedback-radio-item {
@@ -58,7 +58,7 @@
       flex-shrink: 0;
     }
     .feedback-radio-circle.selected {
-      border: 4px solid #7E44FB;
+      border: 4px solid #0950A0;
     }
 
     .main-content { display: flex; height: calc(100vh - 68px); overflow: hidden; }
@@ -76,11 +76,11 @@
     .pill-btn:hover { background: #f5f5f5; }
 
     .purple-btn {
-      background: #7E44FB; border: none; border-radius: 8px;
+      background: #0950A0; border: none; border-radius: 8px;
       height: 40px; padding: 0 16px; font-size: 16px; font-weight: 700;
       color: white; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;
     }
-    .purple-btn:hover { background: #6c35e0; }
+    .purple-btn:hover { background: #0A4A94; }
 
     /* B안 좌측 OCR 뷰어 */
     .ocr-b-tab-wrap {
@@ -98,25 +98,25 @@
       font-size: 14px; font-weight: 700; color: #808080;
       background: transparent; transition: all 0.15s; font-family: inherit;
     }
-    .ocr-b-tab.active { background: #7E44FB; color: white; }
+    .ocr-b-tab.active { background: #0950A0; color: white; }
     .ocr-uncertain {
       background: #FFF4CC; border-bottom: 2px solid #E07000;
       cursor: pointer; position: relative; border-radius: 2px;
     }
-    /* 툴팁 스킨: Figma MM23…FVJpB 1900:20405 (화이트 · 14px Bold #341761 · 화살표 14px) */
+    /* 툴팁 스킨: Figma MM23…FVJpB 1900:20405 (화이트 · 14px Bold #0A2A5E · 화살표 14px) */
     .ocr-uncertain:hover::after {
       content: attr(data-hint); position: absolute; bottom: calc(100% + 12px); left: 0;
-      background: #fff; color: #341761; font-size: 14px; font-weight: 700; line-height: 18px;
+      background: #fff; color: #0A2A5E; font-size: 14px; font-weight: 700; line-height: 18px;
       padding: 10px 20px; border-radius: 8px; white-space: nowrap; z-index: 10;
-      box-shadow: 0 4px 36px rgba(95,102,178,.16);
+      box-shadow: 0 4px 36px rgba(45,85,145,.16);
     }
     .ocr-uncertain:hover::before {
       content: ''; position: absolute; bottom: calc(100% + 6px); left: 12px;
       width: 14px; height: 14px; background: #fff; transform: rotate(45deg); z-index: 11;
     }
     .ocr-b-q-label {
-      display: inline-flex; align-items: center; background: #F0EAFF; color: #7E44FB;
-      border-radius: 100px; padding: 3px 12px; font-size: 13px; font-weight: 800;
+      display: inline-flex; align-items: center; background: #E7F2FF; color: #0950A0;
+      border-radius: 100px; padding: 3px 12px; font-size: 13px; font-weight:700;
     }
     .ocr-b-q-desc { font-size: 13px; color: #808080; font-weight: 700; }
     .ocr-b-q-text { font-size: 16px; color: #333; line-height: 1.85; }
@@ -127,17 +127,17 @@
     .rubric-ocr-section{ border:1px solid #E6E6E6; border-radius:12px; margin-bottom:12px; overflow:hidden; }
     .rubric-ocr-header{ display:flex; align-items:center; gap:8px; padding:10px 14px; background:#F8F8F8; border-bottom:1px solid #E6E6E6; flex-wrap:wrap; }
     .rubric-ocr-desc{ font-size:13px; color:#808080; font-weight:700; flex:1; min-width:0; overflow:hidden; white-space:nowrap; text-overflow:ellipsis; }
-    .rubric-suspect-chip{ display:inline-flex; align-items:center; gap:4px; background:#FFF0F0; border:1px solid #FFBCBC; border-radius:100px; padding:2px 8px; font-size:12px; font-weight:800; color:#DB3E51; flex-shrink:0; }
+    .rubric-suspect-chip{ display:inline-flex; align-items:center; gap:4px; background:#FFF0F0; border:1px solid #FFBCBC; border-radius:100px; padding:2px 8px; font-size:12px; font-weight:700; color:#DB3E51; flex-shrink:0; }
     .rubric-ocr-body{ padding:14px 16px; font-size:15px; line-height:1.85; color:#333; cursor:text; position:relative; }
     .rubric-ocr-body:hover{ background:#FDFCFF; }
-    .section-editing{ border-color:#7E44FB !important; box-shadow:0 0 0 2px rgba(126,68,251,.12); }
-    .section-editing .rubric-ocr-header{ background:#F7F4FF; }
-    .editing-badge{ font-size:11px; font-weight:800; color:#7E44FB; background:#EDE6FF; border-radius:100px; padding:2px 8px; }
-    .saved-badge{ font-size:11px; font-weight:800; color:#00AF3D; display:inline-flex; align-items:center; gap:3px; transition:opacity .4s; }
+    .section-editing{ border-color:#0950A0 !important; box-shadow:0 0 0 2px rgba(9,80,160,.12); }
+    .section-editing .rubric-ocr-header{ background:#F3F9FF; }
+    .editing-badge{ font-size:11px; font-weight:700; color:#0950A0; background:#D9EAFB; border-radius:100px; padding:2px 8px; }
+    .saved-badge{ font-size:11px; font-weight:700; color:#00AF3D; display:inline-flex; align-items:center; gap:3px; transition:opacity .4s; }
     .ocr-uncertainty-note{ border-top:1px dashed #FFBCBC; background:#FFF5F5; padding:10px 14px; display:flex; flex-direction:column; gap:4px; }
-    .ocr-uncertainty-label{ font-size:12px; font-weight:800; color:#DB3E51; display:flex; align-items:center; gap:4px; }
+    .ocr-uncertainty-label{ font-size:12px; font-weight:700; color:#DB3E51; display:flex; align-items:center; gap:4px; }
     .ocr-uncertainty-text{ font-size:13px; color:#494949; line-height:1.65; }
-    .badge-purple{ display:inline-flex;align-items:center;background:#F7F4FF;color:#7E44FB;border-radius:100px;padding:3px 10px;font-size:12px;font-weight:800; }
+    .badge-purple{ display:inline-flex;align-items:center;background:#F3F9FF;color:#0950A0;border-radius:100px;padding:3px 10px;font-size:12px;font-weight:700; }
   </style>
 </head>
 <body>
@@ -147,7 +147,7 @@
 <!-- 상단 고정 타이틀바 -->
 <div style="position:sticky;top:0;z-index:50;height:68px;display:flex;align-items:stretch;background:#F8F8F8;border-top:1px solid #D9D9D9;border-bottom:1px solid #D9D9D9;">
   <!-- 뒤로가기 버튼 -->
-  <button id="btn-back" onclick="goBack()" style="width:68px;height:68px;background:#7E44FB;border:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;flex-shrink:0;padding:0;">
+  <button id="btn-back" onclick="goBack()" style="width:68px;height:68px;background:#0950A0;border:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;flex-shrink:0;padding:0;">
     <i data-lucide="arrow-left" style="width:28px;height:28px;color:white;"></i>
     <span style="font-size:14px;font-weight:700;color:white;line-height:1;">목록으로</span>
   </button>
@@ -162,7 +162,7 @@
           <span style="font-size:18px;font-weight:700;color:#333;line-height:1.25;">10101 김하나 (확인 필요)</span>
           <i data-lucide="chevron-down" style="width:24px;height:24px;color:#333;flex-shrink:0;margin-left:8px;"></i>
         </div>
-        <div id="studentDropdownList" style="display:none;position:absolute;top:calc(100% + 4px);left:0;min-width:345px;max-height:400px;overflow-y:auto;background:white;border-radius:6px;box-shadow:0 0 1px #494949, 0 8px 32px rgba(95,102,178,0.16);z-index:100;padding:4px;"></div>
+        <div id="studentDropdownList" style="display:none;position:absolute;top:calc(100% + 4px);left:0;min-width:345px;max-height:400px;overflow-y:auto;background:white;border-radius:6px;box-shadow:0 0 1px #494949, 0 8px 32px rgba(45,85,145,0.16);z-index:100;padding:4px;"></div>
       </div>
       <!-- 채점 진행 현황 (1751:4122) -->
       <div style="display:inline-flex;align-items:center;gap:6px;">
@@ -180,7 +180,7 @@
         <button style="background:none;border:none;font-size:16px;font-weight:700;color:#494949;cursor:pointer;padding:0;font-family:inherit;display:inline-flex;align-items:center;gap:4px;line-height:1;">다음 학생<i data-lucide="chevron-right" style="width:20px;height:20px;"></i></button>
       </div>
       <!-- 저장 버튼 (1751:4122 — 채점은 자동 저장 없이 저장 버튼으로 사용자 저장) -->
-      <button onclick="saveGrading()" style="display:inline-flex;align-items:center;justify-content:center;line-height:1;vertical-align:middle;gap:6px;height:40px;padding:0 16px;background:#7E44FB;border:1px solid #7E44FB;border-radius:8px;font-family:inherit;font-size:16px;font-weight:700;color:white;cursor:pointer;" onmouseover="this.style.background='#6c35e0'" onmouseout="this.style.background='#7E44FB'">
+      <button onclick="saveGrading()" style="display:inline-flex;align-items:center;justify-content:center;line-height:1;vertical-align:middle;gap:6px;height:40px;padding:0 16px;background:#0950A0;border:1px solid #0950A0;border-radius:8px;font-family:inherit;font-size:16px;font-weight:700;color:white;cursor:pointer;" onmouseover="this.style.background='#0A4A94'" onmouseout="this.style.background='#0950A0'">
         <i data-lucide="check" style="width:20px;height:20px;"></i>
         저장
       </button>
@@ -265,17 +265,17 @@
           <i data-lucide="align-left" style="width:14px;height:14px;"></i>인식 결과
         </button>
       </div>
-      <span id="left-uncertain-chip" style="display:none;margin-left:auto;background:#FFF4CC;border:1px solid #E07000;border-radius:100px;padding:3px 12px;font-size:12px;font-weight:800;color:#E07000;align-items:center;gap:4px;">
+      <span id="left-uncertain-chip" style="display:none;margin-left:auto;background:#FFF4CC;border:1px solid #E07000;border-radius:100px;padding:3px 12px;font-size:12px;font-weight:700;color:#E07000;align-items:center;gap:4px;">
         <i data-lucide="triangle-alert" style="width:11px;height:11px;"></i>
         <span id="left-uncertain-count"></span>개 불확실 구간
       </span>
       <!-- 우측 그룹: 학생 풀이와 답만 보기(전사 텍스트 + 인식 결과 있을 때만) + 인식 결과 수정 -->
       <div style="margin-left:auto;display:flex;align-items:center;gap:16px;">
         <label id="stu-answersonly-wrap" style="display:none;align-items:center;gap:8px;cursor:pointer;font-size:14px;font-weight:700;color:#333;user-select:none;">
-          <input type="checkbox" id="stu-answers-only" checked onchange="setStuAnswersOnly(this.checked)" style="width:14px;height:14px;accent-color:#7E44FB;cursor:pointer;flex-shrink:0;">
+          <input type="checkbox" id="stu-answers-only" checked onchange="setStuAnswersOnly(this.checked)" style="width:14px;height:14px;accent-color:#0950A0;cursor:pointer;flex-shrink:0;">
           학생 풀이와 답만 보기
         </label>
-        <a id="left-ocr-review-link" href="#" onclick="return goEditOcr(event)" style="display:none;background:white;border:1px solid #B28FFD;border-radius:8px;height:32px;padding:0 12px;font-size:13px;font-weight:700;color:#7E44FB;cursor:pointer;align-items:center;gap:6px;text-decoration:none;" onmouseover="this.style.background='#F7F4FF'" onmouseout="this.style.background='white'">
+        <a id="left-ocr-review-link" href="#" onclick="return goEditOcr(event)" style="display:none;background:white;border:1px solid #7FB3E8;border-radius:8px;height:32px;padding:0 12px;font-size:13px;font-weight:700;color:#0950A0;cursor:pointer;align-items:center;gap:6px;text-decoration:none;" onmouseover="this.style.background='#F3F9FF'" onmouseout="this.style.background='white'">
           <i data-lucide="scan-text" style="width:14px;height:14px;"></i>인식 결과 수정
         </a>
       </div>
@@ -318,9 +318,9 @@
     <!-- 미진행/인식실패 학생: 채점 불가 placeholder (단계형 정책 — OCR 인식 전엔 채점할 입력이 없음) -->
     <div id="right-grading-empty" style="display:none;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:80px 32px;min-height:420px;">
       <div style="width:64px;height:64px;border-radius:18px;background:#F2F2F2;display:flex;align-items:center;justify-content:center;margin-bottom:16px;"><i data-lucide="lock" style="width:28px;height:28px;color:#808080;"></i></div>
-      <div id="right-grading-empty-title" style="font-size:16px;font-weight:800;color:#222;margin-bottom:8px;">아직 채점할 수 없어요</div>
+      <div id="right-grading-empty-title" style="font-size:16px;font-weight:700;color:#222;margin-bottom:8px;">아직 채점할 수 없어요</div>
       <div id="right-grading-empty-desc" style="font-size:13px;color:#494949;line-height:1.7;max-width:360px;">답안 인식(OCR)이 끝나면 AI 채점을 진행할 수 있어요. 왼쪽 안내에서 과제물 관리로 이동해 인식을 먼저 완료해 주세요.</div>
-      <button id="direct-grade-btn" onclick="enableDirectGrade()" style="display:none;margin-top:20px;height:40px;padding:0 18px;background:white;color:#7E44FB;border:1.5px solid #B28FFD;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;align-items:center;justify-content:center;gap:6px;" onmouseover="this.style.background='#F7F4FF'" onmouseout="this.style.background='white'"><i data-lucide="pencil-line" style="width:15px;height:15px;"></i>직접 채점하기</button>
+      <button id="direct-grade-btn" onclick="enableDirectGrade()" style="display:none;margin-top:20px;height:40px;padding:0 18px;background:white;color:#0950A0;border:1.5px solid #7FB3E8;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;align-items:center;justify-content:center;gap:6px;" onmouseover="this.style.background='#F3F9FF'" onmouseout="this.style.background='white'"><i data-lucide="pencil-line" style="width:15px;height:15px;"></i>직접 채점하기</button>
     </div>
 
     <div id="right-grading-content">
@@ -367,7 +367,7 @@
     <div style="padding:24px;border-bottom:1px solid #D9D9D9;">
       <!-- 헤더 -->
       <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
-        <i data-lucide="circle-check-big" style="width:20px;height:20px;color:#7E44FB;flex-shrink:0;"></i>
+        <i data-lucide="circle-check-big" style="width:20px;height:20px;color:#0950A0;flex-shrink:0;"></i>
         <span style="font-size:18px;font-weight:700;color:#333;">채점 결과</span>
         <i data-lucide="circle-help" title="채점 요소별 점수를 선택하면 총점이 계산돼요" style="width:18px;height:18px;color:#B3B3B3;flex-shrink:0;margin-left:auto;cursor:help;"></i>
       </div>
@@ -422,7 +422,7 @@
     <div id="ai-feedback-section" style="padding:24px 24px 52px;border-bottom:1px solid #D9D9D9;">
       <!-- 헤더 -->
       <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px;">
-        <i data-lucide="sparkles" style="width:20px;height:20px;color:#7E44FB;"></i>
+        <i data-lucide="sparkles" style="width:20px;height:20px;color:#0950A0;"></i>
         <span style="font-size:18px;font-weight:700;color:#333;">AI 채점 근거 및 피드백</span>
         <i data-lucide="circle-help" title="AI가 과제물 분석 또는 루브릭 점수를 바탕으로 채점 근거와 피드백을 생성해요" style="width:18px;height:18px;color:#B3B3B3;flex-shrink:0;margin-left:auto;cursor:help;"></i>
       </div>
@@ -503,7 +503,7 @@
 
       <!-- AI 채점 재실행 버튼 -->
       <div id="ai-rerun-wrap" style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
-        <button onclick="openRerunModal()" style="background:#7E44FB;border:none;border-radius:8px;height:36px;padding:0 12px;font-size:16px;font-weight:700;color:white;cursor:pointer;display:inline-flex;align-items:center;gap:6px;" onmouseover="this.style.background='#6c35e0'" onmouseout="this.style.background='#7E44FB'">
+        <button onclick="openRerunModal()" style="background:#0950A0;border:none;border-radius:8px;height:36px;padding:0 12px;font-size:16px;font-weight:700;color:white;cursor:pointer;display:inline-flex;align-items:center;gap:6px;" onmouseover="this.style.background='#0A4A94'" onmouseout="this.style.background='#0950A0'">
           <i data-lucide="wand-sparkles" style="width:16px;height:16px;"></i>
           AI 채점 재실행
         </button>
@@ -520,7 +520,7 @@
     <div style="background:white;padding:24px;padding-bottom:52px;">
       <!-- 헤더 -->
       <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px;">
-        <i data-lucide="message-circle" style="width:20px;height:20px;color:#7E44FB;"></i>
+        <i data-lucide="message-circle" style="width:20px;height:20px;color:#0950A0;"></i>
         <span style="font-size:18px;font-weight:700;color:#333;">선생님 직접 피드백</span>
         <!-- 도움말 (?) — 클릭 팝오버 (개발 디자인 2067:11957) -->
         <div style="position:relative;margin-left:auto;flex-shrink:0;">
@@ -528,13 +528,13 @@
             <i data-lucide="circle-help" style="width:18px;height:18px;color:#B3B3B3;"></i>
           </button>
           <!-- 팝오버 박스 -->
-          <div id="fbGuidePop" style="display:none;position:absolute;top:calc(100% + 10px);right:0;width:300px;background:white;border-radius:8px;box-shadow:0 0 1px #494949, 0 8px 32px rgba(95,102,178,0.16);padding:16px;z-index:60;">
-            <div style="position:absolute;top:-6px;right:9px;width:12px;height:12px;background:white;transform:rotate(45deg);box-shadow:-1px -1px 2px rgba(95,102,178,0.08);"></div>
+          <div id="fbGuidePop" style="display:none;position:absolute;top:calc(100% + 10px);right:0;width:300px;background:white;border-radius:8px;box-shadow:0 0 1px #494949, 0 8px 32px rgba(45,85,145,0.16);padding:16px;z-index:60;">
+            <div style="position:absolute;top:-6px;right:9px;width:12px;height:12px;background:white;transform:rotate(45deg);box-shadow:-1px -1px 2px rgba(45,85,145,0.08);"></div>
             <div style="display:flex;flex-direction:column;gap:16px;">
               <div style="font-size:16px;font-weight:700;color:#27272A;line-height:1.25;">선생님 피드백 가이드</div>
               <div style="font-size:14px;font-weight:400;color:#27272A;line-height:1.55;">이 피드백은 결과지 출력·배부에서 학생에게 공개할지 선택할 수 있어요.<br>AI 채점 근거와 피드백은 선생님 참고용으로, 학생에게 공개되지 않아요.</div>
               <div style="display:flex;justify-content:flex-end;">
-                <button onclick="closeFeedbackGuide()" style="height:36px;padding:0 12px;background:#8751FA;color:white;border:none;border-radius:8px;font-size:16px;font-weight:700;font-family:inherit;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;line-height:1;">확인</button>
+                <button onclick="closeFeedbackGuide()" style="height:36px;padding:0 12px;background:#2F77D5;color:white;border:none;border-radius:8px;font-size:16px;font-weight:700;font-family:inherit;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;line-height:1;">확인</button>
               </div>
             </div>
           </div>
@@ -544,14 +544,14 @@
       <!-- 입력 박스 (텍스트 + 하단 글자수·수식 버튼) -->
       <div id="teacherFeedbackBox" style="background:white;border:1px solid #D9D9D9;border-radius:12px;padding:16px 20px 12px;margin-bottom:16px;transition:border-color .15s;">
         <textarea id="teacherFeedback" oninput="updateCharCount()"
-          onfocus="document.getElementById('teacherFeedbackBox').style.borderColor='#7E44FB'"
+          onfocus="document.getElementById('teacherFeedbackBox').style.borderColor='#0950A0'"
           onblur="document.getElementById('teacherFeedbackBox').style.borderColor='#D9D9D9'"
           style="width:100%;background:transparent;border:none;height:140px;resize:none;font-size:16px;font-family:'NanumSquareRound',sans-serif;color:#333;outline:none;line-height:1.55;display:block;"
           placeholder="채점 완료 시, 학생에게 제공되는 과제 피드백 내용입니다.&#10;AI 생성 기록을 참고하여 피드백을 작성해 보세요."
         ></textarea>
         <div style="display:flex;align-items:center;justify-content:space-between;padding-top:8px;">
           <span id="charCount" style="font-size:14px;color:#494949;">0자 / 0 byte</span>
-          <button onclick="showToast('success','수식 입력은 실제 서비스에서 제공돼요.')" style="display:inline-flex;align-items:center;justify-content:center;line-height:1;vertical-align:middle;gap:4px;height:28px;padding:0 10px;background:white;border:1px solid #B28FFD;border-radius:8px;color:#7E44FB;font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;" onmouseover="this.style.background='#F7F4FF'" onmouseout="this.style.background='white'"><i data-lucide="sigma" style="width:14px;height:14px;"></i>수식 입력</button>
+          <button onclick="showToast('success','수식 입력은 실제 서비스에서 제공돼요.')" style="display:inline-flex;align-items:center;justify-content:center;line-height:1;vertical-align:middle;gap:4px;height:28px;padding:0 10px;background:white;border:1px solid #7FB3E8;border-radius:8px;color:#0950A0;font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;" onmouseover="this.style.background='#F3F9FF'" onmouseout="this.style.background='white'"><i data-lucide="sigma" style="width:14px;height:14px;"></i>수식 입력</button>
         </div>
       </div>
 
@@ -571,7 +571,7 @@
 
 <!-- AI 채점 재실행 모달 -->
 <div id="rerun-overlay" onclick="closeRerunModal()" style="display:none;position:fixed;inset:0;z-index:1000;background:rgba(0,0,0,0.4);"></div>
-<div id="rerun-modal" style="display:none;position:fixed;z-index:1001;width:752px;background:white;border-radius:24px;box-shadow:0 4px 12px rgba(95,102,178,0.16);top:50%;left:50%;transform:translate(-50%,-50%);">
+<div id="rerun-modal" style="display:none;position:fixed;z-index:1001;width:752px;background:white;border-radius:24px;box-shadow:0 4px 12px rgba(45,85,145,0.16);top:50%;left:50%;transform:translate(-50%,-50%);">
   <!-- 헤더 -->
   <div style="padding:24px 24px 16px;position:relative;">
     <span style="font-size:20px;font-weight:700;color:#222631;">AI 채점 재실행</span>
@@ -588,7 +588,7 @@
       <div style="border:1px solid #D9D9D9;border-radius:8px;overflow:hidden;">
         <!-- 반 행 -->
         <div style="border-bottom:1px solid #D9D9D9;height:52px;padding:0 20px;display:flex;align-items:center;gap:8px;cursor:pointer;">
-          <div style="width:20px;height:20px;background:#7E44FB;border-radius:2px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+          <div style="width:20px;height:20px;background:#0950A0;border-radius:2px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
             <i data-lucide="check" style="width:14px;height:14px;color:white;"></i>
           </div>
           <span style="flex:1;font-size:16px;font-weight:700;color:#333;">1-1반 (1/4명)</span>
@@ -599,7 +599,7 @@
         <div style="padding:12px 20px;display:flex;flex-direction:column;gap:16px;">
           <div style="display:flex;align-items:center;justify-content:space-between;">
             <div style="display:flex;align-items:center;gap:10px;">
-              <div style="width:20px;height:20px;background:#7E44FB;border-radius:2px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+              <div style="width:20px;height:20px;background:#0950A0;border-radius:2px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
                 <i data-lucide="check" style="width:14px;height:14px;color:white;"></i>
               </div>
               <span style="font-size:16px;font-weight:700;color:#333;">10101 김하나</span>
@@ -627,7 +627,7 @@
     <div style="display:flex;flex-direction:column;gap:12px;" id="rerun-level">
       <span style="font-size:16px;font-weight:700;color:#333;">AI 채점 수준</span>
       <label style="display:flex;align-items:center;gap:10px;cursor:pointer;" onclick="selectRerunLevel(this)">
-        <div class="rerun-radio rerun-radio-selected" style="width:20px;height:20px;border-radius:50%;border:5px solid #7E44FB;flex-shrink:0;"></div>
+        <div class="rerun-radio rerun-radio-selected" style="width:20px;height:20px;border-radius:50%;border:5px solid #0950A0;flex-shrink:0;"></div>
         <span style="font-size:16px;font-weight:700;color:#333;">이전과 동일하게 채점</span>
       </label>
       <label style="display:flex;align-items:center;gap:10px;cursor:pointer;" onclick="selectRerunLevel(this)">
@@ -643,22 +643,22 @@
   <!-- 푸터 -->
   <div style="padding:8px 24px 24px;display:flex;justify-content:flex-end;gap:12px;">
     <button onclick="closeRerunModal()" style="background:#F0F0F0;border:none;border-radius:8px;height:40px;padding:0 16px;font-size:16px;font-weight:700;color:#494949;cursor:pointer;" onmouseover="this.style.background='#E0E0E0'" onmouseout="this.style.background='#F0F0F0'">취소</button>
-    <button onclick="runRerun()" style="background:#7E44FB;border:none;border-radius:8px;height:40px;padding:0 20px;font-size:16px;font-weight:700;color:white;cursor:pointer;" onmouseover="this.style.background='#6c35e0'" onmouseout="this.style.background='#7E44FB'">AI 채점 재실행</button>
+    <button onclick="runRerun()" style="background:#0950A0;border:none;border-radius:8px;height:40px;padding:0 20px;font-size:16px;font-weight:700;color:white;cursor:pointer;" onmouseover="this.style.background='#0A4A94'" onmouseout="this.style.background='#0950A0'">AI 채점 재실행</button>
   </div>
 </div>
 
 <!-- 토스트 -->
-<div id="toast" style="display:none;position:fixed;bottom:80px;left:50%;transform:translateX(-50%);z-index:9999;width:384px;padding:16px 24px;border-radius:8px;box-shadow:0 0 1px #494949,0 8px 32px rgba(95,102,178,0.16);display:none;align-items:center;gap:12px;font-size:16px;font-weight:700;line-height:1.55;transition:opacity 0.2s ease,transform 0.2s ease;opacity:0;">
+<div id="toast" style="display:none;position:fixed;bottom:80px;left:50%;transform:translateX(-50%);z-index:9999;width:384px;padding:16px 24px;border-radius:8px;box-shadow:0 0 1px #494949,0 8px 32px rgba(45,85,145,0.16);display:none;align-items:center;gap:12px;font-size:16px;font-weight:700;line-height:1.55;transition:opacity 0.2s ease,transform 0.2s ease;opacity:0;">
   <i id="toast-icon" data-lucide="circle-check-big" style="width:20px;height:20px;color:white;flex-shrink:0;"></i>
   <span id="toast-msg"></span>
 </div>
 
 <!-- OCR 결과 팝업 (드래그 가능) -->
-<div id="ocr-popup" style="display:none;position:fixed;z-index:200;width:540px;height:calc(100vh - 88px);background:white;border-radius:16px;box-shadow:-4px 0 24px rgba(0,0,0,0.10),0 8px 40px rgba(95,102,178,0.22),0 0 0 1px rgba(0,0,0,0.05);overflow:hidden;top:44px;right:20px;">
+<div id="ocr-popup" style="display:none;position:fixed;z-index:200;width:540px;height:calc(100vh - 88px);background:white;border-radius:16px;box-shadow:-4px 0 24px rgba(0,0,0,0.10),0 8px 40px rgba(45,85,145,0.22),0 0 0 1px rgba(0,0,0,0.05);overflow:hidden;top:44px;right:20px;">
   <!-- 팝업 헤더 (드래그 핸들) -->
   <div id="ocr-popup-header" style="background:#F8F8F8;border-bottom:1px solid #D9D9D9;height:52px;padding:0 20px;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;cursor:grab;flex-shrink:0;user-select:none;">
     <div style="display:flex;align-items:center;gap:8px;">
-      <i data-lucide="scan-text" style="width:18px;height:18px;color:#7E44FB;"></i>
+      <i data-lucide="scan-text" style="width:18px;height:18px;color:#0950A0;"></i>
       <span style="font-size:16px;font-weight:700;color:#333;">인식 결과 수정</span>
     </div>
     <div title="드래그하여 이동" style="display:flex;flex-direction:column;gap:3px;align-items:center;padding:0 12px;">
@@ -693,10 +693,10 @@
 
     <!-- 하단 버튼 -->
     <div style="padding:12px 16px;border-top:1px solid #D9D9D9;display:flex;justify-content:flex-end;gap:8px;flex-shrink:0;">
-      <button onclick="closeOcrPopup()" style="background:white;border:1px solid #B28FFD;border-radius:8px;height:36px;padding:0 16px;font-size:14px;font-weight:700;color:#7E44FB;cursor:pointer;display:inline-flex;align-items:center;gap:6px;" onmouseover="this.style.background='#F7F4FF'" onmouseout="this.style.background='white'">
+      <button onclick="closeOcrPopup()" style="background:white;border:1px solid #7FB3E8;border-radius:8px;height:36px;padding:0 16px;font-size:14px;font-weight:700;color:#0950A0;cursor:pointer;display:inline-flex;align-items:center;gap:6px;" onmouseover="this.style.background='#F3F9FF'" onmouseout="this.style.background='white'">
         저장
       </button>
-      <button onclick="saveAndRerun()" style="background:#7E44FB;border:none;border-radius:8px;height:36px;padding:0 16px;font-size:14px;font-weight:700;color:white;cursor:pointer;display:inline-flex;align-items:center;gap:6px;" onmouseover="this.style.background='#6c35e0'" onmouseout="this.style.background='#7E44FB'">
+      <button onclick="saveAndRerun()" style="background:#0950A0;border:none;border-radius:8px;height:36px;padding:0 16px;font-size:14px;font-weight:700;color:white;cursor:pointer;display:inline-flex;align-items:center;gap:6px;" onmouseover="this.style.background='#0A4A94'" onmouseout="this.style.background='#0950A0'">
         <i data-lucide="wand-sparkles" style="width:14px;height:14px;"></i>
         저장 후 AI 채점 재실행
       </button>
@@ -817,10 +817,10 @@
       var _contLg = document.getElementById('left-ocr-content');
       if (_contLg) {
         _contLg.innerHTML = '<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:48px 24px;min-height:300px;">'
-          + '<div style="width:64px;height:64px;border-radius:18px;background:#F0EAFF;display:flex;align-items:center;justify-content:center;margin-bottom:16px;"><i data-lucide="history" style="width:30px;height:30px;color:#7E44FB;"></i></div>'
-          + '<div style="font-size:16px;font-weight:800;color:#222;margin-bottom:8px;">업데이트 전 과제물이라 인식 결과가 없어요</div>'
+          + '<div style="width:64px;height:64px;border-radius:18px;background:#E7F2FF;display:flex;align-items:center;justify-content:center;margin-bottom:16px;"><i data-lucide="history" style="width:30px;height:30px;color:#0950A0;"></i></div>'
+          + '<div style="font-size:16px;font-weight:700;color:#222;margin-bottom:8px;">업데이트 전 과제물이라 인식 결과가 없어요</div>'
           + '<div style="font-size:13px;color:#494949;line-height:1.7;max-width:380px;margin-bottom:20px;">이 과제물은 과제물 인식 기능 업데이트 전에 채점됐어요. 점수는 오른쪽에서 볼 수 있지만, 대조할 인식 결과가 없어요. 인식하면 원본과 대조하고 재채점할 수 있어요.</div>'
-          + '<a href="task_ocr_review_v1.html#ocr-b=' + studentId + '" style="display:inline-flex;align-items:center;justify-content:center;line-height:1;gap:8px;height:36px;padding:0 16px;border-radius:8px;background:white;color:#7E44FB;border:1px solid #B28FFD;font-size:14px;font-weight:800;text-decoration:none;cursor:pointer;"><i data-lucide="scan-line" style="width:18px;height:18px;"></i>과제물 관리에서 인식하기</a>'
+          + '<a href="task_ocr_review_v1.html#ocr-b=' + studentId + '" style="display:inline-flex;align-items:center;justify-content:center;line-height:1;gap:8px;height:36px;padding:0 16px;border-radius:8px;background:white;color:#0950A0;border:1px solid #7FB3E8;font-size:14px;font-weight:700;text-decoration:none;cursor:pointer;"><i data-lucide="scan-line" style="width:18px;height:18px;"></i>과제물 관리에서 인식하기</a>'
           + '</div>';
         lucide.createIcons();
       }
@@ -862,7 +862,7 @@
             + '<div style="width:64px;height:64px;border-radius:16px;background:#FFEFEF;display:flex;align-items:center;justify-content:center;margin-bottom:20px;"><i data-lucide="file-x" style="width:32px;height:32px;color:#ED4458;"></i></div>'
             + '<div style="font-size:18px;font-weight:700;color:#333;margin-bottom:10px;">과제물 인식에 실패했어요</div>'
             + '<div style="font-size:14px;color:#494949;line-height:1.7;max-width:400px;margin-bottom:24px;">네트워크 오류 등으로 답안을 인식하지 못했어요.<br>원본 과제물을 보고 직접 채점해 주세요.</div>'
-            + '<button onclick="switchLeftTab(\'original\')" style="display:inline-flex;align-items:center;justify-content:center;line-height:1;vertical-align:middle;gap:6px;height:40px;padding:0 16px;border-radius:8px;background:white;color:#7E44FB;border:1px solid #B28FFD;font-size:16px;font-weight:700;cursor:pointer;font-family:inherit;"><i data-lucide="image" style="width:20px;height:20px;"></i>원본으로 보기</button>'
+            + '<button onclick="switchLeftTab(\'original\')" style="display:inline-flex;align-items:center;justify-content:center;line-height:1;vertical-align:middle;gap:6px;height:40px;padding:0 16px;border-radius:8px;background:white;color:#0950A0;border:1px solid #7FB3E8;font-size:16px;font-weight:700;cursor:pointer;font-family:inherit;"><i data-lucide="image" style="width:20px;height:20px;"></i>원본으로 보기</button>'
             + '</div>';
         } else {
           // 미인식 — 개발 디자인 1817:4659
@@ -870,7 +870,7 @@
             + '<div style="width:64px;height:64px;border-radius:16px;background:#FFF3EA;display:flex;align-items:center;justify-content:center;margin-bottom:20px;"><i data-lucide="circle-alert" style="width:32px;height:32px;color:#E4631C;"></i></div>'
             + '<div style="font-size:18px;font-weight:700;color:#333;margin-bottom:10px;">아직 답안을 인식하지 않았어요</div>'
             + '<div style="font-size:14px;color:#494949;line-height:1.7;max-width:400px;margin-bottom:24px;">과제물 관리에서 과제물 인식을 먼저 진행해 주세요.<br>인식이 끝나면 AI 채점이 가능해요.</div>'
-            + '<a href="task_ocr_review_v1.html#ocr-b=' + studentId + '" style="display:inline-flex;align-items:center;justify-content:center;line-height:1;vertical-align:middle;gap:6px;height:40px;padding:0 16px;border-radius:8px;background:white;color:#7E44FB;border:1px solid #B28FFD;font-size:16px;font-weight:700;text-decoration:none;cursor:pointer;">과제물 관리로 이동<i data-lucide="chevron-right" style="width:20px;height:20px;"></i></a>'
+            + '<a href="task_ocr_review_v1.html#ocr-b=' + studentId + '" style="display:inline-flex;align-items:center;justify-content:center;line-height:1;vertical-align:middle;gap:6px;height:40px;padding:0 16px;border-radius:8px;background:white;color:#0950A0;border:1px solid #7FB3E8;font-size:16px;font-weight:700;text-decoration:none;cursor:pointer;">과제물 관리로 이동<i data-lucide="chevron-right" style="width:20px;height:20px;"></i></a>'
             + '</div>';
         }
         lucide.createIcons();
@@ -941,7 +941,7 @@
       html += '<div style="display:flex;flex-direction:column;gap:8px;">';
       html += '<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">'
         + '<span style="font-size:14px;font-weight:700;color:#333;">학생 답안</span>'
-        + (isExcl ? '<span style="display:inline-flex;align-items:center;gap:3px;font-size:12px;font-weight:700;color:#7E44FB;border:1px solid #B28FFD;border-radius:100px;padding:2px 9px;"><i data-lucide="pencil-line" style="width:11px;height:11px;"></i>직접 채점 (AI 제외)</span>' : '')
+        + (isExcl ? '<span style="display:inline-flex;align-items:center;gap:3px;font-size:12px;font-weight:700;color:#0950A0;border:1px solid #7FB3E8;border-radius:100px;padding:2px 9px;"><i data-lucide="pencil-line" style="width:11px;height:11px;"></i>직접 채점 (AI 제외)</span>' : '')
         + '</div>';
       // 확인 필요(불확실) 문항 — 답 박스 위 빨간 안내 한 줄 (직접 채점 문항은 AI 제외라 생략)
       if (hasUncertain && !isExcl) {
@@ -1051,7 +1051,7 @@
       // 일반 문항: 텍스트 옆에 "저장됨" 뱃지 잠깐 표시
       var row = body.closest('div');
       var badge = document.createElement('span');
-      badge.style.cssText = 'font-size:12px;font-weight:800;color:#00AF3D;display:inline-flex;align-items:center;gap:3px;margin-left:8px;';
+      badge.style.cssText = 'font-size:12px;font-weight:700;color:#00AF3D;display:inline-flex;align-items:center;gap:3px;margin-left:8px;';
       badge.innerHTML = '✓ 저장됨';
       body.insertAdjacentElement('afterend', badge);
       setTimeout(function(){ badge.style.opacity = '0'; badge.style.transition = 'opacity .4s'; }, 1200);
@@ -1198,7 +1198,7 @@
     list.innerHTML = STUDENT_LIST.map(function(s){
       var isCurrent = s.id === CURRENT_STUDENT_ID;
       // "학번 이름 (상태)" 한 줄 — 개발 셀렉트 디자인(1900:18560)과 동일 (OCR 화면과 공통)
-      return '<div class="sd-item" data-link="'+s.link+'" data-id="'+s.id+'" data-name="'+s.name+'" style="padding:10px 12px;display:flex;align-items:center;cursor:pointer;border-radius:4px;'+(isCurrent?'background:#F2F5FF;':'')+'font-size:16px;line-height:1.25;color:#333;">'
+      return '<div class="sd-item" data-link="'+s.link+'" data-id="'+s.id+'" data-name="'+s.name+'" style="padding:10px 12px;display:flex;align-items:center;cursor:pointer;border-radius:4px;'+(isCurrent?'background:#F2F7FF;':'')+'font-size:16px;line-height:1.25;color:#333;">'
         +s.id+' '+s.name+' <span style="color:'+s.statusCls+';">('+s.status+')</span>'
         +'</div>';
     }).join('');
@@ -1392,10 +1392,10 @@
       html += '<span class="badge-purple">' + q.label + '</span>';
       html += '<span class="rubric-ocr-desc">' + q.desc + '</span>';
       html += chip;
-      html += '<button onclick="ocrEditSection(this,' + gi + ')" title="편집" style="background:none;border:none;cursor:pointer;color:#B3B3B3;padding:2px 4px;flex-shrink:0;display:flex;align-items:center;" onmouseover="this.style.color=\'#7E44FB\'" onmouseout="this.style.color=\'#B3B3B3\'"><i data-lucide="pencil" style="width:13px;height:13px;"></i></button>';
+      html += '<button onclick="ocrEditSection(this,' + gi + ')" title="편집" style="background:none;border:none;cursor:pointer;color:#B3B3B3;padding:2px 4px;flex-shrink:0;display:flex;align-items:center;" onmouseover="this.style.color=\'#0950A0\'" onmouseout="this.style.color=\'#B3B3B3\'"><i data-lucide="pencil" style="width:13px;height:13px;"></i></button>';
       html += '</div>';
       html += '<div class="rubric-ocr-body" id="ocr-body-' + gi + '" onclick="ocrEditByBody(this,' + gi + ')"><span style="color:#333;">' + q.text + '</span></div>';
-      html += '<textarea id="ocr-ta-' + gi + '" onblur="ocrSaveSection(this,' + gi + ')" style="display:none;width:100%;border:none;border-top:1px solid #D4BBFF;padding:12px 15px;font-family:inherit;font-size:15px;line-height:1.8;color:#333;outline:none;resize:none;overflow:hidden;box-sizing:border-box;" rows="3">' + q.text + '</textarea>';
+      html += '<textarea id="ocr-ta-' + gi + '" onblur="ocrSaveSection(this,' + gi + ')" style="display:none;width:100%;border:none;border-top:1px solid #B9D5F5;padding:12px 15px;font-family:inherit;font-size:15px;line-height:1.8;color:#333;outline:none;resize:none;overflow:hidden;box-sizing:border-box;" rows="3">' + q.text + '</textarea>';
       if (hasUnc) {
         html += '<div class="ocr-uncertainty-note"><span class="ocr-uncertainty-label"><i data-lucide="triangle-alert" style="width:12px;height:12px;"></i>AI 인식 불확실</span><span class="ocr-uncertainty-text">' + q.uncertainty + '</span></div>';
       }
@@ -1482,7 +1482,7 @@
       r.style.border = '2px solid #B3B3B3';
     });
     var radio = el.querySelector('.rerun-radio');
-    radio.style.border = '5px solid #7E44FB';
+    radio.style.border = '5px solid #0950A0';
   }
   function runRerun() {
     closeRerunModal();
@@ -1512,7 +1512,7 @@
       document.getElementById('toast-icon').setAttribute('data-lucide', 'circle-check-big');
       document.getElementById('toast-icon').style.display = 'block';
     } else if (type === 'loading') {
-      t.style.background = '#7E44FB'; t.style.color = 'white';
+      t.style.background = '#0950A0'; t.style.color = 'white';
       document.getElementById('toast-icon').setAttribute('data-lucide', 'loader');
       document.getElementById('toast-icon').style.display = 'block';
     }
@@ -1584,13 +1584,13 @@
   #mockpick .mp-cap{ font-size:10px; font-weight:800; color:#6B6F8C; letter-spacing:.05em; padding:7px 8px 2px; }
   #mockpick .mp-btn{ width:100%; text-align:left; white-space:nowrap; padding:9px 12px; border-radius:9px; border:1px solid #3A3F58; background:#2A2E44; color:#C9CCE0; font-size:13px; font-weight:700; font-family:inherit; cursor:pointer; line-height:1.35; }
   #mockpick .mp-btn:hover{ background:#33384f; }
-  #mockpick .mp-btn.on{ background:#7E44FB; color:#fff; border-color:#7E44FB; }
+  #mockpick .mp-btn.on{ background:#0950A0; color:#fff; border-color:#0950A0; }
   #mockpick .mp-sub{ font-size:11px; font-weight:600; color:#8A8FB0; margin-left:8px; }
-  #mockpick .mp-btn.on .mp-sub{ color:#E6DBFF; }
+  #mockpick .mp-btn.on .mp-sub{ color:#D9EAFB; }
 </style>
 <div id="mockpick">
   <div class="mp-head" onclick="mpToggle()">
-    <span style="display:inline-flex;align-items:center;gap:6px;"><i data-lucide="layout-grid" style="width:13px;height:13px;"></i>MOCKUP · AI 채점</span>
+    <span style="display:inline-flex;align-items:center;gap:6px;"><i data-lucide="layout-grid" style="width:13px;height:13px;"></i>MOCKUP · AI 채점 (blue 시안)</span>
     <i id="mp-caret" data-lucide="chevron-down" style="width:14px;height:14px;transform:rotate(180deg);"></i>
   </div>
   <div id="mp-body" class="mp-body" style="display:none">
@@ -1660,13 +1660,13 @@
 
 <!-- 미저장 변경 이탈 확인 모달 (OCR 결과 수정 이동 시) -->
 <div id="leaveGuardModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:1300;align-items:center;justify-content:center;" onclick="if(event.target===this)closeLeaveGuard()">
-  <div style="background:white;border-radius:24px;box-shadow:0 4px 12px rgba(95,102,178,0.16);width:460px;max-width:92vw;position:relative;" onclick="event.stopPropagation()">
+  <div style="background:white;border-radius:24px;box-shadow:0 4px 12px rgba(45,85,145,0.16);width:460px;max-width:92vw;position:relative;" onclick="event.stopPropagation()">
     <button onclick="closeLeaveGuard()" style="position:absolute;top:11px;right:11px;width:36px;height:36px;background:none;border:none;cursor:pointer;border-radius:6px;display:flex;align-items:center;justify-content:center;" onmouseover="this.style.background='#F8F8F8'" onmouseout="this.style.background='none'"><i data-lucide="x" style="width:18px;height:18px;color:#808080;"></i></button>
-    <div style="padding:24px 24px 8px;"><h3 style="font-size:18px;font-weight:800;color:#222631;margin:0;">저장하지 않은 변경사항이 있어요</h3></div>
+    <div style="padding:24px 24px 8px;"><h3 style="font-size:18px;font-weight:700;color:#222631;margin:0;">저장하지 않은 변경사항이 있어요</h3></div>
     <div style="padding:0 24px 20px;"><p style="font-size:15px;color:#494949;line-height:1.6;margin:0;">채점 내용을 저장하지 않고 인식 결과 수정 화면으로 이동하면 변경사항이 사라져요. 저장하고 이동할까요?</p></div>
     <div style="padding:0 24px 20px;display:flex;justify-content:flex-end;gap:10px;">
       <button onclick="leaveWithoutSave()" style="height:40px;padding:0 18px;background:white;color:#494949;border:1px solid #D9D9D9;border-radius:8px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;">저장 안 하고 이동</button>
-      <button onclick="leaveSaveAndGo()" style="height:40px;padding:0 18px;background:#7E44FB;color:white;border:none;border-radius:8px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;">저장하고 이동</button>
+      <button onclick="leaveSaveAndGo()" style="height:40px;padding:0 18px;background:#0950A0;color:white;border:none;border-radius:8px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;">저장하고 이동</button>
     </div>
   </div>
 </div>

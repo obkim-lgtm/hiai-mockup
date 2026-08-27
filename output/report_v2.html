@@ -10,25 +10,25 @@
 <style>
   @import url('../screens/fonts.css');
   *{font-family:'NanumSquareRound',-apple-system,sans-serif;box-sizing:border-box}
-  body{margin:0;background:#EDF1FC;color:#222}
+  body{margin:0;background:#EDF3FC;color:#222}
 
   /* tabs */
   .tab-active{flex:1;height:60px;background:white;border-radius:20px 20px 0 0;display:flex;align-items:center;justify-content:center;cursor:default;}
-  .tab-inactive{flex:1;height:60px;background:#CBD6F4;border-radius:20px 20px 0 0;display:flex;align-items:center;justify-content:center;cursor:pointer;}
+  .tab-inactive{flex:1;height:60px;background:#CBDCF4;border-radius:20px 20px 0 0;display:flex;align-items:center;justify-content:center;cursor:pointer;}
   .tab-inactive:hover{background:#b9c8f0}
 
   /* buttons */
-  .btn-pri{background:#7E44FB;color:#fff;border:0;border-radius:8px;height:36px;padding:0 16px;font-size:13px;font-weight:800;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:6px;line-height:1;vertical-align:middle}
-  .btn-pri:hover{background:#6B35E8}
-  .btn-out{background:#fff;color:#7E44FB;border:1px solid #B28FFD;border-radius:8px;height:36px;padding:0 14px;font-size:13px;font-weight:800;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:6px;line-height:1;vertical-align:middle}
-  .btn-out:hover{background:#F7F4FF}
+  .btn-pri{background:#0950A0;color:#fff;border:0;border-radius:8px;height:36px;padding:0 16px;font-size:13px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:6px;line-height:1;vertical-align:middle}
+  .btn-pri:hover{background:#10518F}
+  .btn-out{background:#fff;color:#0950A0;border:1px solid #7FB3E8;border-radius:8px;height:36px;padding:0 14px;font-size:13px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:6px;line-height:1;vertical-align:middle}
+  .btn-out:hover{background:#F3F9FF}
 
-  .section-title{font-size:18px;font-weight:800;color:#222;display:flex;align-items:center;gap:10px;margin-bottom:16px}
-  .section-title::before{content:'';display:inline-block;width:4px;height:20px;background:#7E44FB;border-radius:2px;flex-shrink:0}
+  .section-title{font-size:18px;font-weight:700;color:#222;display:flex;align-items:center;gap:10px;margin-bottom:16px}
+  .section-title::before{content:'';display:inline-block;width:4px;height:20px;background:#0950A0;border-radius:2px;flex-shrink:0}
 
   /* table */
   .tbl{width:100%;border-collapse:collapse}
-  .tbl th{background:#F8F8F8;font-size:13px;font-weight:800;color:#494949;padding:11px 12px;text-align:center;border-bottom:1px solid #E6E6E6}
+  .tbl th{background:#F8F8F8;font-size:13px;font-weight:700;color:#494949;padding:11px 12px;text-align:center;border-bottom:1px solid #E6E6E6}
   .tbl th.left{text-align:left;padding-left:20px}
   .tbl td{font-size:13px;font-weight:700;color:#222;padding:11px 12px;text-align:center;border-bottom:1px solid #F0F0F0;vertical-align:middle}
   .tbl td.left{text-align:left;padding-left:20px}
@@ -36,23 +36,23 @@
   .tbl tbody tr.linkrow{cursor:pointer}
   .tbl tbody tr.linkrow:hover td{background:#FAFAFF}
   .group-sep td{border-bottom:1.5px solid #E6E6E6 !important}
-  .avg-val{font-size:15px;font-weight:900;color:#7E44FB}
-  .diff-up{color:#00AF3D;font-weight:800}
-  .diff-dn{color:#DB3E51;font-weight:800}
-  .diff-eq{color:#808080;font-weight:800}
+  .avg-val{font-size:15px;font-weight:900;color:#0950A0}
+  .diff-up{color:#00AF3D;font-weight:700}
+  .diff-dn{color:#DB3E51;font-weight:700}
+  .diff-eq{color:#808080;font-weight:700}
 
   select.filter-sel{border:1px solid #D9D9D9;border-radius:8px;height:36px;padding:0 12px;font-size:13px;font-weight:700;color:#222;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23808080' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") no-repeat right 10px center;padding-right:32px;cursor:pointer;outline:none;-webkit-appearance:none}
   .page-btn{width:32px;height:32px;border:1px solid #D9D9D9;border-radius:8px;background:#fff;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#494949;transition:all .15s}
-  .page-btn:hover{border-color:#7E44FB;color:#7E44FB}
-  .page-btn.active{background:#7E44FB;color:#fff;border-color:#7E44FB}
-  .report-link{color:#7E44FB;font-weight:800;text-decoration:none;display:inline-flex;align-items:center;justify-content:flex-end;gap:2px;font-size:13px}
+  .page-btn:hover{border-color:#0950A0;color:#0950A0}
+  .page-btn.active{background:#0950A0;color:#fff;border-color:#0950A0}
+  .report-link{color:#0950A0;font-weight:700;text-decoration:none;display:inline-flex;align-items:center;justify-content:flex-end;gap:2px;font-size:13px}
   .report-link:hover{text-decoration:underline}
   .gnb-menu span{cursor:pointer;transition:color .15s}
-  .gnb-menu span:hover{color:#7E44FB}
+  .gnb-menu span:hover{color:#0950A0}
 
   /* ── 상세 ── */
   .search-pill{display:inline-flex;align-items:center;gap:8px;height:40px;padding:0 14px;border:1px solid #D9D9D9;border-radius:8px;font-size:14px;font-weight:700;color:#222;background:#fff}
-  .search-pill .lbl{font-size:13px;font-weight:800;color:#7E44FB;padding-right:10px;margin-right:2px;border-right:1px solid #E6E6E6}
+  .search-pill .lbl{font-size:13px;font-weight:700;color:#0950A0;padding-right:10px;margin-right:2px;border-right:1px solid #E6E6E6}
   .card{background:#fff;border:1px solid #E6E6E6;border-radius:12px}
 
   /* 백분위 비교 차트 (폭 고정 — 과제 수와 무관하게 막대 크기 일정, 넘치면 가로 스크롤) */
@@ -64,29 +64,29 @@
   .bargroup{display:flex;align-items:flex-end;justify-content:center;gap:10px;height:100%;flex:0 0 auto;width:112px}
   .bar{width:34px;border-radius:6px 6px 0 0;position:relative;display:flex;justify-content:center}
   .bar .v{position:absolute;top:-20px;font-size:13px;font-weight:900}
-  .bar.stu{background:#7E44FB}
-  .bar.stu .v{color:#7E44FB}
-  .bar.avg{background:#D8C7FE}
-  .bar.avg .v{color:#B28FFD}
+  .bar.stu{background:#0950A0}
+  .bar.stu .v{color:#0950A0}
+  .bar.avg{background:#B0D8FE}
+  .bar.avg .v{color:#7FB3E8}
 
   /* 채점요소 점수 pill */
-  .band{display:inline-flex;align-items:center;justify-content:center;min-width:30px;height:28px;padding:0 8px;border-radius:6px;font-size:13px;font-weight:800;background:#F0F0F0;color:#B3B3B3}
-  .band.on{background:#7E44FB;color:#fff}
+  .band{display:inline-flex;align-items:center;justify-content:center;min-width:30px;height:28px;padding:0 8px;border-radius:6px;font-size:13px;font-weight:700;background:#F0F0F0;color:#B3B3B3}
+  .band.on{background:#0950A0;color:#fff}
 
   /* ── 출력 오버레이 ── */
   .pv-overlay{position:fixed;inset:0;background:#494949;z-index:2500;display:none;flex-direction:column}
   .pv-overlay.show{display:flex}
   .pv-topbar{background:#F8F8F8;border-bottom:1px solid #D9D9D9;padding:12px 24px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-shrink:0}
-  .pv-btn{height:40px;padding:0 16px;border-radius:8px;font-size:14px;font-weight:800;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:6px;line-height:1;border:1px solid #D9D9D9;background:#fff;color:#494949;font-family:inherit}
-  .pv-btn.pri{background:#7E44FB;color:#fff;border-color:#7E44FB}
-  .pv-btn.pri:hover{background:#6B35E8}
+  .pv-btn{height:40px;padding:0 16px;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:6px;line-height:1;border:1px solid #D9D9D9;background:#fff;color:#494949;font-family:inherit}
+  .pv-btn.pri{background:#0950A0;color:#fff;border-color:#0950A0}
+  .pv-btn.pri:hover{background:#10518F}
   .pv-btn:disabled{opacity:.4;cursor:default}
   .pv-sel{display:inline-flex;align-items:center;gap:10px;height:40px;padding:0 14px;border:1px solid #D9D9D9;border-radius:8px;background:#fff;font-size:14px;font-weight:700;color:#222;cursor:pointer}
   .pv-drop{position:absolute;top:48px;left:0;min-width:260px;background:#fff;border:1px solid #D9D9D9;border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,.15);z-index:10;display:none;max-height:320px;overflow:auto}
   .pv-drop.open{display:block}
   .pv-drop-item{padding:11px 14px;font-size:14px;font-weight:700;color:#222;cursor:pointer;white-space:nowrap}
-  .pv-drop-item:hover{background:#F7F4FF}
-  .pv-drop-item.active{background:#F2ECFF;color:#7E44FB}
+  .pv-drop-item:hover{background:#F3F9FF}
+  .pv-drop-item.active{background:#EAF4FF;color:#0950A0}
   .pv-scroll{flex:1;overflow:auto;padding:28px 24px}
   .pv-paper{background:#fff;width:794px;min-height:900px;padding:56px 48px;border:1px solid #D9D9D9;box-shadow:0 5px 15px rgba(0,0,0,.35);margin:0 auto}
 
@@ -95,28 +95,28 @@
   .pv-mov.show{display:flex}
   .pv-modal{background:#fff;border-radius:16px;width:460px;max-height:82vh;display:flex;flex-direction:column;overflow:hidden}
   .pv-mhead{padding:20px 24px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #F0F0F0}
-  .pv-mhead h4{margin:0;font-size:18px;font-weight:800;color:#222}
+  .pv-mhead h4{margin:0;font-size:18px;font-weight:700;color:#222}
   .pv-mdesc{padding:14px 24px 0;font-size:14px;color:#808080;font-weight:700}
   .pv-mbody{padding:8px 24px;overflow:auto}
   .pv-check{display:flex;align-items:center;gap:12px;padding:10px 0;cursor:pointer;font-size:15px;font-weight:700;color:#222}
-  .pv-check input{width:18px;height:18px;accent-color:#7E44FB;cursor:pointer;flex-shrink:0}
+  .pv-check input{width:18px;height:18px;accent-color:#0950A0;cursor:pointer;flex-shrink:0}
   .pv-mfoot{padding:14px 24px;display:flex;justify-content:flex-end;gap:10px;border-top:1px solid #F0F0F0}
   .pv-stu-sub{padding:12px 24px;display:flex;justify-content:space-between;align-items:center;font-size:13px;color:#808080;font-weight:700}
-  .pv-stu-all{margin:0 24px;padding:11px 14px;display:flex;align-items:center;gap:10px;background:#F8F8F8;border-radius:8px;cursor:pointer;font-weight:800;font-size:14px;color:#222}
-  .pv-stu-all input{width:18px;height:18px;accent-color:#7E44FB;cursor:pointer;flex-shrink:0}
+  .pv-stu-all{margin:0 24px;padding:11px 14px;display:flex;align-items:center;gap:10px;background:#F8F8F8;border-radius:8px;cursor:pointer;font-weight:700;font-size:14px;color:#222}
+  .pv-stu-all input{width:18px;height:18px;accent-color:#0950A0;cursor:pointer;flex-shrink:0}
   .pv-stu-list{overflow:auto;padding:8px 16px;flex:1}
   .pv-stu-row{display:flex;align-items:center;gap:12px;padding:11px 8px;border-radius:8px;cursor:pointer}
-  .pv-stu-row:hover{background:#F7F4FF}
+  .pv-stu-row:hover{background:#F3F9FF}
   .pv-stu-row.dis{opacity:.45;cursor:default}
-  .pv-stu-row input{width:18px;height:18px;accent-color:#7E44FB;cursor:pointer;flex-shrink:0}
-  .pv-stu-badge{margin-left:auto;font-size:12px;font-weight:800;border-radius:100px;padding:2px 10px}
+  .pv-stu-row input{width:18px;height:18px;accent-color:#0950A0;cursor:pointer;flex-shrink:0}
+  .pv-stu-badge{margin-left:auto;font-size:12px;font-weight:700;border-radius:100px;padding:2px 10px}
   .pv-stu-badge.ok{background:#F1F9F3;color:#00AF3D}
   .pv-stu-badge.no{background:#FFEFEF;color:#DB3E51}
 
   /* 출력 종이 섹션 */
-  .pp-head{border-bottom:2px solid #341761;padding-bottom:16px;margin-bottom:28px}
+  .pp-head{border-bottom:2px solid #0A2A5E;padding-bottom:16px;margin-bottom:28px}
   .pp-sec{margin-bottom:28px}
-  .pp-sec-title{font-size:16px;font-weight:800;color:#341761;margin-bottom:14px;padding-left:10px;border-left:3px solid #7E44FB}
+  .pp-sec-title{font-size:16px;font-weight:700;color:#0A2A5E;margin-bottom:14px;padding-left:10px;border-left:3px solid #0950A0}
 
   @media print{
     body>*:not(#printOverlay){display:none!important}
@@ -147,13 +147,13 @@
       <img src="../screens/logo_kg.png" style="height:42px; width:auto; display:block; flex-shrink:0;" alt="AI 서·논술형 평가지원시스템">
     </div>
     <div class="gnb-menu" style="display:flex;align-items:center;gap:52px;font-size:20px">
-      <span style="color:#7E44FB;font-weight:800">나의 평가</span>
+      <span style="color:#0950A0;font-weight:700">나의 평가</span>
       <span style="color:#000;font-weight:700">평가 자료실</span>
       <span style="color:#000;font-weight:700">고객센터</span>
     </div>
     <div style="display:flex;align-items:center;gap:12px">
-      <div style="width:36px;height:36px;background:#F0EAFF;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0">
-        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#7E44FB" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <div style="width:36px;height:36px;background:#E7F2FF;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0950A0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M12 8V4H8"/><rect width="16" height="12" x="4" y="8" rx="2"/><path d="M2 14h2"/><path d="M20 14h2"/><path d="M15 13v2"/><path d="M9 13v2"/>
         </svg>
       </div>
@@ -163,12 +163,12 @@
 </div>
 
 <!-- ── TitleBar ── -->
-<div style="background:linear-gradient(to right,#6562F5 4%,#9B68F3 97.86%);height:86px;display:flex;align-items:center;justify-content:center;padding:0 36px">
+<div style="background:linear-gradient(to right,#0950A0 4%,#2F77D5 97.86%);height:86px;display:flex;align-items:center;justify-content:center;padding:0 36px">
   <div style="flex:1;max-width:1200px;min-width:960px;padding:0 36px;display:flex;align-items:center;gap:16px">
     <button id="backBtn" onclick="showList()" style="display:none;width:36px;height:36px;background:rgba(255,255,255,0.2);border:none;border-radius:8px;cursor:pointer;align-items:center;justify-content:center;flex-shrink:0">
       <i data-lucide="arrow-left" style="width:20px;height:20px;color:#fff"></i>
     </button>
-    <span style="font-size:28px;font-weight:800;color:#fff">1학년 국어</span>
+    <span style="font-size:28px;font-weight:700;color:#fff">1학년 국어</span>
     <span id="titleSuffix" style="display:none;align-items:center;gap:16px">
       <span style="width:1px;height:24px;background:rgba(255,255,255,0.5);display:inline-block"></span>
       <span style="font-size:24px;font-weight:700;color:#fff">리포트 상세</span>
@@ -187,7 +187,7 @@
       <div class="tab-inactive" onclick="location.href='evaluation_design_v5.html?v=5'"><span style="font-size:20px;font-weight:700;color:#000">평가 설계</span></div>
       <div class="tab-inactive" onclick="location.href='task_ocr_review_v1.html'"><span style="font-size:20px;font-weight:700;color:#000">과제물 관리</span></div>
       <div class="tab-inactive" onclick="location.href='scoring_list_v1.html'"><span style="font-size:20px;font-weight:700;color:#000">AI 채점</span></div>
-      <div class="tab-active"><span style="font-size:20px;font-weight:800;color:#341761">평가 리포트</span></div>
+      <div class="tab-active"><span style="font-size:20px;font-weight:700;color:#0A2A5E">평가 리포트</span></div>
     </div>
 
     <!-- Panel -->
@@ -197,7 +197,7 @@
       <div id="listView">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:32px">
           <div>
-            <div style="font-size:24px;font-weight:800;color:#222;margin-bottom:6px">평가 리포트</div>
+            <div style="font-size:24px;font-weight:700;color:#222;margin-bottom:6px">평가 리포트</div>
             <div style="font-size:14px;color:#808080;font-weight:700">실시된 평가 결과를 확인하고 엑셀로 다운받을 수 있습니다.</div>
           </div>
           <div style="display:flex;gap:10px">
@@ -224,21 +224,21 @@
               </thead>
               <tbody>
                 <tr>
-                  <td class="left" rowspan="3" style="border-right:1px solid #F0F0F0;font-size:14px;font-weight:800">미래 사회 예측 시나리오</td>
+                  <td class="left" rowspan="3" style="border-right:1px solid #F0F0F0;font-size:14px;font-weight:700">미래 사회 예측 시나리오</td>
                   <td rowspan="3" class="avg-val" style="border-right:1px solid #F0F0F0">26.1</td>
                   <td>1-1</td><td>30.1</td><td><span class="diff-up">▲ 4.0</span></td><td>20</td><td>2</td>
                 </tr>
                 <tr><td>1-2</td><td>26.1</td><td><span class="diff-eq">— 0.0</span></td><td>20</td><td>2</td></tr>
                 <tr class="group-sep"><td>1-3</td><td>24.1</td><td><span class="diff-dn">▼ 2.0</span></td><td>20</td><td>2</td></tr>
                 <tr>
-                  <td class="left" rowspan="3" style="border-right:1px solid #F0F0F0;font-size:14px;font-weight:800">독후감 1차 과제</td>
+                  <td class="left" rowspan="3" style="border-right:1px solid #F0F0F0;font-size:14px;font-weight:700">독후감 1차 과제</td>
                   <td rowspan="3" class="avg-val" style="border-right:1px solid #F0F0F0">26.4</td>
                   <td>1-1</td><td>27.0</td><td><span class="diff-up">▲ 0.6</span></td><td>20</td><td>2</td>
                 </tr>
                 <tr><td>1-2</td><td>25.0</td><td><span class="diff-dn">▼ 1.4</span></td><td>20</td><td>2</td></tr>
                 <tr class="group-sep"><td>1-3</td><td>27.0</td><td><span class="diff-up">▲ 0.6</span></td><td>20</td><td>2</td></tr>
                 <tr>
-                  <td class="left" rowspan="3" style="border-right:1px solid #F0F0F0;font-size:14px;font-weight:800">독후감 2차 과제</td>
+                  <td class="left" rowspan="3" style="border-right:1px solid #F0F0F0;font-size:14px;font-weight:700">독후감 2차 과제</td>
                   <td rowspan="3" class="avg-val" style="border-right:1px solid #F0F0F0">24.8</td>
                   <td>1-1</td><td>25.0</td><td><span class="diff-up">▲ 0.2</span></td><td>20</td><td>5</td>
                 </tr>
@@ -292,7 +292,7 @@
         <!-- Heading -->
         <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:24px">
           <div>
-            <div id="dTitle" style="font-size:24px;font-weight:800;color:#222;margin-bottom:6px"></div>
+            <div id="dTitle" style="font-size:24px;font-weight:700;color:#222;margin-bottom:6px"></div>
             <div style="font-size:14px;color:#808080;font-weight:700">학생별 평가 결과를 정리된 리포트로 조회할 수 있습니다.</div>
           </div>
           <button class="btn-pri" style="height:40px;font-size:14px" onclick="openPrint()"><i data-lucide="printer" style="width:16px;height:16px"></i>출력</button>
@@ -300,7 +300,7 @@
 
         <!-- 대상 검색 -->
         <div style="display:flex;align-items:center;gap:10px;margin-bottom:24px">
-          <span style="font-size:13px;font-weight:800;color:#494949;margin-right:2px">대상 검색</span>
+          <span style="font-size:13px;font-weight:700;color:#494949;margin-right:2px">대상 검색</span>
           <div class="search-pill"><span id="dCls">1-2</span> <i data-lucide="chevron-down" style="width:14px;height:14px;color:#808080"></i></div>
           <div class="search-pill" style="min-width:280px;justify-content:space-between"><span id="dWho">10201 김하나</span> <i data-lucide="chevron-down" style="width:14px;height:14px;color:#808080"></i></div>
         </div>
@@ -351,7 +351,7 @@
         </div>
         <div class="pv-drop" id="pvDrop"></div>
       </div>
-      <span style="display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:800;color:#7E44FB;background:#F2ECFF;border-radius:100px;padding:5px 12px"><i data-lucide="users" style="width:14px;height:14px"></i><span id="pvScopeLabel">1-2반</span> 출력</span>
+      <span style="display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:700;color:#0950A0;background:#EAF4FF;border-radius:100px;padding:5px 12px"><i data-lucide="users" style="width:14px;height:14px"></i><span id="pvScopeLabel">1-2반</span> 출력</span>
     </div>
     <div style="display:flex;align-items:center;gap:10px">
       <button class="pv-btn" onclick="pvOpenItems()"><i data-lucide="settings" style="width:18px;height:18px"></i>출력 범위 설정</button>
@@ -389,12 +389,12 @@
     </div>
     <div class="pv-mdesc">학생에게 배부할 출력물의 점수 공개 범위와 포함 항목을 선택해 주세요.</div>
     <div class="pv-mbody">
-      <div style="font-size:12px;font-weight:800;color:#B3B3B3;letter-spacing:.04em;margin:8px 0 2px">점수 공개 범위</div>
+      <div style="font-size:12px;font-weight:700;color:#B3B3B3;letter-spacing:.04em;margin:8px 0 2px">점수 공개 범위</div>
       <label class="pv-check"><input type="radio" name="it-score" value="stu" onchange="pvRenderPaper()">학생 점수만 공개</label>
       <label class="pv-check"><input type="radio" name="it-score" value="both" checked onchange="pvRenderPaper()">학생 점수 · 반 평균 공개</label>
       <label class="pv-check"><input type="radio" name="it-score" value="none" onchange="pvRenderPaper()">점수 미공개 <span style="font-weight:600;color:#808080;font-size:13px">(피드백만 제공)</span></label>
       <div style="height:1px;background:#F0F0F0;margin:12px 0"></div>
-      <div style="font-size:12px;font-weight:800;color:#B3B3B3;letter-spacing:.04em;margin:2px 0 2px">포함 항목</div>
+      <div style="font-size:12px;font-weight:700;color:#B3B3B3;letter-spacing:.04em;margin:2px 0 2px">포함 항목</div>
       <label class="pv-check"><input type="checkbox" id="it-chart" checked onchange="pvRenderPaper()">평가 결과 백분위 비교</label>
       <label class="pv-check"><input type="checkbox" id="it-ai" checked onchange="pvRenderPaper()">과제별 AI 피드백</label>
       <label class="pv-check"><input type="checkbox" id="it-info" checked onchange="pvRenderPaper()">학생 정보 (총점·미제출)</label>
@@ -414,7 +414,7 @@
       <h4>출력할 학생 선택</h4>
       <button style="border:0;background:transparent;cursor:pointer" onclick="pvCloseStu()"><i data-lucide="x" style="width:20px;height:20px;color:#494949"></i></button>
     </div>
-    <div class="pv-stu-sub"><span><strong id="pvStuScope" style="color:#7E44FB">1-2반</strong> · 선택한 순서대로 인쇄됩니다</span><strong id="pvStuCount" style="color:#7E44FB">1명 선택됨</strong></div>
+    <div class="pv-stu-sub"><span><strong id="pvStuScope" style="color:#0950A0">1-2반</strong> · 선택한 순서대로 인쇄됩니다</span><strong id="pvStuCount" style="color:#0950A0">1명 선택됨</strong></div>
     <label class="pv-stu-all"><input type="checkbox" id="pv-all" onchange="pvToggleAll()">전체 선택</label>
     <div class="pv-stu-list" id="pvStuList"></div>
     <div class="pv-mfoot">
@@ -532,9 +532,9 @@ function renderList(){
   const rows = listCls==="전체" ? STUDENTS : STUDENTS.filter(s=>s.cls===listCls);
   tb.innerHTML = rows.map(s=>{
     const cell=v=>v==null?'<td style="color:#B3B3B3">—</td>':`<td>${v}</td>`;
-    const tot=s.total==null?'<td style="color:#B3B3B3">—</td>':`<td style="font-weight:900;color:#7E44FB">${s.total}</td>`;
+    const tot=s.total==null?'<td style="color:#B3B3B3">—</td>':`<td style="font-weight:900;color:#0950A0">${s.total}</td>`;
     return `<tr class="linkrow" onclick="showDetail('${s.id}')">
-      <td>${s.cls}</td><td>${s.id}</td><td style="font-weight:800">${s.name}</td>
+      <td>${s.cls}</td><td>${s.id}</td><td style="font-weight:700">${s.name}</td>
       ${tot}${cell(s.s[0])}${cell(s.s[1])}${cell(s.s[2])}
       <td style="text-align:right;padding-right:20px"><a class="report-link" onclick="event.stopPropagation();showDetail('${s.id}')">리포트 상세 <i data-lucide="chevron-right" style="width:14px;height:14px"></i></a></td>
     </tr>`;
@@ -552,7 +552,7 @@ function buildProfileCard(s){
     <div style="width:100%;height:1px;background:#F0F0F0;margin:20px 0"></div>
     <div style="width:100%;display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
       <span style="font-size:14px;color:#808080;font-weight:700">총점</span>
-      <span><span style="font-size:20px;font-weight:900;color:#7E44FB">${s.total}</span><span style="font-size:14px;color:#808080;font-weight:700">점</span></span>
+      <span><span style="font-size:20px;font-weight:900;color:#0950A0">${s.total}</span><span style="font-size:14px;color:#808080;font-weight:700">점</span></span>
     </div>
     <div style="width:100%;display:flex;justify-content:space-between;align-items:center">
       <span style="font-size:14px;color:#808080;font-weight:700">미제출/미응시</span>
@@ -564,7 +564,7 @@ function buildProfileCard(s){
 function _hbar(label,val,color,textColor){
   return `<div style="display:flex;align-items:center;gap:10px">
     <span style="width:52px;font-size:11px;font-weight:700;color:#808080;flex-shrink:0">${label}</span>
-    <div style="flex:1;height:20px;background:#F4F2FB;border-radius:6px;min-width:0"><div style="height:100%;width:${val}%;background:${color};border-radius:6px"></div></div>
+    <div style="flex:1;height:20px;background:#F0F6FA;border-radius:6px;min-width:0"><div style="height:100%;width:${val}%;background:${color};border-radius:6px"></div></div>
     <span style="width:32px;text-align:right;font-size:14px;font-weight:900;color:${textColor||color}">${val}</span>
   </div>`;
 }
@@ -574,10 +574,10 @@ function buildChartCard(s,opts){
   const rows=s.comp.map((stu,i)=>{
     const done = !s.s || s.s[i]!=null;
     const body = done
-      ? `<div style="flex:1;display:flex;flex-direction:column;gap:8px;min-width:0">${_hbar('학생 점수',stu,'#7E44FB')}${o.classAvg?_hbar('반 평균',avg[i],'#D8C7FE','#B28FFD'):''}</div>`
+      ? `<div style="flex:1;display:flex;flex-direction:column;gap:8px;min-width:0">${_hbar('학생 점수',stu,'#0950A0')}${o.classAvg?_hbar('반 평균',avg[i],'#B0D8FE','#7FB3E8'):''}</div>`
       : `<div style="flex:1;font-size:13px;color:#B3B3B3;font-weight:700">미실시</div>`;
     return `<div style="display:flex;align-items:center;gap:16px">
-      <div style="width:150px;flex-shrink:0;text-align:right;font-size:13px;font-weight:800;color:#341761">${(s.results&&s.results[i]&&s.results[i].t)||TASKS[i]||('과제 '+(i+1))}</div>
+      <div style="width:150px;flex-shrink:0;text-align:right;font-size:13px;font-weight:700;color:#0A2A5E">${(s.results&&s.results[i]&&s.results[i].t)||TASKS[i]||('과제 '+(i+1))}</div>
       ${body}
     </div>`;
   }).join('<div style="height:1px;background:#F5F5F5;margin:14px 0"></div>');
@@ -585,8 +585,8 @@ function buildChartCard(s,opts){
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
       <div class="section-title" style="margin-bottom:0">평가 결과 백분위 비교</div>
       <div style="display:flex;gap:16px">
-        <span style="display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;color:#494949"><span style="width:10px;height:10px;border-radius:3px;background:#7E44FB;display:inline-block"></span>학생 점수</span>
-        ${o.classAvg?`<span style="display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;color:#494949"><span style="width:10px;height:10px;border-radius:3px;background:#D8C7FE;display:inline-block"></span>반 평균</span>`:''}
+        <span style="display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;color:#494949"><span style="width:10px;height:10px;border-radius:3px;background:#0950A0;display:inline-block"></span>학생 점수</span>
+        ${o.classAvg?`<span style="display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;color:#494949"><span style="width:10px;height:10px;border-radius:3px;background:#B0D8FE;display:inline-block"></span>반 평균</span>`:''}
       </div>
     </div>
     ${rows}
@@ -598,8 +598,8 @@ function buildResults(s,opts){
   return s.results.map(r=>`
     <div class="card" style="padding:22px 24px">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:${o.scores?'16px':(o.ai?'14px':'0')}">
-        <span style="font-size:16px;font-weight:800;color:#341761">[${r.t}]</span>
-        ${o.scores?`<span style="font-size:14px;font-weight:900;color:#7E44FB">${r.score}<span style="color:#B3B3B3;font-weight:700;font-size:12px"> / ${r.max}점</span></span>`:''}
+        <span style="font-size:16px;font-weight:700;color:#0A2A5E">[${r.t}]</span>
+        ${o.scores?`<span style="font-size:14px;font-weight:900;color:#0950A0">${r.score}<span style="color:#B3B3B3;font-weight:700;font-size:12px"> / ${r.max}점</span></span>`:''}
       </div>
       ${o.scores?`<div style="display:flex;flex-direction:column;gap:10px;${o.ai?'margin-bottom:16px':''}">
         ${r.rows.map(([name,bands,got])=>`
@@ -685,8 +685,8 @@ function pvOpenClsPick(){
   wrap.innerHTML = PV_CLASSES.map(cls=>{
     const n=pvClsPrintable(cls).length;
     return `<label class="pv-stu-row" style="justify-content:flex-start">
-      <input type="radio" name="pvcls" value="${cls}" ${cls===def?'checked':''} style="width:18px;height:18px;accent-color:#7E44FB">
-      <span style="font-weight:800">${cls}반</span>
+      <input type="radio" name="pvcls" value="${cls}" ${cls===def?'checked':''} style="width:18px;height:18px;accent-color:#0950A0">
+      <span style="font-weight:700">${cls}반</span>
       <span style="margin-left:auto;font-size:13px;font-weight:700;color:#808080">${n}명</span></label>`;
   }).join("");
   document.getElementById("pvClsModal").classList.add("show");
@@ -745,14 +745,14 @@ function pvRenderPaper(){
   const showChart=on("it-chart")&&pubStu; // 점수 미공개면 백분위 차트도 숨김
   // 문서 헤더 — 이름·학급은 여기서만(프로필 카드 중복 제거). 총점(점수)은 미공개 시 숨김, 미제출은 유지
   const headStats = showInfo ? `<div style="display:flex;gap:28px;flex-shrink:0;padding-bottom:2px">
-      ${pubStu?`<div style="text-align:right"><div style="font-size:12px;color:#808080;font-weight:700;margin-bottom:2px">총점</div><div><span style="font-size:22px;font-weight:900;color:#7E44FB">${s.total}</span><span style="font-size:13px;color:#808080">점</span></div></div>`:''}
+      ${pubStu?`<div style="text-align:right"><div style="font-size:12px;color:#808080;font-weight:700;margin-bottom:2px">총점</div><div><span style="font-size:22px;font-weight:900;color:#0950A0">${s.total}</span><span style="font-size:13px;color:#808080">점</span></div></div>`:''}
       <div style="text-align:right"><div style="font-size:12px;color:#808080;font-weight:700;margin-bottom:2px">미제출/미응시</div><div><span style="font-size:22px;font-weight:900;color:#222">${s.miss}</span><span style="font-size:13px;color:#808080">건</span></div></div>
     </div>` : '';
   let html=`
     <div class="pp-head" style="display:flex;justify-content:space-between;align-items:flex-end;gap:24px">
       <div>
         <div style="font-size:13px;color:#808080;font-weight:700;margin-bottom:8px">2026학년도 1학기 · 1학년 국어</div>
-        <div style="font-size:26px;font-weight:900;color:#341761">${s.name} 평가 리포트</div>
+        <div style="font-size:26px;font-weight:900;color:#0A2A5E">${s.name} 평가 리포트</div>
         <div style="font-size:13px;color:#808080;margin-top:8px">경기도테스트중학교 · 1학년 ${s.cls.split("-")[1]}반 ${s.num}번 · 학번 ${s.id}</div>
       </div>
       ${headStats}
@@ -781,11 +781,11 @@ function pvOpenStu(){
   const list=document.getElementById("pvStuList");
   document.getElementById("pvStuScope").textContent = pvScopeCls+"반";
   list.innerHTML = pvClsStudents(pvScopeCls).map((s,i)=>{
-    if(s.noReport) return `<div class="pv-stu-row dis"><input type="checkbox" disabled><span style="font-weight:800">${s.id}</span><span>${s.name}</span><span class="pv-stu-badge no">리포트 없음</span></div>`;
+    if(s.noReport) return `<div class="pv-stu-row dis"><input type="checkbox" disabled><span style="font-weight:700">${s.id}</span><span>${s.name}</span><span class="pv-stu-badge no">리포트 없음</span></div>`;
     const pre = pvMode==="all" ? true : (s.id===pvPreviewId);
     return `<div class="pv-stu-row" onclick="pvToggleRow(${i})">
       <input type="checkbox" id="pv-chk-${i}" ${pre?'checked':''} onclick="event.stopPropagation();pvToggleRow(${i})">
-      <span style="font-weight:800">${s.id}</span><span>${s.name}</span><span class="pv-stu-badge ok">총점 ${s.total}점</span></div>`;
+      <span style="font-weight:700">${s.id}</span><span>${s.name}</span><span class="pv-stu-badge ok">총점 ${s.total}점</span></div>`;
   }).join("");
   pvUpdateCount();
   document.getElementById("pvStuModal").classList.add("show");

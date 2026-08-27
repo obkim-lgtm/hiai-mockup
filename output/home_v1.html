@@ -9,15 +9,15 @@
 <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
 <style>
   *{box-sizing:border-box;font-family:'NanumSquareRound',-apple-system,sans-serif}
-  body{margin:0;background:#EDF1FC}
+  body{margin:0;background:#EDF3FC}
 
   /* 버튼 공통 — 콘텐츠 중앙정렬 5종 세트 */
   .btn{display:inline-flex;align-items:center;justify-content:center;line-height:1;vertical-align:middle;
        border:none;cursor:pointer;font-family:inherit;white-space:nowrap;gap:8px}
-  .btn-primary{background:#8751FA;color:#fff;height:44px;padding:0 16px;border-radius:8px;font-size:18px;font-weight:700}
-  .btn-primary:hover{background:#7A41F5}
-  .btn-blue{background:#5890FF;color:#fff;height:44px;padding:0 16px;border-radius:8px;font-size:18px;font-weight:700;flex:1 0 0;min-width:0}
-  .btn-blue:hover{background:#4680F5}
+  .btn-primary{background:#0950A0;color:#fff;height:44px;padding:0 16px;border-radius:8px;font-size:18px;font-weight:700}
+  .btn-primary:hover{background:#00319F}
+  .btn-blue{background:#2F77D5;color:#fff;height:44px;padding:0 16px;border-radius:8px;font-size:18px;font-weight:700;flex:1 0 0;min-width:0}
+  .btn-blue:hover{background:#1F63BE}
 
   .panel{background:#fff;border:1px solid #D9D9D9;border-radius:20px;box-shadow:0 4px 18px rgba(95,102,178,.16)}
 
@@ -27,13 +27,13 @@
 
   .badge{display:inline-flex;align-items:center;justify-content:center;line-height:1;height:24px;padding:0 8px;gap:3px;
          border-radius:9999px;font-size:14px;font-weight:700;white-space:nowrap}
-  .badge-grade{background:#F2EDFF;color:#6C2DF4}
-  .badge-new{background:#F2F5FF;color:#276AF0}
+  .badge-grade{background:#EAF4FF;color:#0A4A94}
+  .badge-new{background:#F2F7FF;color:#00778B}
 
   /* 수업 카드 */
   .cards{display:flex;flex-wrap:wrap;gap:28px}
   .ccard{width:336px;height:186px;display:flex;align-items:stretch;position:relative}
-  .ccard-thumb{width:124px;background:#9465F8;border-radius:20px 0 0 20px;position:relative;overflow:hidden;flex-shrink:0}
+  .ccard-thumb{width:124px;background:#388EFF;border-radius:20px 0 0 20px;position:relative;overflow:hidden;flex-shrink:0}
   .ccard-thumb .paper{position:absolute;left:calc(50% + 1.3px);top:50%;transform:translate(-50%,-50%);width:52px;height:58px}
   .ccard-thumb .grade{position:absolute;left:calc(50% + 20.8px);top:calc(50% + 9px);transform:translate(-50%,-50%);width:27px;height:28px}
   .ccard-body{flex:1 0 0;min-width:0;background:#fff;border:1px solid #D9D9D9;border-left:none;border-radius:0 20px 20px 0;
@@ -48,8 +48,8 @@
       box-shadow:0 0 1px 0 #494949, 0 8px 32px 0 rgba(95,102,178,.16)}
   .dd-opt{display:flex;align-items:center;justify-content:space-between;gap:12px;
           padding:10px 12px;border-radius:4px;font-size:16px;font-weight:700;color:#333;cursor:pointer;white-space:nowrap}
-  .dd-opt:hover{background:#F7F4FF}
-  .dd-opt.on{color:#6C2DF4}
+  .dd-opt:hover{background:#F3F9FF}
+  .dd-opt.on{color:#0A4A94}
 
   .notice-item{display:flex;align-items:center;gap:12px;height:36px;cursor:pointer}
   .notice-item:hover .notice-title{text-decoration:underline}
@@ -66,9 +66,9 @@
   #mockpick .mp-cap{font-size:10px;font-weight:800;color:#6B6F8C;letter-spacing:.05em;padding:7px 8px 2px}
   #mockpick .mp-btn{width:100%;text-align:left;white-space:nowrap;padding:9px 12px;border-radius:9px;border:1px solid #3A3F58;background:#2A2E44;color:#C9CCE0;font-size:13px;font-weight:700;font-family:inherit;cursor:pointer;line-height:1.35}
   #mockpick .mp-btn:hover{background:#33384f}
-  #mockpick .mp-btn.on{background:#8751FA;color:#fff;border-color:#8751FA}
+  #mockpick .mp-btn.on{background:#0950A0;color:#fff;border-color:#0950A0}
   #mockpick .mp-sub{font-size:11px;font-weight:600;color:#8A8FB0;margin-left:8px}
-  #mockpick .mp-btn.on .mp-sub{color:#E6DBFF}
+  #mockpick .mp-btn.on .mp-sub{color:#D9EAFB}
 </style>
 </head>
 <body>
@@ -80,26 +80,26 @@
       <img src="../screens/logo_kg.png" style="height:42px; width:auto; display:block; flex-shrink:0;" alt="AI 서·논술형 평가지원시스템">
     </div>
     <nav style="display:flex; gap:52px; align-items:center;">
-      <span style="font-size:20px; font-weight:700; color:#7E44FB; cursor:pointer;">나의 평가</span>
+      <span style="font-size:20px; font-weight:700; color:#0950A0; cursor:pointer;">나의 평가</span>
       <span style="font-size:20px; font-weight:700; color:#000; cursor:pointer;">평가 자료실</span>
       <span style="font-size:20px; font-weight:700; color:#000; cursor:pointer;">고객센터</span>
     </nav>
     <div style="display:flex; align-items:center; gap:12px; flex-shrink:0;">
-      <img src="../screens/home/ic_profile.svg" style="width:36px;height:36px;display:block;" alt="">
+      <img src="../screens/home/ic_profile_blue.svg" style="width:36px;height:36px;display:block;" alt="">
       <span style="font-size:20px; font-weight:700; color:#000;">김동* 님</span>
     </div>
   </div>
 </div>
 
 <!-- ===== 타이틀 바 ===== -->
-<div style="background:linear-gradient(to right, #6562F5 4%, #9B68F3 97.86%); height:86px; display:flex; align-items:center; justify-content:center; padding:10px 36px;">
+<div style="background:linear-gradient(to right, #0950A0 4%, #2F77D5 97.86%); height:86px; display:flex; align-items:center; justify-content:center; padding:10px 36px;">
   <div style="flex:1 0 0; max-width:1200px; min-width:960px; padding:0 36px;">
     <span style="font-size:28px; font-weight:700; color:white; line-height:1.35;">나의 평가</span>
   </div>
 </div>
 
 <!-- ===== 학교 정보 · 공지 사항 ===== -->
-<div style="background:#CBD6F4; padding:48px 36px; display:flex; flex-direction:column; align-items:center; gap:40px;">
+<div style="background:#CBDCF4; padding:48px 36px; display:flex; flex-direction:column; align-items:center; gap:40px;">
   <div style="display:flex; gap:20px; align-items:stretch; width:1128px;">
 
     <!-- 학교 정보 -->
@@ -176,12 +176,12 @@
 </div>
 
 <!-- ===== 나의 평가 목록 ===== -->
-<div style="background:#EDF1FC; padding:36px 0; display:flex; flex-direction:column; align-items:center; gap:24px;">
+<div style="background:#EDF3FC; padding:36px 0; display:flex; flex-direction:column; align-items:center; gap:24px;">
   <div style="width:1200px; padding:28px 36px; display:flex; flex-direction:column; gap:24px;">
 
     <div style="display:flex; align-items:center; justify-content:space-between;">
       <div style="display:flex; align-items:center; gap:12px;">
-        <img src="../screens/home/ic_evallist.svg" style="width:24px;height:24px;display:block;" alt="">
+        <img src="../screens/home/ic_evallist_blue.svg" style="width:24px;height:24px;display:block;" alt="">
         <span style="font-size:28px; font-weight:700; color:#000;">나의 평가 목록</span>
       </div>
       <button class="btn btn-primary" onclick="alert('수업 추가 화면으로 이동합니다.')">
@@ -204,7 +204,7 @@
 
       <!-- 빈 상태 -->
       <div id="class-empty" style="display:none; flex:1 0 0; flex-direction:column; align-items:center; justify-content:center; gap:16px; padding:48px 0;">
-        <img src="../screens/home/ic_evallist.svg" style="width:44px;height:44px;display:block;opacity:.35;" alt="">
+        <img src="../screens/home/ic_evallist_blue.svg" style="width:44px;height:44px;display:block;opacity:.35;" alt="">
         <p style="margin:0; font-size:20px; font-weight:700; color:#333;">아직 등록된 수업이 없어요</p>
         <p style="margin:0; font-size:16px; font-weight:400; color:#808080; line-height:1.6; text-align:center;">
           수업을 추가하면 이 학기에 진행할 수행평가를 만들 수 있어요.
@@ -219,7 +219,7 @@
 </div>
 
 <!-- ===== Footer ===== -->
-<div style="background:#EDF1FC; display:flex; flex-direction:column; align-items:center;">
+<div style="background:#EDF3FC; display:flex; flex-direction:column; align-items:center;">
   <div style="width:100%; max-width:1200px; padding:64px 36px; display:flex; flex-direction:column; gap:36px; align-items:center;">
     <div style="display:flex; align-items:center; width:100%; max-width:1176px; min-width:912px;">
       <div class="foot-logo"><img src="../screens/home/foot1.png" alt="경기도교육청"></div>
@@ -279,8 +279,8 @@
     document.getElementById('class-list').innerHTML = CLASSES.map((c, i) => `
       <div class="ccard">
         <div class="ccard-thumb">
-          <img class="paper" src="../screens/home/card_paper.svg" alt="">
-          <img class="grade" src="../screens/home/card_grade.svg" alt="">
+          <img class="paper" src="../screens/home/card_paper_blue.svg" alt="">
+          <img class="grade" src="../screens/home/card_grade_blue.svg" alt="">
         </div>
         <div class="ccard-body">
           <div style="display:flex; flex-direction:column; gap:16px;">

@@ -11,20 +11,20 @@
     @import url('../screens/fonts.css');
     * { font-family: 'NanumSquareRound', sans-serif; box-sizing: border-box; }
     body { margin: 0; padding: 0; background: white; overflow: hidden; }
-    .ocr-popup-textarea:focus { border-color: #7E44FB !important; outline: none; }
+    .ocr-popup-textarea:focus { border-color: #0950A0 !important; outline: none; }
 
     .score-btn {
       width: 28px; height: 28px; border-radius: 6px; font-size: 18px; font-weight: 700;
       display: inline-flex; align-items: center; justify-content: center;
-      cursor: pointer; border: 1px solid #7E44FB; color: #7E44FB; background: white;
+      cursor: pointer; border: 1px solid #0950A0; color: #0950A0; background: white;
       transition: all 0.15s;
     }
     .score-btn.selected {
-      background: #7E44FB; color: white; border-color: #7E44FB;
+      background: #0950A0; color: white; border-color: #0950A0;
     }
     .score-btn.hatched {
       background: repeating-linear-gradient(-45deg, transparent, transparent 3px, rgba(126,68,251,0.15) 3px, rgba(126,68,251,0.15) 4px);
-      border: 1px solid #7E44FB; color: #7E44FB;
+      border: 1px solid #0950A0; color: #0950A0;
     }
 
     .tab-toggle-btn {
@@ -33,7 +33,7 @@
       border: none; color: #494949; background: transparent;
       transition: all 0.15s; font-family: inherit; line-height: 1;
     }
-    .tab-toggle-btn.active { background: white; color: #7E44FB; box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
+    .tab-toggle-btn.active { background: white; color: #0950A0; box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
 
     .radio-item {
       display: flex; align-items: center; gap: 6px; cursor: pointer;
@@ -45,7 +45,7 @@
       flex-shrink: 0;
     }
     .radio-circle.selected {
-      border: 5px solid #7E44FB;
+      border: 5px solid #0950A0;
     }
 
     .feedback-radio-item {
@@ -58,7 +58,7 @@
       flex-shrink: 0;
     }
     .feedback-radio-circle.selected {
-      border: 4px solid #7E44FB;
+      border: 4px solid #0950A0;
     }
 
     .main-content { display: flex; height: calc(100vh - 68px); overflow: hidden; }
@@ -76,11 +76,11 @@
     .pill-btn:hover { background: #f5f5f5; }
 
     .purple-btn {
-      background: #7E44FB; border: none; border-radius: 8px;
+      background: #0950A0; border: none; border-radius: 8px;
       height: 40px; padding: 0 16px; font-size: 16px; font-weight: 700;
       color: white; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;
     }
-    .purple-btn:hover { background: #6c35e0; }
+    .purple-btn:hover { background: #0A4A94; }
 
     /* B안 좌측 OCR 뷰어 */
     .ocr-b-tab-wrap {
@@ -98,15 +98,15 @@
       font-size: 14px; font-weight: 700; color: #808080;
       background: transparent; transition: all 0.15s; font-family: inherit;
     }
-    .ocr-b-tab.active { background: #7E44FB; color: white; }
+    .ocr-b-tab.active { background: #0950A0; color: white; }
     .ocr-uncertain {
       background: #FFF4CC; border-bottom: 2px solid #E07000;
       cursor: pointer; position: relative; border-radius: 2px;
     }
-    /* 툴팁 스킨: Figma MM23…FVJpB 1900:20405 (화이트 · 14px Bold #341761 · 화살표 14px) */
+    /* 툴팁 스킨: Figma MM23…FVJpB 1900:20405 (화이트 · 14px Bold #0A2A5E · 화살표 14px) */
     .ocr-uncertain:hover::after {
       content: attr(data-hint); position: absolute; bottom: calc(100% + 12px); left: 0;
-      background: #fff; color: #341761; font-size: 14px; font-weight: 700; line-height: 18px;
+      background: #fff; color: #0A2A5E; font-size: 14px; font-weight: 700; line-height: 18px;
       padding: 10px 20px; border-radius: 8px; white-space: nowrap; z-index: 10;
       box-shadow: 0 4px 36px rgba(95,102,178,.16);
     }
@@ -115,8 +115,8 @@
       width: 14px; height: 14px; background: #fff; transform: rotate(45deg); z-index: 11;
     }
     .ocr-b-q-label {
-      display: inline-flex; align-items: center; background: #F0EAFF; color: #7E44FB;
-      border-radius: 100px; padding: 3px 12px; font-size: 13px; font-weight: 800;
+      display: inline-flex; align-items: center; background: #E7F2FF; color: #0950A0;
+      border-radius: 100px; padding: 3px 12px; font-size: 13px; font-weight:700;
       margin-bottom: 8px;
     }
     .ocr-b-q-desc { font-size: 13px; color: #808080; font-weight: 700; margin-bottom: 10px; }
@@ -128,17 +128,17 @@
     .rubric-ocr-section{ border:1px solid #E6E6E6; border-radius:12px; margin-bottom:12px; overflow:hidden; }
     .rubric-ocr-header{ display:flex; align-items:center; gap:8px; padding:10px 14px; background:#F8F8F8; border-bottom:1px solid #E6E6E6; flex-wrap:wrap; }
     .rubric-ocr-desc{ font-size:13px; color:#808080; font-weight:700; flex:1; min-width:0; overflow:hidden; white-space:nowrap; text-overflow:ellipsis; }
-    .rubric-suspect-chip{ display:inline-flex; align-items:center; gap:4px; background:#FFF0F0; border:1px solid #FFBCBC; border-radius:100px; padding:2px 8px; font-size:12px; font-weight:800; color:#DB3E51; flex-shrink:0; }
+    .rubric-suspect-chip{ display:inline-flex; align-items:center; gap:4px; background:#FFF0F0; border:1px solid #FFBCBC; border-radius:100px; padding:2px 8px; font-size:12px; font-weight:700; color:#DB3E51; flex-shrink:0; }
     .rubric-ocr-body{ padding:14px 16px; font-size:15px; line-height:1.85; color:#333; cursor:text; position:relative; }
     .rubric-ocr-body:hover{ background:#FDFCFF; }
-    .section-editing{ border-color:#7E44FB !important; box-shadow:0 0 0 2px rgba(126,68,251,.12); }
-    .section-editing .rubric-ocr-header{ background:#F7F4FF; }
-    .editing-badge{ font-size:11px; font-weight:800; color:#7E44FB; background:#EDE6FF; border-radius:100px; padding:2px 8px; }
-    .saved-badge{ font-size:11px; font-weight:800; color:#00AF3D; display:inline-flex; align-items:center; gap:3px; transition:opacity .4s; }
+    .section-editing{ border-color:#0950A0 !important; box-shadow:0 0 0 2px rgba(126,68,251,.12); }
+    .section-editing .rubric-ocr-header{ background:#F3F9FF; }
+    .editing-badge{ font-size:11px; font-weight:700; color:#0950A0; background:#D9EAFB; border-radius:100px; padding:2px 8px; }
+    .saved-badge{ font-size:11px; font-weight:700; color:#00AF3D; display:inline-flex; align-items:center; gap:3px; transition:opacity .4s; }
     .ocr-uncertainty-note{ border-top:1px dashed #FFBCBC; background:#FFF5F5; padding:10px 14px; display:flex; flex-direction:column; gap:4px; }
-    .ocr-uncertainty-label{ font-size:12px; font-weight:800; color:#DB3E51; display:flex; align-items:center; gap:4px; }
+    .ocr-uncertainty-label{ font-size:12px; font-weight:700; color:#DB3E51; display:flex; align-items:center; gap:4px; }
     .ocr-uncertainty-text{ font-size:13px; color:#494949; line-height:1.65; }
-    .badge-purple{ display:inline-flex;align-items:center;background:#F7F4FF;color:#7E44FB;border-radius:100px;padding:3px 10px;font-size:12px;font-weight:800; }
+    .badge-purple{ display:inline-flex;align-items:center;background:#F3F9FF;color:#0950A0;border-radius:100px;padding:3px 10px;font-size:12px;font-weight:700; }
 
     /* v2: AI 채점 근거 하이라이트 (좌측 전사 텍스트) */
     .hl { cursor: help; border-radius: 3px; padding: 1px 3px; position: relative; transition: background 0.12s; }
@@ -149,7 +149,7 @@
     .hl::before {
       content: attr(data-criterion);
       position: absolute; bottom: calc(100% + 6px); left: 50%; transform: translateX(-50%);
-      background: #7E44FB; color: white; font-size: 11px; font-weight: 800;
+      background: #0950A0; color: white; font-size: 11px; font-weight:700;
       padding: 2px 8px; border-radius: 100px; white-space: nowrap;
       opacity: 0; visibility: hidden; transition: opacity 0.15s; z-index: 101; pointer-events: none;
     }
@@ -158,7 +158,7 @@
     .hl::after {
       content: attr(data-reason);
       position: absolute; bottom: calc(100% + 28px); left: 50%; transform: translateX(-50%);
-      background: #fff; color: #341761; font-size: 14px; font-weight: 700; line-height: 1.5;
+      background: #fff; color: #0A2A5E; font-size: 14px; font-weight: 700; line-height: 1.5;
       padding: 10px 20px; border-radius: 8px; max-width: 320px; width: max-content;
       white-space: pre-wrap; text-align: left;
       box-shadow: 0 4px 36px rgba(95,102,178,.16);
@@ -178,9 +178,9 @@
       transition: all 0.15s; padding: 0;
     }
     .q-score-btn:hover { background: #F8F8F8; }
-    .q-score-btn.selected { background: #7E44FB; border-color: #7E44FB; color: white; }
-    .q-score-btn.ai-rec { border-color: #B28FFD; color: #7E44FB; }
-    .q-score-btn.ai-rec.selected { background: #7E44FB; color: white; border-color: #7E44FB; }
+    .q-score-btn.selected { background: #0950A0; border-color: #0950A0; color: white; }
+    .q-score-btn.ai-rec { border-color: #7FB3E8; color: #0950A0; }
+    .q-score-btn.ai-rec.selected { background: #0950A0; color: white; border-color: #0950A0; }
     .reason-bullet {
       display: flex; gap: 8px; align-items: flex-start; padding: 8px 0;
       font-size: 14px; line-height: 1.55; color: #333;
@@ -200,7 +200,7 @@
 <!-- 상단 고정 타이틀바 -->
 <div style="position:sticky;top:0;z-index:50;height:68px;display:flex;align-items:stretch;background:#F8F8F8;border-top:1px solid #D9D9D9;border-bottom:1px solid #D9D9D9;">
   <!-- 뒤로가기 버튼 -->
-  <button id="btn-back" onclick="goBack()" style="width:68px;height:68px;background:#7E44FB;border:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;flex-shrink:0;padding:0;">
+  <button id="btn-back" onclick="goBack()" style="width:68px;height:68px;background:#0950A0;border:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;flex-shrink:0;padding:0;">
     <i data-lucide="arrow-left" style="width:28px;height:28px;color:white;"></i>
     <span style="font-size:14px;font-weight:700;color:white;line-height:1;">목록으로</span>
   </button>
@@ -237,7 +237,7 @@
         </button>
       </div>
       <!-- 저장 버튼 (1751:4122 — 채점은 자동 저장 없이 저장 버튼으로 사용자 저장) -->
-      <button onclick="saveGrading()" style="display:inline-flex;align-items:center;justify-content:center;line-height:1;vertical-align:middle;gap:6px;height:40px;padding:0 16px;background:#7E44FB;border:1px solid #7E44FB;border-radius:8px;font-family:inherit;font-size:16px;font-weight:700;color:white;cursor:pointer;" onmouseover="this.style.background='#6c35e0'" onmouseout="this.style.background='#7E44FB'">
+      <button onclick="saveGrading()" style="display:inline-flex;align-items:center;justify-content:center;line-height:1;vertical-align:middle;gap:6px;height:40px;padding:0 16px;background:#0950A0;border:1px solid #0950A0;border-radius:8px;font-family:inherit;font-size:16px;font-weight:700;color:white;cursor:pointer;" onmouseover="this.style.background='#0A4A94'" onmouseout="this.style.background='#0950A0'">
         <i data-lucide="check" style="width:20px;height:20px;"></i>
         저장
       </button>
@@ -307,11 +307,11 @@
           <i data-lucide="file-image" style="width:14px;height:14px;"></i>원본 제출물
         </button>
       </div>
-      <span id="left-uncertain-chip" style="display:none;margin-left:auto;background:#FFF4CC;border:1px solid #E07000;border-radius:100px;padding:3px 12px;font-size:12px;font-weight:800;color:#E07000;align-items:center;gap:4px;">
+      <span id="left-uncertain-chip" style="display:none;margin-left:auto;background:#FFF4CC;border:1px solid #E07000;border-radius:100px;padding:3px 12px;font-size:12px;font-weight:700;color:#E07000;align-items:center;gap:4px;">
         <i data-lucide="triangle-alert" style="width:11px;height:11px;"></i>
         <span id="left-uncertain-count"></span>개 불확실 구간
       </span>
-      <a id="left-ocr-review-link" href="#" target="_blank" rel="noopener" style="display:none;margin-left:auto;background:white;border:1px solid #B28FFD;border-radius:8px;height:32px;padding:0 12px;font-size:13px;font-weight:700;color:#7E44FB;cursor:pointer;align-items:center;gap:6px;text-decoration:none;" onmouseover="this.style.background='#F7F4FF'" onmouseout="this.style.background='white'">
+      <a id="left-ocr-review-link" href="#" target="_blank" rel="noopener" style="display:none;margin-left:auto;background:white;border:1px solid #7FB3E8;border-radius:8px;height:32px;padding:0 12px;font-size:13px;font-weight:700;color:#0950A0;cursor:pointer;align-items:center;gap:6px;text-decoration:none;" onmouseover="this.style.background='#F3F9FF'" onmouseout="this.style.background='white'">
         <i data-lucide="scan-text" style="width:14px;height:14px;"></i>인식 결과 수정<i data-lucide="external-link" style="width:12px;height:12px;"></i>
       </a>
     </div>
@@ -363,7 +363,7 @@
         <span style="font-size:16px;font-weight:700;color:#333;line-height:1.25;">총점</span>
         <span style="font-size:18px;font-weight:700;color:#333;line-height:1.25;"><span id="v2-total-score">35</span> / 50</span>
         <span style="font-size:16px;font-weight:700;color:#333;line-height:1.25;">점</span>
-        <span id="score-plan-badge" style="font-size:18px;font-weight:700;color:#7E44FB;line-height:1.25;margin-left:4px;">(B)</span>
+        <span id="score-plan-badge" style="font-size:18px;font-weight:700;color:#0950A0;line-height:1.25;margin-left:4px;">(B)</span>
       </div>
       <!-- 채점 상태 라디오 -->
       <div style="display:flex;gap:20px;align-items:center;">
@@ -395,7 +395,7 @@
       <div style="display:flex;justify-content:flex-end;gap:8px;">
         <button class="pill-btn" onclick="resetScoresV2()">점수 초기화</button>
         <button class="pill-btn" onclick="applyAiScoresV2()">
-          <i data-lucide="sparkles" style="width:14px;height:14px;color:#7E44FB;"></i>
+          <i data-lucide="sparkles" style="width:14px;height:14px;color:#0950A0;"></i>
           AI 점수 그대로 적용
         </button>
       </div>
@@ -404,7 +404,7 @@
     <!-- v2 섹션 3: 문항별 AI 채점 근거 + 피드백 -->
     <div style="padding:20px 24px 8px;">
       <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
-        <i data-lucide="sparkles" style="width:20px;height:20px;color:#7E44FB;flex-shrink:0;"></i>
+        <i data-lucide="sparkles" style="width:20px;height:20px;color:#0950A0;flex-shrink:0;"></i>
         <span style="font-size:18px;font-weight:700;color:#333;">문항별 AI 채점 근거 및 피드백</span>
       </div>
       <p style="font-size:13px;color:#808080;margin:0;line-height:1.5;">좌측 답안의 <span style="color:#00AF3D;font-weight:700;">초록 강조</span>는 잘한 부분, <span style="color:#FF8C4C;font-weight:700;">주황 강조</span>는 보완 필요 부분 — 호버하면 채점 근거가 표시됩니다.</p>
@@ -418,7 +418,7 @@
         <span style="font-size:13px;color:#494949;line-height:1.55;">AI Assistant의 채점 결과는 부정확할 수 있습니다. 언제나 선생님의 최종 확인이 필요합니다.</span>
       </div>
       <div style="margin-top:12px;">
-        <button onclick="openRerunModal()" style="background:#7E44FB;border:none;border-radius:8px;height:36px;padding:0 12px;font-size:14px;font-weight:700;color:white;cursor:pointer;display:inline-flex;align-items:center;gap:6px;" onmouseover="this.style.background='#6c35e0'" onmouseout="this.style.background='#7E44FB'">
+        <button onclick="openRerunModal()" style="background:#0950A0;border:none;border-radius:8px;height:36px;padding:0 12px;font-size:14px;font-weight:700;color:white;cursor:pointer;display:inline-flex;align-items:center;gap:6px;" onmouseover="this.style.background='#0A4A94'" onmouseout="this.style.background='#0950A0'">
           <i data-lucide="wand-sparkles" style="width:14px;height:14px;"></i>
           AI 채점 재실행
         </button>
@@ -430,11 +430,11 @@
       <!-- 헤더 -->
       <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:16px;flex-wrap:wrap;">
         <div style="display:flex;align-items:center;gap:8px;">
-          <i data-lucide="message-circle" style="width:20px;height:20px;color:#7E44FB;"></i>
+          <i data-lucide="message-circle" style="width:20px;height:20px;color:#0950A0;"></i>
           <span style="font-size:18px;font-weight:700;color:#333;">선생님 직접 피드백</span>
         </div>
         <button class="pill-btn" onclick="bulkImportFeedback()" title="문항별 AI 피드백을 모아 아래 입력란에 채워 넣습니다">
-          <i data-lucide="download" style="width:14px;height:14px;color:#7E44FB;"></i>
+          <i data-lucide="download" style="width:14px;height:14px;color:#0950A0;"></i>
           AI 피드백 일괄 가져오기
         </button>
       </div>
@@ -481,7 +481,7 @@
       <div style="border:1px solid #D9D9D9;border-radius:8px;overflow:hidden;">
         <!-- 반 행 -->
         <div style="border-bottom:1px solid #D9D9D9;height:52px;padding:0 20px;display:flex;align-items:center;gap:8px;cursor:pointer;">
-          <div style="width:20px;height:20px;background:#7E44FB;border-radius:2px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+          <div style="width:20px;height:20px;background:#0950A0;border-radius:2px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
             <i data-lucide="check" style="width:14px;height:14px;color:white;"></i>
           </div>
           <span style="flex:1;font-size:16px;font-weight:700;color:#333;">1-1반 (1/4명)</span>
@@ -492,7 +492,7 @@
         <div style="padding:12px 20px;display:flex;flex-direction:column;gap:16px;">
           <div style="display:flex;align-items:center;justify-content:space-between;">
             <div style="display:flex;align-items:center;gap:10px;">
-              <div style="width:20px;height:20px;background:#7E44FB;border-radius:2px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+              <div style="width:20px;height:20px;background:#0950A0;border-radius:2px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
                 <i data-lucide="check" style="width:14px;height:14px;color:white;"></i>
               </div>
               <span style="font-size:16px;font-weight:700;color:#333;">10101 김하나</span>
@@ -520,7 +520,7 @@
     <div style="display:flex;flex-direction:column;gap:12px;" id="rerun-level">
       <span style="font-size:16px;font-weight:700;color:#333;">AI 채점 수준</span>
       <label style="display:flex;align-items:center;gap:10px;cursor:pointer;" onclick="selectRerunLevel(this)">
-        <div class="rerun-radio rerun-radio-selected" style="width:20px;height:20px;border-radius:50%;border:5px solid #7E44FB;flex-shrink:0;"></div>
+        <div class="rerun-radio rerun-radio-selected" style="width:20px;height:20px;border-radius:50%;border:5px solid #0950A0;flex-shrink:0;"></div>
         <span style="font-size:16px;font-weight:700;color:#333;">이전과 동일하게 채점</span>
       </label>
       <label style="display:flex;align-items:center;gap:10px;cursor:pointer;" onclick="selectRerunLevel(this)">
@@ -536,7 +536,7 @@
   <!-- 푸터 -->
   <div style="padding:8px 24px 24px;display:flex;justify-content:flex-end;gap:12px;">
     <button onclick="closeRerunModal()" style="background:#F0F0F0;border:none;border-radius:8px;height:40px;padding:0 16px;font-size:16px;font-weight:700;color:#494949;cursor:pointer;" onmouseover="this.style.background='#E0E0E0'" onmouseout="this.style.background='#F0F0F0'">취소</button>
-    <button onclick="runRerun()" style="background:#7E44FB;border:none;border-radius:8px;height:40px;padding:0 20px;font-size:16px;font-weight:700;color:white;cursor:pointer;" onmouseover="this.style.background='#6c35e0'" onmouseout="this.style.background='#7E44FB'">AI 채점 재실행</button>
+    <button onclick="runRerun()" style="background:#0950A0;border:none;border-radius:8px;height:40px;padding:0 20px;font-size:16px;font-weight:700;color:white;cursor:pointer;" onmouseover="this.style.background='#0A4A94'" onmouseout="this.style.background='#0950A0'">AI 채점 재실행</button>
   </div>
 </div>
 
@@ -551,7 +551,7 @@
   <!-- 팝업 헤더 (드래그 핸들) -->
   <div id="ocr-popup-header" style="background:#F8F8F8;border-bottom:1px solid #D9D9D9;height:52px;padding:0 20px;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;cursor:grab;flex-shrink:0;user-select:none;">
     <div style="display:flex;align-items:center;gap:8px;">
-      <i data-lucide="scan-text" style="width:18px;height:18px;color:#7E44FB;"></i>
+      <i data-lucide="scan-text" style="width:18px;height:18px;color:#0950A0;"></i>
       <span style="font-size:16px;font-weight:700;color:#333;">인식 결과 수정</span>
     </div>
     <div title="드래그하여 이동" style="display:flex;flex-direction:column;gap:3px;align-items:center;padding:0 12px;">
@@ -586,10 +586,10 @@
 
     <!-- 하단 버튼 -->
     <div style="padding:12px 16px;border-top:1px solid #D9D9D9;display:flex;justify-content:flex-end;gap:8px;flex-shrink:0;">
-      <button onclick="closeOcrPopup()" style="background:white;border:1px solid #B28FFD;border-radius:8px;height:36px;padding:0 16px;font-size:14px;font-weight:700;color:#7E44FB;cursor:pointer;display:inline-flex;align-items:center;gap:6px;" onmouseover="this.style.background='#F7F4FF'" onmouseout="this.style.background='white'">
+      <button onclick="closeOcrPopup()" style="background:white;border:1px solid #7FB3E8;border-radius:8px;height:36px;padding:0 16px;font-size:14px;font-weight:700;color:#0950A0;cursor:pointer;display:inline-flex;align-items:center;gap:6px;" onmouseover="this.style.background='#F3F9FF'" onmouseout="this.style.background='white'">
         저장
       </button>
-      <button onclick="saveAndRerun()" style="background:#7E44FB;border:none;border-radius:8px;height:36px;padding:0 16px;font-size:14px;font-weight:700;color:white;cursor:pointer;display:inline-flex;align-items:center;gap:6px;" onmouseover="this.style.background='#6c35e0'" onmouseout="this.style.background='#7E44FB'">
+      <button onclick="saveAndRerun()" style="background:#0950A0;border:none;border-radius:8px;height:36px;padding:0 16px;font-size:14px;font-weight:700;color:white;cursor:pointer;display:inline-flex;align-items:center;gap:6px;" onmouseover="this.style.background='#0A4A94'" onmouseout="this.style.background='#0950A0'">
         <i data-lucide="wand-sparkles" style="width:14px;height:14px;"></i>
         저장 후 AI 채점 재실행
       </button>
@@ -789,7 +789,7 @@
       var _sdEval = (new URLSearchParams(location.search)).get('eval');
       var isReadOnly = (_sdEval === 'C');
       if (hasUncertain && !isReadOnly) {
-        html += '<span id="left-unc-chip-' + qi + '" style="display:inline-flex;align-items:center;gap:4px;background:#FFF4CC;border:1px solid #E07000;border-radius:100px;padding:2px 8px;font-size:11px;font-weight:800;color:#E07000;margin-left:auto;">'
+        html += '<span id="left-unc-chip-' + qi + '" style="display:inline-flex;align-items:center;gap:4px;background:#FFF4CC;border:1px solid #E07000;border-radius:100px;padding:2px 8px;font-size:11px;font-weight:700;color:#E07000;margin-left:auto;">'
               + '<i data-lucide="triangle-alert" style="width:11px;height:11px;"></i>확인 필요</span>';
       }
       html += '</div>';
@@ -814,7 +814,7 @@
           html += '<div id="left-ocr-body-' + qi + '" class="ocr-b-q-text ocr-b-editable" onclick="leftOcrEdit(' + qi + ')">'
                 + fullText + '</div>';
           html += '<textarea id="left-ocr-ta-' + qi + '" onblur="leftOcrSave(' + qi + ')" '
-                + 'style="display:none;width:100%;background:white;border:2px solid #7E44FB;border-radius:8px;padding:14px 16px;'
+                + 'style="display:none;width:100%;background:white;border:2px solid #0950A0;border-radius:8px;padding:14px 16px;'
                 + 'font-family:inherit;font-size:16px;line-height:1.85;color:#333;outline:none;resize:none;overflow:hidden;box-sizing:border-box;" rows="3">'
                 + fullText + '</textarea>';
         }
@@ -892,20 +892,20 @@
     SCORING_V2.questions.forEach(function(q){
       var cardClass = 'q-card ' + (q.score >= 8 ? 'q-good' : (q.score <= 5 ? 'q-bad' : 'q-mid'));
       var statusChip = '';
-      if (q.score >= 8) statusChip = '<span style="background:rgba(0,175,61,0.15);color:#00AF3D;border-radius:100px;padding:2px 8px;font-size:11px;font-weight:800;flex-shrink:0;">잘함</span>';
-      else if (q.score <= 5) statusChip = '<span style="background:rgba(255,140,76,0.20);color:#E07000;border-radius:100px;padding:2px 8px;font-size:11px;font-weight:800;flex-shrink:0;">보완 필요</span>';
+      if (q.score >= 8) statusChip = '<span style="background:rgba(0,175,61,0.15);color:#00AF3D;border-radius:100px;padding:2px 8px;font-size:11px;font-weight:700;flex-shrink:0;">잘함</span>';
+      else if (q.score <= 5) statusChip = '<span style="background:rgba(255,140,76,0.20);color:#E07000;border-radius:100px;padding:2px 8px;font-size:11px;font-weight:700;flex-shrink:0;">보완 필요</span>';
       html += '<div class="' + cardClass + '" data-q-num="' + q.num + '">';
       // 헤더 (문항 번호 + 프롬프트 + 상태 칩)
       html += '<div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:10px;">';
-      html += '<span class="badge-purple" style="font-size:13px;font-weight:800;flex-shrink:0;">문항 ' + q.num + '</span>';
+      html += '<span class="badge-purple" style="font-size:13px;font-weight:700;flex-shrink:0;">문항 ' + q.num + '</span>';
       html += '<span style="font-size:14px;color:#494949;font-weight:700;line-height:1.5;flex:1;min-width:0;">' + q.prompt + '</span>';
       html += statusChip;
       html += '</div>';
       // AI 채점 근거
       html += '<div style="background:#F8F8FA;border-radius:8px;padding:10px 14px;margin-bottom:8px;">';
       html += '<div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;">';
-      html += '<i data-lucide="sparkles" style="width:13px;height:13px;color:#7E44FB;"></i>';
-      html += '<span style="font-size:12px;font-weight:800;color:#7E44FB;">AI 채점 근거</span>';
+      html += '<i data-lucide="sparkles" style="width:13px;height:13px;color:#0950A0;"></i>';
+      html += '<span style="font-size:12px;font-weight:700;color:#0950A0;">AI 채점 근거</span>';
       html += '</div>';
       q.aiReasoning.forEach(function(r){
         var icon = r.type === 'good' ? 'thumbs-up' : 'circle-alert';
@@ -916,10 +916,10 @@
       });
       html += '</div>';
       // AI 피드백
-      html += '<div style="background:#F7F4FF;border-radius:8px;padding:10px 14px;">';
+      html += '<div style="background:#F3F9FF;border-radius:8px;padding:10px 14px;">';
       html += '<div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;">';
-      html += '<i data-lucide="message-circle" style="width:13px;height:13px;color:#7E44FB;"></i>';
-      html += '<span style="font-size:12px;font-weight:800;color:#7E44FB;">AI 피드백</span>';
+      html += '<i data-lucide="message-circle" style="width:13px;height:13px;color:#0950A0;"></i>';
+      html += '<span style="font-size:12px;font-weight:700;color:#0950A0;">AI 피드백</span>';
       html += '</div>';
       html += '<p style="font-size:14px;color:#333;line-height:1.55;margin:0;">' + q.aiFeedback + '</p>';
       html += '</div>';
@@ -1025,7 +1025,7 @@
       // 일반 문항: 텍스트 옆에 "저장됨" 뱃지 잠깐 표시
       var row = body.closest('div');
       var badge = document.createElement('span');
-      badge.style.cssText = 'font-size:12px;font-weight:800;color:#00AF3D;display:inline-flex;align-items:center;gap:3px;margin-left:8px;';
+      badge.style.cssText = 'font-size:12px;font-weight:700;color:#00AF3D;display:inline-flex;align-items:center;gap:3px;margin-left:8px;';
       badge.innerHTML = '✓ 저장됨';
       body.insertAdjacentElement('afterend', badge);
       setTimeout(function(){ badge.style.opacity = '0'; badge.style.transition = 'opacity .4s'; }, 1200);
@@ -1142,7 +1142,7 @@
     var list = document.getElementById('studentDropdownList');
     list.innerHTML = STUDENT_LIST.map(function(s){
       var isCurrent = s.id === CURRENT_STUDENT_ID;
-      return '<div class="sd-item" data-link="'+s.link+'" data-id="'+s.id+'" data-name="'+s.name+'" style="padding:10px 16px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;'+(isCurrent?'background:#F7F4FF;':'')+'font-size:16px;font-weight:'+(isCurrent?'700':'400')+';color:#333;">'
+      return '<div class="sd-item" data-link="'+s.link+'" data-id="'+s.id+'" data-name="'+s.name+'" style="padding:10px 16px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;'+(isCurrent?'background:#F3F9FF;':'')+'font-size:16px;font-weight:'+(isCurrent?'700':'400')+';color:#333;">'
         +'<span>'+s.id+' '+s.name+'</span>'
         +'<span style="font-size:13px;font-weight:700;color:'+s.statusCls+';">'+s.status+'</span>'
         +'</div>';
@@ -1268,10 +1268,10 @@
       html += '<span class="badge-purple">' + q.label + '</span>';
       html += '<span class="rubric-ocr-desc">' + q.desc + '</span>';
       html += chip;
-      html += '<button onclick="ocrEditSection(this,' + gi + ')" title="편집" style="background:none;border:none;cursor:pointer;color:#B3B3B3;padding:2px 4px;flex-shrink:0;display:flex;align-items:center;" onmouseover="this.style.color=\'#7E44FB\'" onmouseout="this.style.color=\'#B3B3B3\'"><i data-lucide="pencil" style="width:13px;height:13px;"></i></button>';
+      html += '<button onclick="ocrEditSection(this,' + gi + ')" title="편집" style="background:none;border:none;cursor:pointer;color:#B3B3B3;padding:2px 4px;flex-shrink:0;display:flex;align-items:center;" onmouseover="this.style.color=\'#0950A0\'" onmouseout="this.style.color=\'#B3B3B3\'"><i data-lucide="pencil" style="width:13px;height:13px;"></i></button>';
       html += '</div>';
       html += '<div class="rubric-ocr-body" id="ocr-body-' + gi + '" onclick="ocrEditByBody(this,' + gi + ')"><span style="color:#333;">' + q.text + '</span></div>';
-      html += '<textarea id="ocr-ta-' + gi + '" onblur="ocrSaveSection(this,' + gi + ')" style="display:none;width:100%;border:none;border-top:1px solid #D4BBFF;padding:12px 15px;font-family:inherit;font-size:15px;line-height:1.8;color:#333;outline:none;resize:none;overflow:hidden;box-sizing:border-box;" rows="3">' + q.text + '</textarea>';
+      html += '<textarea id="ocr-ta-' + gi + '" onblur="ocrSaveSection(this,' + gi + ')" style="display:none;width:100%;border:none;border-top:1px solid #B9D5F5;padding:12px 15px;font-family:inherit;font-size:15px;line-height:1.8;color:#333;outline:none;resize:none;overflow:hidden;box-sizing:border-box;" rows="3">' + q.text + '</textarea>';
       if (hasUnc) {
         html += '<div class="ocr-uncertainty-note"><span class="ocr-uncertainty-label"><i data-lucide="triangle-alert" style="width:12px;height:12px;"></i>AI 인식 불확실</span><span class="ocr-uncertainty-text">' + q.uncertainty + '</span></div>';
       }
@@ -1358,7 +1358,7 @@
       r.style.border = '2px solid #B3B3B3';
     });
     var radio = el.querySelector('.rerun-radio');
-    radio.style.border = '5px solid #7E44FB';
+    radio.style.border = '5px solid #0950A0';
   }
   function runRerun() {
     closeRerunModal();
@@ -1388,7 +1388,7 @@
       document.getElementById('toast-icon').setAttribute('data-lucide', 'circle-check-big');
       document.getElementById('toast-icon').style.display = 'block';
     } else if (type === 'loading') {
-      t.style.background = '#7E44FB'; t.style.color = 'white';
+      t.style.background = '#0950A0'; t.style.color = 'white';
       document.getElementById('toast-icon').setAttribute('data-lucide', 'loader');
       document.getElementById('toast-icon').style.display = 'block';
     }
