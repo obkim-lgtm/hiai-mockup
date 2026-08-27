@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="icon" href="../screens/favicon_src.png?v=2" type="image/png">
 <title>선생님 홈 (blue) — 컬러톤 시안</title>
-<link rel="stylesheet" href="https://cdn.rawgit.com/moonspam/NanumSquareRound/master/nanumsquareround.min.css">
+<link rel="stylesheet" href="../screens/fonts.css">
 <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
 <style>
   *{box-sizing:border-box;font-family:'NanumSquareRound',-apple-system,sans-serif}
@@ -14,9 +14,9 @@
   /* 버튼 공통 — 콘텐츠 중앙정렬 5종 세트 */
   .btn{display:inline-flex;align-items:center;justify-content:center;line-height:1;vertical-align:middle;
        border:none;cursor:pointer;font-family:inherit;white-space:nowrap;gap:8px}
-  .btn-primary{background:#0950A0;color:#fff;height:44px;padding:0 16px;border-radius:8px;font-size:18px;font-weight:800}
+  .btn-primary{background:#0950A0;color:#fff;height:44px;padding:0 16px;border-radius:8px;font-size:18px;font-weight:700}
   .btn-primary:hover{background:#00319F}
-  .btn-blue{background:#2F77D5;color:#fff;height:44px;padding:0 16px;border-radius:8px;font-size:18px;font-weight:800;flex:1 0 0;min-width:0}
+  .btn-blue{background:#2F77D5;color:#fff;height:44px;padding:0 16px;border-radius:8px;font-size:18px;font-weight:700;flex:1 0 0;min-width:0}
   .btn-blue:hover{background:#1F63BE}
 
   .panel{background:#fff;border:1px solid #D9D9D9;border-radius:20px;box-shadow:0 4px 18px rgba(95,102,178,.16)}
@@ -26,7 +26,7 @@
   .select span{flex:1 0 0;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-align:left}
 
   .badge{display:inline-flex;align-items:center;justify-content:center;line-height:1;height:24px;padding:0 8px;gap:3px;
-         border-radius:9999px;font-size:14px;font-weight:800;white-space:nowrap}
+         border-radius:9999px;font-size:14px;font-weight:700;white-space:nowrap}
   .badge-grade{background:#EAF4FF;color:#0A4A94}
   .badge-new{background:#F2F7FF;color:#00778B}
 
@@ -38,7 +38,7 @@
   .ccard-thumb .grade{position:absolute;left:calc(50% + 20.8px);top:calc(50% + 9px);transform:translate(-50%,-50%);width:27px;height:28px}
   .ccard-body{flex:1 0 0;min-width:0;background:#fff;border:1px solid #D9D9D9;border-left:none;border-radius:0 20px 20px 0;
               padding:16px;display:flex;flex-direction:column;justify-content:space-between}
-  .ccard-title{font-size:20px;font-weight:800;color:#000;line-height:1.25;word-break:keep-all;margin:0}
+  .ccard-title{font-size:20px;font-weight:700;color:#000;line-height:1.25;word-break:keep-all;margin:0}
   .ccard-count{display:flex;align-items:center;gap:4px;padding:4px 0;font-size:14px;font-weight:700;color:#808080;white-space:nowrap}
   .icon-btn{display:inline-flex;align-items:center;justify-content:center;line-height:1;vertical-align:middle;
             width:24px;height:24px;border:none;background:none;padding:0;cursor:pointer;flex-shrink:0}
@@ -57,7 +57,7 @@
   .notice-date{font-size:16px;font-weight:400;color:#333;line-height:1.55;flex-shrink:0}
 
   .foot-link{font-size:16px;font-weight:400;color:#000;cursor:pointer;white-space:nowrap;line-height:27px}
-  .foot-link.b{font-weight:800}
+  .foot-link.b{font-weight:700}
 
   /* 까망이 목업 내비게이터 */
   #mockpick{position:fixed;left:24px;bottom:24px;z-index:3000;background:#1F2233;border-radius:14px;padding:8px;box-shadow:0 10px 30px rgba(0,0,0,.35);width:max-content;max-width:360px;cursor:move;user-select:none}
@@ -80,7 +80,7 @@
       <img src="../screens/logo_kg.png" style="height:42px; width:auto; display:block; flex-shrink:0;" alt="AI 서·논술형 평가지원시스템">
     </div>
     <nav style="display:flex; gap:52px; align-items:center;">
-      <span style="font-size:20px; font-weight:800; color:#0950A0; cursor:pointer;">나의 평가</span>
+      <span style="font-size:20px; font-weight:700; color:#0950A0; cursor:pointer;">나의 평가</span>
       <span style="font-size:20px; font-weight:700; color:#000; cursor:pointer;">평가 자료실</span>
       <span style="font-size:20px; font-weight:700; color:#000; cursor:pointer;">고객센터</span>
     </nav>
@@ -94,7 +94,7 @@
 <!-- ===== 타이틀 바 ===== -->
 <div style="background:linear-gradient(to right, #0950A0 4%, #2F77D5 97.86%); height:86px; display:flex; align-items:center; justify-content:center; padding:10px 36px;">
   <div style="flex:1 0 0; max-width:1200px; min-width:960px; padding:0 36px;">
-    <span style="font-size:28px; font-weight:800; color:white; line-height:1.35;">나의 평가</span>
+    <span style="font-size:28px; font-weight:700; color:white; line-height:1.35;">나의 평가</span>
   </div>
 </div>
 
@@ -106,11 +106,11 @@
     <div class="panel" style="width:448px; padding:28px; display:flex; flex-direction:column; justify-content:space-between; flex-shrink:0;">
       <div style="display:flex; align-items:center; gap:12px;">
         <img src="../screens/home/ic_school.svg" style="width:28px;height:28px;display:block;" alt="">
-        <span style="font-size:24px; font-weight:800; color:#000;">학교 정보</span>
+        <span style="font-size:24px; font-weight:700; color:#000;">학교 정보</span>
       </div>
       <div style="display:flex; flex-direction:column; gap:28px;">
         <div style="display:flex; align-items:center; gap:12px; position:relative;">
-          <span style="font-size:28px; font-weight:800; color:#000; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">경기도고등학교</span>
+          <span style="font-size:28px; font-weight:700; color:#000; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">경기도고등학교</span>
           <button class="icon-btn" style="width:32px;height:32px;" onclick="toggleSchoolDd(event)" aria-label="학교 전환">
             <i data-lucide="chevron-down" id="school-caret" style="width:32px;height:32px;color:#000;"></i>
           </button>
@@ -138,7 +138,7 @@
       <div style="display:flex; align-items:center; justify-content:space-between;">
         <div style="display:flex; align-items:center; gap:12px;">
           <img src="../screens/home/ic_notice.svg" style="width:28px;height:28px;display:block;" alt="">
-          <span style="font-size:24px; font-weight:800; color:#000;">공지 사항</span>
+          <span style="font-size:24px; font-weight:700; color:#000;">공지 사항</span>
         </div>
         <!-- 디자이너 주석: 화살표가 많아져 텍스트 링크로 대체 -->
         <span style="font-size:16px; font-weight:700; color:#494949; cursor:pointer;">전체 보기</span>
@@ -182,7 +182,7 @@
     <div style="display:flex; align-items:center; justify-content:space-between;">
       <div style="display:flex; align-items:center; gap:12px;">
         <img src="../screens/home/ic_evallist_blue.svg" style="width:24px;height:24px;display:block;" alt="">
-        <span style="font-size:28px; font-weight:800; color:#000;">나의 평가 목록</span>
+        <span style="font-size:28px; font-weight:700; color:#000;">나의 평가 목록</span>
       </div>
       <button class="btn btn-primary" onclick="alert('수업 추가 화면으로 이동합니다.')">
         <i data-lucide="plus" style="width:22px;height:22px;"></i>수업 추가
@@ -205,7 +205,7 @@
       <!-- 빈 상태 -->
       <div id="class-empty" style="display:none; flex:1 0 0; flex-direction:column; align-items:center; justify-content:center; gap:16px; padding:48px 0;">
         <img src="../screens/home/ic_evallist_blue.svg" style="width:44px;height:44px;display:block;opacity:.35;" alt="">
-        <p style="margin:0; font-size:20px; font-weight:800; color:#333;">아직 등록된 수업이 없어요</p>
+        <p style="margin:0; font-size:20px; font-weight:700; color:#333;">아직 등록된 수업이 없어요</p>
         <p style="margin:0; font-size:16px; font-weight:400; color:#808080; line-height:1.6; text-align:center;">
           수업을 추가하면 이 학기에 진행할 수행평가를 만들 수 있어요.
         </p>

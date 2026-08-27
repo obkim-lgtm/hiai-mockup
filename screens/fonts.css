@@ -1,0 +1,53 @@
+/* ── 나눔스퀘어라운드 웹폰트 ───────────────────────────────────────────────
+   기존 `cdn.rawgit.com/moonspam/NanumSquareRound`는 죽었다.
+   rawgit(2019 종료) → jsDelivr 301 리다이렉트 → 원본 저장소가 GitHub에서 삭제(404).
+   그동안 모든 목업이 맑은 고딕으로 대체 렌더링됐고, 맑은 고딕엔 800(ExtraBold)이
+   없어 브라우저가 가짜 볼드를 합성해 글자가 뭉개져 보였다. (2026-08-27 확인)
+
+   대체 출처는 네이버 공식 배포 서버(hangeul.pstatic.net). 원본 CSS는 굵기별로
+   font-family를 쪼개 놔서(NanumSquareRoundB/EB…) font-weight가 안 먹는다.
+   그래서 파일만 가져다 하나의 family + font-weight로 다시 묶는다.
+
+   굵기: 300 Light · 400 Regular · 700 Bold · 800 ExtraBold
+   목업 본문 기준은 Bold(700). 피그마의 `NanumSquareRound:Bold`가 700이다.
+   ───────────────────────────────────────────────────────────────────────── */
+
+@font-face {
+  font-family: 'NanumSquareRound';
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+  src: url('https://hangeul.pstatic.net/hangeul_static/webfont/NanumSquareRound/NanumSquareRoundL.woff2') format('woff2'),
+       url('https://hangeul.pstatic.net/hangeul_static/webfont/NanumSquareRound/NanumSquareRoundL.woff')  format('woff'),
+       url('https://hangeul.pstatic.net/hangeul_static/webfont/NanumSquareRound/NanumSquareRoundL.ttf')   format('truetype');
+}
+
+@font-face {
+  font-family: 'NanumSquareRound';
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  src: url('https://hangeul.pstatic.net/hangeul_static/webfont/NanumSquareRound/NanumSquareRoundR.woff2') format('woff2'),
+       url('https://hangeul.pstatic.net/hangeul_static/webfont/NanumSquareRound/NanumSquareRoundR.woff')  format('woff'),
+       url('https://hangeul.pstatic.net/hangeul_static/webfont/NanumSquareRound/NanumSquareRoundR.ttf')   format('truetype');
+}
+
+@font-face {
+  font-family: 'NanumSquareRound';
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+  src: url('https://hangeul.pstatic.net/hangeul_static/webfont/NanumSquareRound/NanumSquareRoundB.woff2') format('woff2'),
+       url('https://hangeul.pstatic.net/hangeul_static/webfont/NanumSquareRound/NanumSquareRoundB.woff')  format('woff'),
+       url('https://hangeul.pstatic.net/hangeul_static/webfont/NanumSquareRound/NanumSquareRoundB.ttf')   format('truetype');
+}
+
+@font-face {
+  font-family: 'NanumSquareRound';
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap;
+  src: url('https://hangeul.pstatic.net/hangeul_static/webfont/NanumSquareRound/NanumSquareRoundEB.woff2') format('woff2'),
+       url('https://hangeul.pstatic.net/hangeul_static/webfont/NanumSquareRound/NanumSquareRoundEB.woff')  format('woff'),
+       url('https://hangeul.pstatic.net/hangeul_static/webfont/NanumSquareRound/NanumSquareRoundEB.ttf')   format('truetype');
+}
