@@ -7,15 +7,21 @@
 
 - **폰트**: `나눔스퀘어 라운드`
   ```css
-  @import url('https://cdn.rawgit.com/moonspam/NanumSquareRound/master/nanumsquareround.min.css');
+  @import url('../screens/fonts.css');
   font-family: 'NanumSquareRound', -apple-system, sans-serif;
   ```
-- **Primary**: `#7E44FB` (purple-800)
-- **텍스트**: `#000000` (기본) / `#494949` (muted) / `#808080` (subtle) / `#341761` (title_purple)
+- **Primary**: `#0950A0` (blue-800) — hover/눌림 `#00319F`, 링크·텍스트 버튼 `#0A4A94`
+- **텍스트**: `#000000` (기본) / `#494949` (muted) / `#808080` (subtle) / `#0A2A5E` (title_dark)
 - **Border**: `#D9D9D9` (기본) / `#B3B3B3` (emphasized)
-- **배경**: `#F8F8F8` (subtle) / `#F0F0F0` (muted) / `#EDF1FC` (coursebg)
-- **Error**: `#DB3E51` / **Success**: `#00AF3D` / **Warning**: `#FF8C4C` / **Info**: `#5890FF`
+- **배경**: `#F8F8F8` (subtle) / `#F0F0F0` (muted) / `#EDF3FC` (coursebg)
+- **Error**: `#DB3E51` / **Success**: `#00AF3D` / **Warning**: `#FF8C4C` / **Info**: `#00778B`
 - 상세 팔레트 전체 → `../context.md` 참조
+
+> ⚠️ **2026-08-27 새 로고 CI에 맞춰 보라 → 블루 전면 교체(디자이너 컨펌).**
+> 보라(`#7E44FB`·`#B28FFD`·`#341761`·`#8751FA` 등)와 옛 안내색 `#5890FF`는 폐기.
+> 시멘틱 토큰 이름은 `purple/…` 그대로지만 값은 블루다 — 이름 보고 보라를 넣지 말 것.
+> 팔레트 근거·명도 대비값은 `../output/colorchip_blue.html`.
+> 볼드는 **700**만 쓴다 — ExtraBold(800) 토큰은 없다.
 
 ## 타이포그래피 요약
 | 토큰 | 크기 | 비고 |
@@ -84,8 +90,8 @@
 [바디]  px:24px, pb:24px — 콘텐츠 자유 구성
 
 [푸터]  px:24px, pt:8px, pb:16px, 버튼 우측 정렬, gap:12px
-  취소: border #B28FFD, text #7E44FB, bg transparent, h:40px, radius:8px
-  확인/저장: bg #7E44FB, text white, h:40px, radius:8px
+  취소: border #7FB3E8, text #0950A0, bg transparent, h:40px, radius:8px
+  확인/저장: bg #0950A0, text white, h:40px, radius:8px
 ```
 
 ### 컨테이너
@@ -210,12 +216,12 @@ window.addEventListener('hashchange', function(){ routeHash(location.hash); });
 
 | 종류 | 배경 | 텍스트 | Border | 용도 |
 |------|------|--------|--------|------|
-| **Primary** | `#7E44FB` | white | — | 주요 CTA (화면당 1개 원칙) |
-| **Secondary** | white | `#7E44FB` | `#B28FFD` | 보조 액션 |
+| **Primary** | `#0950A0` | white | — | 주요 CTA (화면당 1개 원칙) |
+| **Secondary** | white | `#0950A0` | `#7FB3E8` | 보조 액션 |
 | **Outline** | white | `#494949` | `#D9D9D9` | 취소·일반 |
 | **Danger** | `#DB3E51` | white | — | 삭제·위험 |
 | **Green** | `#00AF3D` | white | — | 업로드·완료 |
-| **Ghost/Link** | transparent | `#7E44FB` | — | 텍스트 링크형 |
+| **Ghost/Link** | transparent | `#0950A0` | — | 텍스트 링크형 |
 
 ```css
 /* 공통 버튼 토큰 (Figma 기준) */
@@ -238,7 +244,7 @@ gap: 8px;              /* 아이콘-텍스트 간격 */
 | 상태 | Border | 배경 |
 |------|--------|------|
 | Default | `#D9D9D9` | white |
-| Focus | `#7E44FB` | white |
+| Focus | `#0950A0` | white |
 | Error | `#FF3A3A` | `#FFEFEF` |
 | Disabled | `#E6E6E6` | `#F8F8F8` |
 
@@ -253,9 +259,9 @@ gap: 8px;              /* 아이콘-텍스트 간격 */
 
 | 종류 | 배경 | 텍스트 | 용도 |
 |------|------|--------|------|
-| 과목 뱃지 | purple-50 `#F7F4FF` | `#7E44FB` | 과목명 표시 |
+| 과목 뱃지 | purple-50 `#F3F9FF` | `#0950A0` | 과목명 표시 |
 | 임시저장 | red-50 `#FFEFEF` | `#DB3E51` | 미완료 상태 |
-| 신규 | blue-50 `#F2F5FF` | `#5890FF` | 공지 신규 |
+| 신규 | blue-50 `#F2F7FF` | `#00778B` | 공지 신규 |
 | 진행 | green-50 `#F1F9F3` | `#00AF3D` | 과제 진행중 |
 | 마감 | orange-50 `#FFEDD5` | `#FF8C4C` | 과제 마감 |
 | 예정 | gray-50 `#F8F8F8` | `#808080` | 예정 상태 |

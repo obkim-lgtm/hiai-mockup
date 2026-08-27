@@ -36,7 +36,7 @@
 - **나눔스퀘어 라운드** (피그마 디자인 시스템 기준)
 - CDN 임포트:
   ```css
-  @import url('https://cdn.rawgit.com/moonspam/NanumSquareRound/master/nanumsquareround.min.css');
+  @import url('../screens/fonts.css');
   font-family: 'NanumSquareRound', -apple-system, sans-serif;
   ```
 
@@ -75,22 +75,35 @@
 
 ## 기본 컬러 팔레트
 
-### Purple (Primary — 메인 컬러)
-| 단계 | Hex |
-|------|-----|
-| 50 | `#F7F4FF` |
-| 100 | `#F7F4FF` |
-| 200 | `#F2ECFF` |
-| 300 | `#E3E4F8` |
-| 400 | `#d8c7fe` |
-| 500 | `#cbb4fd` |
-| 600 | `#b28ffd` |
-| 700 | `#9869fc` |
-| **800** | **`#7E44FB`** |
-| 900 | `#341761` |
-| 950 | `#341761` |
+### Blue (Primary — 메인 컬러)
 
-> ⚠️ Primary 실사용 기준은 **purple-800 `#7E44FB`** (solid/fg/focusring 등에서 사용)
+2026-08-27 새 로고 CI에 맞춰 보라 → 블루로 전면 교체(디자이너 컨펌). 근거·명도 대비값은
+`output/colorchip_blue.html`. 목업 HTML은 전부 반영 완료 — **새 화면은 아래 값만 쓴다.**
+
+| 단계 | Hex | 역할 |
+|------|-----|------|
+| 50 | `#F3F9FF` | 강조 영역 배경 · 카드 hover |
+| 100 | `#F3F9FF` | 〃 |
+| 200 | `#EAF4FF` | 칩 배경 |
+| 300 | `#D9EAFB` | 진행바 트랙 · 옅은 배경 |
+| 400 | `#CEE1F9` | 보더 · 옅은 구분선 |
+| 500 | `#7FB3E8` | 보조 강조 · 완료 단계 점 |
+| 600 | `#388EFF` | 밝은 강조 · 포인트 |
+| 700 | `#2F77D5` | 진행바 채움 · 그라디언트 끝 · 보조 filled 버튼 |
+| **800** | **`#0950A0`** | **Primary — 메인 CTA · 활성 탭 · 링크** |
+| 900 | `#0A2A5E` | 큰 제목 · 카드 타이틀 |
+| 950 | `#0A2A5E` | 〃 |
+
+> ⚠️ Primary 실사용 기준은 **blue-800 `#0950A0`** (solid/fg/focusring 등에서 사용).
+> 경기도교육청 새 로고 심볼(`#0850A0`)과 청 누리집 `--main-btn-color1`(`#0950A0`)이 같은 색이라
+> 누리집 값을 기준점으로 잡았다. 흰 배경 대비 7.87로 본문 크기 텍스트에도 쓸 수 있다.
+> 버튼 hover·눌림은 `#00319F`, 링크·텍스트 버튼은 `#0A4A94`.
+
+> ⚠️ **보라 계열은 폐기** — `#7E44FB` `#B28FFD` `#341761` `#8751FA` `#9A6BFC` `#6C2DF4`
+> `#F7F4FF` `#F2ECFF` `#EDE7FF` 등. 옛 화면·문서에서 보이면 미이관분이니 위 표로 옮긴다.
+
+> 📌 시멘틱 토큰 이름은 아직 `purple/…`·`text/title_purple` 그대로다. 값만 블루로 바뀌었고
+> 이름은 Figma 디자인 시스템 쪽 정리를 기다리는 중이니, 이름이 보라라고 보라를 넣지 말 것.
 
 ### Gray
 | 단계 | Hex |
@@ -107,20 +120,19 @@
 | 900 | `#333333` |
 | 950 | `#333333` |
 
-### Blue
+### Teal (안내 · Info)
+
+Primary가 파랑이 되면서 기존 안내색 `#5890FF`가 주요 액션과 구분되지 않아 청록으로 옮겼다.
+"안내인지 눌러야 하는 버튼인지" 헷갈리지 않게 하는 게 목적이므로, 안내·예정 표시에만 쓴다.
+
 | 단계 | Hex |
 |------|-----|
-| 50 | `#F2F5FF` |
-| 100 | `#F2F5FF` |
-| 200 | `#E3EAFF` |
-| 300 | `#E3EAFF` |
-| 400 | `#8AA5FE` |
-| 500 | `#8AA5FE` |
-| 600 | `#5890FF` |
-| 700 | `#5890FF` |
-| 800 | `#5890FF` |
-| 900 | `#5890FF` |
-| 950 | `#5890FF` |
+| 50 | `#F2F7FF` |
+| 100 | `#F2F7FF` |
+| 600 | `#00778B` |
+| 800 | `#00778B` |
+
+> ⚠️ `#5890FF`는 폐기 — 안내 뱃지·문구는 `#00778B`, 액션 버튼이면 blue-800/700을 쓴다.
 
 ### Red
 | 단계 | Hex |
@@ -193,13 +205,13 @@
 | `text/muted` | gray-800 | `#494949` |
 | `text/subtle` | gray-700 | `#808080` |
 | `text/inverted` | gray-50 | `#F8F8F8` |
-| `text/title_purple` | purple-950 | `#341761` |
+| `text/title_purple` | purple-950 | `#0A2A5E` |
 | `text/sub_purple` | — | `#A5AFCC` |
 | `text/error` | red-600 | `#DB3E51` |
 | `text/warning` | orange-600 | `#FF8C4C` |
 | `text/success` | green-600 | `#00AF3D` |
-| `text/info` | blue-600 | `#5890FF` |
-| `text/purple` | purple-800 | `#7E44FB` |
+| `text/info` | blue-600 | `#00778B` |
+| `text/purple` | purple-800 | `#0950A0` |
 
 ### Border (테두리 색상)
 | 토큰 | 참조 | Hex |
@@ -211,14 +223,14 @@
 | `border/inverted` | gray-800 | `#494949` |
 | `border/error` | — | `#FF3A3A` |
 | `border/warning` | orange-600 | `#FF8C4C` |
-| `border/green` | — | `#CBD6F4` |
-| `border/info` | blue-600 | `#5890FF` |
-| `border/purple` | purple-800 | `#7E44FB` |
+| `border/green` | — | `#CBDCF4` |
+| `border/info` | blue-600 | `#00778B` |
+| `border/purple` | purple-800 | `#0950A0` |
 
 ### BG (배경 색상)
 | 토큰 | 참조 | Hex |
 |------|------|-----|
-| `bg/coursebg` | — | `#EDF1FC` |
+| `bg/coursebg` | — | `#EDF3FC` |
 | `bg/panel` | white | `#FFFFFF` |
 | `bg/subtle` | gray-50 | `#F8F8F8` |
 | `bg/muted` | gray-100 | `#F0F0F0` |
@@ -226,8 +238,8 @@
 | `bg/error` | red-100 | `#FFEFEF` |
 | `bg/warning` | orange-100 | `#FFEDD5` |
 | `bg/success` | green-100 | `#F1F9F3` |
-| `bg/info` | blue-100 | `#F2F5FF` |
-| `bg/purple` | purple-50 | `#F7F4FF` |
+| `bg/info` | blue-100 | `#F2F7FF` |
+| `bg/purple` | purple-50 | `#F3F9FF` |
 
 ### Gray 시멘틱
 | 토큰 | 참조 | Hex |
@@ -244,13 +256,13 @@
 | 토큰 | 참조 | Hex |
 |------|------|-----|
 | `purple/contrast` | white | `#FFFFFF` |
-| `purple/fg` | purple-800 | `#7E44FB` |
-| `purple/subtle` | purple-100 | `#F7F4FF` |
-| `purple/muted` | purple-200 | `#F2ECFF` |
-| `purple/emphasized` | purple-600 | `#b28ffd` |
-| `purple/solid` | purple-800 | `#7E44FB` |
-| `purple/focusring` | purple-800 | `#7E44FB` |
-| `purple/menu_tab` | — | `#CBD6F4` |
+| `purple/fg` | purple-800 | `#0950A0` |
+| `purple/subtle` | purple-100 | `#F3F9FF` |
+| `purple/muted` | purple-200 | `#EAF4FF` |
+| `purple/emphasized` | purple-600 | `#7FB3E8` |
+| `purple/solid` | purple-800 | `#0950A0` |
+| `purple/focusring` | purple-800 | `#0950A0` |
+| `purple/menu_tab` | — | `#CBDCF4` |
 
 ### Orange 시멘틱
 | 토큰 | 참조 | Hex |
@@ -296,7 +308,7 @@
 - **Basic Modal**: Header(제목 + 선택적 뱃지 + × 닫기) + Body + Footer(취소 outline + 확인 purple filled)
   - 사이즈: sm(384px) / md(512px) / lg(672px)
   - 타입: Action(버튼 있음) / Inform(버튼 없음) / Addon(하단 텍스트+버튼)
-- 버튼 스타일: Primary = purple-800(`#7E44FB`) filled, Secondary = outline(border gray-300), Danger = red-600(`#DB3E51`) filled
+- 버튼 스타일: Primary = purple-800(`#0950A0`) filled, Secondary = outline(border gray-300), Danger = red-600(`#DB3E51`) filled
 - border-radius: 12px (모달 컨테이너), 8px (버튼)
 
 ### 홈 컴포넌트 (Home)
@@ -398,7 +410,7 @@
 | 상태 | 배경 | 테두리 | 설명 |
 |------|------|--------|------|
 | **default** | white | gray-300(`#D9D9D9`) | 기본 상태 |
-| **hover** | purple-50(`#F7F4FF`) | purple-800(`#7E44FB`) | 마우스 오버 시 |
+| **hover** | purple-50(`#F3F9FF`) | purple-800(`#0950A0`) | 마우스 오버 시 |
 | **progress** | white | gray-300(`#D9D9D9`) | 임시저장 뱃지 추가 |
 
 **카드 구성:**
@@ -413,14 +425,14 @@
 - **Table Cell**: 배경 white, 높이 58px (md) / 41px (sm), 하단 border gray-200(`#E6E6E6`)
   - state: Default / Active(선택 시 purple-50 배경)
   - 타입: text, text_addCount, text_addDescription, text_addArrow, badge, graph(프로그레스바), button, button_icon, button_iconSet, checkbox, radio, input, inputPages
-- **Pagination**: purple-800(`#7E44FB`) filled 현재 페이지, 나머지 gray 텍스트, `< 1 2 3 4 5 >` 형태
+- **Pagination**: purple-800(`#0950A0`) filled 현재 페이지, 나머지 gray 텍스트, `< 1 2 3 4 5 >` 형태
 - **상태 뱃지**: `진행`(green), `마감`(orange), `예정`(gray) — 텍스트 + 라운드 배경
 - **수정 링크**: green-600(`#00AF3D`) 텍스트
 - **점수 이상치 표시**: red border(input box) — 0점 등 이상값 강조
 - **액션 버튼**: `점수 초기화`(outline), `학급 점수 업로드`(green outline + 아이콘)
 
 ### Graph
-- **Bar Chart**: purple-600(`#b28ffd`) ~ purple-800(`#7E44FB`) 막대, blue 보조색
+- **Bar Chart**: purple-600(`#7FB3E8`) ~ purple-800(`#0950A0`) 막대, blue 보조색
   - 타입: class(반별) / score(점수별) / result(결과)
   - 사이즈: sm / md
   - priority: primary(진한) / secondary(연한)
@@ -568,7 +580,7 @@
 - 6탭 네비게이션: 평가 홈(active) / 평가 대상 / 평가 설계 / 과제물 관리 / AI 채점 / 평가 리포트
 - 좌측 패널(445px): **관찰 기록** — 학생 선택 드롭다운, 키워드 태그 클라우드, 키워드 입력+등록, 기록 내역 테이블(날짜·번호·이름·키워드·삭제)
 - 우측 패널(flex-1): **평가 목록** — 평가 카드(평가명, 날짜, 상태 설명, 3단계 스텝 바: 평가 설계→과제물 제출→채점 진행), 신규 평가 안내 텍스트
-- 탭 스타일: active=white, inactive=`#CBD6F4`, border-radius 20px(상단만)
+- 탭 스타일: active=white, inactive=`#CBDCF4`, border-radius 20px(상단만)
 
 #### 평가 설계 (TEMPLATES)
 | 스크린 ID | 화면명 | 상태 | 파일 | 노드 ID |
@@ -716,9 +728,9 @@
 - 260415: 평가 리포트(REPORTS) 목록 목업 신규 작성 (`report_list_v1.html`). Figma `344b7XVs8E9KaFBhgAEhtW` `2087:52878` 기준. 과제별 평균 점수 테이블 + 학생별 리포트 테이블. 리포트 상세 링크 → `student_report_v1.html`. 전 파일 "평가 리포트" 탭 연결 완료.
 - 260423: 재채점 유도 정책 (Stale 알림) 기획 정리 — 평가 단위 `needsRescoring` 단일 플래그, 자동 실행 없음, 교사 확정값 항상 보존, 배너 2종 + 최소 다이얼로그로 UI 구성.
 - 260604: **유초등(유아·초등) 개별 채점 화면** 신규 — `output/scoring_student_elementary_v1.html`. **7월 타깃.**
-  - 출처: CLIPO 초등 채점 `clipo_mockup/output/scoring_elementary_v2_260511.html`를 **구조·기능 유지하고 HIAI 디자인 토큰으로 리스킨** (블루#365eef→보라#7E44FB, Pretendard GOV→나눔스퀘어라운드, GNB/로고/파비콘 교체).
+  - 출처: CLIPO 초등 채점 `clipo_mockup/output/scoring_elementary_v2_260511.html`를 **구조·기능 유지하고 HIAI 디자인 토큰으로 리스킨** (블루#365eef→보라#0950A0, Pretendard GOV→나눔스퀘어라운드, GNB/로고/파비콘 교체).
   - 학생: `10103 유초등` (CLIPO `김피드백`에서 변경). 평가 콘텐츠는 "우리 고장" 사회(4학년).
-  - 색상 체계: **과제물 분석 AI = 보라 / 루브릭 기반 AI = 연하늘(#2b7fd4)** 로 모델 구분. 문항별 피드백 카드는 파스텔 도달칩(민트/버터/피치), 채점요소별 피드백 = **연보라(#f7f4ff/#6b30d9)**. 문항번호도 수준태그처럼 파스텔 알약.
+  - 색상 체계: **과제물 분석 AI = 보라 / 루브릭 기반 AI = 연하늘(#2b7fd4)** 로 모델 구분. 문항별 피드백 카드는 파스텔 도달칩(민트/버터/피치), 채점요소별 피드백 = **연보라(#F3F9FF/#6b30d9)**. 문항번호도 수준태그처럼 파스텔 알약.
   - 레이아웃: 도달/점수 칩 우측 정렬, 버튼(AI 초안 되돌리기→문항 수정) 좌측 정렬. 문항 수정 모달의 문항제목 textarea 높이 반응형(auto-grow).
   - HIAI 미적용 제거: **AI 크레딧 표기 전부 제거**(모든 팝업), **채점 모델 v3.2 설명 카드 제거**, 도장(AI 점수 일괄 확정) 버튼·로고 워드마크 제거.
   - 학생 리포트(미리보기/PDF출력/학생공개 iframe) → **"학생 리포트 디자인하여 재구성 예정"** 플레이스홀더 (실제 화면 별도 디자인 예정).
