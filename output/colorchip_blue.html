@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" href="../screens/favicon_src.png?v=2" type="image/png">
+<title>컬러톤 시안 — 블루 (컬러칩)</title>
+<style>
+  @import url('https://cdn.rawgit.com/moonspam/NanumSquareRound/master/nanumsquareround.min.css');
+  *{font-family:'NanumSquareRound',-apple-system,sans-serif;box-sizing:border-box}
+  body{margin:0;background:#F5F7FA;color:#222;padding:48px 24px 96px}
+  .wrap{max-width:1080px;margin:0 auto}
+
+  h1{margin:0 0 10px;font-size:28px;font-weight:800;color:#0A2A5E;line-height:1.35}
+  .lead{margin:0 0 8px;font-size:16px;color:#494949;line-height:1.6}
+  .warn{display:inline-flex;align-items:center;justify-content:center;line-height:1;vertical-align:middle;
+        height:28px;padding:0 12px;border-radius:100px;font-size:14px;font-weight:800;
+        background:#FFF4E5;color:#A4560A;margin-bottom:28px}
+
+  h2{margin:44px 0 6px;font-size:20px;font-weight:800;color:#0A2A5E}
+  .sub{margin:0 0 18px;font-size:15px;color:#808080;line-height:1.6}
+
+  .chips{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:14px}
+  .chip{background:#fff;border:1px solid #E6E6E6;border-radius:12px;overflow:hidden}
+  .chip .sw{height:88px}
+  .chip .body{padding:12px 14px 14px}
+  .chip .role{font-size:14px;font-weight:800;color:#222;line-height:1.35}
+  .chip .hex{font-size:15px;font-weight:800;color:#0950A0;letter-spacing:.02em;margin-top:4px;font-variant-numeric:tabular-nums}
+  .chip .use{font-size:13px;color:#808080;margin-top:6px;line-height:1.5}
+
+  table{width:100%;border-collapse:collapse;background:#fff;border:1px solid #E6E6E6;border-radius:12px;overflow:hidden}
+  th,td{text-align:center;padding:13px 12px;font-size:15px;border-bottom:1px solid #F0F0F0}
+  th{background:#F8FAFC;font-weight:800;color:#494949;font-size:14px}
+  tr:last-child td{border-bottom:none}
+  td.l{text-align:left}
+  .sq{display:inline-block;width:16px;height:16px;border-radius:4px;vertical-align:middle;margin-right:7px;border:1px solid rgba(0,0,0,.08)}
+  code{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:14px;background:#F2F4F7;padding:2px 6px;border-radius:5px}
+
+  .note{display:flex;align-items:flex-start;gap:10px;background:#F3F9FF;border-radius:12px;padding:16px 18px;
+        font-size:15px;color:#494949;line-height:1.6;margin-top:16px}
+  .note.q{background:#FFF4E5;color:#6B3E06}
+  .note b{color:#0A2A5E}
+  .note.q b{color:#A4560A}
+
+  .ok{color:#00792F;font-weight:800}
+  .bad{color:#C0392B;font-weight:800}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <h1>컬러톤 시안 — 블루</h1>
+  <p class="lead">경기도교육청 새 로고 CI에 맞춘 컬러 팔레트 제안입니다. 화면 적용본은 아직 없고, 색만 정리한 컬러칩입니다.</p>
+  <span class="warn">가안 · 디자인 검토 전</span>
+
+  <h2>Primary 근거</h2>
+  <p class="sub">두 출처의 파랑이 사실상 같은 색이라, 팔레트 기준점으로 잡았습니다.</p>
+  <table>
+    <tr><th>출처</th><th>색</th><th>확인 방법</th></tr>
+    <tr>
+      <td class="l">새 로고 심볼의 파랑</td>
+      <td><span class="sq" style="background:#0850A0"></span><code>#0850A0</code></td>
+      <td class="l">전달받은 <code>KG_logo.png</code> 픽셀 추출</td>
+    </tr>
+    <tr>
+      <td class="l">교육청 누리집 메인 버튼</td>
+      <td><span class="sq" style="background:#0950A0"></span><code>#0950A0</code></td>
+      <td class="l">goe.go.kr CSS 변수 <code>--main-btn-color1</code></td>
+    </tr>
+  </table>
+  <div class="note">
+    <span>두 값의 차이는 R채널 1단계뿐입니다. 누리집 변수값인 <b>#0950A0</b>을 Primary로 쓰면 "로고에서 가져왔고 청 누리집과 같은 색"이라는 근거가 한 줄로 섭니다.</span>
+  </div>
+
+  <h2>Primary 팔레트</h2>
+  <p class="sub">현재 보라 팔레트와 역할을 1:1로 맞춘 대응값입니다.</p>
+  <div class="chips" id="primary"></div>
+
+  <h2>보라 → 블루 대응표</h2>
+  <p class="sub">흰 배경 기준 명도 대비입니다. 4.5 이상이면 본문 텍스트로 쓸 수 있습니다.</p>
+  <table id="maptable">
+    <tr><th>역할</th><th>현재 (보라)</th><th>대비</th><th>시안 (블루)</th><th>대비</th><th>출처</th></tr>
+  </table>
+  <div class="note">
+    <span>Primary 대비가 <b>5.11 → 7.87</b>로 올라갑니다. 지금은 본문 크기 텍스트에 보라를 쓰면 아슬아슬했는데, 블루는 여유 있게 통과합니다.</span>
+  </div>
+
+  <h2>상태 색 (Semantic)</h2>
+  <p class="sub">완료·오류·주의는 그대로 두고, 안내(Info)만 조정이 필요합니다.</p>
+  <div class="chips" id="semantic"></div>
+  <div class="note q">
+    <span><b>판단 필요</b> — 기존 안내(Info) 색 <code>#5890FF</code>가 새 Primary와 같은 파랑 계열이라, 뱃지가 "안내"인지 "주요 액션"인지 구분되지 않습니다. 아래 청록 <code>#00778B</code>는 제안값이고, 다른 방향(회색 계열로 낮추기 등)도 가능합니다.</span>
+  </div>
+
+</div>
+
+<script>
+const PRIMARY = [
+  ['Primary',            '#0950A0', '메인 CTA · 활성 탭 · 링크'],
+  ['Primary Dark',       '#00319F', '버튼 hover · 눌림'],
+  ['Title Dark',         '#0A2A5E', '큰 제목 · 카드 타이틀'],
+  ['Fill',               '#2F77D5', '진행바 채움 · 그라디언트 끝'],
+  ['Accent',             '#388EFF', '밝은 강조 · 포인트'],
+  ['Sub',                '#7FB3E8', '보조 강조 · 완료 단계 점'],
+  ['Tint 3',             '#CEE1F9', '보더 · 옅은 구분선'],
+  ['Tint 2',             '#D9EAFB', '진행바 트랙 · 칩 배경'],
+  ['Tint 1',             '#F3F9FF', '강조 영역 배경 · 카드 hover'],
+  ['Page BG',            '#EDF3FC', '페이지 바탕'],
+];
+
+const SEMANTIC = [
+  ['완료 · 통과',  '#00AF3D', '유지'],
+  ['오류 · 위험',  '#DB3E51', '유지'],
+  ['주의 · 마감',  '#FF8C4C', '유지'],
+  ['안내 · 예정',  '#00778B', '조정 제안 (기존 #5890FF)'],
+  ['강조 보조',    '#FACC1B', '유지'],
+];
+
+const MAP = [
+  ['Primary',      '#7E44FB', '#0950A0', '로고 심볼 · 청 누리집'],
+  ['Primary Dark', '#6D33E8', '#00319F', '청 누리집 딥네이비'],
+  ['링크 · 텍스트 버튼', '#6C2DF4', '#0A4A94', '파생'],
+  ['진행바 채움',  '#8751FA', '#2F77D5', '청 --main-btn-color3'],
+  ['밝은 강조',    '#9A6BFC', '#388EFF', '청 누리집 포인트'],
+  ['보조 강조',    '#B28FFD', '#7FB3E8', '파생'],
+  ['큰 제목',      '#341761', '#0A2A5E', '파생'],
+  ['배경 tint 1',  '#F7F4FF', '#F3F9FF', '청 --main-btn-color2'],
+  ['배경 tint 2',  '#EDE7FF', '#D9EAFB', '파생'],
+  ['배경 tint 3',  '#E0D9FF', '#CEE1F9', '청 누리집 연파랑'],
+];
+
+function contrast(hex){
+  const c = [1,3,5].map(i=>parseInt(hex.substr(i,2),16)/255)
+    .map(v => v<=0.03928 ? v/12.92 : Math.pow((v+0.055)/1.055,2.4));
+  const L = .2126*c[0] + .7152*c[1] + .0722*c[2];
+  return Math.round(((1.05)/(L+.05))*100)/100;
+}
+const rate = v => v>=4.5 ? '<span class="ok">'+v.toFixed(2)+'</span>'
+                : '<span class="bad">'+v.toFixed(2)+'</span>';
+
+const chipHtml = (role,hex,use) => `
+  <div class="chip">
+    <div class="sw" style="background:${hex}"></div>
+    <div class="body">
+      <div class="role">${role}</div>
+      <div class="hex">${hex}</div>
+      <div class="use">${use}</div>
+    </div>
+  </div>`;
+
+document.getElementById('primary').innerHTML  = PRIMARY.map(r=>chipHtml(...r)).join('');
+document.getElementById('semantic').innerHTML = SEMANTIC.map(r=>chipHtml(...r)).join('');
+
+document.getElementById('maptable').insertAdjacentHTML('beforeend', MAP.map(([role,p,b,src]) => `
+  <tr>
+    <td class="l">${role}</td>
+    <td><span class="sq" style="background:${p}"></span><code>${p}</code></td>
+    <td>${rate(contrast(p))}</td>
+    <td><span class="sq" style="background:${b}"></span><code>${b}</code></td>
+    <td>${rate(contrast(b))}</td>
+    <td class="l" style="font-size:14px;color:#808080">${src}</td>
+  </tr>`).join(''));
+</script>
+</body>
+</html>
