@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" href="../screens/favicon_src.png?v=2" type="image/png">
+  <title>나의 평가 홈 — 컬러톤 시안(블루) | AI 서·논술형 평가지원시스템</title>
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+  <style>
+    @import url('https://cdn.rawgit.com/moonspam/NanumSquareRound/master/nanumsquareround.min.css');
+    * { font-family: 'NanumSquareRound', -apple-system, sans-serif; box-sizing: border-box; }
+    body { margin:0; background:#EDF3FC; }
+
+    /* 공통 버튼 — 콘텐츠 중앙정렬 5종 세트 */
+    .btn { display:inline-flex; align-items:center; justify-content:center; line-height:1; vertical-align:middle;
+           gap:6px; height:40px; padding:0 18px; border-radius:8px; font-size:15px; font-weight:700;
+           font-family:inherit; cursor:pointer; border:1px solid transparent; white-space:nowrap; }
+    .btn-primary { background:#0950A0; color:#fff; }
+    .btn-primary:hover { background:#00319F; }
+    .btn-outline { background:#fff; color:#0950A0; border-color:#B9D5F5; }
+    .btn-outline:hover { background:#F3F9FF; }
+
+    /* 수업 카드 */
+    .grid { display:grid; grid-template-columns:repeat(3, 1fr); gap:20px; }
+    .cls { background:#fff; border:1px solid #E6E6E6; border-radius:16px; padding:24px 24px 20px;
+           display:flex; flex-direction:column; gap:16px; cursor:pointer; transition:border-color .15s, box-shadow .15s; }
+    .cls:hover { border-color:#7FB3E8; box-shadow:0 6px 18px rgba(9,80,160,.10); }
+    .cls-top { display:flex; align-items:flex-start; justify-content:space-between; gap:12px; }
+    .cls-name { font-size:20px; font-weight:800; color:#0A2A5E; line-height:1.35; word-break:keep-all; }
+    .cls-meta { font-size:14px; color:#808080; margin-top:6px; }
+    .cls-body { display:flex; flex-direction:column; gap:10px; padding-top:16px; border-top:1px solid #F0F0F0; }
+    .cls-row { display:flex; align-items:center; gap:8px; font-size:16px; color:#494949; }
+    .cls-row b { color:#0950A0; font-weight:800; }
+    .cls-foot { display:flex; align-items:center; justify-content:space-between; gap:12px; }
+
+    /* 상태 뱃지 */
+    .bdg { display:inline-flex; align-items:center; justify-content:center; line-height:1; vertical-align:middle;
+           height:26px; padding:0 10px; border-radius:100px; font-size:13px; font-weight:700; white-space:nowrap; flex-shrink:0; }
+    .bdg-run  { background:#F3F9FF; color:#0950A0; border:1px solid #CEE1F9; }
+    .bdg-done { background:#F1F9F3; color:#00AF3D; border:1px solid #CFEAD8; }
+    .bdg-none { background:#F5F5F5; color:#808080; border:1px solid #E6E6E6; }
+
+    /* 단계 점 */
+    .dots { display:inline-flex; align-items:center; gap:0; }
+    .d { width:8px; height:8px; border-radius:50%; background:#E0E0E0; flex-shrink:0; }
+    .d.done { background:#7FB3E8; }
+    .d.now { width:10px; height:10px; background:#0950A0; box-shadow:0 0 0 3px #E7F2FF; }
+    .d-line { width:12px; height:2px; background:#EDEDED; flex-shrink:0; }
+    .d-line.done { background:#B9D5F5; }
+    .stage-name { font-size:14px; font-weight:700; color:#0950A0; white-space:nowrap; margin-left:8px; }
+
+    /* 안내 박스 — 좌측 컬러 띠 없이 배경+아이콘만 */
+    .info { display:flex; align-items:flex-start; gap:10px; background:#F3F9FF; border-radius:12px;
+            padding:16px 18px; font-size:15px; color:#494949; line-height:1.55; }
+    .info i { color:#0950A0; flex-shrink:0; margin-top:1px; }
+
+    /* 빈 상태 */
+    .empty { background:#fff; border:1px solid #E6E6E6; border-radius:16px; padding:64px 24px;
+             display:flex; flex-direction:column; align-items:center; gap:14px; text-align:center; }
+
+    /* 목업 내비게이터 */
+    #mockpick{position:fixed;left:24px;bottom:24px;z-index:3000;background:#1F2233;border-radius:14px;padding:8px;
+      box-shadow:0 10px 30px rgba(0,0,0,.35);width:max-content;max-width:340px;cursor:move;user-select:none}
+    #mockpick .mp-head{font-size:11px;font-weight:800;color:#8A8FB0;letter-spacing:.04em;display:flex;align-items:center;
+      justify-content:space-between;gap:16px;padding:6px 8px;cursor:pointer}
+    #mockpick .mp-body{display:flex;flex-direction:column;gap:6px;margin-top:6px}
+    #mockpick .mp-cap{font-size:10px;font-weight:800;color:#6B6F8C;letter-spacing:.05em;padding:7px 8px 2px}
+    #mockpick .mp-btn{width:100%;text-align:left;white-space:nowrap;padding:9px 12px;border-radius:9px;border:1px solid #3A3F58;
+      background:#2A2E44;color:#C9CCE0;font-size:13px;font-weight:700;font-family:inherit;cursor:pointer;line-height:1.35}
+    #mockpick .mp-btn:hover{background:#33384f}
+    #mockpick .mp-btn.on{background:#0950A0;color:#fff;border-color:#0950A0}
+  </style>
+</head>
+<body>
+
+<!-- ===== GNB ===== -->
+<div style="background:white; height:98px; border-bottom:1px solid #D9D9D9; display:flex; align-items:center; justify-content:center; padding:0 36px;">
+  <div style="display:flex; align-items:center; justify-content:space-between; width:100%; max-width:1200px; padding:0 36px;">
+    <div style="display:flex; align-items:center; gap:8px; flex-shrink:0;">
+      <img src="../screens/logo_kg.png" style="height:42px; width:auto; display:block; flex-shrink:0;" alt="AI 서·논술형 평가지원시스템">
+    </div>
+    <nav style="display:flex; gap:52px; align-items:center;">
+      <span style="font-size:20px; font-weight:800; color:#0950A0; cursor:pointer;">나의 평가</span>
+      <span style="font-size:20px; font-weight:700; color:#000; cursor:pointer;">평가 자료실</span>
+      <span style="font-size:20px; font-weight:700; color:#000; cursor:pointer;">고객센터</span>
+    </nav>
+    <div style="display:flex; align-items:center; gap:12px; flex-shrink:0;">
+      <div style="width:36px;height:36px;border-radius:50%;background:#F3F9FF;display:inline-flex;align-items:center;justify-content:center;"><i data-lucide="user" style="width:20px;height:20px;color:#0950A0;"></i></div>
+      <span style="font-size:20px; font-weight:700; color:#000;">김동* 님</span>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 타이틀 바 ===== -->
+<div style="background:linear-gradient(to right, #0950A0 4%, #2F77D5 97.86%); height:86px; display:flex; align-items:center; justify-content:center; padding:0 36px;">
+  <div style="width:100%; max-width:1200px; padding:0 36px;">
+    <span style="font-size:28px; font-weight:800; color:white; line-height:1.35;">나의 평가</span>
+  </div>
+</div>
+
+<!-- ===== 본문 ===== -->
+<div style="display:flex; flex-direction:column; align-items:center; padding:40px 36px 80px; min-height:700px;">
+  <div style="width:100%; max-width:1200px; padding:0 36px; display:flex; flex-direction:column; gap:24px;">
+
+    <div style="display:flex; align-items:flex-end; justify-content:space-between; gap:16px; flex-wrap:wrap;">
+      <div>
+        <h1 style="margin:0; font-size:26px; font-weight:800; color:#0A2A5E; line-height:1.35;">담당 수업</h1>
+        <p style="margin:8px 0 0; font-size:16px; color:#494949; line-height:1.55;">수업을 선택하면 평가 진행 상황을 확인하고 이어서 작업할 수 있습니다.</p>
+      </div>
+      <button class="btn btn-outline" onclick="alert('시안 화면입니다.')"><i data-lucide="refresh-cw" style="width:18px;height:18px;"></i>수업 정보 새로고침</button>
+    </div>
+
+    <!-- 수업 있음 -->
+    <div id="scene-filled" style="display:flex; flex-direction:column; gap:20px;">
+      <div class="info">
+        <i data-lucide="info" style="width:20px;height:20px;"></i>
+        <span>수업 정보는 학교 학사 정보와 연동되어 자동으로 표시됩니다. 담당 수업이 보이지 않으면 고객센터로 문의해 주세요.</span>
+      </div>
+
+      <div class="grid" id="cls-grid"></div>
+    </div>
+
+    <!-- 수업 없음 -->
+    <div id="scene-empty" style="display:none;">
+      <div class="empty">
+        <div style="width:64px;height:64px;border-radius:50%;background:#F3F9FF;display:inline-flex;align-items:center;justify-content:center;">
+          <i data-lucide="book-open" style="width:30px;height:30px;color:#0950A0;"></i>
+        </div>
+        <div style="font-size:20px; font-weight:800; color:#0A2A5E;">담당 수업이 없습니다</div>
+        <div style="font-size:16px; color:#808080; line-height:1.6;">학사 정보에 담당 수업이 등록되면 이 화면에 표시됩니다.<br>수업이 등록되어 있는데 보이지 않으면 고객센터로 문의해 주세요.</div>
+        <button class="btn btn-primary" style="margin-top:6px;" onclick="alert('시안 화면입니다.')">고객센터 문의</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ===== 목업 내비게이터 ===== -->
+<div id="mockpick">
+  <div class="mp-head" onclick="document.querySelector('#mockpick .mp-body').classList.toggle('hide');this.querySelector('span:last-child').textContent=document.querySelector('#mockpick .mp-body').classList.contains('hide')?'▲':'▼';">
+    <span>MOCKUP · 컬러톤 시안(블루)</span><span>▼</span>
+  </div>
+  <div class="mp-body">
+    <div class="mp-cap">화면</div>
+    <button class="mp-btn on" onclick="location.hash='#filled'">나의 평가 홈</button>
+    <button class="mp-btn" onclick="location.href='eval_home_blue_v1.html'">수업 홈 →</button>
+    <div class="mp-cap">케이스</div>
+    <button class="mp-btn on" data-case="filled" onclick="location.hash='#filled'">담당 수업 있음</button>
+    <button class="mp-btn" data-case="empty" onclick="location.hash='#empty'">담당 수업 없음</button>
+  </div>
+</div>
+
+<script>
+const CLASSES = [
+  { name:'1학년 국어', meta:'1-1 · 1-2 · 1-3 학급 · 42명', total:2, run:1,
+    last:'주장하는 글 쓰기', stage:2, stageName:'AI 채점', status:'run' },
+  { name:'2학년 국어', meta:'2-1 · 2-4 학급 · 28명', total:3, run:1,
+    last:'독서 감상문 쓰기', stage:1, stageName:'과제물 관리', status:'run' },
+  { name:'3학년 국어', meta:'3-2 학급 · 14명', total:1, run:0,
+    last:'설명하는 글 쓰기', stage:3, stageName:'평가 리포트', status:'done' },
+  { name:'1학년 사회', meta:'1-1 · 1-2 학급 · 28명', total:1, run:1,
+    last:'우리 지역 문제 탐구', stage:0, stageName:'평가 설계', status:'run' },
+  { name:'2학년 사회', meta:'2-3 학급 · 14명', total:0, run:0,
+    last:null, stage:0, stageName:'평가 설계', status:'none' },
+];
+
+const dots = (stage) => {
+  let h = '<span class="dots">';
+  for (let i=0; i<4; i++) {
+    if (i) h += '<span class="d-line'+(i<=stage?' done':'')+'"></span>';
+    h += '<span class="d'+(i<stage?' done':(i===stage?' now':''))+'"></span>';
+  }
+  return h + '</span>';
+};
+
+const BADGE = {
+  run:  '<span class="bdg bdg-run">진행 중</span>',
+  done: '<span class="bdg bdg-done">완료</span>',
+  none: '<span class="bdg bdg-none">평가 없음</span>',
+};
+
+document.getElementById('cls-grid').innerHTML = CLASSES.map(c => `
+  <div class="cls" onclick="location.href='eval_home_blue_v1.html'">
+    <div class="cls-top">
+      <div>
+        <div class="cls-name">${c.name}</div>
+        <div class="cls-meta">${c.meta}</div>
+      </div>
+      ${BADGE[c.status]}
+    </div>
+    <div class="cls-body">
+      <div class="cls-row"><i data-lucide="clipboard-list" style="width:18px;height:18px;color:#808080;"></i>평가 <b>${c.total}건</b>${c.run ? ' · 진행 중 <b>'+c.run+'건</b>' : ''}</div>
+      ${c.last ? `<div class="cls-row" style="align-items:flex-start;">
+        <i data-lucide="corner-down-right" style="width:18px;height:18px;color:#808080;flex-shrink:0;margin-top:2px;"></i>
+        <span style="word-break:keep-all;">최근 · ${c.last}</span></div>
+      <div style="display:flex;align-items:center;padding-left:26px;">${dots(c.stage)}<span class="stage-name">${c.stageName}</span></div>`
+      : `<div class="cls-row" style="color:#808080;"><i data-lucide="minus" style="width:18px;height:18px;color:#B3B3B3;"></i>등록된 평가가 없습니다</div>`}
+    </div>
+  </div>`).join('');
+
+// 해시 라우팅
+function route(){
+  const h = (location.hash || '#filled').replace('#','');
+  const empty = h === 'empty';
+  document.getElementById('scene-filled').style.display = empty ? 'none' : 'flex';
+  document.getElementById('scene-empty').style.display  = empty ? 'block' : 'none';
+  document.querySelectorAll('#mockpick .mp-btn[data-case]').forEach(b =>
+    b.classList.toggle('on', b.dataset.case === (empty ? 'empty' : 'filled')));
+  lucide.createIcons();
+}
+window.addEventListener('hashchange', route);
+route();
+
+// 내비게이터 드래그
+(function(){
+  const el = document.getElementById('mockpick');
+  let dx=0, dy=0, on=false;
+  el.addEventListener('mousedown', e => {
+    if (e.target.closest('button')) return;
+    on = true; const r = el.getBoundingClientRect();
+    dx = e.clientX - r.left; dy = e.clientY - r.top;
+    el.style.right='auto'; el.style.bottom='auto'; e.preventDefault();
+  });
+  document.addEventListener('mousemove', e => {
+    if(!on) return;
+    el.style.left = (e.clientX-dx)+'px'; el.style.top = (e.clientY-dy)+'px';
+  });
+  document.addEventListener('mouseup', () => on=false);
+})();
+
+document.querySelector('#mockpick .mp-body').classList.remove('hide');
+const st = document.createElement('style');
+st.textContent = '#mockpick .mp-body.hide{display:none}';
+document.head.appendChild(st);
+</script>
+</body>
+</html>

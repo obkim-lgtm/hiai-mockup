@@ -152,6 +152,17 @@
 // ── 데이터: 서비스 흐름 순서 ──
 const SECTIONS = [
   {
+    title:'컬러톤 시안 (블루)', color:'#0950A0', note:'컨펌 요청',
+    cards:[
+      { name:'나의 평가 홈 · 수업 홈', file:'my_eval_home_blue_v1.html', desc:'경기도교육청 새 로고 CI에 맞춘 <b>컬러톤 조정 시안</b>. 화면 구성·기능은 그대로이고 색만 보라 → 파랑으로 바꾼 상태입니다.<br>Primary <code>#0950A0</code> — 새 로고 심볼의 파랑이자 교육청 누리집 메인 버튼 색과 동일',
+        states:[
+          {label:'나의 평가 홈', hash:'#filled', def:true},
+          {label:'담당 수업 없음', hash:'#empty'},
+          {label:'수업 홈', file:'eval_home_blue_v1.html', hash:'#filled'},
+        ]},
+    ]
+  },
+  {
     title:'평가 홈 / 설문조사', color:'#7E44FB', note:'평가 홈 8/24 배포 완료',
     cards:[
       { name:'평가 홈', file:'eval_home_v10.html', desc:'수업 정보·평가 대상·평가 진행 상황을 한 화면에서 확인할 수 있도록 개편<br><b>채점 만족도 설문은 문항 확정 후 반영 예정 — 아래 설문 화면은 가안</b>',
