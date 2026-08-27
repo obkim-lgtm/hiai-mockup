@@ -32,7 +32,8 @@
 
   /* 수업 카드 */
   .cards{display:flex;flex-wrap:wrap;gap:28px}
-  .ccard{width:336px;height:186px;display:flex;align-items:stretch;position:relative}
+  .ccard{width:336px;height:186px;display:flex;align-items:stretch;position:relative;cursor:pointer;transition:box-shadow .15s ease}
+  .ccard:hover{box-shadow:0 4px 18px rgba(95,102,178,.20)}
   .ccard-thumb{width:124px;background:#388EFF;border-radius:20px 0 0 20px;position:relative;overflow:hidden;flex-shrink:0}
   .ccard-thumb .paper{position:absolute;left:calc(50% + 1.3px);top:50%;transform:translate(-50%,-50%);width:52px;height:58px}
   .ccard-thumb .grade{position:absolute;left:calc(50% + 20.8px);top:calc(50% + 9px);transform:translate(-50%,-50%);width:27px;height:28px}
@@ -277,7 +278,8 @@
 
   function renderClasses() {
     document.getElementById('class-list').innerHTML = CLASSES.map((c, i) => `
-      <div class="ccard">
+      <div class="ccard" onclick="openClass(${i})" role="link" tabindex="0"
+           onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openClass(${i});}">
         <div class="ccard-thumb">
           <img class="paper" src="../screens/home/card_paper_blue.svg" alt="">
           <img class="grade" src="../screens/home/card_grade_blue.svg" alt="">
@@ -304,6 +306,11 @@
     lucide.createIcons();
   }
   renderClasses();
+
+  /* 수업 카드 → 수업 상세(평가 홈). 카드마다 과목이 달라 수업명을 넘겨 상단 타이틀을 맞춘다 */
+  function openClass(i) {
+    location.href = 'eval_home_v10.html?class=' + encodeURIComponent(CLASSES[i].title);
+  }
 
   /* ── 드롭다운 ── */
   function closeAllDd() {

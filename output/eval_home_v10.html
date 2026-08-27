@@ -202,7 +202,7 @@
 <!-- ===== 타이틀 바 ===== -->
 <div style="background:linear-gradient(to right, #0950A0 4%, #2F77D5 97.86%); height:86px; display:flex; align-items:center; justify-content:center; padding:0 36px;">
   <div style="width:100%; max-width:1200px; padding:0 36px;">
-    <span style="font-size:28px; font-weight:700; color:white; line-height:1.35;">1학년 국어</span>
+    <span id="class-name" style="font-size:28px; font-weight:700; color:white; line-height:1.35;">1학년 국어</span>
   </div>
 </div>
 
@@ -582,7 +582,7 @@
       <!-- 수업명: 수정 가능 -->
       <div>
         <div class="field-label">수업명</div>
-        <input class="field-input" type="text" value="1학년 국어">
+        <input id="class-name-input" class="field-input" type="text" value="1학년 국어">
       </div>
 
       <!-- 반 편성: 수정 불가 -->
@@ -928,6 +928,17 @@
 
 <script>
   lucide.createIcons();
+
+  /* 선생님 홈에서 수업 카드로 들어오면 그 수업명으로 상단 타이틀을 맞춘다 (없으면 기본값 유지) */
+  (function () {
+    var name = new URLSearchParams(location.search).get('class');
+    if (!name) return;
+    var title = document.getElementById('class-name');
+    var input = document.getElementById('class-name-input');
+    if (title) title.textContent = name;
+    if (input) input.value = name;
+    document.title = name;
+  })();
 
   function toggleNewEvalDropdown(e) {
     e.stopPropagation();
