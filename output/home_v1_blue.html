@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" href="../screens/favicon_src.png?v=2" type="image/png">
+<title>선생님 홈 (blue) — 컬러톤 시안</title>
+<link rel="stylesheet" href="https://cdn.rawgit.com/moonspam/NanumSquareRound/master/nanumsquareround.min.css">
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<style>
+  *{box-sizing:border-box;font-family:'NanumSquareRound',-apple-system,sans-serif}
+  body{margin:0;background:#EDF3FC}
+
+  /* 버튼 공통 — 콘텐츠 중앙정렬 5종 세트 */
+  .btn{display:inline-flex;align-items:center;justify-content:center;line-height:1;vertical-align:middle;
+       border:none;cursor:pointer;font-family:inherit;white-space:nowrap;gap:8px}
+  .btn-primary{background:#0950A0;color:#fff;height:44px;padding:0 16px;border-radius:8px;font-size:18px;font-weight:800}
+  .btn-primary:hover{background:#00319F}
+  .btn-blue{background:#2F77D5;color:#fff;height:44px;padding:0 16px;border-radius:8px;font-size:18px;font-weight:800;flex:1 0 0;min-width:0}
+  .btn-blue:hover{background:#1F63BE}
+
+  .panel{background:#fff;border:1px solid #D9D9D9;border-radius:20px;box-shadow:0 4px 18px rgba(95,102,178,.16)}
+
+  .select{background:#fff;border:1px solid #D9D9D9;border-radius:8px;height:44px;width:210px;
+          display:flex;align-items:center;gap:4px;padding:0 8px 0 16px;cursor:pointer;font-size:18px;font-weight:700;color:#333}
+  .select span{flex:1 0 0;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-align:left}
+
+  .badge{display:inline-flex;align-items:center;justify-content:center;line-height:1;height:24px;padding:0 8px;gap:3px;
+         border-radius:9999px;font-size:14px;font-weight:800;white-space:nowrap}
+  .badge-grade{background:#EAF4FF;color:#0A4A94}
+  .badge-new{background:#F2F7FF;color:#00778B}
+
+  /* 수업 카드 */
+  .cards{display:flex;flex-wrap:wrap;gap:28px}
+  .ccard{width:336px;height:186px;display:flex;align-items:stretch;position:relative}
+  .ccard-thumb{width:124px;background:#388EFF;border-radius:20px 0 0 20px;position:relative;overflow:hidden;flex-shrink:0}
+  .ccard-thumb .paper{position:absolute;left:calc(50% + 1.3px);top:50%;transform:translate(-50%,-50%);width:52px;height:58px}
+  .ccard-thumb .grade{position:absolute;left:calc(50% + 20.8px);top:calc(50% + 9px);transform:translate(-50%,-50%);width:27px;height:28px}
+  .ccard-body{flex:1 0 0;min-width:0;background:#fff;border:1px solid #D9D9D9;border-left:none;border-radius:0 20px 20px 0;
+              padding:16px;display:flex;flex-direction:column;justify-content:space-between}
+  .ccard-title{font-size:20px;font-weight:800;color:#000;line-height:1.25;word-break:keep-all;margin:0}
+  .ccard-count{display:flex;align-items:center;gap:4px;padding:4px 0;font-size:14px;font-weight:700;color:#808080;white-space:nowrap}
+  .icon-btn{display:inline-flex;align-items:center;justify-content:center;line-height:1;vertical-align:middle;
+            width:24px;height:24px;border:none;background:none;padding:0;cursor:pointer;flex-shrink:0}
+
+  /* 드롭다운 공통 */
+  .dd{position:absolute;z-index:80;background:#fff;border-radius:6px;padding:4px;
+      box-shadow:0 0 1px 0 #494949, 0 8px 32px 0 rgba(95,102,178,.16)}
+  .dd-opt{display:flex;align-items:center;justify-content:space-between;gap:12px;
+          padding:10px 12px;border-radius:4px;font-size:16px;font-weight:700;color:#333;cursor:pointer;white-space:nowrap}
+  .dd-opt:hover{background:#F3F9FF}
+  .dd-opt.on{color:#0A4A94}
+
+  .notice-item{display:flex;align-items:center;gap:12px;height:36px;cursor:pointer}
+  .notice-item:hover .notice-title{text-decoration:underline}
+  .notice-title{font-size:18px;font-weight:700;color:#333;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .notice-date{font-size:16px;font-weight:400;color:#333;line-height:1.55;flex-shrink:0}
+
+  .foot-link{font-size:16px;font-weight:400;color:#000;cursor:pointer;white-space:nowrap;line-height:27px}
+  .foot-link.b{font-weight:800}
+
+  /* 까망이 목업 내비게이터 */
+  #mockpick{position:fixed;left:24px;bottom:24px;z-index:3000;background:#1F2233;border-radius:14px;padding:8px;box-shadow:0 10px 30px rgba(0,0,0,.35);width:max-content;max-width:360px;cursor:move;user-select:none}
+  #mockpick .mp-head{font-size:11px;font-weight:800;color:#8A8FB0;letter-spacing:.04em;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:6px 8px;cursor:pointer}
+  #mockpick .mp-body{display:flex;flex-direction:column;gap:6px;margin-top:6px;max-height:70vh;overflow-y:auto}
+  #mockpick .mp-cap{font-size:10px;font-weight:800;color:#6B6F8C;letter-spacing:.05em;padding:7px 8px 2px}
+  #mockpick .mp-btn{width:100%;text-align:left;white-space:nowrap;padding:9px 12px;border-radius:9px;border:1px solid #3A3F58;background:#2A2E44;color:#C9CCE0;font-size:13px;font-weight:700;font-family:inherit;cursor:pointer;line-height:1.35}
+  #mockpick .mp-btn:hover{background:#33384f}
+  #mockpick .mp-btn.on{background:#0950A0;color:#fff;border-color:#0950A0}
+  #mockpick .mp-sub{font-size:11px;font-weight:600;color:#8A8FB0;margin-left:8px}
+  #mockpick .mp-btn.on .mp-sub{color:#D9EAFB}
+</style>
+</head>
+<body>
+
+<!-- ===== GNB ===== -->
+<div style="background:white; height:98px; border-bottom:1px solid #D9D9D9; display:flex; align-items:center; justify-content:center; padding:0 36px;">
+  <div style="display:flex; align-items:center; justify-content:space-between; width:100%; max-width:1200px; padding:0 36px;">
+    <div style="display:flex; align-items:center; gap:8px; flex-shrink:0;">
+      <img src="../screens/logo_kg.png" style="height:42px; width:auto; display:block; flex-shrink:0;" alt="AI 서·논술형 평가지원시스템">
+    </div>
+    <nav style="display:flex; gap:52px; align-items:center;">
+      <span style="font-size:20px; font-weight:800; color:#0950A0; cursor:pointer;">나의 평가</span>
+      <span style="font-size:20px; font-weight:700; color:#000; cursor:pointer;">평가 자료실</span>
+      <span style="font-size:20px; font-weight:700; color:#000; cursor:pointer;">고객센터</span>
+    </nav>
+    <div style="display:flex; align-items:center; gap:12px; flex-shrink:0;">
+      <img src="../screens/home/ic_profile_blue.svg" style="width:36px;height:36px;display:block;" alt="">
+      <span style="font-size:20px; font-weight:700; color:#000;">김동* 님</span>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 타이틀 바 ===== -->
+<div style="background:linear-gradient(to right, #0950A0 4%, #2F77D5 97.86%); height:86px; display:flex; align-items:center; justify-content:center; padding:10px 36px;">
+  <div style="flex:1 0 0; max-width:1200px; min-width:960px; padding:0 36px;">
+    <span style="font-size:28px; font-weight:800; color:white; line-height:1.35;">나의 평가</span>
+  </div>
+</div>
+
+<!-- ===== 학교 정보 · 공지 사항 ===== -->
+<div style="background:#CBDCF4; padding:48px 36px; display:flex; flex-direction:column; align-items:center; gap:40px;">
+  <div style="display:flex; gap:20px; align-items:stretch; width:1128px;">
+
+    <!-- 학교 정보 -->
+    <div class="panel" style="width:448px; padding:28px; display:flex; flex-direction:column; justify-content:space-between; flex-shrink:0;">
+      <div style="display:flex; align-items:center; gap:12px;">
+        <img src="../screens/home/ic_school.svg" style="width:28px;height:28px;display:block;" alt="">
+        <span style="font-size:24px; font-weight:800; color:#000;">학교 정보</span>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:28px;">
+        <div style="display:flex; align-items:center; gap:12px; position:relative;">
+          <span style="font-size:28px; font-weight:800; color:#000; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">경기도고등학교</span>
+          <button class="icon-btn" style="width:32px;height:32px;" onclick="toggleSchoolDd(event)" aria-label="학교 전환">
+            <i data-lucide="chevron-down" id="school-caret" style="width:32px;height:32px;color:#000;"></i>
+          </button>
+
+          <!-- 학교 전환 드롭다운 -->
+          <div id="school-dd" class="dd" style="display:none; top:44px; left:0; width:278px;">
+            <div class="dd-opt on" onclick="pickSchool(this)">
+              <span>(현) 경기도고등학교</span>
+              <i data-lucide="check" style="width:18px;height:18px;flex-shrink:0;"></i>
+            </div>
+            <div class="dd-opt" onclick="pickSchool(this)">
+              <span>(전) 경기도중학교</span>
+            </div>
+          </div>
+        </div>
+        <div style="display:flex; gap:12px; align-items:stretch;">
+          <button class="btn btn-blue">학생 관리 <i data-lucide="chevron-right" style="width:22px;height:22px;"></i></button>
+          <button class="btn btn-blue">선생님 목록 <i data-lucide="chevron-right" style="width:22px;height:22px;"></i></button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 공지 사항 -->
+    <div class="panel" style="flex:1 0 0; min-width:0; padding:28px; display:flex; flex-direction:column; gap:24px;">
+      <div style="display:flex; align-items:center; justify-content:space-between;">
+        <div style="display:flex; align-items:center; gap:12px;">
+          <img src="../screens/home/ic_notice.svg" style="width:28px;height:28px;display:block;" alt="">
+          <span style="font-size:24px; font-weight:800; color:#000;">공지 사항</span>
+        </div>
+        <!-- 디자이너 주석: 화살표가 많아져 텍스트 링크로 대체 -->
+        <span style="font-size:16px; font-weight:700; color:#494949; cursor:pointer;">전체 보기</span>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:8px;">
+        <div class="notice-item">
+          <div style="flex:1 0 0; min-width:0; display:flex; align-items:center; gap:8px;">
+            <span class="badge badge-new">신규</span>
+            <span class="notice-title">신학기 서비스 점검 일정 및 이용 안내</span>
+          </div>
+          <span class="notice-date">2026.02.02</span>
+        </div>
+        <div class="notice-item">
+          <div style="flex:1 0 0; min-width:0; display:flex; align-items:center; gap:8px;">
+            <span class="notice-title">고객센터 운영 안내</span>
+          </div>
+          <span class="notice-date">2025.12.04</span>
+        </div>
+        <div class="notice-item">
+          <div style="flex:1 0 0; min-width:0; display:flex; align-items:center; gap:8px;">
+            <span class="notice-title">서비스 점검 안내 12/09(화)</span>
+          </div>
+          <span class="notice-date">2025.11.10</span>
+        </div>
+        <div class="notice-item">
+          <div style="flex:1 0 0; min-width:0; display:flex; align-items:center; gap:8px;">
+            <span class="notice-title">내부 일정으로 인한 고객센터 운영 안내</span>
+          </div>
+          <span class="notice-date">2025.10.02</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ===== 나의 평가 목록 ===== -->
+<div style="background:#EDF3FC; padding:36px 0; display:flex; flex-direction:column; align-items:center; gap:24px;">
+  <div style="width:1200px; padding:28px 36px; display:flex; flex-direction:column; gap:24px;">
+
+    <div style="display:flex; align-items:center; justify-content:space-between;">
+      <div style="display:flex; align-items:center; gap:12px;">
+        <img src="../screens/home/ic_evallist_blue.svg" style="width:24px;height:24px;display:block;" alt="">
+        <span style="font-size:28px; font-weight:800; color:#000;">나의 평가 목록</span>
+      </div>
+      <button class="btn btn-primary" onclick="alert('수업 추가 화면으로 이동합니다.')">
+        <i data-lucide="plus" style="width:22px;height:22px;"></i>수업 추가
+      </button>
+    </div>
+
+    <div class="panel" style="width:1128px; min-height:542px; padding:32px; display:flex; flex-direction:column; gap:28px;">
+
+      <!-- 필터 -->
+      <div style="display:flex; align-items:center; gap:12px;">
+        <div class="select"><span>2025학년도 2학기</span><i data-lucide="chevron-down" style="width:28px;height:28px;color:#333;flex-shrink:0;"></i></div>
+        <div class="select"><span>전 과목</span><i data-lucide="chevron-down" style="width:28px;height:28px;color:#333;flex-shrink:0;"></i></div>
+      </div>
+
+      <!-- 수업 카드 목록 -->
+      <div id="class-list" class="cards">
+        <!-- JS 렌더 -->
+      </div>
+
+      <!-- 빈 상태 -->
+      <div id="class-empty" style="display:none; flex:1 0 0; flex-direction:column; align-items:center; justify-content:center; gap:16px; padding:48px 0;">
+        <img src="../screens/home/ic_evallist_blue.svg" style="width:44px;height:44px;display:block;opacity:.35;" alt="">
+        <p style="margin:0; font-size:20px; font-weight:800; color:#333;">아직 등록된 수업이 없어요</p>
+        <p style="margin:0; font-size:16px; font-weight:400; color:#808080; line-height:1.6; text-align:center;">
+          수업을 추가하면 이 학기에 진행할 수행평가를 만들 수 있어요.
+        </p>
+        <button class="btn btn-primary" style="margin-top:8px;" onclick="alert('수업 추가 화면으로 이동합니다.')">
+          <i data-lucide="plus" style="width:22px;height:22px;"></i>수업 추가
+        </button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ===== Footer ===== -->
+<div style="background:#EDF3FC; display:flex; flex-direction:column; align-items:center;">
+  <div style="width:100%; max-width:1200px; padding:64px 36px; display:flex; flex-direction:column; gap:36px; align-items:center;">
+    <div style="display:flex; align-items:center; width:100%; max-width:1176px; min-width:912px;">
+      <div class="foot-logo"><img src="../screens/home/foot1.png" alt="경기도교육청"></div>
+      <div class="foot-logo"><img src="../screens/home/foot2.png" alt="경기교육 경기교육모아"></div>
+      <div class="foot-logo"><img src="../screens/home/foot3.png" alt="e학습터"></div>
+      <div class="foot-logo"><img src="../screens/home/foot4.png" alt="EBS 온라인 클래스"></div>
+      <div class="foot-logo"><img src="../screens/home/foot5.png" alt="이다 디지털콘텐츠 플랫폼"></div>
+      <div class="foot-logo"><img src="../screens/home/foot6.png" alt="지식샘터"></div>
+      <div class="foot-logo"><img src="../screens/home/foot7.png" alt="영어콘텐츠"></div>
+    </div>
+    <div style="display:flex; align-items:center; gap:22px; width:100%;">
+      <span class="foot-link b" style="font-size:18px;">개인정보처리방침</span>
+      <span class="foot-link b">이용약관</span>
+      <span class="foot-link b">오픈소스 라이선스</span>
+    </div>
+    <div style="display:flex; align-items:center; gap:22px; width:100%;">
+      <span class="foot-link b">AI 서·논술형 평가지원시스템 고객센터</span>
+      <span class="foot-link">공지사항</span>
+      <span class="foot-link">자주 묻는 질문</span>
+      <span class="foot-link">1:1 문의</span>
+    </div>
+  </div>
+</div>
+<style>
+  .foot-logo{flex:1 0 0;min-width:0;aspect-ratio:169/58;display:flex;align-items:center;justify-content:center;padding:16px 24px}
+  .foot-logo img{width:121px;max-width:121px;min-width:86px;height:26px;max-height:26px;object-fit:contain;display:block}
+</style>
+
+<!-- ===== 까망이 목업 내비게이터 (드래그·시연용 · 실제 화면 아님) ===== -->
+<div id="mockpick">
+  <div class="mp-head" onclick="mpToggle()">
+    <span style="display:inline-flex;align-items:center;gap:6px;"><i data-lucide="layout-grid" style="width:13px;height:13px;"></i>MOCKUP · 선생님 홈 (blue)</span>
+    <i id="mp-caret" data-lucide="chevron-down" style="width:14px;height:14px;transform:rotate(180deg);"></i>
+  </div>
+  <div id="mp-body" class="mp-body" style="display:none">
+    <div class="mp-cap">선생님 홈</div>
+    <button class="mp-btn" data-k="default" onclick="mpGo('default')">수업 있는 상태 <span class="mp-sub">기본</span></button>
+    <button class="mp-btn" data-k="empty" onclick="mpGo('empty')">수업 없는 상태 <span class="mp-sub">첫 진입</span></button>
+    <div class="mp-cap">열림 상태</div>
+    <button class="mp-btn" data-k="school-open" onclick="mpGo('school-open')">학교 전환 드롭다운 <span class="mp-sub">현 · 전 소속</span></button>
+    <button class="mp-btn" data-k="card-menu" onclick="mpGo('card-menu')">수업 카드 더보기 메뉴</button>
+  </div>
+</div>
+
+<script>
+  lucide.createIcons();
+
+  /* ── 수업 데이터 ── */
+  const CLASSES = [
+    { grade: '1학년', title: '1학년 국어',        count: 3 },
+    { grade: '1학년', title: '1학년 문학',        count: 1 },
+    { grade: '2학년', title: '2학년 국어',        count: 2 },
+    { grade: '3학년', title: '3학년 화법과 언어', count: 0 },
+  ];
+
+  function renderClasses() {
+    document.getElementById('class-list').innerHTML = CLASSES.map((c, i) => `
+      <div class="ccard">
+        <div class="ccard-thumb">
+          <img class="paper" src="../screens/home/card_paper_blue.svg" alt="">
+          <img class="grade" src="../screens/home/card_grade_blue.svg" alt="">
+        </div>
+        <div class="ccard-body">
+          <div style="display:flex; flex-direction:column; gap:16px;">
+            <div style="display:flex; align-items:flex-start; justify-content:space-between; gap:8px;">
+              <span class="badge badge-grade">
+                <i data-lucide="graduation-cap" style="width:14px;height:14px;"></i>${c.grade}
+              </span>
+              <button class="icon-btn" onclick="toggleCardMenu(event, ${i})" aria-label="수업 더보기">
+                <i data-lucide="more-vertical" style="width:24px;height:24px;color:#808080;"></i>
+              </button>
+            </div>
+            <p class="ccard-title">${c.title}</p>
+          </div>
+          <div class="ccard-count"><span>수행평가</span><span>${c.count}개</span></div>
+        </div>
+        <div id="card-dd-${i}" class="dd" style="display:none; top:48px; right:8px; width:180px;">
+          <div class="dd-opt" onclick="closeAllDd(); alert('수업 정보 수정 화면으로 이동합니다.')">수업 정보 수정</div>
+          <div class="dd-opt" onclick="closeAllDd(); alert('수업을 삭제할까요? (목업)')">수업 삭제</div>
+        </div>
+      </div>`).join('');
+    lucide.createIcons();
+  }
+  renderClasses();
+
+  /* ── 드롭다운 ── */
+  function closeAllDd() {
+    document.querySelectorAll('.dd').forEach(d => d.style.display = 'none');
+    const caret = document.getElementById('school-caret');
+    if (caret) caret.style.transform = '';
+  }
+  function toggleSchoolDd(e) {
+    e.stopPropagation();
+    const d = document.getElementById('school-dd');
+    const open = d.style.display === 'block';
+    closeAllDd();
+    d.style.display = open ? 'none' : 'block';
+    document.getElementById('school-caret').style.transform = open ? '' : 'rotate(180deg)';
+  }
+  function toggleCardMenu(e, i) {
+    e.stopPropagation();
+    const d = document.getElementById('card-dd-' + i);
+    const open = d.style.display === 'block';
+    closeAllDd();
+    d.style.display = open ? 'none' : 'block';
+  }
+  function pickSchool(el) {
+    document.querySelectorAll('#school-dd .dd-opt').forEach(o => {
+      o.classList.remove('on');
+      const c = o.querySelector('i'); if (c) c.remove();
+    });
+    el.classList.add('on');
+    el.insertAdjacentHTML('beforeend', '<i data-lucide="check" style="width:18px;height:18px;flex-shrink:0;"></i>');
+    lucide.createIcons();
+    closeAllDd();
+  }
+  document.addEventListener('click', closeAllDd);
+  document.querySelectorAll('.dd').forEach(d => d.addEventListener('click', e => e.stopPropagation()));
+
+  /* ── 해시 라우팅 ── */
+  var MP_CASES = ['default', 'empty', 'school-open', 'card-menu'];
+  function applyViewFromHash() {
+    var k = location.hash.slice(1);
+    if (MP_CASES.indexOf(k) === -1) k = 'default';
+
+    var isEmpty = (k === 'empty');
+    document.getElementById('class-list').style.display  = isEmpty ? 'none' : 'flex';
+    document.getElementById('class-empty').style.display = isEmpty ? 'flex' : 'none';
+
+    closeAllDd();
+    if (k === 'school-open') {
+      document.getElementById('school-dd').style.display = 'block';
+      document.getElementById('school-caret').style.transform = 'rotate(180deg)';
+    }
+    if (k === 'card-menu') {
+      var d = document.getElementById('card-dd-0');
+      if (d) d.style.display = 'block';
+    }
+    if (typeof mpSyncActive === 'function') mpSyncActive(k);
+  }
+  window.addEventListener('hashchange', applyViewFromHash);
+  applyViewFromHash();
+</script>
+
+<!-- ===== 까망이 목업 내비게이터 (시연용) ===== -->
+<script>
+function mpToggle(){
+  const el0=document.getElementById('mockpick');
+  if(el0 && el0._dragMoved){ el0._dragMoved=false; return; }
+  const b=document.getElementById('mp-body'), c=document.getElementById('mp-caret');
+  const open=b.style.display!=='none';
+  if(!open){
+    const el=document.getElementById('mockpick'), r=el.getBoundingClientRect();
+    el.style.top='auto'; el.style.bottom=Math.max(16,window.innerHeight-r.bottom)+'px';
+  }
+  b.style.display=open?'none':'flex';
+  if(c) c.style.transform=open?'rotate(180deg)':'';
+  if(!open) mpClamp();
+}
+function mpClamp(){
+  const el=document.getElementById('mockpick'); if(!el) return;
+  const r=el.getBoundingClientRect();
+  if(r.top<8){ el.style.bottom='auto'; el.style.top='8px'; }
+  if(r.bottom>window.innerHeight-8 && r.height<window.innerHeight-16){ el.style.top='auto'; el.style.bottom='8px'; }
+  const r2=el.getBoundingClientRect();
+  const maxL=Math.max(8, window.innerWidth-r2.width-8);
+  if(r2.left<8) el.style.left='8px';
+  else if(r2.left>maxL) el.style.left=maxL+'px';
+}
+function mpSyncActive(key){
+  document.querySelectorAll('#mockpick .mp-btn[data-k]').forEach(b=>b.classList.toggle('on',b.dataset.k===key));
+  const body=document.getElementById('mp-body');
+  const btn=document.querySelector('#mockpick .mp-btn[data-k="'+key+'"]');
+  if(btn && body && body.style.display!=='none') btn.scrollIntoView({block:'nearest'});
+}
+function mpGo(k){
+  if(location.hash.slice(1)===k) applyViewFromHash();
+  else location.hash = k;
+  lucide.createIcons();
+}
+(function(){
+  const el=document.getElementById('mockpick'); if(!el) return;
+  let dx=0,dy=0,drag=false,sx=0,sy=0;
+  el.addEventListener('mousedown',(e)=>{ if(e.target.closest('button')) return; drag=true; el._dragMoved=false; sx=e.clientX; sy=e.clientY; const r=el.getBoundingClientRect(); dx=e.clientX-r.left; dy=e.clientY-r.top; el.style.right='auto'; el.style.bottom='auto'; el.style.left=r.left+'px'; el.style.top=r.top+'px'; e.preventDefault(); });
+  document.addEventListener('mousemove',(e)=>{ if(!drag) return; if(Math.abs(e.clientX-sx)>3||Math.abs(e.clientY-sy)>3) el._dragMoved=true; const nx=Math.min(Math.max(8,e.clientX-dx), Math.max(8,window.innerWidth-el.offsetWidth-8)); const ny=Math.min(Math.max(8,e.clientY-dy), Math.max(8,window.innerHeight-el.offsetHeight-8)); el.style.left=nx+'px'; el.style.top=ny+'px'; });
+  document.addEventListener('mouseup',()=>{ drag=false; });
+})();
+mpSyncActive(MP_CASES.indexOf(location.hash.slice(1)) > -1 ? location.hash.slice(1) : 'default');
+lucide.createIcons();
+</script>
+
+<!-- ===== 까망이 공통 보정 (mp-fix-v2) — 화면 밖 이탈 방지 · 접힌 채 드래그 ===== -->
+<script>
+(function(){
+  var el = document.getElementById('mockpick');
+  if (!el) return;
+  var down = false, moved = false, swallow = false, sx = 0, sy = 0;
+
+  function clamp(){
+    if (!window.innerWidth || !window.innerHeight) return;
+    var r = el.getBoundingClientRect();
+    if (!r.width || !r.height) return;
+    var maxL = Math.max(8, window.innerWidth  - r.width  - 8);
+    var maxT = Math.max(8, window.innerHeight - r.height - 8);
+    var l = Math.min(Math.max(8, r.left), maxL);
+    var t = Math.min(Math.max(8, r.top),  maxT);
+    if (Math.abs(l - r.left) > 0.5 || Math.abs(t - r.top) > 0.5) {
+      el.style.right = 'auto'; el.style.bottom = 'auto';
+      el.style.left = l + 'px'; el.style.top = t + 'px';
+    }
+  }
+
+  document.addEventListener('mousedown', function(e){
+    if (!el.contains(e.target) || e.target.closest('button')) return;
+    down = true; moved = false; sx = e.clientX; sy = e.clientY;
+  }, true);
+
+  document.addEventListener('mousemove', function(e){
+    if (!down) return;
+    if (Math.abs(e.clientX - sx) > 3 || Math.abs(e.clientY - sy) > 3) moved = true;
+    if (moved) clamp();
+  });
+
+  document.addEventListener('mouseup', function(){
+    if (!down) return;
+    down = false; swallow = moved;
+    if (moved) clamp();
+  });
+
+  document.addEventListener('click', function(e){
+    if (swallow && el.contains(e.target)) { e.stopPropagation(); e.preventDefault(); }
+    swallow = false;
+  }, true);
+
+  el.addEventListener('click', function(){
+    requestAnimationFrame(function(){ requestAnimationFrame(clamp); });
+  });
+
+  window.addEventListener('resize', clamp);
+})();
+</script>
+
+</body>
+</html>
