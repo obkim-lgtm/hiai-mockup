@@ -2069,32 +2069,70 @@ function renderOverall(){
 }
 /* 제안 채점기준으로 문항마다 다시 연결한 결과. 읽기 전용 요약 —
    고치는 자리는 ①단이고, 여기서 또 만지게 하면 같은 일을 두 번 시키는 셈이다 */
+/* AI가 배정한 기본 연결 (작업본 인덱스) — 목업 데이터 */
+var AI_MAP = [[0], [0, 1], [4], [0, 1, 2, 3]];
+var _mapEdit = {};    // 교사가 고친 연결 {문항no: [작업본 index]}
+var _mapOpen = null;  // 펼쳐 둔 문항
+
+function mapPicks(q, qi){
+  return _mapEdit[q.no] ? _mapEdit[q.no].slice() : (AI_MAP[qi] || []).slice();
+}
+function mapToggleRow(no){ _mapOpen = (_mapOpen === no) ? null : no; renderFitCards(); }
+function mapToggle(no, qi, idx){
+  var cur = mapPicks({ no: no }, qi);
+  var at = cur.indexOf(idx);
+  if (at === -1) cur.push(idx); else cur.splice(at, 1);
+  _mapEdit[no] = cur;
+  renderFitCards();
+}
+function shortTitle(t){ return t.replace(/를 평가한다\.$/, '').replace(/^(.{26}).+/, '$1…'); }
+
 function renderNewMap(proposal){
   var wrap = document.getElementById('dg-newmap');
   if (!wrap) return;
   wrap.style.display = proposal ? 'block' : 'none';
   if (!proposal) return;
   var set = _draft || SUGGESTED_SET;
-  /* 문항 순서대로 붙을 제안 기준 (id 아닌 인덱스) — 목업 데이터 */
-  var MAP = [[0], [0, 1], [4], [0, 1, 2, 3]];
-  /* 가져온 기준은 AI가 어느 문항에 붙일지 정하지 못한다 — 미연결로 두고 사실대로 보여 준다 */
+
   document.getElementById('dg-newmap-list').innerHTML = QUESTIONS.map(function(q, qi){
-    var picks = (MAP[qi] || []).map(function(i){ return set[i]; }).filter(Boolean);
-    var chips = picks.length
-      ? picks.map(function(r){
-          var t = r.title.replace(/를 평가한다\.$/, '').replace(/^(.{26}).+/, '$1…');
-          return '<span style="font-size:14px;background:#F3F9FF;color:#0950A0;border-radius:100px;padding:3px 10px;">' + esc(t) + '</span>';
+    var idxs = mapPicks(q, qi).filter(function(i){ return set[i]; });
+    var open = (_mapOpen === q.no);
+    var edited = !!_mapEdit[q.no];
+    var chips = idxs.length
+      ? idxs.map(function(i){
+          return '<span style="font-size:14px;background:#F3F9FF;color:#0950A0;border-radius:100px;padding:3px 10px;">' + esc(shortTitle(set[i].title)) + '</span>';
         }).join('')
       : '<span style="font-size:14px;color:#808080;">연결된 기준 없음 — 채점기준 전체로 채점돼요</span>';
-    return '<div style="display:flex;gap:10px;align-items:flex-start;border:1px solid #E6E6E6;border-radius:8px;padding:12px 14px;background:#fff;">'
+
+    var head = '<div onclick="mapToggleRow(' + q.no + ')" style="display:flex;gap:10px;align-items:flex-start;cursor:pointer;">'
       + '<span style="font-size:12px;font-weight:700;background:#EFEFEF;color:#494949;border-radius:100px;padding:3px 9px;white-space:nowrap;flex-shrink:0;">' + esc(q.label) + '</span>'
-      + '<div style="display:flex;flex-wrap:wrap;gap:6px;min-width:0;">' + chips + '</div>'
+      + '<div style="flex:1;min-width:0;display:flex;flex-wrap:wrap;gap:6px;">' + chips + '</div>'
+      + (edited ? '<span style="flex-shrink:0;font-size:12px;font-weight:700;color:#0950A0;background:#F3F9FF;border-radius:100px;padding:2px 8px;">직접 고침</span>' : '')
+      + '<i data-lucide="' + (open ? 'chevron-up' : 'chevron-down') + '" style="width:16px;height:16px;color:#B3B3B3;flex-shrink:0;"></i>'
       + '</div>';
+
+    var body = '';
+    if (open){
+      body = '<div style="margin-top:12px;padding-top:12px;border-top:1px solid #F0F0F0;">'
+        + '<p style="font-size:14px;color:#808080;margin:0 0 10px;line-height:1.6;">' + esc(q.text) + '</p>'
+        + set.map(function(r, i){
+            var on = idxs.indexOf(i) !== -1;
+            var box = on
+              ? 'width:18px;height:18px;border-radius:4px;background:#0950A0;border:1.5px solid #0950A0;display:flex;align-items:center;justify-content:center;flex-shrink:0;'
+              : 'width:18px;height:18px;border-radius:4px;background:white;border:1.5px solid #D9D9D9;display:flex;align-items:center;justify-content:center;flex-shrink:0;';
+            var mark = on ? '<svg width="11" height="11" viewBox="0 0 11 11" fill="none"><polyline points="1.5,5.5 4.5,8 9.5,2.5" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>' : '';
+            return '<label onclick="mapToggle(' + q.no + ',' + qi + ',' + i + ')" style="display:flex;align-items:center;gap:10px;padding:9px 12px;border:1px solid ' + (on ? '#0950A0' : '#E6E6E6') + ';border-radius:8px;background:' + (on ? '#F7FAFF' : '#fff') + ';cursor:pointer;margin-bottom:6px;">'
+              + '<div style="' + box + '">' + mark + '</div>'
+              + '<span style="font-size:14px;color:' + (on ? '#333' : '#808080') + ';font-weight:' + (on ? '700' : '400') + ';">' + esc(r.title) + '</span></label>';
+          }).join('')
+        + '</div>';
+    }
+    return '<div style="border:1px solid ' + (open ? '#0950A0' : '#E6E6E6') + ';border-radius:8px;padding:12px 14px;background:#fff;">' + head + body + '</div>';
   }).join('');
 
   /* 어느 문항에도 안 붙은 기준 — AI가 붙일 곳을 정하지 못한 것이므로 감추지 않고 말한다 */
   var used = {};
-  QUESTIONS.forEach(function(q, qi){ (MAP[qi] || []).forEach(function(i){ used[i] = true; }); });
+  QUESTIONS.forEach(function(q, qi){ mapPicks(q, qi).forEach(function(i){ used[i] = true; }); });
   var loose = set.filter(function(r, i){ return !used[i]; });
   /* 채점기준을 고쳤다면 지금 목록은 고치기 전 기준으로 만든 것이다.
      매핑은 AI가 다시 돌려야 나오므로 '언제' 다시 연결되는지만 말한다 */
@@ -2184,7 +2222,7 @@ function pullRubric(id){
   drSync();
   _draft.push({ id: 700 + _draft.length, title: r.title, rows: JSON.parse(JSON.stringify(r.rows)) });
   _draftEdited = true;
-  _mapRedone = true;
+  _mapEdit = {}; _mapOpen = null;
   renderFitCards();
   showToast('success','가져왔어요.');
 }
@@ -2339,11 +2377,12 @@ function applyDraft(){
       S.linksEdited = false; // AI가 연결을 새로 만들었으므로 교사 수정본은 더 이상 없음
       _draft = null;
       // AI 재연결(목업은 순서대로 배분)
+      /* 화면에서 보고 고친 그대로 저장한다 — 여기서 다시 배분하면 본 것과 달라진다 */
       QUESTIONS.forEach(function(q, i){
-        q.links = rubrics.filter(function(r, ri){ return (ri % QUESTIONS.length) === i || (ri === 0 && i === 0); }).map(function(r){ return r.id; });
-        if (!q.links.length) q.links = [rubrics[0].id];
-        q.aiReason = 'AI가 새 채점기준으로 다시 연결했어요. 맞지 않으면 직접 고쳐 주세요.';
+        q.links = mapPicks(q, i).map(function(k){ return rubrics[k] ? rubrics[k].id : null; }).filter(Boolean);
+        q.aiPicks = q.links.slice();
       });
+      _mapEdit = {}; _mapOpen = null;
       S.relinked = true;
       renderRubrics(); renderScoreTable(); renderAll(); renderToc(); renderMockpick();
       backToDetail('sec-diagnosis');
