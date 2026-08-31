@@ -1517,7 +1517,8 @@ function stageCase(){
 }
 function wsDone(){ return S.ws === 'ready'; }
 function gotoWorksheet(){
-  if (S.ws === 'idle') S.ws = 'file';
+  /* 분석 중 이탈은 '처음부터 다시'라고 안내했으므로 load2로 돌아오면 드롭존에서 시작한다 */
+  if (S.ws === 'idle' || S.ws === 'load2') S.ws = 'file';
   // 답안을 이미 쓴 설계라면 문항은 확정된 것 — 매번 ①단을 거치게 하지 않는다
   S.wsStep = (S.ws === 'ready' && countAnswers() > 0) ? 2 : 1;
   S.case = (S.ws === 'ready') ? (S.wsStep === 2 ? 'sheet-answer' : 'sheet') : 'upload';
@@ -1555,10 +1556,9 @@ function renderWsCard(){
       +   (na ? ('모범답안을 ' + na + '개 문항에 넣었어요.') : '모범답안은 아직 넣지 않았어요.') + '</p>'
       + '<button class="btn btn-secondary" onclick="gotoWorksheet()"><i data-lucide="' + (S.locked || na ? 'list-checks' : 'pencil-line') + '" style="width:20px;height:20px;"></i>'
     + (S.locked ? '문항·모범답안 보기' : (na ? '문항·모범답안 확인' : '모범답안·가이드 입력')) + '</button>';
-  } else if (S.ws === 'file' || S.ws === 'load'){
-    h = '<div class="note note-info" style="margin-bottom:14px;"><i data-lucide="loader" style="color:#00778B;"></i><div><strong>활동지를 올렸어요.</strong> 문항 구조 분석을 이어서 진행해 주세요.</div></div>'
-      + '<button class="btn btn-secondary" onclick="gotoWorksheet()">이어서 하기</button>';
   } else {
+    /* 문항이 나뉜 것(ready)만 완료다. 화면에 들어갔다 파일 없이 나온 것도, 분석하다 이탈한 것도
+       남는 게 없으니 '아직 안 올림'과 같다 — 중간 상태를 만들어 보여 주지 않는다 */
     h = '<button class="btn btn-secondary" onclick="gotoWorksheet()"><i data-lucide="file-up" style="width:20px;height:20px;"></i>빈 활동지부터 올리기</button>';
   }
   el.innerHTML = h;
