@@ -882,6 +882,7 @@ var S = {
   linksEdited: false,    // 진단 후 문항 연결을 직접 고쳤는지 — 세트 교체 시 덮어쓰기 경고용
   diagResultKind: 'warn',// warn | ok
   setApplied: false,     // AI 채점기준 세트로 교체했는지
+  editedApplied: false,  // AI 제안을 교사가 고쳐서 저장했는지 — AI는 그 기준을 본 적이 없다
   relinked: false,       // 교체 후 AI가 다시 연결한 결과를 보는 중인지
   applied: {},           // 적용한 제안
   answersOpen: false,
@@ -1116,7 +1117,7 @@ function applyCase(k){
   S.name = ''; S.stdFilled = false; S.rubricFilled = false;
   S.ws = 'idle'; S.wsStep = 1; S.dg = 'idle'; S.worksheet = false; S.linksEdited = false;
   resetStageOpen(); S.diagResultKind = 'warn';
-  S.applied = {}; S.setApplied = false; S.relinked = false; _draft = null; _draftFromAI = false; _draftEdited = false; S.answersFilled = false; S.locked = false; S.scored = false; S.marks = {};
+  S.applied = {}; S.setApplied = false; S.editedApplied = false; S.relinked = false; _draft = null; _draftFromAI = false; _draftEdited = false; S.answersFilled = false; S.locked = false; S.scored = false; S.marks = {};
   S.diagDone = false;
   if (k === 'structure') k = 'sheet';                     // 옛 링크 호환 — 두 화면이 한 화면 두 단계가 됐다
   if (k === 'answer') k = 'sheet-answer';
@@ -1563,7 +1564,11 @@ function renderDiagCard(){
         + '<button class="btn btn-secondary" onclick="gotoDiag()">연결 이어서 하기</button>';
     }
   } else {
-    if (S.marks['sec-diagnosis']){
+    if (S.editedApplied && !S.marks['sec-diagnosis']){
+      h = '<div class="note note-info" style="margin-bottom:14px;"><i data-lucide="info" style="color:#00778B;"></i><div><strong>직접 고친 채점기준이 있어요.</strong> 고친 내용은 AI가 아직 보지 않았어요. 이대로 채점해도 되고, 다시 확인받고 싶으면 다시 연결해 주세요.</div></div>'
+        + '<div style="display:flex;gap:8px;"><button class="btn btn-secondary" onclick="startDiagnosis(true)"><i data-lucide="refresh-cw" style="width:18px;height:18px;"></i>다시 연결</button>'
+        + '<button class="btn btn-outline" onclick="gotoDiag()">연결 결과 보기</button></div>';
+    } else if (S.marks['sec-diagnosis']){
       h = '<div class="note note-warn" style="margin-bottom:14px;"><i data-lucide="info" style="color:#E4631C;"></i><div><strong>연결 뒤에 채점기준이 바뀌었어요.</strong> 이 결과는 지금 채점기준과 다를 수 있어요. 활동지를 다시 올릴 필요는 없으니 다시 연결해 주세요.</div></div>'
         + '<div style="display:flex;gap:8px;"><button class="btn btn-secondary" onclick="startDiagnosis(true)"><i data-lucide="refresh-cw" style="width:18px;height:18px;"></i>다시 연결</button>'
         + '<button class="btn btn-outline" onclick="gotoDiag()">지난 연결 결과 보기</button></div>';
@@ -1660,8 +1665,8 @@ function onWsFile(input){
   S.worksheet = true;
   QUESTIONS = seedQuestions();
   S.ws = 'file';
-  S.dg = 'idle'; S.diagDone = false; S.setApplied = false; S.relinked = false;
-  S.marks['sec-diagnosis'] = false;
+  S.dg = 'idle'; S.diagDone = false; S.setApplied = false; S.editedApplied = false; S.relinked = false;
+  S.marks['sec-diagnosis'] = false; S.editedApplied = false;
   _draft = null; _draftFromAI = false; _draftEdited = false;
   S.answersFilled = false;
   runWsLoad2();
@@ -1674,8 +1679,8 @@ function removeWorksheet(){
     '지우기', function(){
       S.worksheet = false; S.ws = 'file';
       QUESTIONS = seedQuestions();
-      S.dg = 'idle'; S.diagDone = false; S.setApplied = false; S.relinked = false;
-      S.marks['sec-diagnosis'] = false;
+      S.dg = 'idle'; S.diagDone = false; S.setApplied = false; S.editedApplied = false; S.relinked = false;
+      S.marks['sec-diagnosis'] = false; S.editedApplied = false;
       _draft = null; _draftFromAI = false; _draftEdited = false;
       S.answersFilled = false;
       renderAll(); renderToc(); renderMockpick();
@@ -1708,7 +1713,7 @@ function runDiagLoad(kind){
   clearTimeout(_loadTimer);
   _loadTimer = setTimeout(function(){
     S.dg = 'result'; S.diagDone = true; resetStageOpen();
-    S.marks['sec-diagnosis'] = false;
+    S.marks['sec-diagnosis'] = false; S.editedApplied = false;
     S.case = (S.diagResultKind === 'ok' ? 'result-ok' : 'result');
     showToast('success','문항별 채점기준을 연결했어요.');
     renderAll(); renderToc(); renderMockpick();
@@ -1743,8 +1748,8 @@ function analyzeStructure(){
     '<strong>' + gone.join(', ') + '</strong>' + josa(last) + ' 사라지고 새로 만들어져요.<br>채점기준 자체는 그대로 남아요.',
     '다시 분석', function(){
       QUESTIONS = seedQuestions();
-      S.dg = 'idle'; S.diagDone = false; S.setApplied = false; S.relinked = false;
-      S.marks['sec-diagnosis'] = false;
+      S.dg = 'idle'; S.diagDone = false; S.setApplied = false; S.editedApplied = false; S.relinked = false;
+      S.marks['sec-diagnosis'] = false; S.editedApplied = false;
       _draft = null; _draftFromAI = false; _draftEdited = false;
       S.answersFilled = false;
           runWsLoad2();
@@ -2391,6 +2396,9 @@ function applyDraft(){
         q.aiPicks = q.links.slice();
       });
       _mapEdit = {}; _mapOpen = null;
+      /* 고친 채로 저장했다면 AI가 못 본 기준이 저장된 것 — 다시 볼 길을 남긴다.
+         그대로 적용했다면 AI 제안 그대로이므로 아무 것도 띄우지 않는다 */
+      S.editedApplied = !!_draftEdited;
       S.relinked = true;
       renderRubrics(); renderScoreTable(); renderAll(); renderToc(); renderMockpick();
       backToDetail('sec-diagnosis');
