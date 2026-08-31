@@ -422,7 +422,7 @@ body { margin: 0; background: #EDF3FC; min-width: 1280px; }
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;">
           <div>
             <h2 style="font-size:20px;font-weight:700;color:#000;margin:0 0 4px;">평가 설계</h2>
-            <p style="font-size:14px;color:#494949;margin:0;font-weight:400;line-height:1.55;">어떤 기준으로 채점할지 설계하는 화면이에요. 문항별 모범답안과 채점기준 점검까지 더하면 AI 채점이 더 정확해져요.</p>
+            <p style="font-size:14px;color:#494949;margin:0;font-weight:400;line-height:1.55;">어떤 기준으로 채점할지 설계하는 화면이에요. 빈 활동지·모범답안과 채점기준 점검까지 더하면 AI 채점이 더 정확해져요.</p>
           </div>
         </div>
 
@@ -548,16 +548,16 @@ body { margin: 0; background: #EDF3FC; min-width: 1280px; }
         </div><!-- /grp-core -->
 
         <!-- 정확도 그룹 — 선택. 할수록 AI 채점이 정확해진다 -->
-        <!-- ⑥ 문항별 모범답안 등록 — 독립 블록
+        <!-- ⑥ 빈 활동지 · 모범답안 입력 — 독립 블록
              기본 설계와 축이 다르다: 저기는 반드시 채워야 채점이 되고, 여기는 AI에게 재료를 더 주는 일.
              활동지에서 문항이 나뉘어야 답안을 넣을 수 있어 두 일이 한 흐름이라 한 화면으로 합쳐 뒀다. -->
         <div id="grp-sheet" class="stage-card">
             <section class="sec sec-solo" id="sec-sheet">
               <div class="sec-head">
-                <div class="sec-title">문항별 모범답안 등록 <span class="sec-opt">(선택)</span><span id="ws-badge"></span></div>
+                <div class="sec-title">빈 활동지 · 모범답안 입력 <span class="sec-opt">(선택)</span><span id="ws-badge"></span></div>
                 <span class="stage-sum" id="grp-sheet-sum"></span>
               </div>
-              <p class="sec-desc">문항만 인쇄된 빈 활동지를 올리면 AI가 문항을 나눠 드려요. 나뉜 문항마다 모범답안과 채점 가이드를 적으면 AI가 선생님의 채점기준을 더 잘 이해해요.</p>
+              <p class="sec-desc">문항만 인쇄된 빈 활동지를 올리면 AI가 문항과 학생 답안을 더 잘 구분해요. 나뉜 문항마다 모범답안과 채점 가이드를 적으면 AI가 선생님의 채점기준을 더 잘 이해해요.</p>
               <div id="ws-card-body"></div>
             </section>
 
@@ -639,7 +639,7 @@ body { margin: 0; background: #EDF3FC; min-width: 1280px; }
       <div style="background:white;border-radius:0 0 20px 20px;box-shadow:0 4px 36px rgba(95,102,178,0.16);padding:28px 24px;">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;">
           <div>
-            <h2 style="font-size:20px;font-weight:700;color:#000;margin:0 0 4px;">문항별 모범답안 등록</h2>
+            <h2 style="font-size:20px;font-weight:700;color:#000;margin:0 0 4px;">빈 활동지 · 모범답안 입력</h2>
             <p style="font-size:14px;color:#494949;margin:0;font-weight:400;line-height:1.55;">문항만 인쇄된 빈 활동지를 올려 주세요. AI가 문항을 나눠 드리면, 문항마다 모범답안과 채점 가이드를 적을 수 있어요.</p>
           </div>
         </div>
@@ -1562,7 +1562,7 @@ function renderWsCard(){
     h = '<div class="note note-info" style="margin-bottom:14px;"><i data-lucide="loader" style="color:#00778B;"></i><div><strong>활동지를 올렸어요.</strong> 문항 구조 분석을 이어서 진행해 주세요.</div></div>'
       + '<button class="btn btn-secondary" onclick="gotoWorksheet()">이어서 하기</button>';
   } else {
-    h = '<button class="btn btn-secondary" onclick="gotoWorksheet()"><i data-lucide="file-up" style="width:20px;height:20px;"></i>빈 활동지 올리기</button>';
+    h = '<button class="btn btn-secondary" onclick="gotoWorksheet()"><i data-lucide="file-up" style="width:20px;height:20px;"></i>빈 활동지부터 올리기</button>';
   }
   el.innerHTML = h;
 }
