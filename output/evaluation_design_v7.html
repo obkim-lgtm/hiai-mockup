@@ -770,44 +770,19 @@ body { margin: 0; background: #EDF3FC; min-width: 1280px; }
         </div>
 
         <!-- 3단계: 채점기준 연결 (v4 좌우 분할 화면 이식) -->
-        <div id="dg-s3" class="stage-card" style="display:none;"><div class="stage-head"><span class="stage-num" id="dg-s3-num">1</span><span class="stage-title">문항마다 기준 고르기</span><span class="stage-sum" id="dg-sum-1"></span></div>
-          <div class="note note-info" id="s3-relink-note" style="display:none;margin-bottom:16px;">
-            <i data-lucide="wand-sparkles" style="color:#00778B;"></i>
-            <div><strong>채점기준을 바꿔서 문항 연결을 다시 만들었어요.</strong> 기준이 달라진 만큼 이전 연결은 쓸 수 없어요. AI가 새로 연결한 결과를 확인하고, 맞지 않으면 고쳐 주세요.</div>
-          </div>
-          <p class="sec-desc" style="margin-bottom:16px;">문항마다 볼 채점기준을 AI가 먼저 연결해 뒀어요. 왼쪽에서 문항을 골라 확인하고, 맞지 않으면 고쳐 주세요.</p>
-
-          <!-- 컨텐츠: 좌우 분할 매핑 -->
-          <div style="display:flex;gap:0;background:white;border-radius:16px;overflow:hidden;min-height:520px;border:1px solid #E6E6E6;">
-            <!-- 왼쪽: 문항 목록 패널 -->
-            <div style="width:220px;flex-shrink:0;border-right:1px solid #E6E6E6;display:flex;flex-direction:column;background:white;">
-              <div style="flex:1;overflow-y:auto;">
-                <div style="padding:12px 14px 8px;border-bottom:1px solid #EFEFEF;">
-                  <span style="font-size:14px;font-weight:700;color:#808080;">문항 목록</span>
-                </div>
-                <div id="dg3-qlist"></div>
-              </div>
-            </div>
-            <!-- 오른쪽: 채점기준 확인 패널 -->
-            <div style="flex:1;display:flex;flex-direction:column;min-width:0;background:white;">
-              <div id="dg3-detail" style="flex:1;overflow-y:auto;padding:24px;"></div>
-            </div>
-          </div>
-
-          <div class="dg-navbar" id="dg-s3-nav" style="display:none;">
-            <button class="btn btn-outline" onclick="backToDetail('sec-diagnosis')"><i data-lucide="arrow-left" style="width:16px;height:16px;"></i>설계로 돌아가기</button>
-            <button class="btn btn-primary" onclick="saveLinks()"><i data-lucide="stethoscope" style="width:16px;height:16px;"></i>저장하고 AI 의견 보기</button>
-          </div>
-        </div>
+        
 
         <!-- ②단: 적합도 확인 — 총평 + AI 제안 채점기준 -->
-        <div id="dg-s4" class="stage-card" style="display:none;"><div class="stage-head"><span class="stage-num">2</span><span class="stage-title">AI 의견과 제안</span><span class="stage-sum" id="dg-sum-2"></span></div>
+        <div id="dg-s4" class="stage-card" style="display:none;"><div class="stage-head"><span class="stage-title">AI 의견</span><span class="stage-sum" id="dg-sum-2"></span></div>
           <div id="dg-lock-banner" class="note note-lock" style="display:none;margin-bottom:18px;">
             <i data-lucide="lock"></i>
             <div id="dg-lock-text"></div>
           </div>
           <p class="sec-desc" style="margin-bottom:16px;">연결한 채점기준으로 AI가 채점할 수 있는지 살펴본 결과예요. AI가 다시 쓴 채점기준이 있으면 확인하고 바꿀 수 있어요.</p>
-          <div id="dg-overall" style="margin-bottom:22px;"></div>
+          <div id="dg-overall"></div>
+        </div><!-- /dg-s4 -->
+
+        <div id="dg-s5" class="stage-card" style="display:none;"><div class="stage-head"><span class="stage-title">AI가 다시 짠 채점기준과 연결</span></div>
 
           <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:6px;">
             <h4 id="dg-draft-title" style="font-size:16px;font-weight:700;color:#0A2A5E;margin:0;">AI 제안 채점기준</h4>
@@ -832,7 +807,7 @@ body { margin: 0; background: #EDF3FC; min-width: 1280px; }
               <p style="font-size:16px;font-weight:700;color:#0A2A5E;margin:0 0 6px;line-height:1.3;">이 채점기준과 연결로 바꿀까요?</p>
               <p style="font-size:14px;color:#324151;margin:0;line-height:1.6;">위 채점기준과 문항 연결로 한 번에 바꿔 저장해요. 지금 채점기준은 덮어써요.</p>
             </div>
-            <button class="btn btn-primary btn-lg" onclick="applyDraft()"><i data-lucide="wand-sparkles" style="width:18px;height:18px;"></i>채점기준 바꾸기</button>
+            <button class="btn btn-primary btn-lg" onclick="applyDraft()"><i data-lucide="wand-sparkles" style="width:18px;height:18px;"></i>이대로 바꾸기</button>
           </div>
 
           <div class="dg-navbar">
@@ -1137,6 +1112,7 @@ function applyCase(k){
   S.diagDone = false;
   if (k === 'structure') k = 'sheet';                     // 옛 링크 호환 — 두 화면이 한 화면 두 단계가 됐다
   if (k === 'answer') k = 'sheet-answer';
+  if (k === 'linking') k = 'result';                      // 교사가 고르던 단이 없어졌다 — 옛 링크는 결과로
   rubrics = JSON.parse(JSON.stringify(RUBRIC_SEED));
   standards = [blankStandard()];
   QUESTIONS = seedQuestions();
@@ -1161,7 +1137,6 @@ function applyCase(k){
   if (k === 'sheet'){ S.ws = 'ready'; S.worksheet = true; S.wsStep = 1; }
   if (k === 'sheet-answer'){ S.ws = 'ready'; S.worksheet = true; S.wsStep = 2; S.answersFilled = true; }
   if (k === 'ws-done'){ S.ws = 'ready'; S.worksheet = true; }
-  if (k === 'linking'){ S.ws = 'ready'; S.worksheet = true; S.dg = 'link'; }
   if (k === 'diagnosing'){ S.ws = 'ready'; S.worksheet = true; S.dg = 'load'; }
   if (k === 'result'){ S.ws = 'ready'; S.worksheet = true; S.dg = 'result'; S.diagDone = true; S.diagResultKind = 'warn'; }
   if (k === 'result-ok'){ S.ws = 'ready'; S.worksheet = true; S.dg = 'result'; S.diagDone = true; S.diagResultKind = 'ok'; fillQ4Links(); }
@@ -1632,14 +1607,11 @@ function renderDiagnosis(){
   var show = function(id, on, disp){ var e = document.getElementById(id); if (e) e.style.display = on ? (disp || 'block') : 'none'; };
   var loading = (S.dg === 'load');
   show('dg-loading', loading, 'flex');
-  show('dg-s3', !loading && S.dg !== 'idle');
-  show('dg-s4', !loading && S.dg === 'result');
-  applyStageCollapse('dg-s3', S.dg === 'result');
-  show('dg-s3-nav', S.dg === 'link', 'flex');
+  var done = !loading && S.dg === 'result';
+  show('dg-s4', done);
+  show('dg-s5', done);
   applyStageCollapse('dg-s4', false);
-  var linked = QUESTIONS.filter(function(q){ return q.links.length; }).length;
-  var d1 = document.getElementById('dg-sum-1');
-  if (d1) d1.textContent = '문항 ' + QUESTIONS.length + '개 · 연결 ' + linked + '개';
+  applyStageCollapse('dg-s5', false);
   var d2 = document.getElementById('dg-sum-2');
   if (d2) d2.textContent = '';
 
@@ -1652,7 +1624,6 @@ function renderDiagnosis(){
     ? '<span class="badge b-orange">확인 필요</span>' : '';
   document.getElementById('diag-badge').innerHTML = badgeHtml;
 
-  if (S.dg !== 'idle') renderS3();
   if (S.dg === 'result'){ renderOverall(); renderFitCards(); }
   renderWsCard(); renderDiagCard();
   icons();
@@ -1706,7 +1677,7 @@ function cancelWorksheet(){ S.ws = 'idle'; S.worksheet = false; renderAll(); bac
 var DG_LOAD_MSG = {
   ws:   '빈 활동지에서 문항을 나누고 있어요',
   link: '문항마다 볼 채점기준을 연결하고 있어요',
-  diag: '채점기준이 AI 채점에 맞는지 살펴보고 있어요'
+  diag: '문항마다 볼 채점기준을 연결하고 있어요'
 };
 var _loadTimer = null;
 function runWsLoad2(){
@@ -1724,18 +1695,14 @@ function runWsLoad2(){
 function runDiagLoad(kind){
   if (kind === 'diag') _draft = null;
   S.dg = 'load';
-  document.getElementById('dg-load-title').textContent = DG_LOAD_MSG[kind];
+  document.getElementById('dg-load-title').textContent = DG_LOAD_MSG.diag;
   renderDiagnosis();
   clearTimeout(_loadTimer);
   _loadTimer = setTimeout(function(){
-    if (kind === 'link'){
-      S.dg = 'link'; S.case = 'linking';
-    } else {
-      S.dg = 'result'; S.diagDone = true; resetStageOpen();
-      S.marks['sec-diagnosis'] = false;
-      S.case = (S.diagResultKind === 'ok' ? 'result-ok' : 'result');
-      showToast('success','문항별 채점기준을 연결했어요.');
-    }
+    S.dg = 'result'; S.diagDone = true; resetStageOpen();
+    S.marks['sec-diagnosis'] = false;
+    S.case = (S.diagResultKind === 'ok' ? 'result-ok' : 'result');
+    showToast('success','문항별 채점기준을 연결했어요.');
     renderAll(); renderToc(); renderMockpick();
     setHash('#case=' + S.case);
   }, 1600);
@@ -1785,7 +1752,7 @@ function openDiagnosis(){
   if (!wsDone()){ showToast('error','빈 활동지를 먼저 올려 주세요.'); return; }
   if (!S.rubricFilled){ showToast('error','채점기준을 모두 입력해야 연결할 수 있어요.'); return; }
   showScreen('diag');
-  if (S.dg === 'idle') runDiagLoad('link');
+  if (S.dg === 'idle') runDiagLoad('diag');
   else { S.case = stageCase(); renderDiagnosis(); setHash('#case=' + S.case); }
 }
 function startDiagnosis(again){
@@ -2092,6 +2059,8 @@ function renderOverall(){
     + '</div>'
     + '<div style="border:1px solid #F0F0F2;background:#FBFBFC;border-radius:12px;padding:16px 20px;">'
     +   '<p style="font-size:16px;color:#494949;margin:0;line-height:1.65;">' + opinion + '</p>'
+    +   '<button class="btn btn-ghost btn-sm" style="margin-top:12px;" onclick="togglePrevMap()"><i data-lucide="chevron-down" style="width:15px;height:15px;" id="dg-prevmap-caret"></i>지금 연결 상태 보기</button>'
+    +   prevMapHtml()
     +   staleHtml
     + '</div>';
 }
@@ -2118,6 +2087,32 @@ function renderNewMap(proposal){
       + '<div style="display:flex;flex-wrap:wrap;gap:6px;min-width:0;">' + chips + '</div>'
       + '</div>';
   }).join('');
+}
+/* 지금 연결에서 무엇이 막혔는지 — 원할 때만 펼쳐 본다.
+   고치는 자리가 아니라 왜 다시 짰는지 납득할 근거다. */
+function prevMapHtml(){
+  var rows = QUESTIONS.map(function(q){
+    var names = q.links.map(function(id){
+      var r = rubrics.filter(function(x){ return x.id === id; })[0];
+      return r ? r.title.replace(/를 평가한다\.$/, '') : null;
+    }).filter(Boolean);
+    var body = names.length
+      ? names.map(function(t){ return '<span style="font-size:14px;color:#494949;">' + esc(t) + '</span>'; }).join('<span style="color:#B3B3B3;"> · </span>')
+      : '<span style="font-size:14px;color:#DB3E51;">연결된 기준 없음</span>';
+    return '<div style="display:flex;gap:10px;align-items:flex-start;padding:8px 0;border-bottom:1px solid #F0F0F0;">'
+      + '<span style="font-size:12px;font-weight:700;background:#EFEFEF;color:#494949;border-radius:100px;padding:2px 8px;flex-shrink:0;">' + esc(q.label) + '</span>'
+      + '<div style="min-width:0;">' + body + '</div></div>';
+  }).join('');
+  return '<div id="dg-prevmap" style="display:none;margin-top:10px;">' + rows + '</div>';
+}
+function togglePrevMap(){
+  var e = document.getElementById('dg-prevmap');
+  var c = document.getElementById('dg-prevmap-caret');
+  if (!e) return;
+  var open = e.style.display !== 'none';
+  e.style.display = open ? 'none' : 'block';
+  if (c) c.setAttribute('data-lucide', open ? 'chevron-down' : 'chevron-up');
+  icons();
 }
 function roTableHtml(rows){
   var body = rows.map(function(row, ri){
