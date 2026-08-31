@@ -132,6 +132,7 @@ body { margin: 0; background: #EDF3FC; min-width: 1280px; }
 .btn-direct-add:hover { background:#F7FBFF; }
 /* 채점기준이 1개 이상일 때 — 안내 문구·점선 박스 없이 버튼만 (개발 화면 입력 완료 상태) */
 .rubric-add-row { display:flex; align-items:center; gap:8px; }
+.draft-tools { display:flex; align-items:center; gap:10px; margin-top:14px; padding-top:12px; border-top:1px solid #F0F0F0; }
 .rubric-add-row .btn-ai-gen,
 .rubric-add-row .btn-direct-add { height:40px; padding:0 16px; gap:6px; }
 .rubric-add-row .btn-direct-add { background:#F3F9FF; }
@@ -790,10 +791,11 @@ body { margin: 0; background: #EDF3FC; min-width: 1280px; }
           </div>
           <p class="sec-desc" id="dg-draft-desc"></p>
           <div id="dg-draft-list" style="display:flex;flex-direction:column;gap:12px;margin-bottom:12px;"></div>
-          <div id="dg-cur" style="margin:14px 0 4px;"></div>
-          <div class="rubric-add-row" id="dg-draft-add">
-            <button class="btn-direct-add" onclick="drAdd()"><i data-lucide="plus" style="width:16px;height:16px;"></i>직접 추가</button>
+          <div class="draft-tools" id="dg-draft-add">
+            <div id="dg-cur-btn" style="flex:1;min-width:0;"></div>
+            <button class="btn btn-outline btn-sm" style="flex-shrink:0;" onclick="drAdd()"><i data-lucide="plus" style="width:15px;height:15px;"></i>직접 추가</button>
           </div>
+          <div id="dg-cur-list" style="display:none;flex-direction:column;gap:10px;margin-top:12px;"></div>
 
           <!-- 현재(저장본) 참고 열람 — 제안이 있을 때만 -->
           <!-- AI가 새 채점기준으로 다시 한 문항 연결 — 기존과 대조시키지 않고 결과만 보여 준다 -->
@@ -2185,14 +2187,14 @@ function togglePrevMap(){
 /* 기존(저장본) 채점기준 — 접어 둔 읽기 전용. 대조를 시키지 않되, 덮어쓰기 전에
    내가 쓴 것을 확인할 길은 남긴다. 항목은 작업본으로 가져올 수 있다(복붙 대신). */
 function renderCurRubrics(){
-  var el = document.getElementById('dg-cur');
-  if (!el) return;
-  if (!_draft || !rubrics.length){ el.innerHTML = ''; return; }
-  el.innerHTML = '<button class="btn btn-ghost btn-sm" onclick="toggleCur()">'
+  var btn = document.getElementById('dg-cur-btn');
+  var list = document.getElementById('dg-cur-list');
+  if (!btn || !list) return;
+  if (!_draft || !rubrics.length){ btn.innerHTML = ''; list.innerHTML = ''; list.style.display = 'none'; return; }
+  btn.innerHTML = '<button class="btn btn-outline btn-sm" onclick="toggleCur()">'
     + '<i data-lucide="chevron-down" style="width:15px;height:15px;" id="dg-cur-caret"></i>'
-    + '기존 채점기준 보기<span style="color:#808080;font-weight:400;margin-left:6px;">' + rubrics.length + '개 · 만점 ' + fullScore(rubrics) + '점</span></button>'
-    + '<div id="dg-cur-list" style="display:none;flex-direction:column;gap:10px;margin-top:10px;">'
-    + rubrics.map(function(r){
+    + '기존 채점기준 보기<span style="color:#808080;font-weight:400;margin-left:6px;">' + rubrics.length + '개 · 만점 ' + fullScore(rubrics) + '점</span></button>';
+  list.innerHTML = rubrics.map(function(r){
         var already = _draft.some(function(d){ return d.title.trim() === r.title.trim(); });
         return '<div class="diag-card" style="padding:12px;">'
           + '<div style="display:flex;gap:12px;align-items:flex-start;margin-bottom:8px;">'
@@ -2202,8 +2204,7 @@ function renderCurRubrics(){
                 : '<button class="btn btn-outline btn-sm" style="flex-shrink:0;" onclick="pullRubric(' + r.id + ')">가져오기</button>')
           + '</div>'
           + roTableHtml(r.rows) + '</div>';
-      }).join('')
-    + '</div>';
+      }).join('');
   icons();
 }
 function toggleCur(){
