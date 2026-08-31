@@ -551,7 +551,6 @@ body { margin: 0; background: #EDF3FC; min-width: 1280px; }
             <section class="sec sec-solo" id="sec-sheet">
               <div class="sec-head">
                 <div class="sec-title">빈 활동지 · 모범답안 입력 <span class="sec-opt">(선택)</span><span id="ws-badge"></span></div>
-                <span class="stage-sum" id="grp-sheet-sum"></span>
               </div>
               <p class="sec-desc">문항만 인쇄된 빈 활동지를 올리면 AI가 문항과 학생 답안을 더 잘 구분해요. 나뉜 문항마다 모범답안과 채점 가이드를 적으면 AI가 선생님의 채점기준을 더 잘 이해해요.</p>
               <div id="ws-card-body"></div>
@@ -566,7 +565,6 @@ body { margin: 0; background: #EDF3FC; min-width: 1280px; }
             <section class="sec sec-solo" id="sec-diagnosis">
               <div class="sec-head">
                 <div class="sec-title">채점기준 점검 <span class="sec-opt">(선택)</span><span id="diag-badge"></span></div>
-                <span class="stage-sum" id="grp-diag-sum"></span>
               </div>
               <p class="sec-desc">AI 채점을 시작하기 전에, 지금 채점기준으로 점수를 매길 수 있는지 확인해 보세요. 애매한 기준은 고쳐 쓸 문장을 제안해 드려요.</p>
               <div id="diag-card-body"></div>
@@ -1621,9 +1619,7 @@ function renderWorksheet(){
   if (fn) fn.textContent = WS_FILE_NAME;
   document.getElementById('ws-sum-2').textContent = wsDone() ? ('문항 ' + QUESTIONS.length + '개') : '';
 
-  var badge = '';
-  if (wsDone()) badge = '<span class="badge b-purple">문항 ' + QUESTIONS.length + '개</span>';
-  else if (S.ws !== 'idle') badge = '<span class="badge b-purple">진행 중</span>';
+  var badge = wsDone() ? ('<span class="badge b-purple">문항 ' + QUESTIONS.length + '개</span>') : '';
   var wb = document.getElementById('ws-badge');
   if (wb) wb.innerHTML = badge;
 
@@ -1651,14 +1647,10 @@ function renderDiagnosis(){
   var rd = document.getElementById('btn-rediag');
   rd.style.display = (S.dg === 'result' && S.diagDone) ? 'inline-flex' : 'none';
 
-  var badgeHtml = '';
-  if (S.diagDone){
-    badgeHtml = S.marks['sec-diagnosis']
-      ? '<span class="badge b-orange">확인 필요</span>'
-      : '<span class="badge b-purple">점검 완료</span>';
-  } else if (S.dg !== 'idle'){
-    badgeHtml = '<span class="badge b-purple">진행 중</span>';
-  }
+  /* 배지는 '무엇이 몇 개'만. 어디까지 했는지는 카드 본문이 말한다 —
+     경고(확인 필요)만 남긴다, 놓치면 손해라서 */
+  var badgeHtml = S.marks['sec-diagnosis']
+    ? '<span class="badge b-orange">확인 필요</span>' : '';
   document.getElementById('diag-badge').innerHTML = badgeHtml;
 
   if (S.dg !== 'idle') renderS3();
@@ -2334,19 +2326,7 @@ function sectionStatus(id){
   return 'todo';
 }
 function renderToc(){
-  /* 블록마다 제 상태만 말한다 — 합쳐 놓으면 어느 쪽이 끝났는지 안 보인다 */
-  var ws = document.getElementById('grp-sheet-sum');
-  if (ws){
-    var wp = [];
-    if (wsDone()) wp.push('문항 확정');
-    if (countAnswers() > 0) wp.push('모범답안');
-    ws.textContent = wp.length ? wp.join(' · ') + ' 완료' : '';
-  }
-  var dg = document.getElementById('grp-diag-sum');
-  if (dg){
-    var chip = S.marks['sec-diagnosis'] ? ' <span class="toc-chip">확인 필요</span>' : '';
-    dg.innerHTML = (S.diagDone ? '점검 완료' : '') + chip;
-  }
+  /* 블록 헤더에 상태를 적지 않는다 — 카드 본문이 이미 말하고 있어 같은 말이 두 번이 된다 */
   applyStageCollapse('grp-sheet', false);
   applyStageCollapse('grp-diag', false);
   icons();
