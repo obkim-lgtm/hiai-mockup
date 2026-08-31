@@ -790,7 +790,7 @@ body { margin: 0; background: #EDF3FC; min-width: 1280px; }
           </div>
           <p class="sec-desc" id="dg-draft-desc"></p>
           <div id="dg-draft-list" style="display:flex;flex-direction:column;gap:12px;margin-bottom:12px;"></div>
-          <div id="dg-dropped" style="display:none;margin:10px 0 14px;"></div>
+          <div id="dg-cur" style="margin:14px 0 4px;"></div>
           <div class="rubric-add-row" id="dg-draft-add">
             <button class="btn-direct-add" onclick="drAdd()"><i data-lucide="plus" style="width:16px;height:16px;"></i>직접 추가</button>
           </div>
@@ -801,6 +801,7 @@ body { margin: 0; background: #EDF3FC; min-width: 1280px; }
             <h4 style="font-size:16px;font-weight:700;color:#0A2A5E;margin:0 0 4px;">AI가 다시 한 문항 연결</h4>
             <p class="sec-desc" style="margin-bottom:12px;">새 채점기준으로 문항마다 다시 연결했어요. 고치려면 위 단계에서 바꾸시면 돼요.</p>
             <div id="dg-newmap-list" style="display:flex;flex-direction:column;gap:8px;"></div>
+            <div id="dg-newmap-note" class="note note-warn" style="display:none;margin-top:12px;"></div>
           </div>
 
           <div class="apply-band" id="dg-apply-band" style="display:none;">
@@ -957,7 +958,7 @@ var QUESTIONS = seedQuestions();
 /* 총평은 채점기준(세트) 축 문제만 말한다 — 연결 축 문제는 문항 카드의 판정·사유가 맡는다.
    연결을 고쳐도 총평이 낡은 말을 반복하지 않게 하기 위한 역할 분리. */
 var DIAG_REASONS = [
-  '성실하게 과제를 수행했는지는 제출된 과제물만으로는 알 수 없어 제안에서 뺐어요. 선생님이 직접 채점하실 것이라면 아래에서 다시 넣어 주세요.',
+  '성실하게 과제를 수행했는지는 제출된 과제물만으로는 알 수 없어 제안에서 뺐어요. 선생님이 직접 채점하실 것이라면 아래 <strong>기존 채점기준 보기</strong>에서 가져와 주세요.',
   '3번 문항은 반론을 쓰라고 하는데 지금 채점기준에는 반론을 보는 항목이 없어요.',
   '채점기준 3번에는 어휘·맞춤법·문장 자연스러움이 한 칸에 함께 있어요. 사람은 함께 보고 판단하지만 AI는 어느 쪽에 점수를 줄지 스스로 정하지 못해요.',
   '채점기준 4번의 "충분히", "설득력 있게"는 사람에게는 통하는 표현이지만, AI는 기준을 잡지 못해 학생마다 점수가 달라질 수 있어요.'
@@ -2078,6 +2079,7 @@ function renderNewMap(proposal){
   var set = _draft || SUGGESTED_SET;
   /* 문항 순서대로 붙을 제안 기준 (id 아닌 인덱스) — 목업 데이터 */
   var MAP = [[0], [0, 1], [4], [0, 1, 2, 3]];
+  /* 가져온 기준은 AI가 어느 문항에 붙일지 정하지 못한다 — 미연결로 두고 사실대로 보여 준다 */
   document.getElementById('dg-newmap-list').innerHTML = QUESTIONS.map(function(q, qi){
     var picks = (MAP[qi] || []).map(function(i){ return set[i]; }).filter(Boolean);
     var chips = picks.length
@@ -2091,6 +2093,21 @@ function renderNewMap(proposal){
       + '<div style="display:flex;flex-wrap:wrap;gap:6px;min-width:0;">' + chips + '</div>'
       + '</div>';
   }).join('');
+
+  /* 어느 문항에도 안 붙은 기준 — AI가 붙일 곳을 정하지 못한 것이므로 감추지 않고 말한다 */
+  var used = {};
+  QUESTIONS.forEach(function(q, qi){ (MAP[qi] || []).forEach(function(i){ used[i] = true; }); });
+  var loose = set.filter(function(r, i){ return !used[i]; });
+  var note = document.getElementById('dg-newmap-note');
+  if (note){
+    if (!loose.length){ note.style.display = 'none'; note.innerHTML = ''; }
+    else {
+      note.style.display = 'flex';
+      note.innerHTML = '<i data-lucide="info" style="color:#C2620A;"></i><div>'
+        + '<strong>' + loose.map(function(r){ return esc(r.title.replace(/를 평가한다\.$/, '')); }).join(', ') + '</strong>'
+        + ' — 어느 문항에도 연결하지 못했어요. 과제물만으로는 판단할 수 없는 기준이라 선생님이 직접 채점하셔야 해요.</div>';
+    }
+  }
 }
 /* 지금 연결에서 무엇이 막혔는지 — 원할 때만 펼쳐 본다.
    고치는 자리가 아니라 왜 다시 짰는지 납득할 근거다. */
@@ -2118,57 +2135,49 @@ function togglePrevMap(){
   if (c) c.setAttribute('data-lucide', open ? 'chevron-down' : 'chevron-up');
   icons();
 }
-/* AI 제안에서 빠진 기존 기준 — 과제물만으로 판단할 수 없어 뺀 것들.
-   교사가 직접 채점하려고 일부러 둔 기준일 수 있으므로 원문 그대로 되살릴 수 있어야 한다. */
-/* 어떤 기존 기준이 제안에서 빠졌는지는 문구 비교로 알 수 없다 —
-   AI가 다시 쓰면 제목이 통째로 바뀌기 때문. 목업에서는 데이터로 지정한다. */
-var DROPPED_IDS = [5];   // 성실성: 과제물만으로 판단 불가
-function droppedRubrics(){
-  if (!_draft) return [];
-  return rubrics.filter(function(r){
-    if (DROPPED_IDS.indexOf(r.id) === -1) return false;
-    return !_draft.some(function(d){ return d.title.trim() === r.title.trim(); });
-  });
-}
-function renderDropped(){
-  var el = document.getElementById('dg-dropped');
+/* 기존(저장본) 채점기준 — 접어 둔 읽기 전용. 대조를 시키지 않되, 덮어쓰기 전에
+   내가 쓴 것을 확인할 길은 남긴다. 항목은 작업본으로 가져올 수 있다(복붙 대신). */
+function renderCurRubrics(){
+  var el = document.getElementById('dg-cur');
   if (!el) return;
-  var gone = droppedRubrics();
-  if (!gone.length){ el.style.display = 'none'; el.innerHTML = ''; return; }
-  el.style.display = 'block';
-  el.innerHTML = '<button class="btn btn-ghost btn-sm" onclick="toggleDropped()">'
-    + '<i data-lucide="chevron-down" style="width:15px;height:15px;" id="dg-dropped-caret"></i>'
-    + 'AI가 뺀 기준 ' + gone.length + '개 보기</button>'
-    + '<div id="dg-dropped-list" style="display:none;flex-direction:column;gap:8px;margin-top:10px;">'
-    + gone.map(function(r){
-        return '<div style="display:flex;gap:12px;align-items:flex-start;border:1px solid #E6E6E6;border-radius:8px;padding:12px 14px;background:#FBFBFC;">'
-          + '<div style="flex:1;min-width:0;">'
-          +   '<p style="font-size:16px;font-weight:700;color:#333;margin:0 0 4px;">' + esc(r.title) + '</p>'
-          +   '<p style="font-size:14px;color:#808080;margin:0;line-height:1.6;">제출된 과제물만으로는 판단할 수 없어 뺐어요. 직접 채점하실 것이라면 다시 넣어 주세요.</p>'
+  if (!_draft || !rubrics.length){ el.innerHTML = ''; return; }
+  el.innerHTML = '<button class="btn btn-ghost btn-sm" onclick="toggleCur()">'
+    + '<i data-lucide="chevron-down" style="width:15px;height:15px;" id="dg-cur-caret"></i>'
+    + '기존 채점기준 보기<span style="color:#808080;font-weight:400;margin-left:6px;">' + rubrics.length + '개 · 만점 ' + fullScore(rubrics) + '점</span></button>'
+    + '<div id="dg-cur-list" style="display:none;flex-direction:column;gap:10px;margin-top:10px;">'
+    + rubrics.map(function(r){
+        var already = _draft.some(function(d){ return d.title.trim() === r.title.trim(); });
+        return '<div class="diag-card" style="padding:12px;">'
+          + '<div style="display:flex;gap:12px;align-items:flex-start;margin-bottom:8px;">'
+          +   '<p style="flex:1;min-width:0;font-size:16px;font-weight:700;color:#333;margin:0;">' + esc(r.title) + '</p>'
+          +   (already
+                ? '<span style="flex-shrink:0;font-size:14px;color:#808080;">가져옴</span>'
+                : '<button class="btn btn-outline btn-sm" style="flex-shrink:0;" onclick="pullRubric(' + r.id + ')">가져오기</button>')
           + '</div>'
-          + '<button class="btn btn-outline btn-sm" style="flex-shrink:0;" onclick="restoreRubric(' + r.id + ')">다시 넣기</button>'
-          + '</div>';
+          + roTableHtml(r.rows) + '</div>';
       }).join('')
     + '</div>';
   icons();
 }
-function toggleDropped(){
-  var e = document.getElementById('dg-dropped-list');
-  var c = document.getElementById('dg-dropped-caret');
+function toggleCur(){
+  var e = document.getElementById('dg-cur-list');
+  var c = document.getElementById('dg-cur-caret');
   if (!e) return;
   var open = e.style.display !== 'none';
   e.style.display = open ? 'none' : 'flex';
   if (c) c.setAttribute('data-lucide', open ? 'chevron-down' : 'chevron-up');
   icons();
 }
-function restoreRubric(id){
+/* 가져오면 채점기준 구성이 바뀐다 -> 문항 연결을 다시 만든다(정책) */
+function pullRubric(id){
   var r = rubrics.filter(function(x){ return x.id === id; })[0];
   if (!r || !_draft) return;
   drSync();
   _draft.push({ id: 700 + _draft.length, title: r.title, rows: JSON.parse(JSON.stringify(r.rows)) });
   _draftEdited = true;
+  _mapRedone = true;
   renderFitCards();
-  showToast('success','채점기준을 다시 넣었어요. 이 기준은 선생님이 직접 채점하셔야 해요.');
+  showToast('success','가져왔어요. 채점기준이 바뀌어 문항 연결을 다시 만들었어요.');
 }
 function roTableHtml(rows){
   var body = rows.map(function(row, ri){
@@ -2299,7 +2308,7 @@ function renderFitCards(){
   }).join('');
 
   renderNewMap(proposal);
-  renderDropped();
+  renderCurRubrics();
   drMetaBand();
   icons();
 }
