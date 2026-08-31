@@ -1,0 +1,2462 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" href="../screens/favicon_src.png?v=2" type="image/png">
+<title>평가 설계 v7 — AI 서·논술형 평가지원시스템 목업</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<style>
+@import url('../screens/fonts.css');
+* { font-family: 'NanumSquareRound', -apple-system, sans-serif; box-sizing: border-box; }
+body { margin: 0; background: #EDF3FC; min-width: 1280px; }
+.screen { display: none; }
+.screen.active { display: block; }
+@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes fadeUp { from { opacity:0; transform: translateY(8px); } to { opacity:1; transform:none; } }
+
+/* ── 공통 버튼 (콘텐츠 중앙정렬 5종 세트) ── */
+.btn { display:inline-flex; align-items:center; justify-content:center; line-height:1; vertical-align:middle; gap:8px;
+       height:40px; padding:0 16px; border-radius:8px; font-family:inherit; font-size:16px; font-weight:700; cursor:pointer; border:1px solid transparent; }
+.btn-sm { height:32px; padding:0 12px; font-size:14px; gap:6px; }
+.btn-primary { background:#0950A0; color:#fff; }
+.btn-primary:hover { background:#10508F; }
+.btn-secondary { background:#fff; color:#0950A0; border-color:#7FB3E8; }
+.btn-secondary:hover { background:#F7FBFF; }
+.btn-outline { background:#fff; color:#494949; border-color:#D9D9D9; }
+.btn-outline:hover { background:#F8F8F8; border-color:#B3B3B3; }
+.btn-ghost { background:transparent; color:#494949; border-color:transparent; }
+.btn-ghost:hover { background:#F0F0F0; }
+.btn:disabled, .btn.is-disabled { background:#F0F0F0 !important; color:#B3B3B3 !important; border-color:#E6E6E6 !important; cursor:not-allowed; }
+
+/* ── 좌측 목차 ── */
+.toc-chip { margin-left:auto; background:#FFF3E0; color:#C2620A; border-radius:100px; padding:1px 7px; font-size:12px; font-weight:700; white-space:nowrap; }
+
+/* ── 섹션 ── */
+.sec { scroll-margin-top:130px; padding-bottom:24px; margin-bottom:24px; border-bottom:1px solid #F0F0F0; }
+.sec:last-child { border-bottom:none; }
+.sec-head { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:14px; }
+.sec-title { font-size:18px; font-weight:700; color:#0A2A5E; display:flex; align-items:center; gap:8px; }
+.sec-desc { font-size:14px; color:#808080; font-weight:400; line-height:1.55; margin:0 0 14px; }
+
+/* ── 안내 박스 (좌측 컬러 띠 금지 — 배경 + 아이콘만) ── */
+.note { display:flex; gap:10px; align-items:flex-start; border-radius:10px; padding:14px 16px; font-size:14px; line-height:1.65; }
+.note i { width:17px; height:17px; flex-shrink:0; margin-top:2px; }
+.note-info  { background:#F2F7FF; color:#2B4C96; }
+.note-warn  { background:#FFF8F0; color:#7A4A00; }
+.note-lock  { background:#F8F8F8; color:#5A5A5A; }
+.note-ok    { background:#F1F9F3; color:#0A6B2C; }
+
+/* ── 뱃지 ── */
+.badge { display:inline-flex; align-items:center; justify-content:center; gap:4px; border-radius:100px; padding:3px 10px; font-size:12px; font-weight:700; white-space:nowrap; line-height:1.3; }
+.b-gray   { background:#F8F8F8; color:#808080; }
+.b-purple { background:#F3F9FF; color:#0950A0; }
+.b-green  { background:#F1F9F3; color:#00AF3D; }
+.b-orange { background:#FFF3E0; color:#C2620A; }
+.b-red    { background:#FFEFEF; color:#DB3E51; }
+.b-blue   { background:#F2F7FF; color:#00778B; }
+
+/* 3단계 문항 목록 아이템 (v4 이식) */
+.s3-q-item { display:flex; align-items:center; cursor:pointer; }
+.s3-q-item:hover { background:#F3F9FF; }
+.s3-q-item.active { background:#D9EAFB; border-left:3px solid #0950A0; }
+.s3-q-item:not(.active) { border-left:3px solid transparent; }
+
+/* 성취기준 카드 — 개발 화면(MM23…JpB 736:9920) 준수 */
+.std-card { border:1px solid #D9D9D9; border-radius:12px; padding:16px 20px; display:flex; flex-direction:column; gap:8px; }
+.std-head { display:flex; align-items:center; justify-content:space-between; gap:12px; }
+.std-head-l { display:flex; align-items:center; gap:28px; min-width:0; }
+.std-title { font-size:16px; font-weight:700; color:#333; white-space:nowrap; }
+.std-check { display:flex; align-items:center; gap:8px; cursor:pointer; user-select:none; }
+.std-box { width:14px; height:14px; border:1px solid #B3B3B3; border-radius:2px; background:#fff; flex-shrink:0;
+           display:inline-flex; align-items:center; justify-content:center; }
+.std-check.on .std-box { background:#0950A0; border-color:#0950A0; }
+.std-check-label { font-size:14px; font-weight:700; color:#333; white-space:nowrap; }
+.std-help { font-size:12px; color:#494949; line-height:1.25; }
+.std-combo { height:40px; border:1px solid #D9D9D9; border-radius:8px; background:#fff;
+             display:flex; align-items:center; gap:4px; padding:0 8px 0 16px; cursor:pointer; }
+.std-combo .ph { flex:1; min-width:0; font-size:16px; color:#333; opacity:.8; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.std-combo .val { flex:1; min-width:0; font-size:16px; color:#333; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.std-input { width:100%; height:44px; border:1px solid #D9D9D9; border-radius:8px; padding:0 16px;
+             font-size:16px; font-family:inherit; color:#333; outline:none; box-sizing:border-box; }
+.std-input:focus, .std-lv input:focus { border-color:#0950A0; }
+.std-lv { width:100%; border:1px solid #D9D9D9; border-radius:8px; overflow:hidden; }
+.std-lv-row { display:flex; align-items:stretch; border-bottom:1px solid #D9D9D9; min-height:44px; }
+.std-lv-row:last-child { border-bottom:none; }
+.std-lv-name { width:58px; flex-shrink:0; border-right:1px solid #D9D9D9; display:flex; align-items:center;
+               justify-content:center; padding:8px 4px; font-size:16px; color:#333; }
+.std-lv-desc { flex:1; min-width:0; display:flex; align-items:center; padding:8px 12px; font-size:16px; color:#333; line-height:1.55; }
+.std-lv input { border:none; outline:none; width:100%; font-size:16px; font-family:inherit; color:#333; background:transparent; }
+.std-lv-name input { text-align:center; }
+/* 목록 아래 성취기준 추가 — Basic_button */
+.std-add { display:inline-flex; align-items:center; justify-content:center; line-height:1; vertical-align:middle; gap:4px;
+           height:32px; padding:0 12px; background:#EAF4FF; border:1px solid #89C0F3; border-radius:8px;
+           color:#0A4A94; font-size:14px; font-weight:700; font-family:inherit; cursor:pointer; }
+.std-add:hover { background:#D6EBFE; }
+
+/* ── 채점기준 카드 ── */
+.rubric-card { background:#fff; border:1px solid #D9D9D9; border-radius:12px; }
+.rubric-body { display:flex; gap:12px; align-items:stretch; padding:12px 14px 16px; }
+.rubric-ta-wrap { width:198px; flex-shrink:0; display:flex; flex-direction:column; }
+.rubric-ta-wrap textarea { flex:1; min-height:132px; width:100%; border:1px solid #D9D9D9; border-radius:6px; padding:8px 12px;
+                           font-size:16px; font-family:inherit; resize:none; outline:none; color:#333; line-height:1.55; }
+.rubric-ta-wrap textarea:focus { border-color:#0950A0; }
+.rt { width:100%; border-collapse:separate; border-spacing:0; }
+.rt th { background:#F8F8F8; padding:8px 12px; font-size:14px; font-weight:700; color:#808080; border-bottom:1px solid #D9D9D9; text-align:center; }
+.rt td { padding:9px 12px; border-bottom:1px solid #D9D9D9; text-align:center; }
+.rt tr:last-child td { border-bottom:none; }
+.rt .c-score { width:58px; border-right:1px solid #D9D9D9; }
+.rt input { border:none; font-size:16px; font-family:inherit; outline:none; color:#333; background:transparent; width:100%; text-align:center; }
+.rt td:last-child input { text-align:left; }
+
+/* 수식(시그마) 버튼 — 개발 화면 Icon_button 준수 (24px · #EAF4FF · #89C0F3 · radius 6) */
+.rt td.c-crit { display:flex; align-items:center; gap:8px; }
+.sigma-btn { display:inline-flex; align-items:center; justify-content:center; line-height:1; vertical-align:middle;
+             width:24px; height:24px; background:#EAF4FF; border:1px solid #89C0F3; border-radius:6px; color:#0A4A94; cursor:pointer; flex-shrink:0; }
+.sigma-btn:hover { background:#D6EBFE; }
+
+/* 채점기준 추가 진입점 — 개발 화면(MM23…JpB 736:9578) 채점기준_card 초기 상태 준수 */
+.rubric-add-outer { border:1px solid #D9D9D9; border-radius:12px; padding:16px 20px; }
+.rubric-add-dashed { background:#F3F9FF; border:2px dashed #89C0F3; border-radius:8px; padding:32px 20px;
+                     display:flex; flex-direction:column; align-items:center; justify-content:center; gap:12px; }
+.btn-ai-gen { display:inline-flex; align-items:center; justify-content:center; line-height:1; vertical-align:middle; gap:4px;
+              height:32px; padding:0 12px; border:none; border-radius:8px; background:#2F77D5; color:#fff;
+              font-family:inherit; font-size:14px; font-weight:700; cursor:pointer; }
+.btn-ai-gen:hover { background:#0A4A94; }
+.btn-direct-add { display:inline-flex; align-items:center; justify-content:center; line-height:1; vertical-align:middle; gap:4px;
+                  height:32px; padding:0 12px; border:1px solid #89C0F3; border-radius:8px; background:#fff; color:#0A4A94;
+                  font-family:inherit; font-size:14px; font-weight:700; cursor:pointer; }
+.btn-direct-add:hover { background:#F7FBFF; }
+/* 채점기준이 1개 이상일 때 — 안내 문구·점선 박스 없이 버튼만 (개발 화면 입력 완료 상태) */
+.rubric-add-row { display:flex; align-items:center; gap:8px; }
+.rubric-add-row .btn-ai-gen,
+.rubric-add-row .btn-direct-add { height:40px; padding:0 16px; gap:6px; }
+.rubric-add-row .btn-direct-add { background:#F3F9FF; }
+.rubric-add-row .btn-direct-add:hover { background:#E1F1FF; }
+
+/* 모범답안 · 답변 유형 (v4 4단계 원본) */
+.s4-card { background:white; border:1px solid #E6E6E6; border-radius:10px; overflow:hidden; }
+.s4-type-btn { display:inline-flex; flex-direction:row; align-items:center; justify-content:center; line-height:1; vertical-align:middle; gap:8px; border:1px solid #E6E6E6; background:white; border-radius:8px; height:44px; padding:0 14px; cursor:pointer; font-family:inherit; text-align:left; transition:border-color .12s, background .12s; }
+.s4-type-btn:hover { border-color:#7FB3E8; }
+.s4-type-btn.active { border:1.5px solid #0950A0; background:#F7FBFF; }
+.s4-type-title { font-size:14px; font-weight:700; color:#494949; line-height:1; }
+.s4-type-btn.active .s4-type-title { color:#0950A0; }
+.s4-type-desc { font-size:14px; font-weight:400; color:#808080; line-height:1.35; }
+.s4-sum-btn { display:inline-flex; align-items:center; justify-content:center; line-height:1; vertical-align:middle; gap:4px; border:1px solid #D9D9D9; background:white; border-radius:6px; height:32px; padding:0 10px; cursor:pointer; font-size:14px; font-weight:700; color:#494949; font-family:inherit; flex-shrink:0; }
+.s4-del-btn { width:32px; height:32px; border:none; background:transparent; border-radius:6px; cursor:pointer; display:inline-flex; align-items:center; justify-content:center; line-height:1; vertical-align:middle; color:#B3B3B3; flex-shrink:0; }
+.s4-del-btn:hover { background:#FFF0F0; color:#DB3E51; }
+.s4-model textarea:focus { border-color:#0950A0; }
+.s4-field { display:flex; flex-direction:column; gap:6px; }
+.s4-lab { display:flex; align-items:center; gap:8px; min-height:32px; }
+.s4-lab-t { font-size:14px; font-weight:700; color:#333; white-space:nowrap; }
+.s4-lab-d { font-size:14px; font-weight:400; color:#808080; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.s4-lab .s4-sum-btn { margin-left:auto; }
+.s4-guide { display:flex; flex-direction:column; gap:6px; }
+.s4-ansblock { display:flex; flex-direction:column; gap:8px; padding-top:12px; border-top:1px solid #EFEFEF; }
+.s4-guide textarea { width:100%; min-height:60px; border:1px solid #D9D9D9; border-radius:8px; padding:10px 12px;
+                     font-size:16px; font-family:inherit; resize:none; overflow:hidden; outline:none; color:#333; line-height:1.55; box-sizing:border-box; }
+.s4-guide textarea:focus { border-color:#0950A0; }
+.s4-model textarea { width:100%; min-height:72px; border:1px solid #D9D9D9; border-radius:8px; padding:10px 12px; font-size:16px; font-family:inherit; resize:none; overflow:hidden; outline:none; color:#333; line-height:1.55; box-sizing:border-box; }
+
+/* 누적 카드 — 앞 카드를 끝내면 다음 카드가 아래에 나타난다(단계 바 없음) */
+.stage-card { border:1px solid #E6E6E6; border-radius:12px; padding:20px 22px; margin-bottom:16px; background:#fff; }
+.stage-card.is-done { background:#FBFBFC; }
+.stage-head { display:flex; align-items:center; gap:10px; margin-bottom:8px; }
+.stage-num { width:26px; height:26px; border-radius:50%; background:#0950A0; color:#fff; font-size:13px; font-weight:700;
+             display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+.stage-title { font-size:18px; font-weight:700; color:#0A2A5E; }
+.stage-sum { font-size:14px; color:#808080; font-weight:700; margin-left:auto; }
+/* 완료한 단은 머리만 남기고 접는다 — 단이 늘어도 화면이 길어지지 않게 */
+.stage-head { cursor:pointer; }
+.stage-caret { width:18px; height:18px; color:#B3B3B3; flex-shrink:0; margin-left:10px; }
+.stage-card.collapsed { background:#FBFBFC; }
+.stage-card.collapsed > *:not(.stage-head) { display:none !important; }
+.stage-card.collapsed .stage-head { margin-bottom:0; }
+/* 설계 화면 그룹 헤더 — 섹션 제목과 크기가 같아 위계가 안 보이므로 구분선으로 가른다 */
+#grp-core > .stage-head, #grp-adv > .stage-head { border-bottom:1px solid #ECECEC; padding-bottom:14px; margin-bottom:24px; }
+#grp-core.collapsed > .stage-head, #grp-adv.collapsed > .stage-head { border-bottom:none; padding-bottom:0; margin-bottom:0; }
+/* 같은 평가에 활동지가 여러 종류일 때 — 드문 경우라 필요한 사람만 펼쳐 보게 */
+.ws-help-link { display:inline-flex; align-items:center; justify-content:center; line-height:1; vertical-align:middle; gap:4px;
+                background:none; border:none; padding:0; cursor:pointer;
+                font-family:inherit; font-size:14px; font-weight:700; color:#0A4A94; }
+.ws-help-link:hover { text-decoration:underline; }
+.ws-help-wrap { position:relative; display:inline-block; }
+.ws-pop { position:absolute; top:calc(100% + 10px); left:0; width:420px; max-width:80vw; z-index:60;
+          background:#fff; border:1px solid #E6E6E6; border-radius:10px; box-shadow:0 8px 24px rgba(95,102,178,.18);
+          padding:14px 16px; font-size:14px; color:#494949; line-height:1.65; text-align:left; }
+.ws-pop::before { content:''; position:absolute; top:-7px; left:18px; width:12px; height:12px; background:#fff;
+                  border-left:1px solid #E6E6E6; border-top:1px solid #E6E6E6; transform:rotate(45deg); }
+
+/* 진단 화면 공통 하단 바 — 좌: 뒤로 / 우: 보조 + 주 행동 */
+.dg-navbar { display:flex; align-items:center; justify-content:space-between; gap:12px;
+             padding-top:20px; border-top:1px solid #F0F0F0; margin-top:20px; }
+
+/* 진단 결과 · 읽기 전용 채점기준 표 (적합·적용됨 카드) */
+.rt-ro td { color:#333; font-size:16px; }
+.rt-ro td:last-child { text-align:left; }
+.ro-title { width:198px; flex-shrink:0; border:1px solid #D9D9D9; border-radius:6px; padding:8px 12px;
+            font-size:16px; color:#333; line-height:1.5; background:#FAFAFA; }
+
+/* 현재 ↔ AI 제안 병렬 비교 — 요소 개수가 달라도 되도록 매칭선 없이 세트 대 세트로 본다 */
+.cmp-wrap { display:grid; grid-template-columns:1fr 1fr; gap:16px; align-items:start; }
+.cmp-col { border:1px solid #E6E6E6; border-radius:12px; background:#FBFBFC; padding:14px; min-width:0; }
+.cmp-col.is-new { border-color:#B5D6F9; background:#F7FBFF; }
+.cmp-head { display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:10px; }
+.cmp-title { font-size:16px; font-weight:700; color:#494949; }
+.cmp-meta { font-size:14px; color:#808080; font-weight:700; }
+.cmp-body { display:flex; flex-direction:column; gap:10px; }
+.cmp-item { background:#fff; border:1px solid #E6E6E6; border-radius:10px; padding:12px; }
+.cmp-item-title { font-size:16px; font-weight:700; color:#333; line-height:1.5; margin:0 0 8px; }
+.cmp-item textarea { width:100%; border:1px solid #D9D9D9; border-radius:6px; padding:8px 10px; font-size:16px; font-family:inherit; color:#333; line-height:1.5; resize:vertical; min-height:56px; outline:none; box-sizing:border-box; margin:0 0 8px; }
+.cmp-item textarea:focus { border-color:#0950A0; }
+@media (max-width:900px){ .cmp-wrap { grid-template-columns:1fr; } }
+
+/* 수정안 일괄 적용 밴드 — 카드를 다 읽은 자리에서 결정하도록 목록 뒤에 둔다 */
+.apply-band { display:flex; align-items:center; justify-content:space-between; gap:20px; flex-wrap:wrap;
+              background:#F3F9FF; border:1px solid #B5D6F9; border-radius:12px; padding:20px 22px; margin-top:16px; }
+.btn-lg { height:48px; padding:0 22px; font-size:16px; }
+
+/* ①단 좌측 문항 목록 아이템 */
+.s3-q-item { display:flex; align-items:center; cursor:pointer; }
+.s3-q-item:hover { background:#F3F9FF; }
+.s3-q-item.active { background:#D9EAFB; border-left:3px solid #0950A0; }
+.s3-q-item:not(.active) { border-left:3px solid transparent; }
+
+/* ── 진단 결과 카드 ── */
+.diag-card { border:1px solid #E6E6E6; border-radius:12px; padding:16px 18px; background:#fff; }
+.diag-card.warn { border-color:#FFD9B0; background:#FFFCF8; }
+.suggest { background:#F3F9FF; border-radius:10px; padding:14px 16px; margin-top:12px; }
+
+/* ── 연결 표 ── */
+.link-tb { width:100%; border-collapse:separate; border-spacing:0; }
+.link-tb th { background:#F8F8F8; padding:10px 12px; font-size:14px; font-weight:700; color:#808080; border-bottom:1px solid #D9D9D9; text-align:center; }
+.link-tb td { padding:12px; border-bottom:1px solid #F0F0F0; font-size:16px; color:#333; text-align:center; vertical-align:middle; }
+.link-tb tr:last-child td { border-bottom:none; }
+.rchip { display:inline-flex; align-items:center; justify-content:center; gap:5px; background:#F3F9FF; color:#244768; border:1px solid #C2E1FF;
+         border-radius:100px; padding:4px 10px; font-size:14px; font-weight:700; line-height:1; }
+.rchip button { border:none; background:transparent; cursor:pointer; color:#5380B1; display:flex; align-items:center; padding:0; }
+
+/* ── 드롭존 ── */
+.dropzone { border:1.5px dashed #94C9FC; border-radius:12px; background:#F7FBFF; padding:30px 24px;
+            display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px; }
+
+/* ── 토스트 ── */
+#toast { position:fixed; bottom:80px; left:50%; transform:translateX(-50%) translateY(12px); display:flex; align-items:center; gap:12px;
+         width:384px; padding:16px 24px 16px 16px; border-radius:8px; font-size:16px; font-weight:700; line-height:1.55;
+         box-shadow:0 0 1px #494949, 0 8px 32px rgba(95,102,178,0.16); opacity:0; pointer-events:none; transition:opacity .2s, transform .2s; z-index:9999; }
+#toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+#toast.t-success { background:#00AF3D; color:#fff; }
+#toast.t-error   { background:#DB3E51; color:#F8F8F8; }
+#toast.t-info    { background:#fff; color:#333; }
+
+/* ── 모달 ── */
+.ov { display:none; position:fixed; inset:0; background:rgba(0,0,0,.4); z-index:1000; align-items:center; justify-content:center; }
+.ov.open { display:flex; }
+.dlg { background:#fff; border-radius:24px; box-shadow:0 4px 12px rgba(95,102,178,.16); width:460px; max-width:92vw; }
+.dlg-head { padding:24px 24px 16px; position:relative; }
+.dlg-title { font-size:18px; font-weight:700; color:#222631; margin:0; }
+.dlg-body { padding:0 24px 24px; font-size:16px; color:#494949; line-height:1.65; }
+.dlg-foot { padding:8px 24px 16px; display:flex; justify-content:flex-end; gap:12px; }
+
+/* ── 까망이 목업 내비게이터 (시연용 · 실제 화면 아님) ── */
+#mockpick{position:fixed;left:24px;bottom:24px;z-index:3000;background:#1F2233;border-radius:14px;padding:8px;box-shadow:0 10px 30px rgba(0,0,0,.35);width:max-content;min-width:250px;max-width:360px;cursor:move;user-select:none}
+#mockpick .mp-head{font-size:11px;font-weight:800;color:#8A8FB0;letter-spacing:.04em;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:6px 8px;cursor:pointer}
+#mockpick .mp-body{display:flex;flex-direction:column;gap:6px;margin-top:6px}
+#mockpick .mp-plan{display:flex;gap:4px;margin:2px 0 8px;background:#171A28;border-radius:9px;padding:3px}
+#mockpick .mp-plan button{flex:1;height:28px;border:none;border-radius:7px;background:transparent;color:#8A8FB0;font-family:inherit;font-size:11px;font-weight:800;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;line-height:1;vertical-align:middle}
+#mockpick .mp-plan button.on{background:#3A3F58;color:#fff}
+#mockpick .mp-tabs{display:flex;gap:4px;margin-bottom:6px}
+#mockpick .mp-tabs button{flex:1;height:26px;border:1px solid #3A3F58;border-radius:7px;background:transparent;color:#8A8FB0;font-family:inherit;font-size:11px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;line-height:1;vertical-align:middle}
+#mockpick .mp-tabs button.on{background:#7E44FB;border-color:#7E44FB;color:#fff}
+#mockpick .mp-cap{font-size:10px;font-weight:800;color:#6B6F8C;letter-spacing:.05em;padding:7px 8px 2px}
+#mockpick .mp-btn{width:100%;text-align:left;white-space:normal;padding:9px 12px;border-radius:9px;border:1px solid #3A3F58;background:#2A2E44;color:#C9CCE0;font-size:13px;font-weight:700;font-family:inherit;cursor:pointer;line-height:1.35}
+#mockpick .mp-btn:hover{background:#33384f}
+#mockpick .mp-btn.on{background:#7E44FB;color:#fff;border-color:#7E44FB}
+#mockpick .mp-sub{display:block;font-size:11px;font-weight:600;color:#8A8FB0;margin-top:3px}
+#mockpick .mp-btn.on .mp-sub{color:#E6DBFF}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════════
+     SCREEN 1 · 평가 설계 목록
+═══════════════════════════════════════════════════════ -->
+<div id="screen-list" class="screen active">
+
+  <!-- GNB -->
+  <header style="background:white;height:98px;border-bottom:1px solid #D9D9D9;display:flex;align-items:center;padding:0 36px;position:sticky;top:0;z-index:100;">
+    <div style="max-width:1200px;width:100%;margin:0 auto;display:flex;align-items:center;justify-content:space-between;padding:0 36px;">
+      <div style="display:flex;align-items:center;gap:8px;">
+        <img src="../screens/logo_kg.png" style="height:42px; width:auto; display:block; flex-shrink:0;" alt="AI 서·논술형 평가지원시스템">
+      </div>
+      <nav style="display:flex;gap:52px;align-items:center;">
+        <a href="home_v1.html" style="font-size:20px;font-weight:700;color:#0950A0;text-decoration:none;">나의 평가</a>
+        <a href="#" style="font-size:20px;font-weight:700;color:#000;text-decoration:none;">평가 자료실</a>
+        <a href="#" style="font-size:20px;font-weight:700;color:#000;text-decoration:none;">고객센터</a>
+      </nav>
+      <div style="display:flex;align-items:center;gap:12px;">
+        <div style="width:36px;height:36px;background:#EDF3FC;border-radius:50%;display:flex;align-items:center;justify-content:center;">
+          <i data-lucide="user" style="width:20px;height:20px;color:#0950A0;"></i>
+        </div>
+        <span style="font-size:20px;font-weight:700;">김동* 님</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- 타이틀바 -->
+  <div style="background:linear-gradient(90deg,#0950A0 4%,#2F77D5 97.86%);height:86px;display:flex;align-items:center;padding:0 36px;">
+    <div style="max-width:1200px;width:100%;margin:0 auto;padding:0 36px;">
+      <span style="font-size:28px;font-weight:700;color:white;">1학년 국어</span>
+    </div>
+  </div>
+
+  <div style="padding-bottom:80px;">
+    <div style="max-width:1200px;width:100%;margin:0 auto;padding:0 36px;">
+
+      <!-- 탭 -->
+      <div style="padding-top:40px;display:flex;gap:12px;">
+        <div style="flex:1;height:60px;background:#CBDCF4;border-radius:20px 20px 0 0;display:flex;align-items:center;justify-content:center;cursor:pointer;" onclick="location.href='eval_home_v10.html'"><span style="font-size:20px;font-weight:700;color:#000;">평가 홈</span></div>
+        <div style="flex:1;height:60px;background:#CBDCF4;border-radius:20px 20px 0 0;display:flex;align-items:center;justify-content:center;cursor:pointer;"><span style="font-size:20px;font-weight:700;color:#000;">평가 대상</span></div>
+        <div style="flex:1;height:60px;background:white;border-radius:20px 20px 0 0;display:flex;align-items:center;justify-content:center;cursor:pointer;"><span style="font-size:20px;font-weight:700;color:#0A2A5E;">평가 설계</span></div>
+        <div style="flex:1;height:60px;background:#CBDCF4;border-radius:20px 20px 0 0;display:flex;align-items:center;justify-content:center;cursor:pointer;" onclick="location.href='task_ocr_review_v2.html'"><span style="font-size:20px;font-weight:700;color:#000;">과제물 관리</span></div>
+        <div style="flex:1;height:60px;background:#CBDCF4;border-radius:20px 20px 0 0;display:flex;align-items:center;justify-content:center;cursor:pointer;" onclick="location.href='scoring_list_v1.html'"><span style="font-size:20px;font-weight:700;color:#000;">AI 채점</span></div>
+        <div style="flex:1;height:60px;background:#CBDCF4;border-radius:20px 20px 0 0;display:flex;align-items:center;justify-content:center;cursor:pointer;" onclick="location.href='report_v2.html'"><span style="font-size:20px;font-weight:700;color:#000;">평가 리포트</span></div>
+      </div>
+
+      <!-- 패널 -->
+      <div style="background:white;border-radius:0 0 20px 20px;box-shadow:0 4px 36px rgba(95,102,178,0.16);padding:28px 24px;">
+
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+          <div>
+            <h2 style="font-size:24px;font-weight:700;color:#000;margin:0 0 4px;">평가 설계</h2>
+            <p style="font-size:14px;color:#494949;margin:0;font-weight:400;line-height:1.55;">성취기준과 채점기준을 정하고, AI가 그 기준대로 채점할 수 있는지 미리 확인해 보세요.</p>
+          </div>
+          <div style="position:relative;">
+            <button class="btn btn-primary" onclick="toggleAddMenu(event)"><i data-lucide="plus" style="width:20px;height:20px;"></i>설계 추가</button>
+            <div id="add-menu" style="display:none;position:absolute;right:0;top:46px;background:white;border:1px solid #E6E6E6;border-radius:12px;box-shadow:0 8px 24px rgba(95,102,178,.18);padding:6px;width:268px;z-index:60;">
+              <button class="btn btn-ghost" style="width:100%;justify-content:flex-start;height:42px;white-space:nowrap;" onclick="openDetail('new')"><i data-lucide="file-plus-2" style="width:18px;height:18px;color:#808080;flex-shrink:0;"></i>새로 만들기</button>
+              <button class="btn btn-ghost" style="width:100%;justify-content:flex-start;height:42px;white-space:nowrap;" onclick="showToast('info','복사할 설계를 고르는 화면입니다.')"><i data-lucide="copy" style="width:18px;height:18px;color:#808080;flex-shrink:0;"></i>복사해서 만들기</button>
+              <button class="btn btn-ghost" style="width:100%;justify-content:flex-start;height:42px;white-space:nowrap;" onclick="showToast('info','평가 자료실에서 가져오는 화면입니다.')"><i data-lucide="library" style="width:18px;height:18px;color:#808080;flex-shrink:0;"></i>평가 자료실에서 가져오기</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 빈 상태 -->
+        <div id="list-empty" style="display:none;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:80px 24px 90px;">
+          <div style="width:72px;height:72px;border-radius:50%;background:#F3F9FF;display:flex;align-items:center;justify-content:center;">
+            <i data-lucide="clipboard-pen-line" style="width:32px;height:32px;color:#0950A0;"></i>
+          </div>
+          <div style="text-align:center;">
+            <p style="font-size:18px;font-weight:700;color:#0A2A5E;margin:0 0 6px;">아직 만든 평가 설계가 없어요</p>
+            <p style="font-size:16px;color:#808080;margin:0;font-weight:400;line-height:1.6;">평가할 내용과 채점기준을 설계하면 과제 제출과 AI 채점을 시작할 수 있어요.</p>
+          </div>
+          <button class="btn btn-primary" style="margin-top:6px;" onclick="openDetail('new')"><i data-lucide="plus" style="width:20px;height:20px;"></i>설계 추가</button>
+        </div>
+
+        <!-- 카드 목록 -->
+        <div id="list-cards" style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;"></div>
+
+      </div>
+    </div>
+  </div>
+</div><!-- /screen-list -->
+
+
+<!-- ═══════════════════════════════════════════════════════
+     SCREEN 2 · 평가 설계 상세 (한 화면에서 전 과정)
+═══════════════════════════════════════════════════════ -->
+<div id="screen-detail" class="screen">
+
+  <!-- GNB -->
+  <header style="background:white;height:98px;border-bottom:1px solid #D9D9D9;display:flex;align-items:center;padding:0 36px;position:sticky;top:0;z-index:100;">
+    <div style="max-width:1200px;width:100%;margin:0 auto;display:flex;align-items:center;justify-content:space-between;padding:0 36px;">
+      <div style="display:flex;align-items:center;gap:8px;">
+        <img src="../screens/logo_kg.png" style="height:42px; width:auto; display:block; flex-shrink:0;" alt="AI 서·논술형 평가지원시스템">
+      </div>
+      <nav style="display:flex;gap:52px;align-items:center;">
+        <a href="home_v1.html" style="font-size:20px;font-weight:700;color:#0950A0;text-decoration:none;">나의 평가</a>
+        <a href="#" style="font-size:20px;font-weight:700;color:#000;text-decoration:none;">평가 자료실</a>
+        <a href="#" style="font-size:20px;font-weight:700;color:#000;text-decoration:none;">고객센터</a>
+      </nav>
+      <div style="display:flex;align-items:center;gap:12px;">
+        <div style="width:36px;height:36px;background:#EDF3FC;border-radius:50%;display:flex;align-items:center;justify-content:center;">
+          <i data-lucide="user" style="width:20px;height:20px;color:#0950A0;"></i>
+        </div>
+        <span style="font-size:20px;font-weight:700;">김동* 님</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- 타이틀바 -->
+  <div style="background:linear-gradient(90deg,#0950A0 4%,#2F77D5 97.86%);height:86px;display:flex;align-items:center;padding:0 36px;">
+    <div style="max-width:1200px;width:100%;margin:0 auto;padding:0 36px;display:flex;align-items:center;gap:12px;">
+      <div onclick="goList()" style="width:36px;height:36px;background:rgba(255,255,255,0.2);border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;">
+        <i data-lucide="arrow-left" style="width:20px;height:20px;color:white;"></i>
+      </div>
+      <span style="font-size:28px;font-weight:700;color:white;">1학년 국어</span>
+      <div style="width:1px;height:24px;background:rgba(255,255,255,0.4);margin:0 4px;"></div>
+      <span class="hero-name" style="font-size:24px;font-weight:700;color:white;"></span>
+    </div>
+  </div>
+
+  <div style="padding-bottom:100px;">
+    <div style="max-width:1200px;width:100%;margin:0 auto;padding:0 36px;">
+
+      <!-- 탭 -->
+      <div style="padding-top:40px;display:flex;gap:12px;">
+        <div style="flex:1;height:60px;background:#CBDCF4;border-radius:20px 20px 0 0;display:flex;align-items:center;justify-content:center;cursor:pointer;" onclick="location.href='eval_home_v10.html'"><span style="font-size:20px;font-weight:700;color:#000;">평가 홈</span></div>
+        <div style="flex:1;height:60px;background:#CBDCF4;border-radius:20px 20px 0 0;display:flex;align-items:center;justify-content:center;cursor:pointer;"><span style="font-size:20px;font-weight:700;color:#000;">평가 대상</span></div>
+        <div style="flex:1;height:60px;background:white;border-radius:20px 20px 0 0;display:flex;align-items:center;justify-content:center;cursor:pointer;"><span style="font-size:20px;font-weight:700;color:#0A2A5E;">평가 설계</span></div>
+        <div style="flex:1;height:60px;background:#CBDCF4;border-radius:20px 20px 0 0;display:flex;align-items:center;justify-content:center;cursor:pointer;" onclick="location.href='task_ocr_review_v2.html'"><span style="font-size:20px;font-weight:700;color:#000;">과제물 관리</span></div>
+        <div style="flex:1;height:60px;background:#CBDCF4;border-radius:20px 20px 0 0;display:flex;align-items:center;justify-content:center;cursor:pointer;" onclick="location.href='scoring_list_v1.html'"><span style="font-size:20px;font-weight:700;color:#000;">AI 채점</span></div>
+        <div style="flex:1;height:60px;background:#CBDCF4;border-radius:20px 20px 0 0;display:flex;align-items:center;justify-content:center;cursor:pointer;" onclick="location.href='report_v2.html'"><span style="font-size:20px;font-weight:700;color:#000;">평가 리포트</span></div>
+      </div>
+
+      <!-- 패널 -->
+      <div style="background:white;border-radius:0 0 20px 20px;box-shadow:0 4px 36px rgba(95,102,178,0.16);padding:28px 24px;">
+
+        <!-- 패널 헤딩 -->
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;">
+          <div>
+            <h2 style="font-size:20px;font-weight:700;color:#000;margin:0 0 4px;">평가 설계</h2>
+            <p style="font-size:14px;color:#494949;margin:0;font-weight:400;line-height:1.55;">어떤 기준으로 채점할지 설계하는 화면이에요. 활동지와 모범답안·채점기준 점검까지 더하면 AI 채점이 더 정확해져요.</p>
+          </div>
+        </div>
+
+        <!-- 잠금 안내 (단일 배너) -->
+        <div id="lock-banner" class="note note-lock" style="display:none;margin-bottom:20px;">
+          <i data-lucide="lock"></i>
+          <div id="lock-banner-text"></div>
+        </div>
+
+        <!-- 필수 그룹 — 이것만 채우면 채점된다 -->
+        <div id="grp-core" class="stage-card">
+          <div class="stage-head"><span class="stage-title">기본 설계</span><span class="stage-sum" id="grp-core-sum"></span></div>
+
+            <!-- ① 기본 정보 -->
+            <section class="sec" id="sec-basic">
+              <div class="sec-head"><div class="sec-title">기본 정보</div></div>
+              <div style="margin-bottom:16px;">
+                <label style="display:block;font-size:16px;font-weight:700;color:#333;margin-bottom:8px;">평가(과제)명</label>
+                <input id="f-name" type="text" placeholder="평가(과제)명을 입력해 주세요." oninput="onBasicInput()"
+                       style="width:100%;height:48px;border:1px solid #D9D9D9;border-radius:8px;padding:0 12px;font-size:16px;font-family:inherit;outline:none;color:#333;"
+                       onfocus="this.style.borderColor='#0950A0'" onblur="this.style.borderColor='#D9D9D9'">
+              </div>
+              <div>
+                <label style="display:block;font-size:16px;font-weight:700;color:#333;margin-bottom:12px;">공개 여부</label>
+                <div style="display:flex;gap:20px;">
+                  <label style="display:flex;align-items:center;gap:12px;cursor:pointer;">
+                    <div style="width:24px;height:24px;border-radius:50%;border:2px solid #0950A0;background:#0950A0;display:flex;align-items:center;justify-content:center;"><div style="width:10px;height:10px;background:white;border-radius:50%;"></div></div>
+                    <span style="font-size:16px;color:#000;">교내 공개</span>
+                  </label>
+                  <label style="display:flex;align-items:center;gap:12px;cursor:pointer;">
+                    <div style="width:24px;height:24px;border-radius:50%;border:2px solid #B3B3B3;background:white;"></div>
+                    <span style="font-size:16px;color:#000;">비공개</span>
+                  </label>
+                </div>
+              </div>
+            </section>
+
+            <!-- ② 성취기준 -->
+            <section class="sec" id="sec-standard">
+              <div class="sec-head">
+                <div class="sec-title">성취기준<i data-lucide="circle-help" style="width:18px;height:18px;color:#B3B3B3;cursor:pointer;"></i></div>
+              </div>
+              <div id="std-list" style="display:flex;flex-direction:column;gap:12px;margin-bottom:12px;"></div>
+              <button class="std-add" onclick="addStandard()"><i data-lucide="plus" style="width:16px;height:16px;"></i>성취기준 추가</button>
+            </section>
+
+            <!-- ③ 채점기준 -->
+            <section class="sec" id="sec-rubric">
+              <div class="sec-head">
+                <div class="sec-title">채점기준<i data-lucide="circle-help" style="width:18px;height:18px;color:#B3B3B3;cursor:pointer;"></i></div>
+                <span id="rubric-total" style="font-size:14px;color:#808080;font-weight:700;"></span>
+              </div>
+              <div id="rubric-list" style="display:flex;flex-direction:column;gap:12px;margin-bottom:12px;"></div>
+              <!-- 추가 진입점 ① 비어 있을 때 (개발 화면 채점기준_card 초기 상태) -->
+              <div class="rubric-add-outer" id="rubric-add-empty">
+                <div class="rubric-add-dashed">
+                  <div style="text-align:center;">
+                    <p style="font-size:16px;font-weight:700;color:#333;margin:0 0 4px;line-height:1.25;">채점기준을 AI로 빠르게 만들어보세요!</p>
+                    <p style="font-size:12px;color:#494949;margin:0;line-height:1.55;">성취기준과 입력된 자료를 분석하여 AI가 초안을 제안합니다.</p>
+                  </div>
+                  <div style="display:flex;flex-direction:column;align-items:center;gap:4px;">
+                    <button class="btn-ai-gen" onclick="aiGenRubrics()"><i data-lucide="wand-sparkles" style="width:16px;height:16px;"></i>채점기준 AI 생성</button>
+                    <span style="font-size:12px;color:#494949;line-height:1.25;">또는</span>
+                    <button class="btn-direct-add" onclick="addRubric()"><i data-lucide="plus" style="width:16px;height:16px;"></i>직접 추가</button>
+                  </div>
+                </div>
+              </div>
+              <!-- 추가 진입점 ② 이미 입력됐을 때 (개발 화면 입력 완료 상태) -->
+              <div class="rubric-add-row" id="rubric-add-more" style="display:none;">
+                <button class="btn-ai-gen" onclick="aiGenRubrics()"><i data-lucide="wand-sparkles" style="width:16px;height:16px;"></i>채점기준 AI 생성</button>
+                <button class="btn-direct-add" onclick="addRubric()"><i data-lucide="plus" style="width:16px;height:16px;"></i>직접 추가</button>
+              </div>
+              <!-- HowToUse (개발 화면 하단 행 준수) -->
+              <div style="display:flex;align-items:center;gap:12px;padding:12px 0 0;">
+                <span style="font-size:16px;font-weight:700;color:#333;">어떻게 입력해야 하나요?</span>
+                <span style="font-size:16px;font-weight:700;color:#0A4A94;cursor:pointer;" onclick="showToast('info','채점기준 입력 예시를 보여주는 화면입니다.')">채점기준 입력 예시</span>
+              </div>
+            </section>
+
+            <!-- ④ 점수 계산 방식 -->
+            <section class="sec" id="sec-score">
+              <div class="sec-head"><div class="sec-title">점수 계산 방식<i data-lucide="circle-help" style="width:18px;height:18px;color:#B3B3B3;cursor:pointer;"></i></div></div>
+              <div style="display:flex;gap:20px;margin-bottom:14px;">
+                <label style="display:flex;align-items:center;gap:12px;cursor:pointer;">
+                  <div style="width:24px;height:24px;border-radius:50%;border:2px solid #0950A0;background:#0950A0;display:flex;align-items:center;justify-content:center;"><div style="width:10px;height:10px;background:white;border-radius:50%;"></div></div>
+                  <span style="font-size:16px;color:#000;">채점기준 배점 그대로 적용</span>
+                </label>
+                <label style="display:flex;align-items:center;gap:12px;cursor:pointer;">
+                  <div style="width:24px;height:24px;border-radius:50%;border:2px solid #B3B3B3;background:white;"></div>
+                  <span style="font-size:16px;color:#000;">점수 구간별 등급으로 환산</span>
+                </label>
+              </div>
+              <div style="width:560px;border:1px solid #D9D9D9;border-radius:8px;overflow:hidden;">
+                <table style="width:100%;border-collapse:separate;border-spacing:0;">
+                  <thead><tr style="background:#F8F8F8;">
+                    <th style="padding:10px;text-align:center;font-size:16px;font-weight:700;color:#494949;border-bottom:1px solid #D9D9D9;">영역 만점</th>
+                    <th style="padding:10px;text-align:center;font-size:16px;font-weight:700;color:#494949;border-left:1px solid #D9D9D9;border-bottom:1px solid #D9D9D9;">최소 점수</th>
+                  </tr></thead>
+                  <tbody><tr>
+                    <td id="score-max" style="padding:10px;text-align:center;font-size:16px;color:#333;">-</td>
+                    <td id="score-min" style="padding:10px;text-align:center;font-size:16px;color:#333;border-left:1px solid #D9D9D9;">-</td>
+                  </tr></tbody>
+                </table>
+              </div>
+            </section>
+
+            <!-- ⑦ 결시자 처리 -->
+            <section class="sec" id="sec-absent">
+              <div class="sec-head"><div class="sec-title">결시자 처리<i data-lucide="circle-help" style="width:18px;height:18px;color:#B3B3B3;cursor:pointer;"></i></div></div>
+              <div style="display:flex;gap:52px;">
+                <div style="display:flex;align-items:center;gap:10px;">
+                  <span style="font-size:16px;color:#333;">미제출</span>
+                  <input type="number" value="0" style="width:64px;height:40px;border:1px solid #D9D9D9;border-radius:8px;text-align:center;font-size:16px;font-family:inherit;outline:none;color:#333;">
+                  <span style="font-size:16px;color:#333;">점</span>
+                </div>
+                <div style="display:flex;align-items:center;gap:10px;">
+                  <span style="font-size:16px;color:#333;">미응시</span>
+                  <input type="number" value="0" style="width:64px;height:40px;border:1px solid #D9D9D9;border-radius:8px;text-align:center;font-size:16px;font-family:inherit;outline:none;color:#333;">
+                  <span style="font-size:16px;color:#333;">점</span>
+                </div>
+              </div>
+            </section>
+        </div><!-- /grp-core -->
+
+        <!-- 정확도 그룹 — 선택. 할수록 AI 채점이 정확해진다 -->
+        <div id="grp-adv" class="stage-card">
+          <div class="stage-head"><span class="stage-title">AI 채점 정확도 개선 <span style="font-size:14px;font-weight:400;color:#808080;">(선택)</span></span><span class="stage-sum" id="grp-adv-sum"></span></div>
+
+            <!-- ⑥ 활동지와 모범답안 (요약 — 업로드·문항·답안 입력은 전용 화면 하나)
+                 활동지에서 문항이 나뉘어야 답안을 넣을 수 있어 두 일이 한 흐름이다.
+                 진입점을 나누면 뒤엣것이 '잠긴 버튼'으로만 보이므로 하나로 합친다. -->
+            <section class="sec" id="sec-sheet">
+              <div class="sec-head">
+                <div class="sec-title">활동지와 모범답안<span id="ws-badge"></span></div>
+              </div>
+              <p class="sec-desc">문항만 인쇄된 빈 활동지를 올리면 AI가 문항을 나눠 드려요. 나뉜 문항마다 모범답안과 채점 가이드를 적으면 AI가 선생님의 채점기준을 더 잘 이해해요.</p>
+              <div id="ws-card-body"></div>
+            </section>
+
+            <!-- ⑧ 채점기준 점검 (요약 — 진행·결과는 전용 화면) -->
+            <section class="sec" id="sec-diagnosis">
+              <div class="sec-head">
+                <div class="sec-title">채점기준 점검<span id="diag-badge"></span></div>
+              </div>
+              <p class="sec-desc">AI 채점을 시작하기 전에, 지금 채점기준으로 점수를 매길 수 있는지 확인해 보세요. 애매한 기준은 고쳐 쓸 문장을 제안해 드려요.</p>
+              <div id="diag-card-body"></div>
+            </section>
+        </div><!-- /grp-adv -->
+
+            <!-- 하단 버튼 -->
+            <div style="display:flex;align-items:center;justify-content:space-between;padding-top:20px;border-top:1px solid #F0F0F0;">
+              <button class="btn btn-outline" onclick="goList()"><i data-lucide="arrow-left" style="width:16px;height:16px;"></i>목록으로</button>
+              <div style="display:flex;gap:12px;">
+                <button class="btn btn-outline" onclick="saveDraft()">임시 저장</button>
+                <button class="btn btn-primary" onclick="saveDesign()">저장</button>
+              </div>
+            </div>
+
+
+      </div>
+    </div>
+  </div>
+</div><!-- /screen-detail -->
+
+
+
+<!-- ═══════════════════════════════════════════════════════
+     SCREEN · diag
+═══════════════════════════════════════════════════════ -->
+<div id="screen-worksheet" class="screen">
+  <header style="background:white;height:98px;border-bottom:1px solid #D9D9D9;display:flex;align-items:center;padding:0 36px;position:sticky;top:0;z-index:100;">
+    <div style="max-width:1200px;width:100%;margin:0 auto;display:flex;align-items:center;justify-content:space-between;padding:0 36px;">
+      <div style="display:flex;align-items:center;gap:8px;">
+        <img src="../screens/logo_kg.png" style="height:42px; width:auto; display:block; flex-shrink:0;" alt="AI 서·논술형 평가지원시스템">
+      </div>
+      <nav style="display:flex;gap:52px;align-items:center;">
+        <a href="home_v1.html" style="font-size:20px;font-weight:700;color:#0950A0;text-decoration:none;">나의 평가</a>
+        <a href="#" style="font-size:20px;font-weight:700;color:#000;text-decoration:none;">평가 자료실</a>
+        <a href="#" style="font-size:20px;font-weight:700;color:#000;text-decoration:none;">고객센터</a>
+      </nav>
+      <div style="display:flex;align-items:center;gap:12px;">
+        <div style="width:36px;height:36px;background:#EDF3FC;border-radius:50%;display:flex;align-items:center;justify-content:center;">
+          <i data-lucide="user" style="width:20px;height:20px;color:#0950A0;"></i>
+        </div>
+        <span style="font-size:20px;font-weight:700;">김동* 님</span>
+      </div>
+    </div>
+  </header>
+  <div style="background:linear-gradient(90deg,#0950A0 4%,#2F77D5 97.86%);height:86px;display:flex;align-items:center;padding:0 36px;">
+    <div style="max-width:1200px;width:100%;margin:0 auto;padding:0 36px;display:flex;align-items:center;gap:12px;">
+      <div onclick="backToDetail('sec-sheet')" style="width:36px;height:36px;background:rgba(255,255,255,0.2);border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;">
+        <i data-lucide="arrow-left" style="width:20px;height:20px;color:white;"></i>
+      </div>
+      <span style="font-size:28px;font-weight:700;color:white;">1학년 국어</span>
+      <div style="width:1px;height:24px;background:rgba(255,255,255,0.4);margin:0 4px;"></div>
+      <span class="hero-name" style="font-size:24px;font-weight:700;color:white;"></span>
+    </div>
+  </div>
+  <div style="padding-bottom:100px;">
+    <div style="max-width:1200px;width:100%;margin:0 auto;padding:0 36px;">
+      <div style="padding-top:40px;display:flex;gap:12px;">
+        <div style="flex:1;height:60px;background:#CBDCF4;border-radius:20px 20px 0 0;display:flex;align-items:center;justify-content:center;cursor:pointer;" onclick="location.href='eval_home_v10.html'"><span style="font-size:20px;font-weight:700;color:#000;">평가 홈</span></div>
+        <div style="flex:1;height:60px;background:#CBDCF4;border-radius:20px 20px 0 0;display:flex;align-items:center;justify-content:center;cursor:pointer;"><span style="font-size:20px;font-weight:700;color:#000;">평가 대상</span></div>
+        <div style="flex:1;height:60px;background:white;border-radius:20px 20px 0 0;display:flex;align-items:center;justify-content:center;cursor:pointer;"><span style="font-size:20px;font-weight:700;color:#0A2A5E;">평가 설계</span></div>
+        <div style="flex:1;height:60px;background:#CBDCF4;border-radius:20px 20px 0 0;display:flex;align-items:center;justify-content:center;cursor:pointer;" onclick="location.href='task_ocr_review_v2.html'"><span style="font-size:20px;font-weight:700;color:#000;">과제물 관리</span></div>
+        <div style="flex:1;height:60px;background:#CBDCF4;border-radius:20px 20px 0 0;display:flex;align-items:center;justify-content:center;cursor:pointer;" onclick="location.href='scoring_list_v1.html'"><span style="font-size:20px;font-weight:700;color:#000;">AI 채점</span></div>
+        <div style="flex:1;height:60px;background:#CBDCF4;border-radius:20px 20px 0 0;display:flex;align-items:center;justify-content:center;cursor:pointer;" onclick="location.href='report_v2.html'"><span style="font-size:20px;font-weight:700;color:#000;">평가 리포트</span></div>
+      </div>
+      <div style="background:white;border-radius:0 0 20px 20px;box-shadow:0 4px 36px rgba(95,102,178,0.16);padding:28px 24px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;">
+          <div>
+            <h2 style="font-size:20px;font-weight:700;color:#000;margin:0 0 4px;">활동지와 모범답안</h2>
+            <p style="font-size:14px;color:#494949;margin:0;font-weight:400;line-height:1.55;">문항만 인쇄된 빈 활동지를 올려 주세요. AI가 문항을 나눠 드리면, 문항마다 모범답안과 채점 가이드를 적을 수 있어요.</p>
+          </div>
+        </div>
+
+        <!-- 단계 전환 로딩 -->
+        <div id="ws-loading" style="display:none;flex-direction:column;align-items:center;gap:14px;padding:56px 24px;">
+          <div style="width:44px;height:44px;border:4px solid #D5EBFF;border-top-color:#0950A0;border-radius:50%;animation:spin .9s linear infinite;"></div>
+          <p id="ws-load-title" style="font-size:18px;font-weight:700;color:#0A2A5E;margin:0;"></p>
+          <p style="font-size:16px;color:#808080;margin:0;">이 화면을 벗어나도 진행은 계속돼요.</p>
+        </div>
+
+        <!-- 활동지 업로드 → (자동) 문항 분석 → 문항 구조 확인. 단 구분 없이 한 흐름 -->
+        <div id="dg-s1" style="display:none;">
+          <input type="file" id="ws-file" accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/*" style="display:none;" onchange="onWsFile(this)">
+          <div id="dz-empty" class="dropzone">
+            <i data-lucide="file-up" style="width:34px;height:34px;color:#0950A0;"></i>
+            <p style="font-size:16px;font-weight:700;color:#0A2A5E;margin:0;">빈 활동지를 끌어다 놓거나 파일을 선택해 주세요</p>
+            <p style="font-size:14px;color:#808080;margin:0;">PDF · JPG · PNG · 20MB 이하</p>
+            <button class="btn btn-secondary btn-sm" style="margin-top:4px;" onclick="pickWorksheet()">파일 선택</button>
+          </div>
+          <div id="ws-help-row" style="display:none;margin-top:14px;">
+            <span class="ws-help-wrap">
+              <button class="ws-help-link" onclick="event.stopPropagation();toggleWsMulti()"><i data-lucide="help-circle" style="width:15px;height:15px;"></i>활동지가 두 종류 이상인가요?</button>
+              <div id="ws-multi-note" class="ws-pop" style="display:none;" onclick="event.stopPropagation();">
+                순서나 내용이 조금씩 다른 활동지를 함께 쓰신다면 <strong>평가를 나눠 각각 만들어 주세요.</strong><br>한 평가에는 활동지 하나만 올릴 수 있고, 문항과 모범답안이 그 활동지에 묶이기 때문이에요.
+              </div>
+            </span>
+          </div>
+          <div id="dz-filled" style="display:none;">
+            <div style="display:flex;align-items:center;gap:12px;border:1px solid #D9D9D9;border-radius:12px;padding:14px 16px;">
+              <div style="width:40px;height:40px;border-radius:8px;background:#F3F9FF;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                <i data-lucide="file-text" style="width:20px;height:20px;color:#0950A0;"></i>
+              </div>
+              <div style="flex:1;min-width:0;">
+                <p id="ws-file-name" style="font-size:16px;font-weight:700;color:#333;margin:0 0 2px;"></p>
+                <p style="font-size:14px;color:#808080;margin:0;">2.4MB · 4쪽</p>
+              </div>
+              <button class="btn btn-ghost btn-sm" id="btn-ws-reanalyze" style="display:none;" onclick="analyzeStructure()"><i data-lucide="scan-text" style="width:15px;height:15px;"></i>문항 다시 분석</button>
+              <button class="btn btn-ghost btn-sm" onclick="pickWorksheet()">파일 교체</button>
+              <button class="btn btn-ghost btn-sm" onclick="removeWorksheet()"><i data-lucide="trash-2" style="width:15px;height:15px;color:#808080;"></i>삭제</button>
+            </div>
+          </div>
+          </div>
+
+          <!-- 문항 구조 확인 -->
+          <div id="dg-s2" style="display:none;margin-top:26px;padding-top:22px;border-top:1px solid #F0F0F0;">
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;">
+              <h3 style="font-size:16px;font-weight:700;color:#0A2A5E;margin:0;">문항 확정</h3>
+              <span class="stage-sum" id="ws-sum-2"></span>
+            </div>
+            <p class="sec-desc" id="dg-s2-intro" style="margin-bottom:16px;"></p>
+            <div id="dg-q-list" style="display:flex;flex-direction:column;gap:12px;margin-bottom:12px;"></div>
+            <button class="btn btn-outline btn-sm" onclick="addQuestion()"><i data-lucide="plus" style="width:15px;height:15px;"></i>문항 추가</button>
+          </div>
+
+          <!-- ②단: 문항별 모범답안·채점 가이드 — 문항이 확정된 뒤에만 나온다.
+               문항은 여기서 읽기만 하고, 고치려면 ①단으로 돌아간다(적어 둔 답안은 남는다) -->
+          <div id="dg-s3" style="display:none;margin-top:26px;padding-top:22px;border-top:1px solid #F0F0F0;">
+            <h3 style="font-size:16px;font-weight:700;color:#0A2A5E;margin:0 0 6px;">문항별 모범답안·채점 가이드</h3>
+            <p class="sec-desc" style="margin-bottom:16px;"><strong>답이 정해진 문항은 모범답안을 넣어 주시면 채점이 정확해져요.</strong> 비워 두어도 채점은 진행돼요.</p>
+            <div id="qa-list" style="display:flex;flex-direction:column;gap:12px;"></div>
+          </div>
+
+          <!-- ①단 하단 -->
+          <div class="dg-navbar" id="ws-nav-1">
+            <button class="btn btn-outline" onclick="backToDetail('sec-sheet')"><i data-lucide="arrow-left" style="width:16px;height:16px;"></i>설계로 돌아가기</button>
+            <div style="display:flex;align-items:center;gap:12px;">
+              <button class="btn btn-outline" id="btn-ws-save1" style="display:none;" onclick="saveStructure()">저장</button>
+              <button class="btn btn-primary" id="btn-ws-next" style="display:none;" onclick="gotoQaStep()">모범답안·가이드 입력</button>
+            </div>
+          </div>
+
+          <!-- ②단 하단 -->
+          <div class="dg-navbar" id="ws-nav-2" style="display:none;">
+            <button class="btn btn-outline" onclick="backToQuestionStep()"><i data-lucide="arrow-left" style="width:16px;height:16px;"></i>문항 수정</button>
+            <button class="btn btn-primary" onclick="saveStructure()">저장</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div><!-- /screen-worksheet -->
+
+<div id="screen-diag" class="screen">
+  <header style="background:white;height:98px;border-bottom:1px solid #D9D9D9;display:flex;align-items:center;padding:0 36px;position:sticky;top:0;z-index:100;">
+    <div style="max-width:1200px;width:100%;margin:0 auto;display:flex;align-items:center;justify-content:space-between;padding:0 36px;">
+      <div style="display:flex;align-items:center;gap:8px;">
+        <img src="../screens/logo_kg.png" style="height:42px; width:auto; display:block; flex-shrink:0;" alt="AI 서·논술형 평가지원시스템">
+      </div>
+      <nav style="display:flex;gap:52px;align-items:center;">
+        <a href="home_v1.html" style="font-size:20px;font-weight:700;color:#0950A0;text-decoration:none;">나의 평가</a>
+        <a href="#" style="font-size:20px;font-weight:700;color:#000;text-decoration:none;">평가 자료실</a>
+        <a href="#" style="font-size:20px;font-weight:700;color:#000;text-decoration:none;">고객센터</a>
+      </nav>
+      <div style="display:flex;align-items:center;gap:12px;">
+        <div style="width:36px;height:36px;background:#EDF3FC;border-radius:50%;display:flex;align-items:center;justify-content:center;">
+          <i data-lucide="user" style="width:20px;height:20px;color:#0950A0;"></i>
+        </div>
+        <span style="font-size:20px;font-weight:700;">김동* 님</span>
+      </div>
+    </div>
+  </header>
+  <div style="background:linear-gradient(90deg,#0950A0 4%,#2F77D5 97.86%);height:86px;display:flex;align-items:center;padding:0 36px;">
+    <div style="max-width:1200px;width:100%;margin:0 auto;padding:0 36px;display:flex;align-items:center;gap:12px;">
+      <div onclick="backToDetail('sec-diagnosis')" style="width:36px;height:36px;background:rgba(255,255,255,0.2);border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;">
+        <i data-lucide="arrow-left" style="width:20px;height:20px;color:white;"></i>
+      </div>
+      <span style="font-size:28px;font-weight:700;color:white;">1학년 국어</span>
+      <div style="width:1px;height:24px;background:rgba(255,255,255,0.4);margin:0 4px;"></div>
+      <span class="hero-name" style="font-size:24px;font-weight:700;color:white;"></span>
+    </div>
+  </div>
+  <div style="padding-bottom:100px;">
+    <div style="max-width:1200px;width:100%;margin:0 auto;padding:0 36px;">
+      <div style="padding-top:40px;display:flex;gap:12px;">
+        <div style="flex:1;height:60px;background:#CBDCF4;border-radius:20px 20px 0 0;display:flex;align-items:center;justify-content:center;cursor:pointer;" onclick="location.href='eval_home_v10.html'"><span style="font-size:20px;font-weight:700;color:#000;">평가 홈</span></div>
+        <div style="flex:1;height:60px;background:#CBDCF4;border-radius:20px 20px 0 0;display:flex;align-items:center;justify-content:center;cursor:pointer;"><span style="font-size:20px;font-weight:700;color:#000;">평가 대상</span></div>
+        <div style="flex:1;height:60px;background:white;border-radius:20px 20px 0 0;display:flex;align-items:center;justify-content:center;cursor:pointer;"><span style="font-size:20px;font-weight:700;color:#0A2A5E;">평가 설계</span></div>
+        <div style="flex:1;height:60px;background:#CBDCF4;border-radius:20px 20px 0 0;display:flex;align-items:center;justify-content:center;cursor:pointer;" onclick="location.href='task_ocr_review_v2.html'"><span style="font-size:20px;font-weight:700;color:#000;">과제물 관리</span></div>
+        <div style="flex:1;height:60px;background:#CBDCF4;border-radius:20px 20px 0 0;display:flex;align-items:center;justify-content:center;cursor:pointer;" onclick="location.href='scoring_list_v1.html'"><span style="font-size:20px;font-weight:700;color:#000;">AI 채점</span></div>
+        <div style="flex:1;height:60px;background:#CBDCF4;border-radius:20px 20px 0 0;display:flex;align-items:center;justify-content:center;cursor:pointer;" onclick="location.href='report_v2.html'"><span style="font-size:20px;font-weight:700;color:#000;">평가 리포트</span></div>
+      </div>
+      <div style="background:white;border-radius:0 0 20px 20px;box-shadow:0 4px 36px rgba(95,102,178,0.16);padding:28px 24px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;">
+          <div>
+            <h2 style="font-size:20px;font-weight:700;color:#000;margin:0 0 4px;">채점기준 점검</h2>
+            <p style="font-size:14px;color:#494949;margin:0;font-weight:400;line-height:1.55;">지금 채점기준과 문항 연결로 AI가 채점할 수 있는지 미리 확인해 드려요.</p>
+          </div>
+        </div>
+
+        <!-- 단계 전환 로딩 -->
+        <div id="dg-loading" style="display:none;flex-direction:column;align-items:center;gap:14px;padding:56px 24px;">
+          <div style="width:44px;height:44px;border:4px solid #D5EBFF;border-top-color:#0950A0;border-radius:50%;animation:spin .9s linear infinite;"></div>
+          <p id="dg-load-title" style="font-size:18px;font-weight:700;color:#0A2A5E;margin:0;"></p>
+          <p style="font-size:16px;color:#808080;margin:0;">3분 정도 걸려요. <strong style="color:#494949;">이 화면을 벗어나면 처음부터 다시 해야 하니 잠시 기다려 주세요.</strong></p>
+        </div>
+
+        <!-- 3단계: 채점기준 연결 (v4 좌우 분할 화면 이식) -->
+        <div id="dg-s3" class="stage-card" style="display:none;"><div class="stage-head"><span class="stage-num" id="dg-s3-num">1</span><span class="stage-title">채점기준 연결</span><span class="stage-sum" id="dg-sum-1"></span></div>
+          <div class="note note-info" id="s3-relink-note" style="display:none;margin-bottom:16px;">
+            <i data-lucide="wand-sparkles" style="color:#00778B;"></i>
+            <div><strong>채점기준을 바꿔서 문항 연결을 다시 만들었어요.</strong> 기준이 달라진 만큼 이전 연결은 쓸 수 없어요. AI가 새로 연결한 결과를 확인하고, 맞지 않으면 고쳐 주세요.</div>
+          </div>
+          <p class="sec-desc" style="margin-bottom:16px;">문항마다 볼 채점기준을 AI가 먼저 연결해 뒀어요. 왼쪽에서 문항을 골라 확인하고, 맞지 않으면 고쳐 주세요.</p>
+
+          <!-- 컨텐츠: 좌우 분할 매핑 -->
+          <div style="display:flex;gap:0;background:white;border-radius:16px;overflow:hidden;min-height:520px;border:1px solid #E6E6E6;">
+            <!-- 왼쪽: 문항 목록 패널 -->
+            <div style="width:220px;flex-shrink:0;border-right:1px solid #E6E6E6;display:flex;flex-direction:column;background:white;">
+              <div style="flex:1;overflow-y:auto;">
+                <div style="padding:12px 14px 8px;border-bottom:1px solid #EFEFEF;">
+                  <span style="font-size:14px;font-weight:700;color:#808080;">문항 목록</span>
+                </div>
+                <div id="dg3-qlist"></div>
+              </div>
+            </div>
+            <!-- 오른쪽: 채점기준 확인 패널 -->
+            <div style="flex:1;display:flex;flex-direction:column;min-width:0;background:white;">
+              <div id="dg3-detail" style="flex:1;overflow-y:auto;padding:24px;"></div>
+            </div>
+          </div>
+
+          <div class="dg-navbar" id="dg-s3-nav" style="display:none;">
+            <button class="btn btn-outline" onclick="backToDetail('sec-diagnosis')"><i data-lucide="arrow-left" style="width:16px;height:16px;"></i>설계로 돌아가기</button>
+            <button class="btn btn-primary" onclick="saveLinks()"><i data-lucide="stethoscope" style="width:16px;height:16px;"></i>연결 저장하고 점검</button>
+          </div>
+        </div>
+
+        <!-- ②단: 적합도 확인 — 총평 + AI 제안 채점기준 -->
+        <div id="dg-s4" class="stage-card" style="display:none;"><div class="stage-head"><span class="stage-num">2</span><span class="stage-title">적합도 확인</span><span class="stage-sum" id="dg-sum-2"></span></div>
+          <div id="dg-lock-banner" class="note note-lock" style="display:none;margin-bottom:18px;">
+            <i data-lucide="lock"></i>
+            <div id="dg-lock-text"></div>
+          </div>
+          <p class="sec-desc" style="margin-bottom:16px;">연결한 채점기준으로 AI가 채점할 수 있는지 살펴본 결과예요. AI가 다시 쓴 채점기준이 있으면 확인하고 바꿀 수 있어요.</p>
+          <div id="dg-overall" style="margin-bottom:22px;"></div>
+
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:6px;">
+            <h4 id="dg-draft-title" style="font-size:16px;font-weight:700;color:#0A2A5E;margin:0;">AI 제안 채점기준</h4>
+            <span id="dg-draft-meta" style="font-size:14px;color:#808080;font-weight:700;"></span>
+          </div>
+          <p class="sec-desc" id="dg-draft-desc"></p>
+          <div id="dg-draft-list" style="display:flex;flex-direction:column;gap:12px;margin-bottom:12px;"></div>
+          <div class="rubric-add-row" id="dg-draft-add">
+            <button class="btn-direct-add" onclick="drAdd()"><i data-lucide="plus" style="width:16px;height:16px;"></i>직접 추가</button>
+          </div>
+
+          <!-- 현재(저장본) 참고 열람 — 제안이 있을 때만 -->
+          <div id="dg-cur-wrap" style="display:none;margin-top:16px;">
+            <button class="btn btn-ghost btn-sm" onclick="drToggleCur()"><i data-lucide="chevron-down" style="width:15px;height:15px;" id="dg-cur-caret"></i><span id="dg-cur-label">현재 채점기준 보기</span><span id="dg-cur-meta" style="color:#808080;font-weight:400;margin-left:6px;"></span></button>
+            <div id="dg-cur-list" style="display:none;flex-direction:column;gap:10px;margin-top:10px;"></div>
+          </div>
+
+          <div class="apply-band" id="dg-apply-band" style="display:none;">
+            <div style="flex:1;min-width:260px;">
+              <p style="font-size:16px;font-weight:700;color:#0A2A5E;margin:0 0 6px;line-height:1.3;">이 채점기준으로 바꿀까요?</p>
+              <p style="font-size:14px;color:#324151;margin:0;line-height:1.6;">기존 채점기준을 이 내용으로 교체해 저장하고, AI가 문항 연결과 점검을 다시 해 드려요.</p>
+            </div>
+            <button class="btn btn-primary btn-lg" onclick="applyDraft()"><i data-lucide="wand-sparkles" style="width:18px;height:18px;"></i>채점기준 바꾸기</button>
+          </div>
+
+          <div class="dg-navbar">
+            <button class="btn btn-outline" onclick="backToDetail('sec-diagnosis')"><i data-lucide="arrow-left" style="width:16px;height:16px;"></i>설계로 돌아가기</button>
+            <div style="display:flex;align-items:center;gap:12px;">
+              <button id="btn-rediag" class="btn btn-secondary" style="display:none;" onclick="startDiagnosis(true)"><i data-lucide="refresh-cw" style="width:16px;height:16px;"></i>다시 점검</button>
+              <button class="btn btn-primary" onclick="finishDiagnosis()">점검 완료</button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div><!-- /screen-diag -->
+
+
+
+
+
+<!-- 토스트 -->
+<div id="toast" class="t-success"><i id="toast-icon" data-lucide="circle-check-big" style="width:20px;height:20px;flex-shrink:0;"></i><span id="toast-msg"></span></div>
+
+<!-- 확인 다이얼로그 -->
+<div id="confirm-ov" class="ov">
+  <div class="dlg">
+    <div class="dlg-head">
+      <h3 id="confirm-title" class="dlg-title">확인</h3>
+      <button onclick="closeConfirm()" style="position:absolute;top:11px;right:11px;width:36px;height:36px;border-radius:6px;border:none;background:transparent;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;">
+        <i data-lucide="x" style="width:20px;height:20px;color:#808080;"></i>
+      </button>
+    </div>
+    <div class="dlg-body" id="confirm-body"></div>
+    <div class="dlg-foot">
+      <button class="btn btn-secondary" onclick="closeConfirm()">취소</button>
+      <button id="confirm-ok" class="btn btn-primary">확인</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── 까망이 목업 내비게이터 (시연용 · 실제 화면 아님) ── -->
+<div id="mockpick">
+  <div class="mp-head" onclick="mpToggle(event)">
+    <span>MOCKUP · 평가 설계</span>
+    <span id="mp-caret">▾</span>
+  </div>
+  <div class="mp-body" id="mp-body">
+    <div class="mp-tabs" id="mp-tabs"></div>
+    <div id="mp-cases" style="display:flex;flex-direction:column;gap:6px;height:296px;overflow-y:auto;"></div>
+  </div>
+</div>
+
+<script>
+/* ══════════════════════════════════════════════════════════
+   상태
+══════════════════════════════════════════════════════════ */
+var S = {
+  screen: 'list',        // list | detail
+  listEmpty: false,
+  name: '',
+  stdFilled: false,
+  rubricFilled: false,   // 채점기준 전부 입력 완료 → 진단 버튼 활성
+  ws: 'idle',            // 활동지 문항: idle | file | load | ready | fail
+  wsStep: 1,             // 활동지 화면 단계: 1 문항 확정 | 2 모범답안·채점 가이드
+  dg: 'idle',            // 적합성 진단: idle | link | load | result
+  diagDone: false,       // 진단까지 마쳤는지
+  worksheet: false,
+  linksEdited: false,    // 진단 후 문항 연결을 직접 고쳤는지 — 세트 교체 시 덮어쓰기 경고용
+  diagResultKind: 'warn',// warn | ok
+  setApplied: false,     // AI 채점기준 세트로 교체했는지
+  relinked: false,       // 교체 후 AI가 다시 연결한 결과를 보는 중인지
+  applied: {},           // 적용한 제안
+  answersOpen: false,
+  answersFilled: false,
+  locked: false,         // 인식 후 — 인식 결과가 존재(진행 중 포함). 문항 구조 잠금
+  scored: false,         // 채점 후 — 저장된 채점 결과가 존재. 점수를 무효로 만드는 변경 잠금
+  marks: {}              // 섹션별 '확인 필요' 표식
+};
+
+/* ══════════════════════════════════════════════════════════
+   데이터
+══════════════════════════════════════════════════════════ */
+/* 성취기준 — 검색 선택형 / 직접 입력형(custom). 선택하면 성취수준(A~D)이 따라온다. */
+var STD_SEED = [
+  { code:'[9국03-03]', text:'주장하는 글을 쓸 때에는 타당한 근거를 들어 주장을 뒷받침한다.', custom:false,
+    levels:[['A','주장이 분명하고 타당한 근거를 두 가지 이상 들어 뒷받침함'],
+            ['B','주장이 분명하고 근거를 한 가지 들어 뒷받침함'],
+            ['C','주장은 드러나나 근거가 주장을 뒷받침하지 못함'],
+            ['D','주장이나 근거를 찾기 어려움']] },
+  { code:'[9국03-05]', text:'글의 목적과 독자를 고려하여 내용을 조직하고 표현한다.', custom:false,
+    levels:[['A','글의 목적과 독자에 맞게 내용을 조직하고 표현함'],
+            ['B','목적에 맞게 조직했으나 독자 고려가 다소 부족함'],
+            ['C','내용 조직이나 표현이 목적과 어긋나는 곳이 있음'],
+            ['D','목적과 독자를 고려한 흔적을 찾기 어려움']] }
+];
+function blankStandard(){ return { code:'', text:'', custom:false, levels:[['',''],['',''],['','']] }; }
+var standards = [];
+
+var RUBRIC_SEED = [
+  { id:1, title:'내용의 타당성과 근거 제시의 충실성을 평가한다.',
+    rows:[[5,'주장이 분명하고 근거가 구체적으로 두 가지 이상 제시됨'],[3,'주장은 분명하나 근거가 한 가지이거나 구체성이 부족함'],[1,'주장이 불분명하거나 근거가 제시되지 않음']] },
+  { id:2, title:'논리적 구성과 문단 간 연결의 자연스러움을 평가한다.',
+    rows:[[5,'서론·본론·결론이 나뉘고 문단 사이 연결어가 알맞게 쓰임'],[3,'문단은 나뉘었으나 연결이 다소 어색함'],[1,'문단 구분 없이 나열되어 흐름을 알기 어려움']] },
+  { id:3, title:'어휘 선택의 적절성과 문장 표현의 정확성을 평가한다.',
+    rows:[[5,'어휘가 적절하고 맞춤법·띄어쓰기 오류가 적으며 문장이 자연스러움'],[3,'어휘나 맞춤법에 오류가 다소 있음'],[1,'어휘가 부적절하고 오류가 많아 뜻을 알기 어려움']] },
+  { id:4, title:'예상되는 반론을 고려하고 반박했는지를 평가한다.',
+    rows:[[5,'반론을 충분히 고려하고 설득력 있게 반박함'],[3,'반론을 언급했으나 반박이 충분하지 않음'],[1,'반론을 고려하지 않음']] }
+];
+
+var QUESTION_SEED = [
+  { no:1, label:'1', text:'다음 글을 읽고, 글쓴이의 주장을 한 문장으로 요약하시오.', links:[1],
+    aiReason:'주장을 정확히 파악해 요약하는 문항이라, 내용의 타당성을 보는 채점기준 1과 관련이 깊어요.' },
+  { no:2, label:'2', text:'글쓴이의 주장에 대한 자신의 입장을 근거 두 가지를 들어 서술하시오.', links:[1,2],
+    aiReason:'근거를 들어 서술하는 문항이라 내용의 타당성(채점기준 1)과 논리적 구성(채점기준 2)을 함께 보는 것이 알맞아요.' },
+  { no:3, label:'3', text:'2번에서 제시한 근거에 대해 예상되는 반론과 그 반박을 쓰시오.', links:[4],
+    aiReason:'반론과 반박을 다루는 문항이라 채점기준 4가 직접 관련돼요.' },
+  { no:4, label:'4', text:'위 내용을 하나의 완성된 글로 다시 쓰시오. (600자 내외)', links:[],
+    aiReason:'' }
+];
+/* 양호 케이스용 — 4번(완성 글)도 연결이 다 된 상태를 보여준다 */
+function fillQ4Links(){
+  var q = QUESTIONS[QUESTIONS.length - 1];
+  q.links = [1, 2]; q.aiPicks = [1, 2];
+  q.aiReason = '완성된 글을 쓰는 문항이라 내용의 타당성(1)과 논리적 구성(2)을 함께 보는 것이 알맞아요.';
+}
+/* 답안·가이드는 문항 번호가 아니라 문항 객체 자체에 담는다.
+   번호를 고치거나 순서를 바꿔도 답안이 그 문항을 따라가고, 문항을 지우면 함께 사라진다. */
+function seedQuestions(){
+  var qs = JSON.parse(JSON.stringify(QUESTION_SEED));
+  qs.forEach(function(q){ q.aiPicks = q.links.slice(); q.answer = ''; q.guide = ''; });
+  return qs;
+}
+function fillAnswers(){
+  QUESTIONS.forEach(function(q){
+    q.answer = ANSWER_SEED[q.no] || '';
+    q.guide  = GUIDE_SEED[q.no]  || '';
+  });
+}
+var QUESTIONS = seedQuestions();
+
+// 진단 결과 — 판정 2종. 기준의 우열이 아니라 지금 상태를 서술한다(신뢰도·점수 표시하지 않음)
+/* 적합도 확인 = 연결까지 끝난 뒤 AI가 채점기준 세트 전체를 다시 보고 내는 판정.
+   요소 하나하나를 대조·매칭하지 않고 새 채점기준 세트를 통으로 제안한다(맥·빌 의견 2026-08-21).
+   요소가 통폐합·삭제될 수 있어 1:1 대응이 성립하지 않기 때문. */
+/* 총평은 채점기준(세트) 축 문제만 말한다 — 연결 축 문제는 문항 카드의 판정·사유가 맡는다.
+   연결을 고쳐도 총평이 낡은 말을 반복하지 않게 하기 위한 역할 분리. */
+var DIAG_REASONS = [
+  '채점기준 3번에는 어휘·맞춤법·문장 자연스러움이 한 칸에 함께 있어요. 사람은 함께 보고 판단하지만 AI는 어느 쪽에 점수를 줄지 스스로 정하지 못해요.',
+  '채점기준 4번의 "충분히", "설득력 있게"는 사람에게는 통하는 표현이지만, AI는 기준을 잡지 못해 학생마다 점수가 달라질 수 있어요.'
+];
+var SUGGESTED_SET = [
+  { id:101, title:'주장이 분명하고 근거가 타당한지를 평가한다.',
+    rows:[[5,'주장이 한 문장으로 분명하고, 근거를 두 가지 이상 구체적으로 제시함'],[3,'주장은 분명하나 근거가 한 가지이거나 구체성이 부족함'],[1,'주장이 불분명하거나 근거가 없음']] },
+  { id:102, title:'글의 구성과 문단 연결이 자연스러운지를 평가한다.',
+    rows:[[5,'서론·본론·결론이 나뉘고 문단 사이 연결어가 알맞게 쓰임'],[3,'문단은 나뉘었으나 연결이 어색한 곳이 있음'],[1,'문단 구분 없이 나열되어 흐름을 알기 어려움']] },
+  { id:103, title:'어휘 선택이 글의 목적에 맞는지를 평가한다.',
+    rows:[[5,'글의 목적에 맞는 어휘를 골라 썼고 뜻이 통하지 않는 낱말이 없음'],[3,'대체로 알맞으나 뜻이 통하지 않는 낱말이 1~2개 있음'],[1,'뜻이 통하지 않는 낱말이 3개 이상임']] },
+  { id:104, title:'맞춤법과 문장 표현이 정확한지를 평가한다.',
+    rows:[[3,'맞춤법·띄어쓰기 오류가 2개 이하이고 문장이 자연스러움'],[2,'오류가 3~5개이거나 어색한 문장이 있음'],[1,'오류가 6개 이상이어서 뜻을 알기 어려움']] },
+  { id:105, title:'예상 반론을 쓰고 반박 근거를 댔는지를 평가한다.',
+    rows:[[5,'예상 반론을 한 가지 이상 쓰고, 그에 대한 반박 근거를 함께 제시함'],[3,'예상 반론은 썼으나 반박 근거가 없음'],[1,'예상 반론을 쓰지 않음']] }
+];
+var SUGGEST_NOTE = '한 칸에 함께 있던 어휘·맞춤법을 두 기준으로 나누고, 뜻은 그대로 두되 무엇이 보이면 몇 점인지를 덧붙였어요.';
+
+var LIST_CARDS = [
+  { name:'2학기 수행평가',        state:'draft', summary:'기본 정보만 입력', date:'26.04.01', open:'new' },
+  { name:'소설 독후감 평가',       state:'draft', summary:'채점기준 4개 · 점검 전', date:'26.03.31', open:'ready' },
+  { name:'주제 글쓰기 평가',       state:'done',  summary:'채점기준 4개 · 문항 4개 · 점검 완료', date:'26.03.30', open:'result' },
+  { name:'시 감상문 쓰기',         state:'done',  summary:'채점기준 4개 · 문항 4개 · 모범답안 4개', date:'26.03.29', open:'sheet-answer' },
+  { name:'1학기 중간고사 서술형',  state:'check', summary:'점검 결과 확인 필요 · 보완 제안 2건', date:'26.03.28', open:'result' },
+  { name:'논설문 쓰기 연습',       state:'draft', summary:'채점기준 입력 중', date:'26.03.27', open:'ready' }
+];
+
+var STATE_BADGE = {
+  draft: { cls:'b-gray',   label:'작성 중' },
+  check: { cls:'b-orange', label:'확인 필요' },
+  done:  { cls:'b-green',  label:'설계 완료' }
+};
+
+var rubrics = [];
+
+/* ══════════════════════════════════════════════════════════
+   공통 유틸
+══════════════════════════════════════════════════════════ */
+function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function icons(){ if (window.lucide) lucide.createIcons(); }
+
+var _toastTimer;
+function showToast(type, msg){
+  var t = document.getElementById('toast');
+  t.className = 't-' + type + ' show';
+  document.getElementById('toast-msg').textContent = msg;
+  var ic = document.getElementById('toast-icon');
+  ic.setAttribute('data-lucide', type==='success' ? 'circle-check-big' : type==='error' ? 'circle-alert' : 'info');
+  ic.style.color = (type==='info') ? '#0950A0' : '#fff';
+  icons();
+  clearTimeout(_toastTimer);
+  _toastTimer = setTimeout(function(){ t.className = t.className.replace(' show',''); }, 2500);
+}
+
+var _confirmFn = null;
+function openConfirm(title, body, okLabel, fn){
+  document.getElementById('confirm-title').textContent = title;
+  document.getElementById('confirm-body').innerHTML = body;
+  var ok = document.getElementById('confirm-ok');
+  ok.textContent = okLabel;
+  _confirmFn = fn;
+  ok.onclick = function(){ closeConfirm(); if (_confirmFn) _confirmFn(); };
+  document.getElementById('confirm-ov').classList.add('open');
+  icons();
+}
+function closeConfirm(){ document.getElementById('confirm-ov').classList.remove('open'); }
+document.getElementById('confirm-ov').addEventListener('click', function(e){ if (e.target === this) closeConfirm(); });
+
+/* ══════════════════════════════════════════════════════════
+   목록 화면
+══════════════════════════════════════════════════════════ */
+function renderList(){
+  var wrap = document.getElementById('list-cards');
+  var empty = document.getElementById('list-empty');
+  if (S.listEmpty){
+    wrap.style.display = 'none';
+    empty.style.display = 'flex';
+    return;
+  }
+  wrap.style.display = 'grid';
+  empty.style.display = 'none';
+  wrap.innerHTML = LIST_CARDS.map(function(c, i){
+    var b = STATE_BADGE[c.state];
+    return ''
+      + '<div onclick="openDetail(\'' + c.open + '\')" style="border:1px solid #D9D9D9;border-radius:16px;padding:20px;cursor:pointer;background:white;transition:border-color .12s, background .12s;position:relative;"'
+      + ' onmouseover="this.style.borderColor=\'#0950A0\';this.style.background=\'#F3F9FF\'" onmouseout="this.style.borderColor=\'#D9D9D9\';this.style.background=\'white\'">'
+      +   '<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:12px;">'
+      +     '<span style="font-size:18px;font-weight:700;color:#000;line-height:1.4;word-break:keep-all;">' + esc(c.name) + '</span>'
+      +     '<button onclick="event.stopPropagation();openConfirm(\'평가 삭제\',\'<strong>' + esc(c.name) + '</strong> 설계를 삭제할까요?<br>삭제하면 되돌릴 수 없습니다.\',\'삭제\',function(){showToast(\'success\',\'설계를 삭제했어요.\');})"'
+      +       ' style="width:28px;height:28px;border:none;background:transparent;border-radius:6px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;">'
+      +       '<i data-lucide="ellipsis-vertical" style="width:18px;height:18px;color:#808080;"></i></button>'
+      +   '</div>'
+      +   '<div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">'
+      +     '<span class="badge ' + b.cls + '">' + b.label + '</span>'
+      +   '</div>'
+      +   '<p style="font-size:14px;color:#808080;margin:0 0 14px;line-height:1.55;">' + esc(c.summary) + '</p>'
+      +   '<div style="border-top:1px solid #F0F0F0;padding-top:10px;"><span style="font-size:14px;color:#B3B3B3;">' + c.date + ' 수정됨</span></div>'
+      + '</div>';
+  }).join('');
+  icons();
+}
+
+function toggleAddMenu(e){
+  e.stopPropagation();
+  var m = document.getElementById('add-menu');
+  m.style.display = (m.style.display === 'block') ? 'none' : 'block';
+  icons();
+}
+document.addEventListener('click', function(){
+  var m = document.getElementById('add-menu');
+  if (m) m.style.display = 'none';
+});
+
+/* ══════════════════════════════════════════════════════════
+   화면 전환 + 해시 라우팅
+══════════════════════════════════════════════════════════ */
+var _suppressHash = false;
+var _booted = false;
+function setHash(h){
+  if (_suppressHash) return;
+  if (location.hash === h) return;
+  history.replaceState(null, '', location.pathname + location.search + h);
+}
+function renderHeroName(){
+  var t = (S.name && S.name.trim()) ? S.name : '새 평가 설계';
+  document.querySelectorAll('.hero-name').forEach(function(e){ e.textContent = t; });
+}
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(function(s){ s.classList.remove('active'); });
+  document.getElementById('screen-' + id).classList.add('active');
+  S.screen = id;
+  renderHeroName();
+  window.scrollTo(0, 0);
+  icons();
+  renderMockpick();
+}
+function goList(){
+  S.listEmpty = false;
+  showScreen('list');
+  renderList();
+  setHash('#list');
+}
+
+/* 케이스 → 상세 상태 세팅 */
+function openDetail(caseKey){
+  applyCase(caseKey);
+  setHash('#case=' + caseKey);
+}
+
+function applyCase(k){
+  // 기본값 초기화
+  S.name = ''; S.stdFilled = false; S.rubricFilled = false;
+  S.ws = 'idle'; S.wsStep = 1; S.dg = 'idle'; S.worksheet = false; S.linksEdited = false;
+  resetStageOpen(); S.diagResultKind = 'warn';
+  S.applied = {}; S.setApplied = false; S.relinked = false; _draft = null; _draftFromAI = false; _draftEdited = false; S.answersFilled = false; S.locked = false; S.scored = false; S.marks = {};
+  S.diagDone = false;
+  if (k === 'structure') k = 'sheet';                     // 옛 링크 호환 — 두 화면이 한 화면 두 단계가 됐다
+  if (k === 'answer') k = 'sheet-answer';
+  rubrics = JSON.parse(JSON.stringify(RUBRIC_SEED));
+  standards = [blankStandard()];
+  QUESTIONS = seedQuestions();
+  S.case = k;
+
+  if (k === 'list' || k === 'list-empty'){
+    S.listEmpty = (k === 'list-empty');
+    showScreen('list'); renderList();
+    return;
+  }
+
+  if (k === 'new'){
+    rubrics = [];   // 개발 화면 초기 상태: 채점기준 0개 + AI 생성 카드
+  }
+  if (k === 'ready' || k === 'ws-done' || k === 'upload' || k === 'sheet' || k === 'sheet-answer' || k === 'linking' || k === 'diagnosing' || k === 'result' || k === 'result-ok' || k === 'locked' || k === 'locked-stale'){
+    S.name = '논설문 쓰기 — 우리 학교 급식 잔반 문제';
+    S.stdFilled = true;
+    S.rubricFilled = true;
+    standards = JSON.parse(JSON.stringify(STD_SEED));
+  }
+  if (k === 'upload'){ S.ws = 'idle'; S.worksheet = false; } // 업로드 전 드롭존 — 올리면 곧장 문항 분석이라 '파일만 올린' 중간 상태는 없음
+  if (k === 'sheet'){ S.ws = 'ready'; S.worksheet = true; S.wsStep = 1; }
+  if (k === 'sheet-answer'){ S.ws = 'ready'; S.worksheet = true; S.wsStep = 2; S.answersFilled = true; }
+  if (k === 'ws-done'){ S.ws = 'ready'; S.worksheet = true; }
+  if (k === 'linking'){ S.ws = 'ready'; S.worksheet = true; S.dg = 'link'; }
+  if (k === 'diagnosing'){ S.ws = 'ready'; S.worksheet = true; S.dg = 'load'; }
+  if (k === 'result'){ S.ws = 'ready'; S.worksheet = true; S.dg = 'result'; S.diagDone = true; S.diagResultKind = 'warn'; }
+  if (k === 'result-ok'){ S.ws = 'ready'; S.worksheet = true; S.dg = 'result'; S.diagDone = true; S.diagResultKind = 'ok'; fillQ4Links(); }
+  if (k === 'locked'){ S.ws = 'ready'; S.worksheet = true; S.dg = 'result'; S.diagDone = true; S.diagResultKind = 'warn'; S.locked = true; }
+  if (k === 'scored'){ S.ws = 'ready'; S.worksheet = true; S.dg = 'result'; S.diagDone = true; S.diagResultKind = 'ok'; S.locked = true; S.scored = true; fillQ4Links(); }
+  if (k === 'locked-stale'){ S.ws = 'ready'; S.worksheet = true; S.dg = 'result'; S.diagDone = true; S.diagResultKind = 'warn'; S.locked = true; S.marks['sec-diagnosis'] = true; }
+
+  if (S.answersFilled) fillAnswers();
+  var target = 'detail';
+  if (k === 'upload' || k === 'sheet' || k === 'sheet-answer') target = 'worksheet';
+  if (k === 'linking' || k === 'diagnosing' || k === 'result' || k === 'result-ok') target = 'diag';
+  renderDetail();
+  showScreen(target);
+  if (k === 'diagnosing') runDiagLoad('diag');
+}
+
+function routeFromUrl(){
+  var h = location.hash.slice(1);
+  _suppressHash = true;
+  try {
+    if (!h || h === 'list'){ S.listEmpty = false; showScreen('list'); renderList(); }
+    else if (h === 'list-empty'){ applyCase('list-empty'); }
+    else if (h === 'detail'){ if (_booted) { showScreen('detail'); renderDetail(); } else applyCase('new'); }
+    else if (h.indexOf('case=') === 0){ applyCase(h.slice(5)); }
+    else { showScreen('list'); renderList(); }
+  } finally { _suppressHash = false; }
+}
+window.addEventListener('hashchange', routeFromUrl);
+
+/* ══════════════════════════════════════════════════════════
+   상세 — 렌더
+══════════════════════════════════════════════════════════ */
+function renderDetail(){
+  document.getElementById('f-name').value = S.name;
+  renderStandards();
+  renderRubrics();
+  renderAll();
+  renderScoreTable();
+  var lbn = document.getElementById('lock-banner');
+  lbn.style.display = (S.locked || S.scored) ? 'flex' : 'none';
+  var lbt = document.getElementById('lock-banner-text');
+  if (lbt) lbt.innerHTML = S.scored
+    ? '<strong>AI 채점이 실행되어 배점과 채점기준 삭제를 막았어요.</strong> 이미 매긴 점수가 근거를 잃기 때문이에요. 문구 수정과 문항 연결 변경은 그대로 할 수 있고, 바뀐 내용은 재채점부터 반영돼요. 문항은 과제물 인식 때부터 고칠 수 없어요.'
+    : '<strong>과제물 인식이 시작되어 문항을 고칠 수 없어요.</strong> 학생 답안이 이미 이 문항대로 나뉘어 있기 때문이에요. 채점기준은 그대로 고칠 수 있어요.';
+  renderToc();
+  icons();
+  renderMockpick();
+}
+
+/* ── 성취기준 ── */
+function stdLevelsHtml(st, i){
+  var editable = st.custom;
+  var rows = st.levels.map(function(lv, li){
+    var name = editable
+      ? '<input value="' + esc(lv[0]) + '" placeholder="입력" oninput="onStdInput()">'
+      : esc(lv[0]);
+    var desc = editable
+      ? '<input value="' + esc(lv[1]) + '" placeholder="입력해 주세요." oninput="onStdInput()">'
+      : esc(lv[1]);
+    return '<div class="std-lv-row"><div class="std-lv-name">' + name + '</div>'
+      + '<div class="std-lv-desc">' + desc + '</div></div>';
+  }).join('');
+  return '<div class="std-lv">' + rows + '</div>'
+    + '<div style="display:flex;gap:12px;margin-top:8px;">'
+    +   '<button class="btn btn-ghost btn-sm" onclick="addStdLevel(' + i + ')"><i data-lucide="circle-plus" style="width:16px;height:16px;color:#808080;"></i>수준 추가</button>'
+    +   '<button class="btn btn-ghost btn-sm" onclick="removeStdLevel(' + i + ')"><i data-lucide="circle-minus" style="width:16px;height:16px;color:#808080;"></i>수준 삭제</button>'
+    + '</div>';
+}
+function renderStandards(){
+  document.getElementById('std-list').innerHTML = standards.map(function(st, i){
+    var picked = !!st.text;
+    var head = '<div class="std-head">'
+      + '<div class="std-head-l">'
+      +   '<span class="std-title">성취기준 ' + (i+1) + '</span>'
+      +   '<span class="std-check' + (st.custom ? ' on' : '') + '" onclick="toggleStdCustom(' + i + ')">'
+      +     '<span class="std-box">' + (st.custom ? '<i data-lucide="check" style="width:11px;height:11px;color:#fff;stroke-width:3.5;"></i>' : '') + '</span>'
+      +     '<span class="std-check-label">직접 입력</span>'
+      +   '</span>'
+      +   (st.custom ? '<span class="std-help">* 성취기준 직접 입력이 필요한 과목입니다. 2022 개정 교육과정 성취기준은 과목별로 순차적으로 업데이트 됩니다.</span>' : '')
+      + '</div>'
+      + '<button class="btn btn-ghost btn-sm" onclick="removeStandard(' + i + ')"><i data-lucide="trash-2" style="width:16px;height:16px;color:#808080;"></i>삭제</button>'
+      + '</div>';
+
+    var body;
+    if (st.custom){
+      body = '<input class="std-input" value="' + esc(st.text) + '" placeholder="성취기준을 직접 입력해 주세요." oninput="onStdText(' + i + ', this.value)">'
+        + '<div style="margin-top:4px;">' + stdLevelsHtml(st, i) + '</div>';
+    } else if (picked){
+      body = '<div class="std-combo" onclick="showToast(\'info\',\'성취기준을 다시 검색해 고르는 화면입니다.\')">'
+        +   '<span class="val">' + esc(st.code) + ' ' + esc(st.text) + '</span>'
+        +   '<i data-lucide="x" style="width:20px;height:20px;color:#808080;flex-shrink:0;" onclick="event.stopPropagation();clearStandard(' + i + ')"></i>'
+        +   '<i data-lucide="chevron-down" style="width:20px;height:20px;color:#808080;flex-shrink:0;"></i>'
+        + '</div>'
+        + '<div style="margin-top:4px;">' + stdLevelsHtml(st, i) + '</div>';
+    } else {
+      body = '<div class="std-combo" onclick="pickStandard(' + i + ')">'
+        +   '<span class="ph">성취기준을 검색해 보세요.</span>'
+        +   '<i data-lucide="chevron-down" style="width:20px;height:20px;color:#808080;flex-shrink:0;"></i>'
+        + '</div>';
+    }
+    return '<div class="std-card">' + head + body + '</div>';
+  }).join('');
+  icons();
+}
+function syncStdState(){
+  S.stdFilled = standards.length > 0 && standards.every(function(st){ return !!(st.text && st.text.trim()); });
+  renderToc();
+}
+function onStdInput(){ syncStdState(); }
+function onStdText(i, v){ standards[i].text = v; syncStdState(); }
+function toggleStdCustom(i){
+  var st = standards[i];
+  st.custom = !st.custom;
+  if (st.custom){ st.code = ''; st.text = ''; st.levels = [['',''],['',''],['','']]; }
+  else { st.text = ''; st.levels = []; }
+  renderStandards(); syncStdState();
+}
+function pickStandard(i){
+  var pick = STD_SEED[i % STD_SEED.length];
+  standards[i] = JSON.parse(JSON.stringify(pick));
+  renderStandards(); syncStdState();
+  showToast('success','성취기준을 선택했어요.');
+}
+function clearStandard(i){
+  standards[i] = blankStandard();
+  renderStandards(); syncStdState();
+}
+function addStdLevel(i){
+  standards[i] = readStandardsFromDom()[i];
+  standards[i].levels.push(['','']);
+  renderStandards(); syncStdState();
+}
+function removeStdLevel(i){
+  var cur = readStandardsFromDom()[i];
+  if (cur.levels.length <= 1){ showToast('error','성취수준은 최소 1개가 필요해요.'); return; }
+  cur.levels.pop();
+  standards[i] = cur;
+  renderStandards(); syncStdState();
+}
+function readStandardsFromDom(){
+  var out = JSON.parse(JSON.stringify(standards));
+  document.querySelectorAll('#std-list .std-card').forEach(function(card, i){
+    if (!out[i] || !out[i].custom) return;
+    var ti = card.querySelector('.std-input');
+    if (ti) out[i].text = ti.value;
+    var lv = [];
+    card.querySelectorAll('.std-lv-row').forEach(function(row){
+      var ins = row.querySelectorAll('input');
+      lv.push(ins.length === 2 ? [ins[0].value, ins[1].value] : [row.querySelector('.std-lv-name').textContent.trim(), row.querySelector('.std-lv-desc').textContent.trim()]);
+    });
+    out[i].levels = lv;
+  });
+  return out;
+}
+function addStandard(){
+  standards = readStandardsFromDom();
+  standards.push(blankStandard());
+  renderStandards(); syncStdState();
+}
+function removeStandard(i){
+  if (standards.length <= 1){ showToast('error','성취기준은 최소 1개가 필요해요.'); return; }
+  openConfirm('성취기준 삭제', '이 성취기준을 삭제할까요?<br>삭제하면 되돌릴 수 없습니다.', '삭제', function(){
+    standards = readStandardsFromDom();
+    standards.splice(i, 1);
+    renderStandards(); syncStdState();
+    showToast('success','성취기준을 삭제했어요.');
+  });
+}
+function fillStandards(){ standards = JSON.parse(JSON.stringify(STD_SEED)); renderStandards(); syncStdState(); }
+
+function rubricCardHtml(r, idx, ns){
+  var oninput = (ns === 'dr') ? 'drInput()' : 'onRubricInput()';
+  var lockedScore = (ns !== 'dr') && S.scored;
+  var rowsHtml = r.rows.map(function(row, ri){
+    var last = (ri === r.rows.length - 1);
+    return '<tr>'
+      + '<td class="c-score"' + (last ? ' style="border-bottom:none;"' : '') + '><input type="number" value="' + (row[0] || '') + '" oninput="' + oninput + '" placeholder="-"' + (lockedScore ? ' disabled title="AI 채점이 실행되어 배점을 바꿀 수 없어요"' : '') + '></td>'
+      + '<td class="c-crit"' + (last ? ' style="border-bottom:none;"' : '') + '><input type="text" value="' + esc(row[1]) + '" oninput="' + oninput + '" placeholder="이 배점을 주는 조건을 적어 주세요.">'
+      + '<button class="sigma-btn" title="수식 입력" onclick="openFormulaTip()"><i data-lucide="sigma" style="width:15px;height:15px;"></i></button></td>'
+      + '</tr>';
+  }).join('');
+
+  var copyFn = (ns === 'dr') ? 'drCopy' : 'copyRubric';
+  var delFn  = (ns === 'dr') ? 'drDel'  : 'removeRubric';
+  var addFn  = (ns === 'dr') ? 'drAddRow' : 'addRow';
+  var remFn  = (ns === 'dr') ? 'drDelRow' : 'removeRow';
+  /* 채점기준 삭제·배점 변경·세부기준 삭제는 '채점 실행 후'에만 잠근다 — 이미 매긴 점수가 근거를 잃기 때문.
+     과제물 인식은 채점기준을 쓰지 않으므로 인식 후에도 자유롭게 고칠 수 있다. */
+  var locked = (ns !== 'dr') && S.scored;
+  var delBtn = locked
+    ? '<button class="btn btn-ghost btn-sm is-disabled" title="AI 채점이 실행되어 삭제할 수 없어요"><i data-lucide="lock" style="width:15px;height:15px;"></i>삭제</button>'
+    : '<button class="btn btn-ghost btn-sm" onclick="' + delFn + '(' + idx + ')"><i data-lucide="trash-2" style="width:15px;height:15px;color:#808080;"></i>삭제</button>';
+
+  return ''
+    + '<div class="rubric-card" data-rid="' + r.id + '" data-di="' + idx + '">'
+    +   '<div style="display:flex;align-items:center;padding:14px 14px 0;gap:4px;">'
+    +     '<span style="font-size:16px;font-weight:700;color:#333;flex:1;">채점기준 ' + (idx+1) + '</span>'
+    +     '<button class="btn btn-ghost btn-sm" onclick="' + copyFn + '(' + idx + ')"><i data-lucide="copy-plus" style="width:15px;height:15px;color:#808080;"></i>복제</button>'
+    +     delBtn
+    +   '</div>'
+    +   '<div class="rubric-body">'
+    +     '<div class="rubric-ta-wrap"><textarea class="sg-title" oninput="' + oninput + '" placeholder="무엇을 평가하는 기준인지 적어 주세요.">' + esc(r.title) + '</textarea></div>'
+    +     '<div style="flex:1;min-width:0;">'
+    +       '<div style="border:1px solid #D9D9D9;border-radius:8px;overflow:hidden;">'
+    +         '<table class="rt"><thead><tr><th class="c-score" style="border-right:1px solid #D9D9D9;">배점</th><th style="text-align:left;">세부 기준</th></tr></thead><tbody>' + rowsHtml + '</tbody></table>'
+    +       '</div>'
+    +       '<div style="display:flex;gap:8px;margin-top:8px;">'
+    +         '<button class="btn btn-ghost btn-sm" onclick="' + addFn + '(' + idx + ')"><i data-lucide="circle-plus" style="width:15px;height:15px;color:#808080;"></i>배점 추가</button>'
+    +         (locked
+                ? '<button class="btn btn-ghost btn-sm is-disabled" title="AI 채점이 실행되어 배점 줄을 지울 수 없어요"><i data-lucide="lock" style="width:15px;height:15px;"></i>배점 삭제</button>'
+                : '<button class="btn btn-ghost btn-sm" onclick="' + remFn + '(' + idx + ')"><i data-lucide="circle-minus" style="width:15px;height:15px;color:#808080;"></i>배점 삭제</button>')
+    +       '</div>'
+    +     '</div>'
+    +   '</div>'
+    + '</div>';
+}
+
+function renderRubrics(){
+  document.getElementById('rubric-list').innerHTML = rubrics.map(function(r, idx){
+    return rubricCardHtml(r, idx, 'rb');
+  }).join('');
+  var total = fullScore(rubrics);
+  document.getElementById('rubric-total').textContent = rubrics.length ? ('채점기준 ' + rubrics.length + '개 · 만점 ' + total + '점') : '';
+  document.getElementById('rubric-add-empty').style.display = rubrics.length ? 'none' : 'block';
+  document.getElementById('rubric-add-more').style.display = rubrics.length ? 'flex' : 'none';
+  icons();
+}
+
+function syncRubricsFromDom(){
+  document.querySelectorAll('#rubric-list .rubric-card').forEach(function(card, idx){
+    if (!rubrics[idx]) return;
+    rubrics[idx].title = card.querySelector('textarea').value;
+    var rows = [];
+    card.querySelectorAll('tbody tr').forEach(function(tr){
+      var ins = tr.querySelectorAll('input');
+      rows.push([ins[0].value, ins[1].value]);
+    });
+    rubrics[idx].rows = rows;
+  });
+}
+function isRubricComplete(){
+  if (!rubrics.length) return false;
+  return rubrics.every(function(r){
+    if (!String(r.title).trim()) return false;
+    if (!r.rows.length) return false;
+    return r.rows.every(function(row){ return String(row[0]).trim() !== '' && String(row[1]).trim() !== ''; });
+  });
+}
+function onRubricInput(){
+  syncRubricsFromDom();
+  var was = S.rubricFilled;
+  S.rubricFilled = isRubricComplete();
+  // 진단 후 사람 손이 닿은 변경 → 진단 결과 재확인 필요 (수정안 '적용'은 AI 문장이라 해당 없음)
+  if (S.diagDone) S.marks['sec-diagnosis'] = true;
+  var total = rubrics.reduce(function(a,r){ return a + Math.max.apply(null, r.rows.map(function(x){ return Number(x[0])||0; })); }, 0);
+  document.getElementById('rubric-total').textContent = '채점기준 ' + rubrics.length + '개 · 만점 ' + total + '점';
+  renderAll();
+  renderScoreTable();
+  renderToc();
+  if (!was && S.rubricFilled) showToast('info','채점기준을 다 입력했어요. 채점기준 점검을 할 수 있어요.');
+}
+function onBasicInput(){ S.name = document.getElementById('f-name').value; renderHeroName(); renderToc(); }
+function openFormulaTip(){ showToast('info','수식 입력 도구를 여는 화면입니다.'); }
+function aiGenRubrics(){
+  syncRubricsFromDom();
+  var seed = JSON.parse(JSON.stringify(RUBRIC_SEED));
+  seed.forEach(function(r){ r.id = r.id + 1000; });
+  rubrics = rubrics.concat(seed);
+  S.rubricFilled = isRubricComplete();
+  if (S.diagDone) S.marks['sec-diagnosis'] = true;
+  renderRubrics(); renderAll(); renderScoreTable(); renderToc();
+  showToast('success','성취기준을 바탕으로 채점기준 초안 ' + seed.length + '개를 만들었어요. 내용을 확인해 주세요.');
+}
+function addRubric(){
+  syncRubricsFromDom();
+  rubrics.push({ id: Date.now(), title:'', rows:[['',''],['',''],['','']] });
+  S.rubricFilled = false;
+  if (S.diagDone) S.marks['sec-diagnosis'] = true;   // 새 기준은 진단·연결이 없는 상태
+  renderRubrics(); renderAll(); renderToc();
+}
+function copyRubric(i){
+  syncRubricsFromDom();
+  var c = JSON.parse(JSON.stringify(rubrics[i]));
+  c.id = Date.now();
+  rubrics.splice(i+1, 0, c);
+  renderRubrics(); renderToc();
+  showToast('success','채점기준을 복제했어요.');
+}
+function removeRubric(i){
+  syncRubricsFromDom();
+  var name = rubrics[i].title || ('채점기준 ' + (i+1));
+  openConfirm('채점기준 삭제',
+    '<strong>' + esc(name) + '</strong><br>이 채점기준을 삭제할까요? 문항에 연결해 둔 것도 함께 끊어지고, 되돌릴 수 없습니다.',
+    '삭제', function(){
+      rubrics.splice(i,1);
+      QUESTIONS.forEach(function(q){ q.links = q.links.filter(function(id){ return rubrics.some(function(r){ return r.id === id; }); }); });
+      S.rubricFilled = isRubricComplete();
+      if (S.diagDone) S.marks['sec-diagnosis'] = true;
+      renderRubrics(); renderAll(); renderScoreTable(); renderToc();
+      showToast('success','채점기준을 삭제했어요.');
+    });
+}
+function addRow(i){ syncRubricsFromDom(); rubrics[i].rows.push(['','']); renderRubrics(); onRubricInput(); }
+function removeRow(i){ syncRubricsFromDom(); if (rubrics[i].rows.length > 1) rubrics[i].rows.pop(); renderRubrics(); onRubricInput(); }
+
+/* ── 점수 계산 표 ── */
+function renderScoreTable(){
+  var max = rubrics.reduce(function(a,r){ return a + Math.max.apply(null, r.rows.map(function(x){ return Number(x[0])||0; })); }, 0);
+  var min = rubrics.reduce(function(a,r){ return a + Math.min.apply(null, r.rows.map(function(x){ return Number(x[0])||0; })); }, 0);
+  document.getElementById('score-max').textContent = max ? (max + '점') : '-';
+  document.getElementById('score-min').textContent = max ? (min + '점') : '-';
+}
+
+/* ══════════════════════════════════════════════════════════
+   채점기준 점검
+══════════════════════════════════════════════════════════ */
+function renderDiagButton(){ renderDiagCard(); }
+
+/* 상세 ↔ 전용 화면 이동 */
+/* 전용 화면(활동지 문항·진단·모범답안)에서 돌아올 때는 맨 위가 아니라
+   그 항목이 있는 자리로 되돌린다 — 방금 한 일의 결과를 바로 보게. */
+function scrollToSection(id){
+  var target = document.getElementById(id);
+  var grp = target && target.closest('.stage-card');
+  if (grp && grp.classList.contains('collapsed')){ _cardOpen[grp.id] = true; grp.classList.remove('collapsed'); syncCaret(grp); }
+  var el = document.getElementById(id);
+  if (!el){ window.scrollTo(0, 0); return; }
+  var go = function(){
+    var y = el.getBoundingClientRect().top + window.pageYOffset - 120;
+    window.scrollTo(0, y < 0 ? 0 : y);
+    renderToc();
+  };
+  void document.body.offsetHeight;  // 화면 전환 직후 레이아웃을 강제로 계산시킨다
+  go();
+  setTimeout(go, 60);               // 렌더가 늦게 끝나 높이가 바뀌는 경우 보정
+}
+function backToDetail(sec){
+  S.case = null;
+  showScreen('detail');
+  renderToc();
+  setHash('#detail');
+  if (sec) scrollToSection(sec);
+}
+function stageCase(){
+  if (S.dg === 'link') return 'linking';
+  if (S.dg === 'load') return 'diagnosing';
+  if (S.dg === 'result') return (S.diagResultKind === 'ok' ? 'result-ok' : 'result');
+  if (S.ws === 'ready') return (S.wsStep === 2 ? 'sheet-answer' : 'sheet');
+  return 'upload';
+}
+function wsDone(){ return S.ws === 'ready'; }
+function gotoWorksheet(){
+  if (S.ws === 'idle') S.ws = 'file';
+  // 답안을 이미 쓴 설계라면 문항은 확정된 것 — 매번 ①단을 거치게 하지 않는다
+  S.wsStep = (S.ws === 'ready' && countAnswers() > 0) ? 2 : 1;
+  S.case = (S.ws === 'ready') ? (S.wsStep === 2 ? 'sheet-answer' : 'sheet') : 'upload';
+  renderWorksheet();
+  showScreen('worksheet');
+  setHash('#case=' + S.case);
+}
+function gotoDiag(){
+  S.case = stageCase();
+  showScreen('diag');
+  setHash('#case=' + S.case);
+}
+
+/* ── 진단 결과 판정: 양호 / 보완 필요 ──
+   제안이 세트 통째라 '몇 건'이라는 수가 없다. 제안 유무 2분기만 존재. */
+function hasSuggestion(){
+  return S.diagResultKind !== 'ok' && !S.setApplied;
+}
+function overallVerdict(){
+  return hasSuggestion() ? { tag:'다시 볼 곳 있음', cls:'b-orange' } : { tag:'바로 채점 가능', cls:'b-green' };
+}
+
+/* ── 상세: 활동지 문항 요약 카드 ── */
+function renderWsCard(){
+  var el = document.getElementById('ws-card-body');
+  if (!el) return;
+  var h;
+  if (wsDone()){
+    var lockNote = S.locked
+      ? '<div class="note note-lock" style="margin-bottom:14px;"><i data-lucide="lock"></i><div><strong>과제물 인식이 시작되어 문항을 바꿀 수 없어요.</strong> 확인만 할 수 있어요.</div></div>'
+      : '';
+    var na = countAnswers();
+    h = lockNote
+      + '<p style="font-size:16px;color:#494949;margin:0 0 14px;line-height:1.6;">'
+      +   (na ? ('모범답안을 ' + na + '개 문항에 넣었어요.') : '모범답안은 아직 넣지 않았어요.') + '</p>'
+      + '<button class="btn btn-secondary" onclick="gotoWorksheet()"><i data-lucide="list-checks" style="width:20px;height:20px;"></i>' + (S.locked ? '문항·모범답안 보기' : '문항·모범답안 확인') + '</button>';
+  } else if (S.ws === 'file' || S.ws === 'load'){
+    h = '<div class="note note-info" style="margin-bottom:14px;"><i data-lucide="loader" style="color:#00778B;"></i><div><strong>활동지를 올렸어요.</strong> 문항 구조 분석을 이어서 진행해 주세요.</div></div>'
+      + '<button class="btn btn-secondary" onclick="gotoWorksheet()">이어서 하기</button>';
+  } else {
+    h = '<button class="btn btn-secondary" onclick="gotoWorksheet()"><i data-lucide="file-up" style="width:20px;height:20px;"></i>빈 활동지 올리기</button>';
+  }
+  el.innerHTML = h;
+}
+
+/* ── 상세: 진단 요약 카드 ── */
+function renderDiagCard(){
+  var el = document.getElementById('diag-card-body');
+  if (!el) return;
+  var h;
+  if (!wsDone() || !S.rubricFilled){
+    var why = !wsDone()
+      ? '<strong>빈 활동지를 먼저 올려 주세요.</strong> 문항마다 어떤 채점기준을 볼지 연결해야 점검할 수 있어요.'
+      : '<strong>채점기준을 모두 입력하면 점검할 수 있어요.</strong> 채점기준 문구와 배점별 세부 기준이 채워져야 AI가 무엇을 볼지 알 수 있어요.';
+    h = '<div class="note note-lock" style="margin-bottom:14px;"><i data-lucide="lock"></i><div>' + why + '</div></div>'
+      + '<button class="btn btn-secondary is-disabled"><i data-lucide="stethoscope" style="width:20px;height:20px;"></i>점검 시작</button>';
+  } else if (!S.diagDone){
+    if (S.dg === 'idle'){
+      h = '<button class="btn btn-secondary" onclick="openDiagnosis()"><i data-lucide="stethoscope" style="width:20px;height:20px;"></i>점검 시작</button>';
+    } else {
+      h = '<div class="note note-info" style="margin-bottom:14px;"><i data-lucide="loader" style="color:#00778B;"></i><div><strong>점검 진행 중</strong><br>AI가 문항 연결과 적합도를 살펴보고 있어요.</div></div>'
+        + '<button class="btn btn-secondary" onclick="gotoDiag()">점검 이어서 하기</button>';
+    }
+  } else {
+    if (S.marks['sec-diagnosis']){
+      h = '<div class="note note-warn" style="margin-bottom:14px;"><i data-lucide="info" style="color:#E4631C;"></i><div><strong>점검 뒤에 채점기준이 바뀌었어요.</strong> 이 결과는 지금 채점기준과 다를 수 있어요. 활동지를 다시 올릴 필요는 없으니 다시 점검해 주세요.</div></div>'
+        + '<div style="display:flex;gap:8px;"><button class="btn btn-secondary" onclick="startDiagnosis(true)"><i data-lucide="refresh-cw" style="width:18px;height:18px;"></i>다시 점검</button>'
+        + '<button class="btn btn-outline" onclick="gotoDiag()">지난 점검 결과 보기</button></div>';
+    } else {
+      h = '<p style="font-size:16px;color:#494949;margin:0 0 14px;line-height:1.6;">점검을 마쳤어요.' + (S.setApplied ? ' AI 제안 채점기준으로 교체했어요.' : '') + '</p>'
+        + '<button class="btn btn-secondary" onclick="gotoDiag()">점검 결과 보기</button>';
+    }
+  }
+  el.innerHTML = h;
+}
+
+/* ══ 활동지 문항 화면 ══ */
+function renderWorksheet(){
+  var show = function(id, on, disp){ var e = document.getElementById(id); if (e) e.style.display = on ? (disp || 'block') : 'none'; };
+  var loading = (S.ws === 'load' || S.ws === 'load2');
+  if (S.ws !== 'ready') S.wsStep = 1;       // 문항이 없으면 ②단은 존재할 수 없다
+  var step2 = (S.ws === 'ready' && S.wsStep === 2);
+  show('ws-loading', loading, 'flex');
+  show('dg-s1', !loading && !step2);
+  show('dg-s2', !loading && S.ws === 'ready' && !step2);
+  show('dg-s3', step2);
+  show('ws-nav-1', !step2 && !loading, 'flex');
+  show('ws-nav-2', step2, 'flex');
+  var nb = document.getElementById('btn-ws-next');
+  if (nb) nb.style.display = (S.ws === 'ready') ? 'inline-flex' : 'none';
+  var sb = document.getElementById('btn-ws-save1');   // 모범답안은 선택 — ①단에서 끝낼 수 있어야 한다
+  if (sb) sb.style.display = (S.ws === 'ready') ? 'inline-flex' : 'none';
+  var rb = document.getElementById('btn-ws-reanalyze');
+  if (rb) rb.style.display = (!loading && S.worksheet && !step2) ? 'inline-flex' : 'none';
+
+  document.getElementById('dz-empty').style.display = S.worksheet ? 'none' : 'flex';
+  document.getElementById('ws-help-row').style.display = S.worksheet ? 'none' : 'block';
+  document.getElementById('dz-filled').style.display = S.worksheet ? 'block' : 'none';
+  var fn = document.getElementById('ws-file-name');
+  if (fn) fn.textContent = WS_FILE_NAME;
+  document.getElementById('ws-sum-2').textContent = wsDone() ? ('문항 ' + QUESTIONS.length + '개') : '';
+
+  var badge = '';
+  if (wsDone()) badge = '<span class="badge b-purple">문항 ' + QUESTIONS.length + '개</span>';
+  else if (S.ws !== 'idle') badge = '<span class="badge b-purple">진행 중</span>';
+  var wb = document.getElementById('ws-badge');
+  if (wb) wb.innerHTML = badge;
+
+  if (S.ws === 'ready'){ renderQuestionList(); renderQaList(); }
+  renderWsCard(); renderDiagCard();
+  icons();
+}
+
+/* ══ 진단 화면 ══ */
+function renderDiagnosis(){
+  var show = function(id, on, disp){ var e = document.getElementById(id); if (e) e.style.display = on ? (disp || 'block') : 'none'; };
+  var loading = (S.dg === 'load');
+  show('dg-loading', loading, 'flex');
+  show('dg-s3', !loading && S.dg !== 'idle');
+  show('dg-s4', !loading && S.dg === 'result');
+  applyStageCollapse('dg-s3', S.dg === 'result');
+  show('dg-s3-nav', S.dg === 'link', 'flex');
+  applyStageCollapse('dg-s4', false);
+  var linked = QUESTIONS.filter(function(q){ return q.links.length; }).length;
+  var d1 = document.getElementById('dg-sum-1');
+  if (d1) d1.textContent = '문항 ' + QUESTIONS.length + '개 · 연결 ' + linked + '개';
+  var d2 = document.getElementById('dg-sum-2');
+  if (d2) d2.textContent = S.diagDone ? overallVerdict().tag : '';
+
+  var rd = document.getElementById('btn-rediag');
+  rd.style.display = (S.dg === 'result' && S.diagDone) ? 'inline-flex' : 'none';
+
+  var badgeHtml = '';
+  if (S.diagDone){
+    badgeHtml = S.marks['sec-diagnosis']
+      ? '<span class="badge b-orange">확인 필요</span>'
+      : '<span class="badge b-purple">점검 완료</span>';
+  } else if (S.dg !== 'idle'){
+    badgeHtml = '<span class="badge b-purple">진행 중</span>';
+  }
+  document.getElementById('diag-badge').innerHTML = badgeHtml;
+
+  if (S.dg !== 'idle') renderS3();
+  if (S.dg === 'result'){ renderOverall(); renderFitCards(); }
+  renderWsCard(); renderDiagCard();
+  icons();
+}
+function renderAll(){ renderWorksheet(); renderDiagnosis(); }
+
+/* ── 활동지 문항: 업로드 → 분석 ── */
+var WS_FILE_NAME = '1학년_국어_논설문쓰기_활동지.pdf';
+/* 파일을 고르면 곧바로 문항 분석까지 실행한다 — 교사가 버튼을 한 번 더 누를 이유가 없다. */
+function pickWorksheet(){
+  if (S.locked){ showToast('error','과제물 인식이 시작되어 활동지를 바꿀 수 없어요.'); return; }
+  if (!S.worksheet){ document.getElementById('ws-file').click(); return; }
+  var gone = [];
+  if (wsDone()) gone.push('문항 목록과 직접 고친 내용');
+  if (S.dg !== 'idle' || S.diagDone) gone.push('채점기준 연결과 점검 결과');
+  if (countAnswers() > 0) gone.push('문항별 답안과 채점 가이드');
+  openConfirm('활동지를 바꿀까요?',
+    '<strong>' + gone.join(', ') + '</strong>이 사라지고 새로 만들어져요.<br>채점기준 자체는 그대로 남아요.',
+    '파일 고르기', function(){ document.getElementById('ws-file').click(); });
+}
+function onWsFile(input){
+  var f = input.files && input.files[0];
+  if (!f) return;
+  WS_FILE_NAME = f.name;
+  input.value = '';
+  S.worksheet = true;
+  QUESTIONS = seedQuestions();
+  S.ws = 'file';
+  S.dg = 'idle'; S.diagDone = false; S.setApplied = false; S.relinked = false;
+  S.marks['sec-diagnosis'] = false;
+  _draft = null; _draftFromAI = false; _draftEdited = false;
+  S.answersFilled = false;
+  runWsLoad2();
+}
+function removeWorksheet(){
+  if (S.locked){ showToast('error','과제물 인식이 시작되어 활동지를 지울 수 없어요.'); return; }
+  if (!wsDone()){ S.worksheet = false; renderWorksheet(); return; }
+  openConfirm('활동지를 지울까요?',
+    '<strong>문항 목록과 이어서 만든 연결·점검 결과·답안</strong>이 함께 사라져요.<br>채점기준 자체는 그대로 남아요.',
+    '지우기', function(){
+      S.worksheet = false; S.ws = 'file';
+      QUESTIONS = seedQuestions();
+      S.dg = 'idle'; S.diagDone = false; S.setApplied = false; S.relinked = false;
+      S.marks['sec-diagnosis'] = false;
+      _draft = null; _draftFromAI = false; _draftEdited = false;
+      S.answersFilled = false;
+      renderAll(); renderToc(); renderMockpick();
+    });
+}
+function cancelWorksheet(){ S.ws = 'idle'; S.worksheet = false; renderAll(); backToDetail('sec-sheet'); }
+var DG_LOAD_MSG = {
+  ws:   '빈 활동지에서 문항을 나누고 있어요',
+  link: '문항마다 볼 채점기준을 연결하고 있어요',
+  diag: '채점기준이 AI 채점에 맞는지 살펴보고 있어요'
+};
+var _loadTimer = null;
+function runWsLoad2(){
+  S.ws = 'load2';
+  document.getElementById('ws-load-title').textContent = DG_LOAD_MSG.ws;
+  renderWorksheet();
+  clearTimeout(_loadTimer);
+  _loadTimer = setTimeout(function(){
+    S.ws = 'ready'; S.wsStep = 1; S.case = 'sheet'; resetStageOpen();
+    renderAll(); renderToc(); renderMockpick();
+    setHash('#case=sheet');
+  }, 1600);
+}
+/* kind: 'link' = 문항에 채점기준을 맵핑하는 중 / 'diag' = 그 기준으로 채점할 수 있는지 보는 중 */
+function runDiagLoad(kind){
+  if (kind === 'diag') _draft = null;
+  S.dg = 'load';
+  document.getElementById('dg-load-title').textContent = DG_LOAD_MSG[kind];
+  renderDiagnosis();
+  clearTimeout(_loadTimer);
+  _loadTimer = setTimeout(function(){
+    if (kind === 'link'){
+      S.dg = 'link'; S.case = 'linking';
+    } else {
+      S.dg = 'result'; S.diagDone = true; resetStageOpen();
+      S.marks['sec-diagnosis'] = false;
+      S.case = (S.diagResultKind === 'ok' ? 'result-ok' : 'result');
+      showToast('success','채점기준 점검을 마쳤어요.');
+    }
+    renderAll(); renderToc(); renderMockpick();
+    setHash('#case=' + S.case);
+  }, 1600);
+}
+function saveLinks(){
+  S.relinked = false;
+  var unlinked = QUESTIONS.filter(function(q){ return !q.links.length; });
+  if (unlinked.length){
+    openConfirm('연결하지 않은 문항이 있어요',
+      '<strong>' + unlinked.map(function(q){ return esc(q.label) + '번'; }).join(', ') + '</strong> 문항은 채점기준을 연결하지 않았어요.<br>'
+      + '이대로 진행하면 이 문항은 채점기준 전체로 채점돼요.', '이대로 진행', function(){ goDiagPhase(); });
+    return;
+  }
+  goDiagPhase();
+}
+function goDiagPhase(){ runDiagLoad('diag'); }
+function analyzeStructure(){
+  if (!S.worksheet){ showToast('error','빈 활동지를 먼저 올려 주세요.'); return; }
+  if (S.locked){ showToast('error','과제물 인식이 시작되어 문항을 다시 나눌 수 없어요.'); return; }
+  if (!wsDone()){ runWsLoad2(); return; }
+
+  /* 이미 나눈 뒤 다시 분석하면 문항이 새로 만들어진다.
+     연결·진단·모범답안은 모두 문항을 참조하므로 함께 사라진다(되돌릴 수 없음 안내). */
+  var josa = function(w){ var c = w.charCodeAt(w.length - 1) - 0xAC00; return (c >= 0 && c <= 11171 && c % 28) ? '이' : '가'; };
+  var gone = ['문항 목록과 직접 고친 내용'];
+  if (S.dg !== 'idle' || S.diagDone) gone.push('채점기준 연결과 점검 결과');
+  if (countAnswers() > 0) gone.push('문항별 답안과 채점 가이드');
+  var last = gone[gone.length - 1];
+  openConfirm('문항을 다시 나눌까요?',
+    '<strong>' + gone.join(', ') + '</strong>' + josa(last) + ' 사라지고 새로 만들어져요.<br>채점기준 자체는 그대로 남아요.',
+    '다시 분석', function(){
+      QUESTIONS = seedQuestions();
+      S.dg = 'idle'; S.diagDone = false; S.setApplied = false; S.relinked = false;
+      S.marks['sec-diagnosis'] = false;
+      _draft = null; _draftFromAI = false; _draftEdited = false;
+      S.answersFilled = false;
+          runWsLoad2();
+    });
+}
+function saveStructure(){
+  syncQuestionsFromDom();
+  renderAll(); renderToc(); renderMockpick();
+  backToDetail('sec-sheet');
+  showToast('success','활동지와 모범답안을 저장했어요.');
+}
+function openDiagnosis(){
+  if (!wsDone()){ showToast('error','빈 활동지를 먼저 올려 주세요.'); return; }
+  if (!S.rubricFilled){ showToast('error','채점기준을 모두 입력해야 점검할 수 있어요.'); return; }
+  showScreen('diag');
+  if (S.dg === 'idle') runDiagLoad('link');
+  else { S.case = stageCase(); renderDiagnosis(); setHash('#case=' + S.case); }
+}
+function startDiagnosis(again){
+  // 다시 점검: 활동지·문항·연결을 그대로 두고 판정만 다시 낸다 → 잠금 후에도 허용
+  showScreen('diag');
+  runDiagLoad('diag');
+}
+function finishDiagnosis(){
+  drSync();
+  if (draftDirty()){
+    openConfirm('채점기준을 바꾸지 않고 마칠까요?',
+      '지금 화면의 내용은 저장되지 않고, <strong>현재 채점기준 그대로</strong> 유지돼요.',
+      '바꾸지 않고 마치기', function(){ _draft = null; backToDetail('sec-diagnosis'); showToast('success','점검을 마쳤어요.'); });
+    return;
+  }
+  backToDetail('sec-diagnosis');
+  showToast('success','점검을 마쳤어요.');
+}
+
+/* ── 2단계: 문항 구조 확인 ── */
+function toggleStage(id){
+  var el = document.getElementById(id);
+  if (!el) return;
+  var willOpen = el.classList.contains('collapsed');
+  _cardOpen[id] = willOpen;
+  el.classList.toggle('collapsed', !willOpen);
+  syncCaret(el);
+}
+function applyStageCollapse(id, autoCollapsed){
+  var el = document.getElementById(id);
+  if (!el) return;
+  var collapsed = (id in _cardOpen) ? !_cardOpen[id] : autoCollapsed;
+  el.classList.toggle('collapsed', collapsed);
+  syncCaret(el);
+}
+function syncCaret(el){
+  var c = el.querySelector('.stage-caret');
+  if (!c) return;
+  c.setAttribute('data-lucide', el.classList.contains('collapsed') ? 'chevron-down' : 'chevron-up');
+}
+function resetStageOpen(){ _cardOpen = {}; }
+function setupStageHeads(){
+  document.querySelectorAll('.stage-card').forEach(function(card){
+    var head = card.querySelector('.stage-head');
+    if (!head || head.dataset.wired) return;
+    head.dataset.wired = '1';
+    var c = document.createElement('i');
+    c.className = 'stage-caret';
+    c.setAttribute('data-lucide', 'chevron-up');
+    head.appendChild(c);
+    head.addEventListener('click', function(e){
+      if (e.target.closest('button')) return;
+      toggleStage(card.id);
+    });
+  });
+}
+function toggleWsMulti(){
+  var n = document.getElementById('ws-multi-note');
+  n.style.display = (n.style.display !== 'none') ? 'none' : 'block';
+}
+document.addEventListener('click', function(){
+  var n = document.getElementById('ws-multi-note');
+  if (n) n.style.display = 'none';
+});
+
+function renderQuestionList(){
+  document.getElementById('dg-s2-intro').innerHTML = 'AI가 활동지를 문항 단위로 나눴어요. 실제 활동지와 같은지 확인하고, 다르면 직접 고쳐 주세요. 문항을 확정한 뒤에 모범답안을 씁니다.';
+  document.getElementById('dg-q-list').innerHTML = QUESTIONS.map(function(q, i){
+    return '<div class="q-row" data-qi="' + i + '" style="border:1px solid #E6E6E6;border-radius:12px;overflow:hidden;background:white;">'
+      + '<div style="display:flex;align-items:center;gap:6px;padding:10px 10px 10px 12px;background:#FBFBFC;border-bottom:1px solid #F0F0F0;">'
+      +   '<input class="q-label-in" data-qi="' + i + '" value="' + esc(q.label) + '" placeholder="문항 번호" oninput="onQuestionLabel(this)" '
+      +     'style="width:220px;border:1px solid #D9D9D9;border-radius:6px;padding:9px 10px;font-size:16px;font-weight:700;color:#0950A0;background:white;outline:none;font-family:inherit;" '
+      +     'onfocus="this.style.borderColor=\'#0950A0\'" onblur="this.style.borderColor=\'#D9D9D9\'">'
+      +   '<span style="flex:1;"></span>'
+      +   '<button onclick="moveQuestion(' + i + ',-1)" title="위로 이동" style="width:28px;height:28px;border:none;background:transparent;border-radius:6px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;line-height:1;vertical-align:middle;" onmouseover="this.style.background=\'#F0F0F0\'" onmouseout="this.style.background=\'transparent\'"><i data-lucide="chevron-up" style="width:16px;height:16px;color:#808080;"></i></button>'
+      +   '<button onclick="moveQuestion(' + i + ',1)" title="아래로 이동" style="width:28px;height:28px;border:none;background:transparent;border-radius:6px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;line-height:1;vertical-align:middle;" onmouseover="this.style.background=\'#F0F0F0\'" onmouseout="this.style.background=\'transparent\'"><i data-lucide="chevron-down" style="width:16px;height:16px;color:#808080;"></i></button>'
+      +   '<div style="width:1px;height:14px;background:#E6E6E6;margin:0 2px;"></div>'
+      +   '<button onclick="removeQuestion(' + i + ')" title="문항 삭제" style="width:28px;height:28px;border:none;background:transparent;border-radius:6px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;line-height:1;vertical-align:middle;color:#B3B3B3;" onmouseover="this.style.background=\'#FFF0F0\';this.style.color=\'#DB3E51\'" onmouseout="this.style.background=\'transparent\';this.style.color=\'#B3B3B3\'"><i data-lucide="trash-2" style="width:15px;height:15px;"></i></button>'
+      + '</div>'
+      + '<div style="padding:10px 12px;display:flex;flex-direction:column;gap:6px;">'
+      +   '<textarea class="q-content-ta" data-qi="' + i + '" oninput="onQuestionInput(this)" placeholder="문항 지시문을 적어 주세요." '
+      +     'style="width:100%;min-height:56px;border:1px solid #D9D9D9;border-radius:6px;padding:9px 10px;font-size:16px;font-family:inherit;resize:vertical;outline:none;color:#333;line-height:1.55;background:white;" '
+      +     'onfocus="this.style.borderColor=\'#0950A0\'" onblur="this.style.borderColor=\'#D9D9D9\'">' + esc(q.text) + '</textarea>'
+      +   '<span><button onclick="openFormulaTip()" style="display:inline-flex;align-items:center;justify-content:center;line-height:1;vertical-align:middle;gap:4px;border:1px solid #D9D9D9;background:white;border-radius:6px;height:30px;padding:0 10px;cursor:pointer;font-size:14px;font-weight:700;color:#494949;font-family:inherit;"><span style="font-size:15px;">∑</span> 수식</button></span>'
+      + '</div>'
+      + '</div>';
+  }).join('');
+  icons();
+}
+
+/* ②단 — 확정한 문항마다 모범답안·채점 가이드.
+   문항 번호·지시문은 읽기다. 고치려면 ①단으로 돌아간다. */
+function renderQaList(){
+  var el = document.getElementById('qa-list');
+  if (!el) return;
+  el.innerHTML = QUESTIONS.map(function(q, i){
+    return '<div class="s4-card">'
+      + '<div style="background:#FBFBFC;padding:12px 16px;border-bottom:1px solid #EFEFEF;display:flex;align-items:center;gap:10px;">'
+      +   '<span style="font-size:12px;font-weight:700;background:#F3F9FF;color:#0950A0;border-radius:100px;padding:3px 10px;white-space:nowrap;flex-shrink:0;">' + esc(q.label) + '</span>'
+      +   '<span style="font-size:14px;color:#333;font-weight:400;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + esc(q.text) + '</span>'
+      + '</div>'
+      + '<div style="padding:14px 16px;display:flex;flex-direction:column;gap:10px;">'
+      +   '<div class="s4-guide s4-field">'
+      +     '<div class="s4-lab">'
+      +       '<span class="s4-lab-t">채점 가이드</span>'
+      +       '<span class="s4-lab-d">이 문항을 어떻게 채점할지 적어 두면 AI가 선생님 기준을 더 잘 이해해요</span>'
+      +       '<button class="s4-sum-btn" title="수식 입력" onclick="openFormulaTip()"><span style="font-size:15px;">&#8721;</span> 수식</button>'
+      +     '</div>'
+      +     '<textarea class="qa-guide" data-qi="' + i + '" placeholder="예) 맞춤법은 보지 않고 내용만 채점해 주세요. / 단위를 쓰지 않으면 1점 깎아 주세요." oninput="onQaInput(this)">' + esc(q.guide || '') + '</textarea>'
+      +   '</div>'
+      +   '<div class="s4-ansblock">'
+      +     '<div class="s4-model s4-field">'
+      +       '<div class="s4-lab">'
+      +         '<span class="s4-lab-t">모범답안</span>'
+      +         '<span class="s4-lab-d">채점할 때 참고할 예시 답안이에요</span>'
+      +         '<button class="s4-sum-btn" title="수식 입력" onclick="openFormulaTip()"><span style="font-size:15px;">&#8721;</span> 수식</button>'
+      +       '</div>'
+      +       '<textarea class="qa-answer" data-qi="' + i + '" placeholder="모범답안을 입력해 주세요. (없으면 비워두셔도 됩니다)" oninput="onQaInput(this)">' + esc(q.answer || '') + '</textarea>'
+      +     '</div>'
+      +   '</div>'
+      + '</div></div>';
+  }).join('');
+  growAnswerFields();
+  icons();
+}
+
+/* 단계 이동 — 문항을 확정한 뒤에 답안을 쓴다.
+   되돌아가도 적어 둔 답안은 문항 객체에 남아 있어 사라지지 않는다. */
+function gotoQaStep(){
+  if (!wsDone()){ showToast('error','빈 활동지를 먼저 올려 주세요.'); return; }
+  syncQuestionsFromDom();
+  S.wsStep = 2; S.case = 'sheet-answer';
+  renderWorksheet(); renderToc();
+  setHash('#case=sheet-answer');
+  window.scrollTo({ top:0, behavior:'smooth' });
+}
+function backToQuestionStep(){
+  syncQuestionsFromDom();
+  S.wsStep = 1; S.case = 'sheet';
+  renderWorksheet();
+  setHash('#case=sheet');
+  window.scrollTo({ top:0, behavior:'smooth' });
+}
+function onQaInput(el){
+  var q = QUESTIONS[Number(el.dataset.qi)];
+  if (!q) return;
+  if (el.classList.contains('qa-guide')) q.guide = el.value;
+  else q.answer = el.value;
+  autoGrow(el);
+  renderToc();
+}
+function onQuestionInput(el){ QUESTIONS[Number(el.dataset.qi)].text = el.value; }
+function onQuestionLabel(el){ QUESTIONS[Number(el.dataset.qi)].label = el.value; }
+/* 문항 칸(①단)만 읽는다. 답안·가이드는 onQaInput이 입력 즉시 문항 객체에 넣으므로
+   여기서 ②단 DOM을 다시 읽으면 안 된다 — 순서를 바꾼 뒤 낡은 DOM이 답안을 밀어 넣는다. */
+function syncQuestionsFromDom(){
+  document.querySelectorAll('#dg-q-list .q-content-ta').forEach(function(t){
+    var q = QUESTIONS[Number(t.dataset.qi)];
+    q.text = t.value;
+  });
+  document.querySelectorAll('#dg-q-list .q-label-in').forEach(function(t){ QUESTIONS[Number(t.dataset.qi)].label = t.value; });
+}
+function moveQuestion(i, dir){
+  syncQuestionsFromDom();
+  var j = i + dir;
+  if (j < 0 || j >= QUESTIONS.length) return;
+  var t = QUESTIONS[i]; QUESTIONS[i] = QUESTIONS[j]; QUESTIONS[j] = t;
+  renderQuestionList();
+}
+function addQuestion(){
+  syncQuestionsFromDom();
+  var no = QUESTIONS.reduce(function(a,q){ return Math.max(a, q.no); }, 0) + 1;
+  QUESTIONS.push({ no: no, label: String(QUESTIONS.length + 1), text:'', links:[], aiPicks:[], aiReason:'', answer:'', guide:'' });
+  renderQuestionList();
+}
+function removeQuestion(i){
+  syncQuestionsFromDom();
+  var q = QUESTIONS[i];
+  var hasQa = (q.answer && q.answer.trim()) || (q.guide && q.guide.trim());
+  openConfirm('문항 삭제', '<strong>' + esc(q.label) + '번 문항</strong>을 삭제할까요?<br>연결해 둔 채점기준' + (hasQa ? '과 이 문항에 적은 모범답안·채점 가이드' : '') + '도 함께 사라지고, 되돌릴 수 없습니다.', '삭제', function(){
+    QUESTIONS.splice(i, 1);
+    renderQuestionList();
+    showToast('success','문항을 삭제했어요.');
+  });
+}
+
+/* ── 3단계: 문항·채점기준 연결 ── */
+var _s3Cur = null;
+function renderS3(){
+  var b = document.getElementById('s3-relink-note');
+  if (b) b.style.display = S.relinked ? 'flex' : 'none';
+  if (_s3Cur === null || !QUESTIONS.some(function(q){ return q.no === _s3Cur; })) _s3Cur = QUESTIONS.length ? QUESTIONS[0].no : null;
+  renderS3List();
+  renderS3Detail();
+}
+function renderS3List(){
+  document.getElementById('dg3-qlist').innerHTML = QUESTIONS.map(function(q){
+    var linked = q.links.length > 0;
+    var badge = linked
+      ? '<span style="flex-shrink:0;display:inline-flex;align-items:center;background:#F1F9F3;border-radius:100px;padding:2px 7px;font-size:12px;font-weight:700;color:#00AF3D;white-space:nowrap;margin-left:auto;">연결완료</span>'
+      : '<span style="flex-shrink:0;display:inline-flex;align-items:center;background:#FFF0EF;border:1px solid #F0C0C4;border-radius:100px;padding:2px 7px;font-size:12px;font-weight:700;color:#DB3E51;white-space:nowrap;margin-left:auto;">미연결</span>';
+    return '<div class="s3-q-item' + (q.no === _s3Cur ? ' active' : '') + '" onclick="selectQ3(' + q.no + ')" style="padding:11px 12px;border-bottom:1px solid #F5F5F5;">'
+      + '<span style="font-size:14px;font-weight:700;color:#333;">' + esc(q.label) + '</span>' + badge + '</div>';
+  }).join('');
+}
+function selectQ3(no){ _s3Cur = no; renderS3List(); renderS3Detail(); }
+function renderS3Detail(){
+  var panel = document.getElementById('dg3-detail');
+  var q = QUESTIONS.find(function(x){ return x.no === _s3Cur; });
+  if (!q){
+    panel.innerHTML = '<div style="flex:1;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:14px;padding:60px 40px;text-align:center;">'
+      + '<div style="width:52px;height:52px;border-radius:50%;background:#DFE9F5;display:flex;align-items:center;justify-content:center;"><i data-lucide="mouse-pointer-click" style="width:24px;height:24px;color:#0950A0;"></i></div>'
+      + '<p style="font-size:14px;font-weight:700;color:#B3B3B3;margin:0;line-height:1.7;">왼쪽에서 문항을 선택하면<br>채점기준을 연결할 수 있어요</p></div>';
+    icons(); return;
+  }
+
+  var headerHtml = '<div style="margin-bottom:18px;">'
+    + '<div style="font-size:14px;font-weight:700;color:#808080;margin-bottom:6px;">문항 ' + esc(q.label) + '</div>'
+    + '<p style="font-size:17px;color:#222;margin:0;line-height:1.6;font-weight:400;">' + esc(q.text) + '</p>'
+    + '</div>';
+
+  var reasonBody = q.aiPicks.length > 0
+    ? '<strong style="display:block;font-weight:700;color:#494949;margin-bottom:2px;">AI가 채점기준을 선택한 이유</strong>' + esc(q.aiReason)
+    : 'AI가 이 문항과 관련된 채점기준을 찾지 못했어요. 아래 목록에서 직접 선택해 주세요.';
+  var reasonHtml = '<div style="display:flex;gap:10px;align-items:flex-start;background:#FBFBFC;border:1px solid #F0F0F2;border-radius:8px;padding:14px 16px;margin-bottom:18px;">'
+    + '<i data-lucide="wand-sparkles" style="width:15px;height:15px;color:#2F77D5;flex-shrink:0;margin-top:3px;"></i>'
+    + '<div style="flex:1;font-size:14px;color:#494949;line-height:1.65;font-weight:400;">' + reasonBody + '</div>'
+    + '</div>';
+
+  var controlsHtml = '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">'
+    + '<div style="display:flex;align-items:center;gap:10px;">'
+    + '<button onclick="s3SelectAll(true)" style="display:inline-flex;align-items:center;justify-content:center;line-height:1;vertical-align:middle;border:none;background:transparent;padding:0;cursor:pointer;font-size:14px;font-weight:700;color:#0950A0;font-family:inherit;">모두 선택</button>'
+    + '<div style="width:1px;height:12px;background:#D9D9D9;"></div>'
+    + '<button onclick="s3SelectAll(false)" style="display:inline-flex;align-items:center;justify-content:center;line-height:1;vertical-align:middle;border:none;background:transparent;padding:0;cursor:pointer;font-size:14px;font-weight:700;color:#808080;font-family:inherit;">모두 해제</button>'
+    + '</div>'
+    + '<span style="font-size:14px;color:#808080;font-weight:700;">' + q.links.length + ' / ' + rubrics.length + ' 선택</span>'
+    + '</div>';
+
+  var rubricsHtml = '<div style="display:flex;flex-direction:column;gap:6px;">'
+    + rubrics.map(function(r, i){
+        var checked = q.links.indexOf(r.id) !== -1;
+        var isAI = q.aiPicks.indexOf(r.id) !== -1;
+        var maxScore = Math.max.apply(null, r.rows.map(function(x){ var v = Number(x[0]); return isFinite(v) ? v : 0; }));
+        var checkStyle = checked
+          ? 'width:18px;height:18px;border-radius:4px;background:#0950A0;border:1.5px solid #0950A0;display:flex;align-items:center;justify-content:center;flex-shrink:0;pointer-events:none;'
+          : 'width:18px;height:18px;border-radius:4px;background:white;border:1.5px solid #D9D9D9;display:flex;align-items:center;justify-content:center;flex-shrink:0;pointer-events:none;';
+        var checkInner = checked ? '<svg width="11" height="11" viewBox="0 0 11 11" fill="none"><polyline points="1.5,5.5 4.5,8 9.5,2.5" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>' : '';
+        var labelStyle = checked
+          ? 'display:flex;align-items:center;gap:10px;padding:12px 14px;border:1.5px solid #0950A0;border-radius:8px;background:#F7FBFF;cursor:pointer;'
+          : 'display:flex;align-items:center;gap:10px;padding:12px 14px;border:1px solid #E6E6E6;border-radius:8px;background:white;cursor:pointer;';
+        var textStyle = checked ? 'font-size:14px;font-weight:700;color:#333;' : 'font-size:14px;color:#808080;font-weight:400;';
+        var aiBadge = isAI ? '<span style="font-size:11px;font-weight:700;color:#0950A0;background:#D9EAFB;border-radius:100px;padding:2px 7px;flex-shrink:0;white-space:nowrap;">AI</span>' : '';
+        return '<label onclick="toggleLink(' + q.no + ',' + r.id + ')" style="' + labelStyle + '">'
+          + '<div style="' + checkStyle + '">' + checkInner + '</div>'
+          + '<div style="flex:1;"><span style="' + textStyle + '">' + esc(r.title || '(내용 없음)') + '</span><span style="font-size:14px;color:#808080;margin-left:6px;">' + maxScore + '점</span></div>'
+          + aiBadge
+          + '</label>';
+      }).join('')
+    + '</div>';
+
+  var warnFooter = '<div style="display:' + (q.links.length ? 'none' : 'flex') + ';align-items:flex-start;gap:7px;margin-top:14px;">'
+    + '<i data-lucide="info" style="width:14px;height:14px;color:#B3B3B3;flex-shrink:0;margin-top:3px;"></i>'
+    + '<span style="font-size:14px;color:#808080;line-height:1.6;">연결하지 않아도 괜찮아요. 이 경우 이 문항은 채점기준 전체로 채점돼요.</span>'
+    + '</div>';
+
+  panel.innerHTML = headerHtml + reasonHtml + controlsHtml + rubricsHtml + warnFooter;
+  icons();
+}
+function toggleLink(qno, rid){
+  var q = QUESTIONS.find(function(x){ return x.no === qno; });
+  var i = q.links.indexOf(rid);
+  if (i === -1) q.links.push(rid); else q.links.splice(i, 1);
+  renderS3List(); renderS3Detail();
+}
+function s3SelectAll(on){
+  var q = QUESTIONS.find(function(x){ return x.no === _s3Cur; });
+  q.links = on ? rubrics.map(function(r){ return r.id; }) : [];
+  renderS3List(); renderS3Detail();
+}
+
+/* ── 진단 결과(총평·AI 제안) ── */
+function renderOverall(){
+  var v = overallVerdict();
+  var stale = !!S.marks['sec-diagnosis'];
+  var opinion;
+  if (!hasSuggestion()){
+    opinion = S.setApplied
+      ? '채점기준을 바꾸고 문항에 다시 연결했어요. 무엇을 보고 점수를 줄지 분명해져 AI가 고르게 채점할 수 있어요.'
+      : '모든 채점기준이 무엇을 보고 점수를 줄지 분명해 AI가 고르게 채점할 수 있어요. 모범답안까지 넣으면 채점이 더 정확해져요.';
+  } else {
+    opinion = DIAG_REASONS.join(' ') + ' 같은 뜻을 AI가 따를 수 있게 다시 쓴 안을 아래에 준비했어요.';
+  }
+  /* stale = 진단을 마친 뒤 채점기준이 바뀐 상태. 판정은 옛 기준으로 낸 것이므로
+     지금 기준과 다를 수 있다는 사실만 알리고, 할 수 있는 다음 행동으로 닫는다. */
+  var staleHtml = '';
+  if (stale){
+    staleHtml = '<div style="display:flex;gap:8px;align-items:flex-start;margin-top:12px;padding-top:12px;border-top:1px solid #E6E6E6;">'
+      + '<i data-lucide="info" style="width:17px;height:17px;color:#C2620A;flex-shrink:0;margin-top:3px;"></i>'
+      + '<p style="font-size:16px;color:#7A4A00;margin:0;line-height:1.65;">'
+      + '<strong>점검 뒤에 채점기준이 바뀌었어요.</strong> 이 결과는 지금 채점기준과 다를 수 있어요. 활동지를 다시 올릴 필요는 없으니 <strong>다시 점검</strong>해 주세요.'
+      + '</p></div>';
+  }
+  document.getElementById('dg-overall').innerHTML = ''
+    + '<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">'
+    +   '<h4 style="font-size:16px;font-weight:700;color:#0A2A5E;margin:0;">' + (stale ? '지난 AI 점검 의견' : 'AI 점검 의견') + '</h4>'
+    +   '<span class="badge ' + v.cls + '">' + v.tag + '</span>'
+    +   (stale ? '<span class="badge b-orange">확인 필요</span>' : '')
+    + '</div>'
+    + '<div style="border:1px solid #F0F0F2;background:#FBFBFC;border-radius:12px;padding:16px 20px;">'
+    +   '<p style="font-size:16px;color:#494949;margin:0;line-height:1.65;">' + opinion + '</p>'
+    +   staleHtml
+    + '</div>';
+}
+function roTableHtml(rows){
+  var body = rows.map(function(row, ri){
+    var bs = (ri === rows.length - 1) ? ' style="border-bottom:none;"' : '';
+    return '<tr><td class="c-score"' + bs + '>' + esc(String(row[0] || '-')) + '</td><td' + bs + '>' + esc(row[1]) + '</td></tr>';
+  }).join('');
+  return '<div style="border:1px solid #D9D9D9;border-radius:8px;overflow:hidden;background:#fff;">'
+    + '<table class="rt rt-ro"><thead><tr><th class="c-score" style="border-right:1px solid #D9D9D9;">배점</th><th style="text-align:left;">세부 기준</th></tr></thead><tbody>'
+    + body + '</tbody></table></div>';
+}
+function fullScore(list){
+  return list.reduce(function(a, r){
+    return a + Math.max.apply(null, r.rows.map(function(x){ var v = Number(x[0]); return isFinite(v) ? v : 0; }));
+  }, 0);
+}
+
+/* ── 4단계 작업본(draft) ──
+   AI가 만들어 채워두는 편집 가능한 채점기준 세트. 보완 필요면 재구성안, 양호면 저장본 그대로.
+   교사는 자유롭게 수정·추가·삭제할 수 있고, 저장본과 달라지면 "바꾸고 다시 연결" 갈림길이 열린다.
+   저장(=DB 교체)은 다시 연결하러 가는 순간에 일어난다 → 바뀐 기준과 연결·판정이 어긋난 상태가 존재하지 않는다. */
+var _draft = null;        // [{id,title,rows}]
+var _draftFromAI = false; // AI가 저장본과 다르게 만들었는지(보완 필요)
+var _draftEdited = false; // 교사가 손댔는지
+function draftDirty(){ return _draftFromAI || _draftEdited; }
+
+function initDraft(){
+  if (hasSuggestion()){
+    _draft = JSON.parse(JSON.stringify(SUGGESTED_SET));
+    _draftFromAI = true;
+  } else {
+    _draft = rubrics.map(function(r){ return { id:r.id, title:r.title, rows: JSON.parse(JSON.stringify(r.rows)) }; });
+    _draftFromAI = false;
+  }
+  _draftEdited = false;
+}
+
+function drSync(){
+  if (!_draft) return;
+  document.querySelectorAll('#dg-draft-list .rubric-card').forEach(function(card, i){
+    if (!_draft[i]) return;
+    _draft[i].title = card.querySelector('.sg-title').value;
+    var rows = [];
+    card.querySelectorAll('tbody tr').forEach(function(tr){
+      var ins = tr.querySelectorAll('input');
+      rows.push([ins[0].value, ins[1].value]);
+    });
+    _draft[i].rows = rows;
+  });
+}
+function drInput(){ _draftEdited = true; drMetaBand(); }
+function drCopy(i){
+  drSync(); if (!_draft || !_draft[i]) return; _draftEdited = true;
+  var src = _draft[i];
+  _draft.splice(i + 1, 0, { id: 900 + _draft.length, title: src.title, rows: JSON.parse(JSON.stringify(src.rows)) });
+  renderFitCards();
+}
+function drAdd(){
+  drSync(); _draftEdited = true;
+  _draft.push({ id: Date.now ? (200 + _draft.length) : (200 + _draft.length), title:'', rows:[['',''],['',''],['','']] });
+  renderFitCards();
+}
+function drDel(i){
+  drSync(); if (!_draft || !_draft[i]) return; _draftEdited = true;
+  _draft.splice(i, 1);
+  renderFitCards();
+}
+function drAddRow(i){ drSync(); if (!_draft || !_draft[i]) return; _draftEdited = true; _draft[i].rows.push(['','']); renderFitCards(); }
+function drDelRow(i){
+  drSync();
+  if (!_draft || !_draft[i]) return;
+  if (_draft[i].rows.length <= 1){ showToast('error','세부 기준은 최소 1줄이 필요해요.'); return; }
+  _draftEdited = true; _draft[i].rows.pop(); renderFitCards();
+}
+function drToggleCur(){
+  var l = document.getElementById('dg-cur-list');
+  var open = l.style.display !== 'none';
+  l.style.display = open ? 'none' : 'flex';
+  document.getElementById('dg-cur-label').textContent = '현재 채점기준' + (open ? ' 보기' : ' 접기');
+  document.getElementById('dg-cur-caret').setAttribute('data-lucide', open ? 'chevron-down' : 'chevron-up');
+  icons();
+}
+function drMetaBand(){
+  drSync();
+  if (!_draft) return;
+  document.getElementById('dg-draft-meta').textContent = _draft.length + '개 · 만점 ' + fullScore(_draft) + '점';
+  document.getElementById('dg-apply-band').style.display = draftDirty() ? 'flex' : 'none';
+}
+
+function renderFitCards(){
+  if (!_draft) initDraft();
+  var proposal = hasSuggestion();
+
+  /* 과제물 인식이 시작되면 채점기준을 바꿀 수 없다(참조 축 잠금).
+     바꿀 수 없는 걸 편집 폼으로 열어두면 헛수고가 되므로 읽기 전용으로 내린다.
+     제안 자체는 남겨 둔다 — 왜 보완이 필요한지 근거이고, 설계를 복제하면 쓸 수 있다. */
+  var lb = document.getElementById('dg-lock-banner');
+  lb.style.display = S.scored ? 'flex' : 'none';
+  if (S.scored){
+    document.getElementById('dg-lock-text').innerHTML = proposal
+      ? '<strong>AI 채점이 실행되어 채점기준을 바꿀 수 없어요.</strong> 이미 매긴 점수가 근거를 잃기 때문이에요. 아래 AI 제안은 확인만 할 수 있고, 적용하려면 설계를 복제해 주세요.'
+      : '<strong>AI 채점이 실행되어 채점기준을 바꿀 수 없어요.</strong> 점검 결과는 확인만 할 수 있어요.';
+    document.getElementById('dg-draft-title').textContent = proposal ? 'AI 제안 채점기준' : '채점기준';
+    document.getElementById('dg-draft-desc').textContent = proposal
+      ? 'AI가 더 잘 이해할 수 있게 같은 뜻을 다시 쓴 안이에요. 지금은 적용할 수 없어요.'
+      : '지금 저장된 채점기준이에요.';
+    var roList = proposal ? SUGGESTED_SET : rubrics;
+    document.getElementById('dg-draft-meta').textContent = roList.length + '개 · 만점 ' + fullScore(roList) + '점';
+    document.getElementById('dg-draft-list').innerHTML = roList.map(function(r, i){
+      return '<div class="diag-card" style="padding:0 0 16px;">'
+        + '<div style="padding:14px 16px 0;"><span style="font-size:16px;font-weight:700;color:#0A2A5E;">채점기준 ' + (i+1) + '</span></div>'
+        + '<div style="display:flex;gap:12px;align-items:stretch;margin:12px 16px 0;">'
+        +   '<div class="ro-title">' + esc(r.title) + '</div>'
+        +   '<div style="flex:1;min-width:0;">' + roTableHtml(r.rows) + '</div>'
+        + '</div></div>';
+    }).join('');
+    document.getElementById('dg-draft-add').style.display = 'none';
+    document.getElementById('dg-apply-band').style.display = 'none';
+    var w = document.getElementById('dg-cur-wrap');
+    w.style.display = proposal ? 'block' : 'none';
+    if (proposal){
+      document.getElementById('dg-cur-meta').textContent = rubrics.length + '개 · 만점 ' + fullScore(rubrics) + '점';
+      document.getElementById('dg-cur-list').innerHTML = rubrics.map(function(r, i){
+        return '<div class="diag-card" style="padding:12px;">'
+          + '<p style="font-size:16px;font-weight:700;color:#333;margin:0 0 8px;">' + (i+1) + '. ' + esc(r.title) + '</p>'
+          + roTableHtml(r.rows) + '</div>';
+      }).join('');
+    }
+    icons();
+    return;
+  }
+  document.getElementById('dg-draft-add').style.display = 'flex';
+  document.getElementById('dg-draft-title').textContent = proposal ? 'AI 제안 채점기준' : '채점기준';
+  document.getElementById('dg-draft-desc').textContent = '필요하면 직접 수정할 수 있어요. 바꿔 저장하면 문항 연결과 점검을 다시 해 드려요.';
+
+  document.getElementById('dg-draft-list').innerHTML = _draft.map(function(r, i){
+    return rubricCardHtml(r, i, 'dr');
+  }).join('');
+
+  // 현재(저장본) 참고 — 제안이 있을 때만
+  var wrap = document.getElementById('dg-cur-wrap');
+  wrap.style.display = proposal ? 'block' : 'none';
+  if (proposal){
+    document.getElementById('dg-cur-label').textContent = '현재 채점기준 보기';
+    document.getElementById('dg-cur-meta').textContent = rubrics.length + '개 · 만점 ' + fullScore(rubrics) + '점';
+    document.getElementById('dg-cur-list').innerHTML = rubrics.map(function(r, i){
+      return '<div class="diag-card" style="padding:12px;">'
+        + '<p style="font-size:16px;font-weight:700;color:#333;margin:0 0 8px;">' + (i+1) + '. ' + esc(r.title) + '</p>'
+        + roTableHtml(r.rows) + '</div>';
+    }).join('');
+  }
+  drMetaBand();
+  icons();
+}
+
+/* 작업본 적용 = 저장본 교체(DB 교체) + AI가 연결·진단을 한 번에 다시 실행.
+   저장이 이 순간에 일어나므로 "바뀐 기준 vs 옛 연결·판정"이 공존하는 상태가 없다. */
+function applyDraft(){
+  if (S.scored){ showToast('error','AI 채점이 실행되어 채점기준을 바꿀 수 없어요.'); return; }
+  drSync();
+  var bad = _draft.some(function(r){ return !r.title.trim(); });
+  if (bad){ showToast('error','비어 있는 채점기준이 있어요. 내용을 채우거나 삭제해 주세요.'); return; }
+  openConfirm('채점기준 바꾸고 다시 연결',
+    '채점기준 ' + rubrics.length + '개(만점 ' + fullScore(rubrics) + '점)를 이 내용 ' + _draft.length + '개(만점 ' + fullScore(_draft) + '점)로 <strong>교체해 저장</strong>해요.<br>'
+    + '문항 연결은 AI가 새 기준으로 다시 만들어 드려요. 1단계에서 확인하고 고칠 수 있어요.'
+    + (S.linksEdited ? '<br><strong>직접 고친 문항 연결도 AI가 새 기준으로 다시 만들어요.</strong>' : ''),
+    '바꾸고 다시 연결', function(){
+      rubrics = _draft.map(function(r, i){ return { id: 300 + i, title: r.title, rows: JSON.parse(JSON.stringify(r.rows)) }; });
+      S.setApplied = true;
+      S.linksEdited = false; // AI가 연결을 새로 만들었으므로 교사 수정본은 더 이상 없음
+      _draft = null;
+      // AI 재연결(목업은 순서대로 배분)
+      QUESTIONS.forEach(function(q, i){
+        q.links = rubrics.filter(function(r, ri){ return (ri % QUESTIONS.length) === i || (ri === 0 && i === 0); }).map(function(r){ return r.id; });
+        if (!q.links.length) q.links = [rubrics[0].id];
+        q.aiReason = 'AI가 새 채점기준으로 다시 연결했어요. 맞지 않으면 직접 고쳐 주세요.';
+      });
+      renderRubrics(); renderScoreTable(); renderToc();
+      S.relinked = true;
+      runDiagLoad('link');
+      showToast('success','채점기준을 바꿔 저장했어요. 새 기준으로 다시 연결한 결과를 확인해 주세요.');
+    });
+}
+
+/* ══════════════════════════════════════════════════════════
+   모범답안
+══════════════════════════════════════════════════════════ */
+var GUIDE_SEED = {
+  2:'근거가 두 가지인지만 세어 주세요. 맞춤법은 보지 않아도 됩니다.',
+  3:'반론과 반박이 모두 있어야 만점이에요. 하나만 있으면 절반만 주세요.'
+};
+var ANSWER_SEED = {
+  1:'글쓴이는 급식 잔반을 줄이려면 학생이 먹을 양을 스스로 정할 수 있어야 한다고 주장한다.',
+  2:'나는 글쓴이의 주장에 찬성한다. 첫째, 스스로 양을 정하면 남기는 음식이 줄어 음식물 쓰레기 처리 비용을 아낄 수 있다. 둘째, 자기가 고른 만큼 책임지고 먹게 되어 식습관을 스스로 관리하는 힘이 길러진다.',
+  3:'예상 반론은 학생이 양을 적게 골라 영양이 부족해질 수 있다는 것이다. 그러나 최소 배식량을 정해 두면 영양은 지키면서 잔반은 줄일 수 있으므로 이 반론은 해결할 수 있다.',
+  4:''
+};
+function countAnswers(){
+  var n = 0;
+  QUESTIONS.forEach(function(q){ if (q.answer && q.answer.trim()) n++; });
+  return n;
+}
+/* 내용이 길어지면 칸이 늘어난다 — 안에서 스크롤되면 적은 내용이 가려져 놓치기 쉽다 */
+function autoGrow(el){
+  if (!el) return;
+  el.style.height = 'auto';
+  el.style.height = el.scrollHeight + 'px';
+}
+function growAnswerFields(){
+  document.querySelectorAll('#qa-list .qa-guide, #qa-list .qa-answer').forEach(autoGrow);
+}
+
+/* ══════════════════════════════════════════════════════════
+   목차 · 스크롤 스파이
+══════════════════════════════════════════════════════════ */
+function sectionStatus(id){
+  switch(id){
+    case 'sec-basic':     return S.name.trim() ? 'done' : 'todo';
+    case 'sec-standard':  return S.stdFilled ? 'done' : 'todo';
+    case 'sec-rubric':    return S.rubricFilled ? 'done' : 'todo';
+    case 'sec-sheet':     return wsDone() ? 'done' : 'todo';
+    case 'sec-diagnosis': return S.diagDone ? 'done' : 'todo';
+    case 'sec-score':     return rubrics.length && S.rubricFilled ? 'done' : 'todo';
+    case 'sec-absent':    return 'done';
+  }
+  return 'todo';
+}
+function renderToc(){
+  var coreDone = ['sec-basic','sec-standard','sec-rubric','sec-score','sec-absent']
+    .filter(function(id){ return sectionStatus(id) === 'done'; }).length;
+  var cs = document.getElementById('grp-core-sum');
+  if (cs) cs.textContent = coreDone + ' / 5 완료';
+  var parts = [];
+  if (wsDone()) parts.push('활동지');
+  if (countAnswers() > 0) parts.push('모범답안');
+  if (S.diagDone) parts.push('점검');
+  var as = document.getElementById('grp-adv-sum');
+  if (as){
+    var chip = S.marks['sec-diagnosis'] ? ' <span class="toc-chip">확인 필요</span>' : '';
+    as.innerHTML = (parts.length ? parts.join(' · ') + ' 완료' : '') + chip;
+  }
+  applyStageCollapse('grp-core', false);
+  applyStageCollapse('grp-adv', false);
+  icons();
+}
+
+/* ══════════════════════════════════════════════════════════
+   저장
+══════════════════════════════════════════════════════════ */
+function saveDraft(){
+  Object.keys(S.marks).forEach(function(k){ S.marks[k] = false; });
+  renderToc();
+  showToast('success','임시 저장했어요.');
+}
+function saveDesign(){
+  if (!S.name.trim()){ showToast('error','평가(과제)명을 입력해 주세요.'); scrollToSection('sec-basic'); return; }
+  if (!S.rubricFilled){ showToast('error','채점기준을 모두 입력해 주세요.'); scrollToSection('sec-rubric'); return; }
+  Object.keys(S.marks).forEach(function(k){ S.marks[k] = false; });
+  showToast('success','평가 설계를 저장했어요.');
+  setTimeout(goList, 700);
+}
+
+/* ══════════════════════════════════════════════════════════
+   까망이 목업 내비게이터
+══════════════════════════════════════════════════════════ */
+/* 연속 동작으로 닿는 중간 상태는 넣지 않는다 — 진입점과 예외만 */
+var MP_TABS = [
+  { id:'main', label:'화면', items:[
+    { k:'list',       label:'설계 목록',            sub:'카드 6개' },
+    { k:'new',        label:'새로 만들기',          sub:'채점기준 0개' },
+    { k:'ready',      label:'채점기준까지 입력',     sub:'활동지 전 · 점검 잠김' },
+    { k:'upload',     label:'활동지 올리기 전',      sub:'드롭존' },
+    { k:'sheet',      label:'① 문항 확정',           sub:'AI가 나눈 문항 검수' },
+    { k:'sheet-answer', label:'② 모범답안·채점 가이드', sub:'문항별 입력' }
+  ]},
+  { id:'diag', label:'점검', items:[
+    { k:'linking',    label:'채점기준 연결',         sub:'AI 맵핑 확인·수정' },
+    { k:'result',     label:'점검 결과 · 다시 볼 곳', sub:'AI 제안 있음' },
+    { k:'result-ok',  label:'점검 결과 · 바로 채점',  sub:'제안 없음' }
+  ]},
+  { id:'edge', label:'예외', items:[
+    { k:'list-empty',   label:'설계 목록 비어 있음',  sub:'만든 설계 없음' },
+    { k:'locked',       label:'과제물 인식 후',       sub:'문항·가림 잠김' },
+    { k:'scored',       label:'AI 채점 실행 후',      sub:'배점·연결 잠김' },
+    { k:'locked-stale', label:'점검 후 기준 변경',    sub:'확인 필요 · 다시 점검' }
+  ]}
+];
+var MP_TAB = 'main';
+
+function renderMockpick(){
+  var cur = S.case || (S.screen === 'list' ? (S.listEmpty ? 'list-empty' : 'list') : '');
+  document.getElementById('mp-tabs').innerHTML = MP_TABS.map(function(t){
+    return '<button class="' + (t.id === MP_TAB ? 'on' : '') + '" onclick="mpTab(\'' + t.id + '\')">' + t.label + '</button>';
+  }).join('');
+  var tab = MP_TABS.filter(function(t){ return t.id === MP_TAB; })[0] || MP_TABS[0];
+  document.getElementById('mp-cases').innerHTML = tab.items.map(function(it){
+    return '<button class="mp-btn' + (it.k === cur ? ' on' : '') + '" onclick="mpGo(\'' + it.k + '\')">'
+         + it.label + '<span class="mp-sub">' + it.sub + '</span></button>';
+  }).join('');
+}
+function mpTab(id){ MP_TAB = id; renderMockpick(); }
+function mpGo(k){
+  closeConfirm();
+  applyCase(k);
+  setHash(k === 'list' ? '#list' : '#case=' + k);
+  renderMockpick();
+}
+function mpToggle(e){
+  e.stopPropagation();
+  var b = document.getElementById('mp-body');
+  var open = b.style.display !== 'none';
+  b.style.display = open ? 'none' : 'flex';
+  document.getElementById('mp-caret').textContent = open ? '▸' : '▾';
+}
+/* 드래그 이동
+   ⚠️ mousedown 시점에 bottom:auto 로 풀어 버리면, 접기만 눌러도(움직이지 않아도)
+   top/bottom 이 둘 다 auto 가 되어 정적 위치(문서 맨 끝)로 튕겨 화면 밖으로 사라진다.
+   → 실제로 4px 넘게 움직인 뒤에야 좌표를 고정한다. */
+(function(){
+  var mp = document.getElementById('mockpick');
+  var sx = 0, sy = 0, dx = 0, dy = 0, down = false, dragging = false;
+  mp.addEventListener('mousedown', function(e){
+    if (e.target.closest('.mp-btn')) return;
+    down = true; dragging = false;
+    sx = e.clientX; sy = e.clientY;
+    var r = mp.getBoundingClientRect();
+    dx = e.clientX - r.left; dy = e.clientY - r.top;
+  });
+  document.addEventListener('mousemove', function(e){
+    if (!down) return;
+    if (!dragging){
+      if (Math.abs(e.clientX - sx) < 4 && Math.abs(e.clientY - sy) < 4) return;
+      dragging = true;
+      var r = mp.getBoundingClientRect();
+      mp.style.right = 'auto'; mp.style.bottom = 'auto';
+      mp.style.left = r.left + 'px'; mp.style.top = r.top + 'px';
+    }
+    e.preventDefault();
+    mp.style.left = (e.clientX - dx) + 'px';
+    mp.style.top  = (e.clientY - dy) + 'px';
+  });
+  document.addEventListener('mouseup', function(){ down = false; dragging = false; });
+})();
+
+/* ══════════════════════════════════════════════════════════
+   부팅
+══════════════════════════════════════════════════════════ */
+rubrics = JSON.parse(JSON.stringify(RUBRIC_SEED));
+standards = [blankStandard()];
+renderList();
+setupStageHeads();
+routeFromUrl();
+_booted = true;
+renderMockpick();
+icons();
+</script>
+</body>
+</html>
