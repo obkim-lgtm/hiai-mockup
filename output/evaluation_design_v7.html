@@ -804,7 +804,6 @@ body { margin: 0; background: #EDF3FC; min-width: 1280px; }
             <p class="sec-desc" id="dg-newmap-desc" style="margin-bottom:12px;"></p>
             <div id="dg-newmap-stale" class="note note-warn" style="display:none;margin-bottom:12px;"></div>
             <div id="dg-newmap-list" style="display:flex;flex-direction:column;gap:8px;"></div>
-            <div id="dg-newmap-note" class="note note-warn" style="display:none;margin-top:12px;"></div>
           </div>
 
           <div class="apply-band" id="dg-apply-band" style="display:none;">
@@ -2144,10 +2143,6 @@ function renderNewMap(proposal){
     return '<div style="border:1px solid ' + (open ? '#0950A0' : '#E6E6E6') + ';border-radius:8px;padding:12px 14px;background:#fff;">' + head + body + '</div>';
   }).join('');
 
-  /* 어느 문항에도 안 붙은 기준 — AI가 붙일 곳을 정하지 못한 것이므로 감추지 않고 말한다 */
-  var used = {};
-  QUESTIONS.forEach(function(q, qi){ mapPicks(q, qi).forEach(function(i){ used[i] = true; }); });
-  var loose = set.filter(function(r, i){ return !used[i]; });
   /* 채점기준을 고쳤다면 지금 목록은 고치기 전 기준으로 만든 것이다.
      매핑은 AI가 다시 돌려야 나오므로 '언제' 다시 연결되는지만 말한다 */
   var stale = document.getElementById('dg-newmap-stale');
@@ -2157,17 +2152,6 @@ function renderNewMap(proposal){
     if (edited) stale.innerHTML = '<i data-lucide="info" style="color:#C2620A;"></i><div>'
       + '<strong>채점기준을 고쳤어요.</strong> 아래 연결은 고치기 전 기준으로 만든 거예요. '
       + '<strong>이대로 바꾸기</strong>를 누르면 새 기준으로 다시 연결해 드려요.</div>';
-  }
-  /* 다시 연결하기 전에는 무엇이 미연결인지 단정할 수 없다 — 경고는 한 번에 하나만 */
-  var note = document.getElementById('dg-newmap-note');
-  if (note){
-    if (!loose.length || _draftEdited){ note.style.display = 'none'; note.innerHTML = ''; }
-    else {
-      note.style.display = 'flex';
-      note.innerHTML = '<i data-lucide="info" style="color:#C2620A;"></i><div>'
-        + '<strong>' + loose.map(function(r){ return esc(r.title.replace(/를 평가한다\.$/, '')); }).join(', ') + '</strong>'
-        + ' — 어느 문항에도 연결하지 못했어요. 과제물만으로는 판단할 수 없는 기준이라 선생님이 직접 채점하셔야 해요.</div>';
-    }
   }
 }
 /* 지금 연결에서 무엇이 막혔는지 — 원할 때만 펼쳐 본다.
