@@ -420,7 +420,7 @@ body { margin: 0; background: #EDF3FC; min-width: 1280px; }
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;">
           <div>
             <h2 style="font-size:20px;font-weight:700;color:#000;margin:0 0 4px;">평가 설계</h2>
-            <p style="font-size:14px;color:#494949;margin:0;font-weight:400;line-height:1.55;">어떤 기준으로 채점할지 설계하는 화면이에요. 빈 활동지·모범답안과 채점기준 점검까지 더하면 AI 채점이 더 정확해져요.</p>
+            <p style="font-size:14px;color:#494949;margin:0;font-weight:400;line-height:1.55;">어떤 기준으로 채점할지 설계하는 화면이에요. 빈 활동지·모범답안과 문항별 채점기준 연결까지 더하면 AI 채점이 더 정확해져요.</p>
           </div>
         </div>
 
@@ -564,9 +564,9 @@ body { margin: 0; background: #EDF3FC; min-width: 1280px; }
         <div id="grp-diag" class="stage-card">
             <section class="sec sec-solo" id="sec-diagnosis">
               <div class="sec-head">
-                <div class="sec-title">채점기준 점검 <span class="sec-opt">(선택)</span><span id="diag-badge"></span></div>
+                <div class="sec-title">문항별 채점기준 연결 <span class="sec-opt">(선택)</span><span id="diag-badge"></span></div>
               </div>
-              <p class="sec-desc">AI 채점을 시작하기 전에, 지금 채점기준으로 점수를 매길 수 있는지 확인해 보세요. 애매한 기준은 고쳐 쓸 문장을 제안해 드려요.</p>
+              <p class="sec-desc">문항마다 볼 채점기준을 정해 주면 AI가 그 문항에 해당하는 기준으로만 점수를 매겨요. AI가 먼저 연결해 두니 확인하고 고치기만 하면 돼요.</p>
               <div id="diag-card-body"></div>
             </section>
         </div><!-- /grp-diag -->
@@ -760,7 +760,7 @@ body { margin: 0; background: #EDF3FC; min-width: 1280px; }
       <div style="background:white;border-radius:0 0 20px 20px;box-shadow:0 4px 36px rgba(95,102,178,0.16);padding:28px 24px;">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;">
           <div>
-            <h2 style="font-size:20px;font-weight:700;color:#000;margin:0 0 4px;">채점기준 점검</h2>
+            <h2 style="font-size:20px;font-weight:700;color:#000;margin:0 0 4px;">문항별 채점기준 연결</h2>
             <p style="font-size:14px;color:#494949;margin:0;font-weight:400;line-height:1.55;">지금 채점기준과 문항 연결로 AI가 채점할 수 있는지 미리 확인해 드려요.</p>
           </div>
         </div>
@@ -773,7 +773,7 @@ body { margin: 0; background: #EDF3FC; min-width: 1280px; }
         </div>
 
         <!-- 3단계: 채점기준 연결 (v4 좌우 분할 화면 이식) -->
-        <div id="dg-s3" class="stage-card" style="display:none;"><div class="stage-head"><span class="stage-num" id="dg-s3-num">1</span><span class="stage-title">채점기준 연결</span><span class="stage-sum" id="dg-sum-1"></span></div>
+        <div id="dg-s3" class="stage-card" style="display:none;"><div class="stage-head"><span class="stage-num" id="dg-s3-num">1</span><span class="stage-title">문항마다 기준 고르기</span><span class="stage-sum" id="dg-sum-1"></span></div>
           <div class="note note-info" id="s3-relink-note" style="display:none;margin-bottom:16px;">
             <i data-lucide="wand-sparkles" style="color:#00778B;"></i>
             <div><strong>채점기준을 바꿔서 문항 연결을 다시 만들었어요.</strong> 기준이 달라진 만큼 이전 연결은 쓸 수 없어요. AI가 새로 연결한 결과를 확인하고, 맞지 않으면 고쳐 주세요.</div>
@@ -799,12 +799,12 @@ body { margin: 0; background: #EDF3FC; min-width: 1280px; }
 
           <div class="dg-navbar" id="dg-s3-nav" style="display:none;">
             <button class="btn btn-outline" onclick="backToDetail('sec-diagnosis')"><i data-lucide="arrow-left" style="width:16px;height:16px;"></i>설계로 돌아가기</button>
-            <button class="btn btn-primary" onclick="saveLinks()"><i data-lucide="stethoscope" style="width:16px;height:16px;"></i>연결 저장하고 점검</button>
+            <button class="btn btn-primary" onclick="saveLinks()"><i data-lucide="stethoscope" style="width:16px;height:16px;"></i>저장하고 AI 의견 보기</button>
           </div>
         </div>
 
         <!-- ②단: 적합도 확인 — 총평 + AI 제안 채점기준 -->
-        <div id="dg-s4" class="stage-card" style="display:none;"><div class="stage-head"><span class="stage-num">2</span><span class="stage-title">적합도 확인</span><span class="stage-sum" id="dg-sum-2"></span></div>
+        <div id="dg-s4" class="stage-card" style="display:none;"><div class="stage-head"><span class="stage-num">2</span><span class="stage-title">AI 의견과 제안</span><span class="stage-sum" id="dg-sum-2"></span></div>
           <div id="dg-lock-banner" class="note note-lock" style="display:none;margin-bottom:18px;">
             <i data-lucide="lock"></i>
             <div id="dg-lock-text"></div>
@@ -823,15 +823,17 @@ body { margin: 0; background: #EDF3FC; min-width: 1280px; }
           </div>
 
           <!-- 현재(저장본) 참고 열람 — 제안이 있을 때만 -->
-          <div id="dg-cur-wrap" style="display:none;margin-top:16px;">
-            <button class="btn btn-ghost btn-sm" onclick="drToggleCur()"><i data-lucide="chevron-down" style="width:15px;height:15px;" id="dg-cur-caret"></i><span id="dg-cur-label">현재 채점기준 보기</span><span id="dg-cur-meta" style="color:#808080;font-weight:400;margin-left:6px;"></span></button>
-            <div id="dg-cur-list" style="display:none;flex-direction:column;gap:10px;margin-top:10px;"></div>
+          <!-- AI가 새 채점기준으로 다시 한 문항 연결 — 기존과 대조시키지 않고 결과만 보여 준다 -->
+          <div id="dg-newmap" style="display:none;margin-top:22px;">
+            <h4 style="font-size:16px;font-weight:700;color:#0A2A5E;margin:0 0 4px;">AI가 다시 한 문항 연결</h4>
+            <p class="sec-desc" style="margin-bottom:12px;">새 채점기준으로 문항마다 다시 연결했어요. 고치려면 위 단계에서 바꾸시면 돼요.</p>
+            <div id="dg-newmap-list" style="display:flex;flex-direction:column;gap:8px;"></div>
           </div>
 
           <div class="apply-band" id="dg-apply-band" style="display:none;">
             <div style="flex:1;min-width:260px;">
-              <p style="font-size:16px;font-weight:700;color:#0A2A5E;margin:0 0 6px;line-height:1.3;">이 채점기준으로 바꿀까요?</p>
-              <p style="font-size:14px;color:#324151;margin:0;line-height:1.6;">기존 채점기준을 이 내용으로 교체해 저장하고, AI가 문항 연결과 점검을 다시 해 드려요.</p>
+              <p style="font-size:16px;font-weight:700;color:#0A2A5E;margin:0 0 6px;line-height:1.3;">이 채점기준과 연결로 바꿀까요?</p>
+              <p style="font-size:14px;color:#324151;margin:0;line-height:1.6;">위 채점기준과 문항 연결로 한 번에 바꿔 저장해요. 지금 채점기준은 덮어써요.</p>
             </div>
             <button class="btn btn-primary btn-lg" onclick="applyDraft()"><i data-lucide="wand-sparkles" style="width:18px;height:18px;"></i>채점기준 바꾸기</button>
           </div>
@@ -839,8 +841,8 @@ body { margin: 0; background: #EDF3FC; min-width: 1280px; }
           <div class="dg-navbar">
             <button class="btn btn-outline" onclick="backToDetail('sec-diagnosis')"><i data-lucide="arrow-left" style="width:16px;height:16px;"></i>설계로 돌아가기</button>
             <div style="display:flex;align-items:center;gap:12px;">
-              <button id="btn-rediag" class="btn btn-secondary" style="display:none;" onclick="startDiagnosis(true)"><i data-lucide="refresh-cw" style="width:16px;height:16px;"></i>다시 점검</button>
-              <button class="btn btn-primary" onclick="finishDiagnosis()">점검 완료</button>
+              <button id="btn-rediag" class="btn btn-secondary" style="display:none;" onclick="startDiagnosis(true)"><i data-lucide="refresh-cw" style="width:16px;height:16px;"></i>다시 연결</button>
+              <button class="btn btn-primary" onclick="finishDiagnosis()">연결 완료</button>
             </div>
           </div>
         </div>
@@ -981,6 +983,7 @@ var QUESTIONS = seedQuestions();
 /* 총평은 채점기준(세트) 축 문제만 말한다 — 연결 축 문제는 문항 카드의 판정·사유가 맡는다.
    연결을 고쳐도 총평이 낡은 말을 반복하지 않게 하기 위한 역할 분리. */
 var DIAG_REASONS = [
+  '3번 문항은 반론을 쓰라고 하는데 지금 채점기준에는 반론을 보는 항목이 없어요.',
   '채점기준 3번에는 어휘·맞춤법·문장 자연스러움이 한 칸에 함께 있어요. 사람은 함께 보고 판단하지만 AI는 어느 쪽에 점수를 줄지 스스로 정하지 못해요.',
   '채점기준 4번의 "충분히", "설득력 있게"는 사람에게는 통하는 표현이지만, AI는 기준을 잡지 못해 학생마다 점수가 달라질 수 있어요.'
 ];
@@ -1000,10 +1003,10 @@ var SUGGEST_NOTE = '한 칸에 함께 있던 어휘·맞춤법을 두 기준으�
 
 var LIST_CARDS = [
   { name:'2학기 수행평가',        state:'draft', summary:'기본 정보만 입력', date:'26.04.01', open:'new' },
-  { name:'소설 독후감 평가',       state:'draft', summary:'채점기준 4개 · 점검 전', date:'26.03.31', open:'ready' },
-  { name:'주제 글쓰기 평가',       state:'done',  summary:'채점기준 4개 · 문항 4개 · 점검 완료', date:'26.03.30', open:'result' },
+  { name:'소설 독후감 평가',       state:'draft', summary:'채점기준 4개 · 연결 전', date:'26.03.31', open:'ready' },
+  { name:'주제 글쓰기 평가',       state:'done',  summary:'채점기준 4개 · 문항 4개 · 연결 완료', date:'26.03.30', open:'result' },
   { name:'시 감상문 쓰기',         state:'done',  summary:'채점기준 4개 · 문항 4개 · 모범답안 4개', date:'26.03.29', open:'sheet-answer' },
-  { name:'1학기 중간고사 서술형',  state:'check', summary:'점검 결과 확인 필요 · 보완 제안 2건', date:'26.03.28', open:'result' },
+  { name:'1학기 중간고사 서술형',  state:'check', summary:'연결 결과 확인 필요 · 보완 제안 2건', date:'26.03.28', open:'result' },
   { name:'논설문 쓰기 연습',       state:'draft', summary:'채점기준 입력 중', date:'26.03.27', open:'ready' }
 ];
 
@@ -1422,7 +1425,7 @@ function onRubricInput(){
   renderAll();
   renderScoreTable();
   renderToc();
-  if (!was && S.rubricFilled) showToast('info','채점기준을 다 입력했어요. 채점기준 점검을 할 수 있어요.');
+  if (!was && S.rubricFilled) showToast('info','채점기준을 다 입력했어요. 이제 문항마다 연결할 수 있어요.');
 }
 function onBasicInput(){ S.name = document.getElementById('f-name').value; renderHeroName(); renderToc(); }
 function openFormulaTip(){ showToast('info','수식 입력 도구를 여는 화면입니다.'); }
@@ -1569,25 +1572,25 @@ function renderDiagCard(){
   var h;
   if (!wsDone() || !S.rubricFilled){
     var why = !wsDone()
-      ? '<strong>빈 활동지를 먼저 올려 주세요.</strong> 문항마다 어떤 채점기준을 볼지 연결해야 점검할 수 있어요.'
-      : '<strong>채점기준을 모두 입력하면 점검할 수 있어요.</strong> 채점기준 문구와 배점별 세부 기준이 채워져야 AI가 무엇을 볼지 알 수 있어요.';
+      ? '<strong>빈 활동지를 먼저 올려 주세요.</strong> 문항마다 어떤 채점기준을 볼지 연결해야 연결할 수 있어요.'
+      : '<strong>채점기준을 모두 입력하면 연결할 수 있어요.</strong> 채점기준 문구와 배점별 세부 기준이 채워져야 AI가 무엇을 볼지 알 수 있어요.';
     h = '<div class="note note-lock" style="margin-bottom:14px;"><i data-lucide="lock"></i><div>' + why + '</div></div>'
-      + '<button class="btn btn-secondary is-disabled"><i data-lucide="stethoscope" style="width:20px;height:20px;"></i>점검 시작</button>';
+      + '<button class="btn btn-secondary is-disabled"><i data-lucide="stethoscope" style="width:20px;height:20px;"></i>연결 시작</button>';
   } else if (!S.diagDone){
     if (S.dg === 'idle'){
-      h = '<button class="btn btn-secondary" onclick="openDiagnosis()"><i data-lucide="stethoscope" style="width:20px;height:20px;"></i>점검 시작</button>';
+      h = '<button class="btn btn-secondary" onclick="openDiagnosis()"><i data-lucide="stethoscope" style="width:20px;height:20px;"></i>연결 시작</button>';
     } else {
-      h = '<div class="note note-info" style="margin-bottom:14px;"><i data-lucide="loader" style="color:#00778B;"></i><div><strong>점검 진행 중</strong><br>AI가 문항 연결과 적합도를 살펴보고 있어요.</div></div>'
-        + '<button class="btn btn-secondary" onclick="gotoDiag()">점검 이어서 하기</button>';
+      h = '<div class="note note-info" style="margin-bottom:14px;"><i data-lucide="loader" style="color:#00778B;"></i><div><strong>연결하는 중</strong><br>AI가 문항 연결과 적합도를 살펴보고 있어요.</div></div>'
+        + '<button class="btn btn-secondary" onclick="gotoDiag()">연결 이어서 하기</button>';
     }
   } else {
     if (S.marks['sec-diagnosis']){
-      h = '<div class="note note-warn" style="margin-bottom:14px;"><i data-lucide="info" style="color:#E4631C;"></i><div><strong>점검 뒤에 채점기준이 바뀌었어요.</strong> 이 결과는 지금 채점기준과 다를 수 있어요. 활동지를 다시 올릴 필요는 없으니 다시 점검해 주세요.</div></div>'
-        + '<div style="display:flex;gap:8px;"><button class="btn btn-secondary" onclick="startDiagnosis(true)"><i data-lucide="refresh-cw" style="width:18px;height:18px;"></i>다시 점검</button>'
-        + '<button class="btn btn-outline" onclick="gotoDiag()">지난 점검 결과 보기</button></div>';
+      h = '<div class="note note-warn" style="margin-bottom:14px;"><i data-lucide="info" style="color:#E4631C;"></i><div><strong>연결 뒤에 채점기준이 바뀌었어요.</strong> 이 결과는 지금 채점기준과 다를 수 있어요. 활동지를 다시 올릴 필요는 없으니 다시 연결해 주세요.</div></div>'
+        + '<div style="display:flex;gap:8px;"><button class="btn btn-secondary" onclick="startDiagnosis(true)"><i data-lucide="refresh-cw" style="width:18px;height:18px;"></i>다시 연결</button>'
+        + '<button class="btn btn-outline" onclick="gotoDiag()">지난 연결 결과 보기</button></div>';
     } else {
-      h = '<p style="font-size:16px;color:#494949;margin:0 0 14px;line-height:1.6;">점검을 마쳤어요.' + (S.setApplied ? ' AI 제안 채점기준으로 교체했어요.' : '') + '</p>'
-        + '<button class="btn btn-secondary" onclick="gotoDiag()">점검 결과 보기</button>';
+      h = '<p style="font-size:16px;color:#494949;margin:0 0 14px;line-height:1.6;">연결을 마쳤어요.' + (S.setApplied ? ' AI 제안 채점기준으로 교체했어요.' : '') + '</p>'
+        + '<button class="btn btn-secondary" onclick="gotoDiag()">연결 결과 보기</button>';
     }
   }
   el.innerHTML = h;
@@ -1642,7 +1645,7 @@ function renderDiagnosis(){
   var d1 = document.getElementById('dg-sum-1');
   if (d1) d1.textContent = '문항 ' + QUESTIONS.length + '개 · 연결 ' + linked + '개';
   var d2 = document.getElementById('dg-sum-2');
-  if (d2) d2.textContent = S.diagDone ? overallVerdict().tag : '';
+  if (d2) d2.textContent = '';
 
   var rd = document.getElementById('btn-rediag');
   rd.style.display = (S.dg === 'result' && S.diagDone) ? 'inline-flex' : 'none';
@@ -1668,7 +1671,7 @@ function pickWorksheet(){
   if (!S.worksheet){ document.getElementById('ws-file').click(); return; }
   var gone = [];
   if (wsDone()) gone.push('문항 목록과 직접 고친 내용');
-  if (S.dg !== 'idle' || S.diagDone) gone.push('채점기준 연결과 점검 결과');
+  if (S.dg !== 'idle' || S.diagDone) gone.push('문항 연결과 AI 의견');
   if (countAnswers() > 0) gone.push('문항별 답안과 채점 가이드');
   openConfirm('활동지를 바꿀까요?',
     '<strong>' + gone.join(', ') + '</strong>이 사라지고 새로 만들어져요.<br>채점기준 자체는 그대로 남아요.',
@@ -1692,7 +1695,7 @@ function removeWorksheet(){
   if (S.locked){ showToast('error','과제물 인식이 시작되어 활동지를 지울 수 없어요.'); return; }
   if (!wsDone()){ S.worksheet = false; renderWorksheet(); return; }
   openConfirm('활동지를 지울까요?',
-    '<strong>문항 목록과 이어서 만든 연결·점검 결과·답안</strong>이 함께 사라져요.<br>채점기준 자체는 그대로 남아요.',
+    '<strong>문항 목록과 이어서 만든 연결 결과와 답안</strong>이 함께 사라져요.<br>채점기준 자체는 그대로 남아요.',
     '지우기', function(){
       S.worksheet = false; S.ws = 'file';
       QUESTIONS = seedQuestions();
@@ -1735,7 +1738,7 @@ function runDiagLoad(kind){
       S.dg = 'result'; S.diagDone = true; resetStageOpen();
       S.marks['sec-diagnosis'] = false;
       S.case = (S.diagResultKind === 'ok' ? 'result-ok' : 'result');
-      showToast('success','채점기준 점검을 마쳤어요.');
+      showToast('success','문항별 채점기준을 연결했어요.');
     }
     renderAll(); renderToc(); renderMockpick();
     setHash('#case=' + S.case);
@@ -1762,7 +1765,7 @@ function analyzeStructure(){
      연결·진단·모범답안은 모두 문항을 참조하므로 함께 사라진다(되돌릴 수 없음 안내). */
   var josa = function(w){ var c = w.charCodeAt(w.length - 1) - 0xAC00; return (c >= 0 && c <= 11171 && c % 28) ? '이' : '가'; };
   var gone = ['문항 목록과 직접 고친 내용'];
-  if (S.dg !== 'idle' || S.diagDone) gone.push('채점기준 연결과 점검 결과');
+  if (S.dg !== 'idle' || S.diagDone) gone.push('문항 연결과 AI 의견');
   if (countAnswers() > 0) gone.push('문항별 답안과 채점 가이드');
   var last = gone[gone.length - 1];
   openConfirm('문항을 다시 나눌까요?',
@@ -1784,13 +1787,13 @@ function saveStructure(){
 }
 function openDiagnosis(){
   if (!wsDone()){ showToast('error','빈 활동지를 먼저 올려 주세요.'); return; }
-  if (!S.rubricFilled){ showToast('error','채점기준을 모두 입력해야 점검할 수 있어요.'); return; }
+  if (!S.rubricFilled){ showToast('error','채점기준을 모두 입력해야 연결할 수 있어요.'); return; }
   showScreen('diag');
   if (S.dg === 'idle') runDiagLoad('link');
   else { S.case = stageCase(); renderDiagnosis(); setHash('#case=' + S.case); }
 }
 function startDiagnosis(again){
-  // 다시 점검: 활동지·문항·연결을 그대로 두고 판정만 다시 낸다 → 잠금 후에도 허용
+  // 다시 연결: 활동지·문항·연결을 그대로 두고 판정만 다시 낸다 → 잠금 후에도 허용
   showScreen('diag');
   runDiagLoad('diag');
 }
@@ -1799,11 +1802,11 @@ function finishDiagnosis(){
   if (draftDirty()){
     openConfirm('채점기준을 바꾸지 않고 마칠까요?',
       '지금 화면의 내용은 저장되지 않고, <strong>현재 채점기준 그대로</strong> 유지돼요.',
-      '바꾸지 않고 마치기', function(){ _draft = null; backToDetail('sec-diagnosis'); showToast('success','점검을 마쳤어요.'); });
+      '바꾸지 않고 마치기', function(){ _draft = null; backToDetail('sec-diagnosis'); showToast('success','연결을 마쳤어요.'); });
     return;
   }
   backToDetail('sec-diagnosis');
-  showToast('success','점검을 마쳤어요.');
+  showToast('success','연결을 마쳤어요.');
 }
 
 /* ── 2단계: 문항 구조 확인 ── */
@@ -2067,7 +2070,6 @@ function s3SelectAll(on){
 
 /* ── 진단 결과(총평·AI 제안) ── */
 function renderOverall(){
-  var v = overallVerdict();
   var stale = !!S.marks['sec-diagnosis'];
   var opinion;
   if (!hasSuggestion()){
@@ -2084,19 +2086,42 @@ function renderOverall(){
     staleHtml = '<div style="display:flex;gap:8px;align-items:flex-start;margin-top:12px;padding-top:12px;border-top:1px solid #E6E6E6;">'
       + '<i data-lucide="info" style="width:17px;height:17px;color:#C2620A;flex-shrink:0;margin-top:3px;"></i>'
       + '<p style="font-size:16px;color:#7A4A00;margin:0;line-height:1.65;">'
-      + '<strong>점검 뒤에 채점기준이 바뀌었어요.</strong> 이 결과는 지금 채점기준과 다를 수 있어요. 활동지를 다시 올릴 필요는 없으니 <strong>다시 점검</strong>해 주세요.'
+      + '<strong>연결 뒤에 채점기준이 바뀌었어요.</strong> 이 결과는 지금 채점기준과 다를 수 있어요. 활동지를 다시 올릴 필요는 없으니 <strong>다시 연결</strong>해 주세요.'
       + '</p></div>';
   }
   document.getElementById('dg-overall').innerHTML = ''
     + '<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">'
-    +   '<h4 style="font-size:16px;font-weight:700;color:#0A2A5E;margin:0;">' + (stale ? '지난 AI 점검 의견' : 'AI 점검 의견') + '</h4>'
-    +   '<span class="badge ' + v.cls + '">' + v.tag + '</span>'
+    +   '<h4 style="font-size:16px;font-weight:700;color:#0A2A5E;margin:0;">' + (stale ? '지난 AI 의견' : 'AI 의견') + '</h4>'
     +   (stale ? '<span class="badge b-orange">확인 필요</span>' : '')
     + '</div>'
     + '<div style="border:1px solid #F0F0F2;background:#FBFBFC;border-radius:12px;padding:16px 20px;">'
     +   '<p style="font-size:16px;color:#494949;margin:0;line-height:1.65;">' + opinion + '</p>'
     +   staleHtml
     + '</div>';
+}
+/* 제안 채점기준으로 문항마다 다시 연결한 결과. 읽기 전용 요약 —
+   고치는 자리는 ①단이고, 여기서 또 만지게 하면 같은 일을 두 번 시키는 셈이다 */
+function renderNewMap(proposal){
+  var wrap = document.getElementById('dg-newmap');
+  if (!wrap) return;
+  wrap.style.display = proposal ? 'block' : 'none';
+  if (!proposal) return;
+  var set = _draft || SUGGESTED_SET;
+  /* 문항 순서대로 붙을 제안 기준 (id 아닌 인덱스) — 목업 데이터 */
+  var MAP = [[0], [0, 1], [4], [0, 1, 2, 3]];
+  document.getElementById('dg-newmap-list').innerHTML = QUESTIONS.map(function(q, qi){
+    var picks = (MAP[qi] || []).map(function(i){ return set[i]; }).filter(Boolean);
+    var chips = picks.length
+      ? picks.map(function(r){
+          var t = r.title.replace(/를 평가한다\.$/, '').replace(/^(.{26}).+/, '$1…');
+          return '<span style="font-size:14px;background:#F3F9FF;color:#0950A0;border-radius:100px;padding:3px 10px;">' + esc(t) + '</span>';
+        }).join('')
+      : '<span style="font-size:14px;color:#808080;">연결된 기준 없음 — 채점기준 전체로 채점돼요</span>';
+    return '<div style="display:flex;gap:10px;align-items:flex-start;border:1px solid #E6E6E6;border-radius:8px;padding:12px 14px;background:#fff;">'
+      + '<span style="font-size:12px;font-weight:700;background:#EFEFEF;color:#494949;border-radius:100px;padding:3px 9px;white-space:nowrap;flex-shrink:0;">' + esc(q.label) + '</span>'
+      + '<div style="display:flex;flex-wrap:wrap;gap:6px;min-width:0;">' + chips + '</div>'
+      + '</div>';
+  }).join('');
 }
 function roTableHtml(rows){
   var body = rows.map(function(row, ri){
@@ -2197,7 +2222,7 @@ function renderFitCards(){
   if (S.scored){
     document.getElementById('dg-lock-text').innerHTML = proposal
       ? '<strong>AI 채점이 실행되어 채점기준을 바꿀 수 없어요.</strong> 이미 매긴 점수가 근거를 잃기 때문이에요. 아래 AI 제안은 확인만 할 수 있고, 적용하려면 설계를 복제해 주세요.'
-      : '<strong>AI 채점이 실행되어 채점기준을 바꿀 수 없어요.</strong> 점검 결과는 확인만 할 수 있어요.';
+      : '<strong>AI 채점이 실행되어 채점기준을 바꿀 수 없어요.</strong> 연결 결과는 확인만 할 수 있어요.';
     document.getElementById('dg-draft-title').textContent = proposal ? 'AI 제안 채점기준' : '채점기준';
     document.getElementById('dg-draft-desc').textContent = proposal
       ? 'AI가 더 잘 이해할 수 있게 같은 뜻을 다시 쓴 안이에요. 지금은 적용할 수 없어요.'
@@ -2214,39 +2239,19 @@ function renderFitCards(){
     }).join('');
     document.getElementById('dg-draft-add').style.display = 'none';
     document.getElementById('dg-apply-band').style.display = 'none';
-    var w = document.getElementById('dg-cur-wrap');
-    w.style.display = proposal ? 'block' : 'none';
-    if (proposal){
-      document.getElementById('dg-cur-meta').textContent = rubrics.length + '개 · 만점 ' + fullScore(rubrics) + '점';
-      document.getElementById('dg-cur-list').innerHTML = rubrics.map(function(r, i){
-        return '<div class="diag-card" style="padding:12px;">'
-          + '<p style="font-size:16px;font-weight:700;color:#333;margin:0 0 8px;">' + (i+1) + '. ' + esc(r.title) + '</p>'
-          + roTableHtml(r.rows) + '</div>';
-      }).join('');
-    }
+    renderNewMap(proposal);
     icons();
     return;
   }
   document.getElementById('dg-draft-add').style.display = 'flex';
   document.getElementById('dg-draft-title').textContent = proposal ? 'AI 제안 채점기준' : '채점기준';
-  document.getElementById('dg-draft-desc').textContent = '필요하면 직접 수정할 수 있어요. 바꿔 저장하면 문항 연결과 점검을 다시 해 드려요.';
+  document.getElementById('dg-draft-desc').textContent = '필요하면 직접 수정할 수 있어요. 바꿔 저장하면 문항 연결을 다시 해 드려요.';
 
   document.getElementById('dg-draft-list').innerHTML = _draft.map(function(r, i){
     return rubricCardHtml(r, i, 'dr');
   }).join('');
 
-  // 현재(저장본) 참고 — 제안이 있을 때만
-  var wrap = document.getElementById('dg-cur-wrap');
-  wrap.style.display = proposal ? 'block' : 'none';
-  if (proposal){
-    document.getElementById('dg-cur-label').textContent = '현재 채점기준 보기';
-    document.getElementById('dg-cur-meta').textContent = rubrics.length + '개 · 만점 ' + fullScore(rubrics) + '점';
-    document.getElementById('dg-cur-list').innerHTML = rubrics.map(function(r, i){
-      return '<div class="diag-card" style="padding:12px;">'
-        + '<p style="font-size:16px;font-weight:700;color:#333;margin:0 0 8px;">' + (i+1) + '. ' + esc(r.title) + '</p>'
-        + roTableHtml(r.rows) + '</div>';
-    }).join('');
-  }
+  renderNewMap(proposal);
   drMetaBand();
   icons();
 }
@@ -2260,7 +2265,7 @@ function applyDraft(){
   if (bad){ showToast('error','비어 있는 채점기준이 있어요. 내용을 채우거나 삭제해 주세요.'); return; }
   openConfirm('채점기준 바꾸고 다시 연결',
     '채점기준 ' + rubrics.length + '개(만점 ' + fullScore(rubrics) + '점)를 이 내용 ' + _draft.length + '개(만점 ' + fullScore(_draft) + '점)로 <strong>교체해 저장</strong>해요.<br>'
-    + '문항 연결은 AI가 새 기준으로 다시 만들어 드려요. 1단계에서 확인하고 고칠 수 있어요.'
+    + '문항 연결도 위에서 보신 대로 함께 바꿔요. 나중에 고치고 싶으면 다시 들어와 바꿀 수 있어요.'
     + (S.linksEdited ? '<br><strong>직접 고친 문항 연결도 AI가 새 기준으로 다시 만들어요.</strong>' : ''),
     '바꾸고 다시 연결', function(){
       rubrics = _draft.map(function(r, i){ return { id: 300 + i, title: r.title, rows: JSON.parse(JSON.stringify(r.rows)) }; });
@@ -2273,10 +2278,10 @@ function applyDraft(){
         if (!q.links.length) q.links = [rubrics[0].id];
         q.aiReason = 'AI가 새 채점기준으로 다시 연결했어요. 맞지 않으면 직접 고쳐 주세요.';
       });
-      renderRubrics(); renderScoreTable(); renderToc();
       S.relinked = true;
-      runDiagLoad('link');
-      showToast('success','채점기준을 바꿔 저장했어요. 새 기준으로 다시 연결한 결과를 확인해 주세요.');
+      renderRubrics(); renderScoreTable(); renderAll(); renderToc(); renderMockpick();
+      backToDetail('sec-diagnosis');
+      showToast('success','채점기준과 문항 연결을 바꿔 저장했어요.');
     });
 }
 
@@ -2368,7 +2373,7 @@ var MP_TABS = [
     { k:'list-empty',   label:'설계 목록 비어 있음',  sub:'만든 설계 없음' },
     { k:'locked',       label:'과제물 인식 후',       sub:'문항·가림 잠김' },
     { k:'scored',       label:'AI 채점 실행 후',      sub:'배점·연결 잠김' },
-    { k:'locked-stale', label:'점검 후 기준 변경',    sub:'확인 필요 · 다시 점검' }
+    { k:'locked-stale', label:'점검 후 기준 변경',    sub:'확인 필요 · 다시 연결' }
   ]}
 ];
 var MP_TAB = 'main';
