@@ -688,7 +688,7 @@ body { margin: 0; background: #EDF3FC; min-width: 1280px; }
 
           <!-- ②단: 문항별 모범답안·채점 가이드 — 문항이 확정된 뒤에만 나온다.
                문항은 여기서 읽기만 하고, 고치려면 ①단으로 돌아간다(적어 둔 답안은 남는다) -->
-          <div id="dg-s3" style="display:none;margin-top:26px;padding-top:22px;border-top:1px solid #F0F0F0;">
+          <div id="ws-answers" style="display:none;margin-top:26px;padding-top:22px;border-top:1px solid #F0F0F0;">
             <h3 style="font-size:16px;font-weight:700;color:#0A2A5E;margin:0 0 6px;">문항별 모범답안·채점 가이드</h3>
             <p class="sec-desc" style="margin-bottom:16px;"><strong>단답형처럼 답이 정해진 문항은 모범답안을 넣어 주시면 채점이 정확해져요.</strong> 비워 두어도 채점은 진행돼요.</p>
             <div id="qa-list" style="display:flex;flex-direction:column;gap:12px;"></div>
@@ -1601,7 +1601,7 @@ function renderWorksheet(){
   show('ws-loading', loading, 'flex');
   show('dg-s1', !loading && !step2);
   show('dg-s2', !loading && S.ws === 'ready' && !step2);
-  show('dg-s3', step2);
+  show('ws-answers', step2);
   show('ws-nav-1', !step2 && !loading, 'flex');
   show('ws-nav-2', step2, 'flex');
   var nb = document.getElementById('btn-ws-next');
@@ -2356,7 +2356,6 @@ var MP_CASES = [
   { k:'ready',        label:'채점기준까지 입력',        sub:'활동지 전' },
   { k:'sheet-answer', label:'빈 활동지·모범답안 입력',  sub:'문항 4개 · 모범답안 4개' },
   { k:'result-ok',    label:'연결 결과 — 고칠 것 없음',  sub:'AI 제안 없는 경우' },
-  { k:'list-empty',   label:'설계 목록 비어 있음',       sub:'만든 설계 없음' },
   { k:'locked',       label:'과제물 인식 후',           sub:'문항·가림 잠김' },
   { k:'scored',       label:'AI 채점 실행 후',          sub:'배점·연결 잠김' }
 ];
