@@ -1136,7 +1136,7 @@ function applyCase(k){
   if (k === 'new'){
     rubrics = [];   // 개발 화면 초기 상태: 채점기준 0개 + AI 생성 카드
   }
-  if (k === 'ready' || k === 'ws-done' || k === 'upload' || k === 'sheet' || k === 'sheet-answer' || k === 'linking' || k === 'diagnosing' || k === 'result' || k === 'result-ok' || k === 'locked' || k === 'locked-stale'){
+  if (k === 'ready' || k === 'ws-done' || k === 'upload' || k === 'sheet' || k === 'sheet-answer' || k === 'linking' || k === 'diagnosing' || k === 'result' || k === 'result-ok' || k === 'edited' || k === 'locked' || k === 'locked-stale'){
     S.name = '논설문 쓰기 — 우리 학교 급식 잔반 문제';
     S.stdFilled = true;
     S.rubricFilled = true;
@@ -1148,6 +1148,7 @@ function applyCase(k){
   if (k === 'ws-done'){ S.ws = 'ready'; S.worksheet = true; }
   if (k === 'diagnosing'){ S.ws = 'ready'; S.worksheet = true; S.dg = 'load'; }
   if (k === 'result'){ S.ws = 'ready'; S.worksheet = true; S.dg = 'result'; S.diagDone = true; S.diagResultKind = 'warn'; }
+  if (k === 'edited'){ S.ws = 'ready'; S.worksheet = true; S.dg = 'result'; S.diagDone = true; S.diagResultKind = 'warn'; S.setApplied = true; S.editedApplied = true; }
   if (k === 'result-ok'){ S.ws = 'ready'; S.worksheet = true; S.dg = 'result'; S.diagDone = true; S.diagResultKind = 'ok'; fillQ4Links(); }
   if (k === 'locked'){ S.ws = 'ready'; S.worksheet = true; S.dg = 'result'; S.diagDone = true; S.diagResultKind = 'warn'; S.locked = true; }
   if (k === 'scored'){ S.ws = 'ready'; S.worksheet = true; S.dg = 'result'; S.diagDone = true; S.diagResultKind = 'ok'; S.locked = true; S.scored = true; fillQ4Links(); }
@@ -2481,6 +2482,7 @@ var MP_CASES = [
   { k:'ready',        label:'채점기준까지 입력',        sub:'활동지 전' },
   { k:'sheet-answer', label:'빈 활동지·모범답안 입력',  sub:'문항 4개 · 모범답안 4개' },
   { k:'result-ok',    label:'연결 결과 — 고칠 것 없음',  sub:'AI 제안 없는 경우' },
+  { k:'edited',       label:'고쳐서 적용한 뒤',        sub:'AI가 못 본 기준 있음' },
   { k:'locked',       label:'과제물 인식 후',           sub:'문항·가림 잠김' },
   { k:'scored',       label:'AI 채점 실행 후',          sub:'배점·연결 잠김' }
 ];
