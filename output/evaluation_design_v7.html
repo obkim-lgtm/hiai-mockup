@@ -986,13 +986,12 @@ var LIST_CARDS = [
   { name:'소설 독후감 평가',       state:'draft', summary:'채점기준까지 입력', date:'26.03.31', open:'ready' },
   { name:'주제 글쓰기 평가',       state:'done',  summary:'', date:'26.03.30', open:'result' },
   { name:'시 감상문 쓰기',         state:'done',  summary:'모범답안까지 입력', date:'26.03.29', open:'sheet-answer' },
-  { name:'1학기 중간고사 서술형',  state:'check', summary:'보완 제안 2건', date:'26.03.28', open:'result' },
+  { name:'1학기 중간고사 서술형',  state:'done',  summary:'보완 제안 2건', date:'26.03.28', open:'result' },
   { name:'논설문 쓰기 연습',       state:'draft', summary:'채점기준 입력 중', date:'26.03.27', open:'ready' }
 ];
 
 var STATE_BADGE = {
-  draft: { cls:'b-gray',   label:'작성 중' },
-  check: { cls:'b-orange', label:'확인 필요' },
+  draft: { cls:'b-red',    label:'임시 저장' },
   done:  { cls:'b-green',  label:'설계 완료' }
 };
 
@@ -1564,14 +1563,14 @@ function renderDiagCard(){
     if (S.dg === 'idle'){
       h = '<button class="btn btn-secondary" onclick="openDiagnosis()"><i data-lucide="stethoscope" style="width:20px;height:20px;"></i>연결 시작</button>';
     } else {
-      h = '<div class="note note-info" style="margin-bottom:14px;"><i data-lucide="loader" style="color:#00778B;"></i><div><strong>연결하는 중</strong><br>AI가 문항 연결과 적합도를 살펴보고 있어요.</div></div>'
+      h = '<div class="note note-info" style="margin-bottom:14px;"><i data-lucide="loader" style="color:#00778B;"></i><div><strong>연결하는 중</strong><br>AI가 문항마다 볼 채점기준을 연결하고 있어요.</div></div>'
         + '<button class="btn btn-secondary" onclick="gotoDiag()">연결 이어서 하기</button>';
     }
   } else {
     if (rubricUnchecked()){
       h = '<div class="note note-info" style="margin-bottom:14px;"><i data-lucide="info" style="color:#00778B;"></i><div><strong>수정된 채점기준이 있어요.</strong> AI가 아직 확인하지 않은 내용이에요. 이대로 채점해도 되고, 다시 확인받고 싶으면 다시 연결해 주세요.</div></div>'
         + '<div style="display:flex;gap:8px;"><button class="btn btn-secondary" onclick="startDiagnosis(true)"><i data-lucide="refresh-cw" style="width:18px;height:18px;"></i>다시 연결</button>'
-        + '<button class="btn btn-outline" onclick="gotoDiag()">연결 결과 보기</button></div>';
+        + '<button class="btn btn-outline" onclick="gotoDiag()">이전 결과 보기</button></div>';
     } else {
       h = '<p style="font-size:16px;color:#494949;margin:0 0 14px;line-height:1.6;">연결을 마쳤어요.' + (S.setApplied ? ' AI 제안 채점기준으로 교체했어요.' : '') + '</p>'
         + '<button class="btn btn-secondary" onclick="gotoDiag()">연결 결과 보기</button>';
