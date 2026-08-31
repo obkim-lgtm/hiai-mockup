@@ -266,9 +266,6 @@ body { margin: 0; background: #EDF3FC; min-width: 1280px; }
 #mockpick .mp-plan{display:flex;gap:4px;margin:2px 0 8px;background:#171A28;border-radius:9px;padding:3px}
 #mockpick .mp-plan button{flex:1;height:28px;border:none;border-radius:7px;background:transparent;color:#8A8FB0;font-family:inherit;font-size:11px;font-weight:800;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;line-height:1;vertical-align:middle}
 #mockpick .mp-plan button.on{background:#3A3F58;color:#fff}
-#mockpick .mp-tabs{display:flex;gap:4px;margin-bottom:6px}
-#mockpick .mp-tabs button{flex:1;height:26px;border:1px solid #3A3F58;border-radius:7px;background:transparent;color:#8A8FB0;font-family:inherit;font-size:11px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;line-height:1;vertical-align:middle}
-#mockpick .mp-tabs button.on{background:#7E44FB;border-color:#7E44FB;color:#fff}
 #mockpick .mp-cap{font-size:10px;font-weight:800;color:#6B6F8C;letter-spacing:.05em;padding:7px 8px 2px}
 #mockpick .mp-btn{width:100%;text-align:left;white-space:normal;padding:9px 12px;border-radius:9px;border:1px solid #3A3F58;background:#2A2E44;color:#C9CCE0;font-size:13px;font-weight:700;font-family:inherit;cursor:pointer;line-height:1.35}
 #mockpick .mp-btn:hover{background:#33384f}
@@ -883,8 +880,7 @@ body { margin: 0; background: #EDF3FC; min-width: 1280px; }
     <span id="mp-caret">▾</span>
   </div>
   <div class="mp-body" id="mp-body">
-    <div class="mp-tabs" id="mp-tabs"></div>
-    <div id="mp-cases" style="display:flex;flex-direction:column;gap:6px;height:296px;overflow-y:auto;"></div>
+    <div id="mp-cases" style="display:flex;flex-direction:column;gap:6px;max-height:340px;overflow-y:auto;"></div>
   </div>
 </div>
 
@@ -2355,41 +2351,23 @@ function saveDesign(){
    까망이 목업 내비게이터
 ══════════════════════════════════════════════════════════ */
 /* 연속 동작으로 닿는 중간 상태는 넣지 않는다 — 진입점과 예외만 */
-var MP_TABS = [
-  { id:'main', label:'화면', items:[
-    { k:'list',       label:'설계 목록',            sub:'카드 6개' },
-    { k:'new',        label:'새로 만들기',          sub:'채점기준 0개' },
-    { k:'ready',      label:'채점기준까지 입력',     sub:'활동지 전 · 점검 잠김' },
-    { k:'upload',     label:'활동지 올리기 전',      sub:'드롭존' },
-    { k:'sheet',      label:'① 문항 확정',           sub:'AI가 나눈 문항 검수' },
-    { k:'sheet-answer', label:'② 모범답안·채점 가이드', sub:'문항별 입력' }
-  ]},
-  { id:'diag', label:'점검', items:[
-    { k:'linking',    label:'채점기준 연결',         sub:'AI 맵핑 확인·수정' },
-    { k:'result',     label:'점검 결과 · 다시 볼 곳', sub:'AI 제안 있음' },
-    { k:'result-ok',  label:'점검 결과 · 바로 채점',  sub:'제안 없음' }
-  ]},
-  { id:'edge', label:'예외', items:[
-    { k:'list-empty',   label:'설계 목록 비어 있음',  sub:'만든 설계 없음' },
-    { k:'locked',       label:'과제물 인식 후',       sub:'문항·가림 잠김' },
-    { k:'scored',       label:'AI 채점 실행 후',      sub:'배점·연결 잠김' },
-    { k:'locked-stale', label:'점검 후 기준 변경',    sub:'확인 필요 · 다시 연결' }
-  ]}
+var MP_CASES = [
+  { k:'list',         label:'설계 목록',               sub:'카드 6개 — 카드로 각 상태에 들어감' },
+  { k:'ready',        label:'채점기준까지 입력',        sub:'활동지 전' },
+  { k:'sheet-answer', label:'빈 활동지·모범답안 입력',  sub:'문항 4개 · 모범답안 4개' },
+  { k:'result-ok',    label:'연결 결과 — 고칠 것 없음',  sub:'AI 제안 없는 경우' },
+  { k:'list-empty',   label:'설계 목록 비어 있음',       sub:'만든 설계 없음' },
+  { k:'locked',       label:'과제물 인식 후',           sub:'문항·가림 잠김' },
+  { k:'scored',       label:'AI 채점 실행 후',          sub:'배점·연결 잠김' }
 ];
-var MP_TAB = 'main';
 
 function renderMockpick(){
   var cur = S.case || (S.screen === 'list' ? (S.listEmpty ? 'list-empty' : 'list') : '');
-  document.getElementById('mp-tabs').innerHTML = MP_TABS.map(function(t){
-    return '<button class="' + (t.id === MP_TAB ? 'on' : '') + '" onclick="mpTab(\'' + t.id + '\')">' + t.label + '</button>';
-  }).join('');
-  var tab = MP_TABS.filter(function(t){ return t.id === MP_TAB; })[0] || MP_TABS[0];
-  document.getElementById('mp-cases').innerHTML = tab.items.map(function(it){
+  document.getElementById('mp-cases').innerHTML = MP_CASES.map(function(it){
     return '<button class="mp-btn' + (it.k === cur ? ' on' : '') + '" onclick="mpGo(\'' + it.k + '\')">'
          + it.label + '<span class="mp-sub">' + it.sub + '</span></button>';
   }).join('');
 }
-function mpTab(id){ MP_TAB = id; renderMockpick(); }
 function mpGo(k){
   closeConfirm();
   applyCase(k);
