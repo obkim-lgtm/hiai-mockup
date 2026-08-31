@@ -165,6 +165,7 @@ body { margin: 0; background: #EDF3FC; min-width: 1280px; }
 .stage-card { border:1px solid #E6E6E6; border-radius:12px; padding:20px 22px; margin-bottom:16px; background:#fff; }
 .stage-card.is-done { background:#FBFBFC; }
 .stage-head { display:flex; align-items:center; gap:10px; margin-bottom:8px; }
+.card-head { display:flex; align-items:center; gap:10px; margin-bottom:14px; }
 .stage-num { width:26px; height:26px; border-radius:50%; background:#0950A0; color:#fff; font-size:13px; font-weight:700;
              display:flex; align-items:center; justify-content:center; flex-shrink:0; }
 .stage-title { font-size:18px; font-weight:700; color:#0A2A5E; }
@@ -773,19 +774,18 @@ body { margin: 0; background: #EDF3FC; min-width: 1280px; }
         
 
         <!-- ②단: 적합도 확인 — 총평 + AI 제안 채점기준 -->
-        <div id="dg-s4" class="stage-card" style="display:none;"><div class="stage-head"><span class="stage-title">AI 의견</span><span class="stage-sum" id="dg-sum-2"></span></div>
+        <div id="dg-s4" class="stage-card" style="display:none;"><div class="card-head"><span class="stage-title">AI 의견</span><span class="stage-sum" id="dg-sum-2"></span></div>
           <div id="dg-lock-banner" class="note note-lock" style="display:none;margin-bottom:18px;">
             <i data-lucide="lock"></i>
             <div id="dg-lock-text"></div>
           </div>
-          <p class="sec-desc" style="margin-bottom:16px;">연결한 채점기준으로 AI가 채점할 수 있는지 살펴본 결과예요. AI가 다시 쓴 채점기준이 있으면 확인하고 바꿀 수 있어요.</p>
           <div id="dg-overall"></div>
         </div><!-- /dg-s4 -->
 
-        <div id="dg-s5" class="stage-card" style="display:none;"><div class="stage-head"><span class="stage-title">AI가 다시 짠 채점기준과 연결</span></div>
+        <div id="dg-s5" class="stage-card" style="display:none;"><div class="card-head"><span class="stage-title">AI가 다시 짠 채점기준과 연결</span></div>
 
           <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:6px;">
-            <h4 id="dg-draft-title" style="font-size:16px;font-weight:700;color:#0A2A5E;margin:0;">AI 제안 채점기준</h4>
+            <h4 id="dg-draft-title" style="font-size:16px;font-weight:700;color:#0A2A5E;margin:0;">채점기준</h4>
             <span id="dg-draft-meta" style="font-size:14px;color:#808080;font-weight:700;"></span>
           </div>
           <p class="sec-desc" id="dg-draft-desc"></p>
@@ -798,7 +798,7 @@ body { margin: 0; background: #EDF3FC; min-width: 1280px; }
           <!-- 현재(저장본) 참고 열람 — 제안이 있을 때만 -->
           <!-- AI가 새 채점기준으로 다시 한 문항 연결 — 기존과 대조시키지 않고 결과만 보여 준다 -->
           <div id="dg-newmap" style="display:none;margin-top:22px;">
-            <h4 style="font-size:16px;font-weight:700;color:#0A2A5E;margin:0 0 4px;">AI가 다시 한 문항 연결</h4>
+            <h4 style="font-size:16px;font-weight:700;color:#0A2A5E;margin:0 0 4px;">문항 연결</h4>
             <p class="sec-desc" style="margin-bottom:12px;">AI가 제안한 채점기준으로 문항마다 연결한 결과예요.</p>
             <div id="dg-newmap-stale" class="note note-warn" style="display:none;margin-bottom:12px;"></div>
             <div id="dg-newmap-list" style="display:flex;flex-direction:column;gap:8px;"></div>
@@ -2059,10 +2059,7 @@ function renderOverall(){
       + '</p></div>';
   }
   document.getElementById('dg-overall').innerHTML = ''
-    + '<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">'
-    +   '<h4 style="font-size:16px;font-weight:700;color:#0A2A5E;margin:0;">' + (stale ? '지난 AI 의견' : 'AI 의견') + '</h4>'
-    +   (stale ? '<span class="badge b-orange">확인 필요</span>' : '')
-    + '</div>'
+    + (stale ? '<div style="margin-bottom:8px;"><span class="badge b-orange">확인 필요</span></div>' : '')
     + '<div style="border:1px solid #F0F0F2;background:#FBFBFC;border-radius:12px;padding:16px 20px;">'
     +   '<p style="font-size:16px;color:#494949;margin:0;line-height:1.65;">' + opinion + '</p>'
     +   '<button class="btn btn-ghost btn-sm" style="margin-top:12px;" onclick="togglePrevMap()"><i data-lucide="chevron-down" style="width:15px;height:15px;" id="dg-prevmap-caret"></i>지금 연결 상태 보기</button>'
@@ -2291,7 +2288,7 @@ function renderFitCards(){
     document.getElementById('dg-lock-text').innerHTML = proposal
       ? '<strong>AI 채점이 실행되어 채점기준을 바꿀 수 없어요.</strong> 이미 매긴 점수가 근거를 잃기 때문이에요. 아래 AI 제안은 확인만 할 수 있고, 적용하려면 설계를 복제해 주세요.'
       : '<strong>AI 채점이 실행되어 채점기준을 바꿀 수 없어요.</strong> 연결 결과는 확인만 할 수 있어요.';
-    document.getElementById('dg-draft-title').textContent = proposal ? 'AI 제안 채점기준' : '채점기준';
+    document.getElementById('dg-draft-title').textContent = '채점기준';
     document.getElementById('dg-draft-desc').textContent = proposal
       ? 'AI가 더 잘 이해할 수 있게 같은 뜻을 다시 쓴 안이에요. 지금은 적용할 수 없어요.'
       : '지금 저장된 채점기준이에요.';
@@ -2312,7 +2309,7 @@ function renderFitCards(){
     return;
   }
   document.getElementById('dg-draft-add').style.display = 'flex';
-  document.getElementById('dg-draft-title').textContent = proposal ? 'AI 제안 채점기준' : '채점기준';
+  document.getElementById('dg-draft-title').textContent = '채점기준';
   document.getElementById('dg-draft-desc').textContent = '필요하면 직접 수정할 수 있어요. 바꿔 저장하면 문항 연결을 다시 해 드려요.';
 
   document.getElementById('dg-draft-list').innerHTML = _draft.map(function(r, i){
