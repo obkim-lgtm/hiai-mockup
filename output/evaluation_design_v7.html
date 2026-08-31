@@ -1108,7 +1108,10 @@ function goList(){
 /* 케이스 → 상세 상태 세팅 */
 function openDetail(caseKey){
   applyCase(caseKey);
-  setHash('#case=' + caseKey);
+  /* 목록에서 들어오면 언제나 설계 상세부터 — 전용 화면(활동지·연결)은 상세에서 버튼으로 연다.
+     상태만 케이스로 세우고 화면은 상세로 되돌린다. 까망이는 검토용이라 전용 화면으로 바로 간다 */
+  backToDetail(null);
+  renderMockpick();
 }
 
 function applyCase(k){
