@@ -1190,7 +1190,7 @@ function renderDetail(){
   lbn.style.display = (S.locked || S.scored) ? 'flex' : 'none';
   var lbt = document.getElementById('lock-banner-text');
   if (lbt) lbt.innerHTML = S.scored
-    ? '<strong>AI 채점이 실행되어 배점과 채점기준 삭제를 막았어요.</strong> 이미 매긴 점수가 근거를 잃기 때문이에요. 문구 수정과 문항 연결 변경은 그대로 할 수 있고, 바뀐 내용은 재채점부터 반영돼요. 문항은 과제물 인식 때부터 고칠 수 없어요.'
+    ? '<strong>AI 채점이 실행되어 배점 변경과 채점기준 삭제를 막았어요.</strong> 이미 매긴 점수가 근거를 잃기 때문이에요. 채점기준 문구는 고칠 수 있고, 바뀐 내용은 재채점부터 반영돼요. 문항과 문항 연결은 바꿀 수 없어요.'
     : '<strong>과제물 인식이 시작되어 문항을 고칠 수 없어요.</strong> 학생 답안이 이미 이 문항대로 나뉘어 있기 때문이에요. 채점기준은 그대로 고칠 수 있어요.';
   renderToc();
   icons();
@@ -2314,15 +2314,15 @@ function renderFitCards(){
   if (!_draft) initDraft();
   var proposal = hasSuggestion();
 
-  /* 과제물 인식이 시작되면 채점기준을 바꿀 수 없다(참조 축 잠금).
+  /* AI 채점이 실행되면 이 화면에서는 바꿀 수 없다 — 이미 매긴 점수가 근거를 잃는다.
      바꿀 수 없는 걸 편집 폼으로 열어두면 헛수고가 되므로 읽기 전용으로 내린다.
-     제안 자체는 남겨 둔다 — 왜 보완이 필요한지 근거이고, 설계를 복제하면 쓸 수 있다. */
+     제안 자체는 남겨 둔다 — 왜 보완이 필요한지 근거이고, 복사해서 만들기로 새 설계를 만들면 쓸 수 있다. */
   var lb = document.getElementById('dg-lock-banner');
   lb.style.display = S.scored ? 'flex' : 'none';
   if (S.scored){
     document.getElementById('dg-lock-text').innerHTML = proposal
-      ? '<strong>AI 채점이 실행되어 채점기준을 바꿀 수 없어요.</strong> 이미 매긴 점수가 근거를 잃기 때문이에요. 아래 AI 제안은 확인만 할 수 있고, 적용하려면 설계를 복제해 주세요.'
-      : '<strong>AI 채점이 실행되어 채점기준을 바꿀 수 없어요.</strong> 연결 결과는 확인만 할 수 있어요.';
+      ? '<strong>AI 채점이 실행되어 여기서는 바꿀 수 없어요.</strong> 아래 제안은 확인만 할 수 있어요. 적용하려면 목록에서 <strong>복사해서 만들기</strong>로 새 설계를 만들어 주세요.'
+      : '<strong>AI 채점이 실행되어 여기서는 바꿀 수 없어요.</strong> 연결 결과는 확인만 할 수 있어요.';
     document.getElementById('dg-draft-title').textContent = '채점기준';
     document.getElementById('dg-draft-desc').textContent = proposal
       ? 'AI가 더 잘 이해할 수 있게 같은 뜻을 다시 쓴 안이에요. 지금은 적용할 수 없어요.'
