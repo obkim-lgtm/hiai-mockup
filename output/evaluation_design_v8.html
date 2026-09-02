@@ -134,6 +134,170 @@ body { margin: 0; background: #EDF3FC; min-width: 1280px; }
 .rubric-add-row .btn-direct-add { background:#F3F9FF; }
 .rubric-add-row .btn-direct-add:hover { background:#E1F1FF; }
 
+/* 채점기준 AI 검토 — 다 쓴 뒤에 하는 일이라 추가 버튼과 단을 가른다.
+   하늘색 = AI가 말하는 자리(문항 연결 이유와 같은 톤). */
+.rv-band { margin-top:18px; padding-top:16px; border-top:1px solid #F0F0F0; }
+.rv-box { display:flex; align-items:flex-start; gap:12px; border-radius:10px; padding:16px 18px;
+          background:#F7FBFF; border:1px solid #B5D6F9; }
+.rv-box > svg { width:20px; height:20px; color:#0950A0; flex-shrink:0; margin-top:2px; }
+.rv-t { font-size:16px; font-weight:700; color:#0A2A5E; margin:0 0 4px; line-height:1.4; }
+.rv-d { font-size:14px; color:#494949; margin:0; line-height:1.65; }
+.rv-lock { font-size:14px; color:#808080; margin:10px 0 0; line-height:1.5; }
+.rv-go { display:inline-flex; align-items:center; justify-content:center; line-height:1; vertical-align:middle; gap:6px;
+         height:40px; padding:0 16px; border:none; border-radius:8px; background:#2F77D5; color:#fff;
+         font-family:inherit; font-size:14px; font-weight:700; cursor:pointer; flex-shrink:0; margin-top:10px; }
+.rv-go:hover { background:#0A4A94; }
+.rv-go.is-disabled { background:#F0F0F0; color:#B3B3B3; cursor:not-allowed; }
+.rv-go.is-disabled:hover { background:#F0F0F0; }
+.rv-again { display:inline-flex; align-items:center; justify-content:center; line-height:1; vertical-align:middle; gap:6px;
+            height:36px; padding:0 14px; border:1px solid #D9D9D9; border-radius:8px; background:#fff; color:#494949;
+            font-family:inherit; font-size:14px; font-weight:700; cursor:pointer; flex-shrink:0; }
+.rv-again:hover { background:#F8F8F8; }
+.rv-spin { width:20px; height:20px; border:3px solid #D5EBFF; border-top-color:#0950A0; border-radius:50%;
+           animation:spin .9s linear infinite; flex-shrink:0; margin-top:2px; }
+
+
+/* 시의2 — 좌우 비교. 왼쪽은 지금 기준, 오른쪽은 AI가 다듬은 것.
+   같은 채점기준끼리 한 줄에 놓아야 뭐가 달라졌는지가 눈으로 잡힌다. */
+.cmp { display:grid; grid-template-columns:1fr 1fr; border:1px solid #E6E6E6; border-radius:12px; overflow:hidden; }
+.cmp-h { background:#F8F8F8; padding:13px 18px; border-bottom:1px solid #E6E6E6;
+         display:flex; align-items:center; gap:10px; position:sticky; top:0; z-index:5; }
+.cmp-h.r { border-left:1px solid #E6E6E6; }
+.cmp-h b { font-size:16px; font-weight:700; color:#333; }
+.cmp-h span { font-size:14px; color:#808080; }
+/* 만점이 어긋나면 채점 결과가 무효해진다 — 숫자만 다르게 두면 모른 채 지나간다 */
+.cmp-h span.off { color:#C2620A; font-weight:700; }
+/* 왼쪽은 읽는 족, 오른쪽은 고치는 족 — 바탕색부터 갈라 놓는다.
+   입력칸이 글자처럼 보이면 여기서 고쳐도 된다는 생각을 못 한다(26-09-02 올립). */
+.cmp-c { padding:16px 18px; border-bottom:1px solid #F0F0F0; background:#FAFBFC; }
+.cmp-c.r { border-left:1px solid #E6E6E6; background:#fff; }
+.cmp-c.pick { background:#F7FBFF; }
+.cmp-c.same { background:#FAFAFA; }
+.cmp-no { font-size:14px; font-weight:700; color:#808080; margin:0 0 6px; }
+.cmp-t { font-size:16px; font-weight:700; color:#333; margin:0 0 10px; line-height:1.5; }
+.cmp-rows { display:flex; flex-direction:column; gap:0; border:1px solid #E6E6E6; border-radius:8px; overflow:hidden; }
+.cmp-row { display:flex; gap:10px; padding:8px 12px; border-bottom:1px solid #F0F0F0; font-size:14px; line-height:1.55; }
+.cmp-row:last-child { border-bottom:none; }
+.cmp-row b { flex-shrink:0; width:28px; text-align:right; font-weight:700; color:#808080; }
+.cmp-row.chg { background:#EAF4FF; }
+.cmp-row.chg b { color:#0A4A94; }
+.cmp-row.chg span { font-weight:700; color:#0A2A5E; }
+.cmp-sub { margin-top:12px; }
+.cmp-sub:first-of-type { margin-top:0; }
+.cmp-lab { display:flex; align-items:center; gap:8px; margin-bottom:10px; }
+.cmp-lab i, .cmp-lab svg { width:17px; height:17px; color:#0950A0; flex-shrink:0; }
+.cmp-lab span { font-size:15px; font-weight:700; color:#0A2A5E; line-height:1.4; }
+.cmp-chk { width:20px; height:20px; border:2px solid #B3B3B3; border-radius:4px; flex-shrink:0; cursor:pointer;
+           display:inline-flex; align-items:center; justify-content:center; background:#fff; }
+.cmp-chk.on { background:#0950A0; border-color:#0950A0; }
+.cmp-chk svg { width:14px; height:14px; color:#fff; }
+.cmp-same-t { font-size:14px; color:#B3B3B3; margin:0; line-height:1.6; }
+.cmp-note { display:flex; gap:8px; align-items:flex-start; margin-top:10px; font-size:14px; color:#7A4A00;
+            background:#FFF8F0; border-radius:8px; padding:10px 12px; line-height:1.6; }
+.cmp-note svg { width:16px; height:16px; flex-shrink:0; margin-top:2px; color:#C2620A; }
+
+/* 오른쪽 셀 = 위 AI 의견 / 아래 고칠 수 있는 채점기준.
+   의견을 페이지 맨 위로 몰면 고치다 말고 근거를 보려 올라가야 한다 —
+   드로워에서 이미 겪은 스크롤 왜복이다. 맨 위엔 '몇 곳·무슨 종류'만 둔다(26-09-02 올립). */
+.rp-op { background:#F3F9FF; border:1px solid #D9EAFB; border-radius:8px; padding:12px 14px; margin-bottom:14px; }
+.rp-op-h { display:flex; align-items:flex-start; gap:8px; margin-bottom:6px; }
+.rp-op-h > span.t { font-size:15px; font-weight:700; color:#0A2A5E; flex:1; min-width:0; line-height:1.45; }
+.rp-op-d { font-size:14px; color:#494949; margin:0; line-height:1.65; }
+.rp-undo { display:inline-flex; align-items:center; justify-content:center; line-height:1; vertical-align:middle; gap:4px;
+           height:28px; padding:0 10px; border:1px solid #D9D9D9; border-radius:6px; background:#fff; color:#808080;
+           font-family:inherit; font-size:13px; font-weight:700; cursor:pointer; flex-shrink:0; margin-top:10px; }
+.rp-undo:hover { background:#F8F8F8; color:#494949; }
+.rp-ed { margin-bottom:12px; }
+.rp-ed:last-of-type { margin-bottom:0; }
+.rp-ed-lab { display:flex; align-items:center; gap:5px; font-size:13px; font-weight:700; color:#0A4A94; margin-bottom:6px; }
+.rp-ed-lab svg { width:14px; height:14px; }
+.rp-t, .rp-tb input {
+  border:1px solid #D9D9D9; border-radius:6px; background:#fff; color:#333;
+  font-family:inherit; outline:none; transition:border-color .12s, background .12s, box-shadow .12s; }
+.rp-t:hover, .rp-tb input:hover { border-color:#89C0F3; background:#F7FBFF; }
+.rp-t { width:100%; min-height:52px; padding:8px 10px; font-size:15px; font-weight:700;
+        resize:none; line-height:1.5; margin-bottom:8px; }
+.rp-tb { border:1px solid #E6E6E6; border-radius:8px; background:#F8F8F8; padding:6px; }
+.rp-tb table { width:100%; border-collapse:separate; border-spacing:0 5px; }
+.rp-tb td { padding:0; }
+.rp-tb td.sc { width:58px; padding-right:6px; }
+.rp-tb input { font-size:14px; width:100%; padding:7px 9px; }
+.rp-tb td.sc input { text-align:center; font-weight:700; }
+/* 바뀌어진 줄 — 칸 자체를 물들여 고쳐도 된다는 느낌을 안 깨뜨린다 */
+.rp-tb tr.chg input { border-color:#89C0F3; background:#F3F9FF; color:#0A2A5E; font-weight:700; }
+.rp-tb tr.chg input:hover { background:#EAF4FF; }
+/* 포커스는 변경 줄 스타일보다 뒤에 놓는다 — 앞에 두면 같은 순위라 덮인다 */
+.rp-t:focus, .rp-tb input:focus, .rp-tb tr.chg input:focus {
+  border-color:#0950A0; background:#fff; box-shadow:0 0 0 3px #D5EBFF; }
+
+/* 짚힌 카드 표시 — 테두리만 바꾼다. 카드 안에 상자를 넣으면
+   고치는 동안 내내 자리를 차지하고 배점 표가 아래로 밀린다(26-09-02 올립). */
+.rubric-card.rv-on { border:1.5px solid #EFA94A; }
+
+/* 검토 드로워 — 기존 '채점기준 AI 생성' 드로워(800px · 우측)과 같은 규격 */
+.rv-dw-ov { display:none; position:fixed; inset:0; z-index:300; background:rgba(0,0,0,0.35); }
+.rv-dw-ov.open { display:block; }
+.rv-dw { position:absolute; right:0; top:0; bottom:0; width:800px; background:#fff;
+         box-shadow:-4px 0 24px rgba(0,0,0,0.12); display:flex; flex-direction:column; }
+.rv-dw-h { display:flex; align-items:center; justify-content:space-between;
+           padding:24px 24px 20px; border-bottom:1px solid #F0F0F0; flex-shrink:0; }
+.rv-dw-h span { font-size:18px; font-weight:700; color:#000; }
+.rv-dw-x { display:inline-flex; align-items:center; justify-content:center; line-height:1; vertical-align:middle;
+           width:36px; height:36px; border:none; background:transparent; cursor:pointer; border-radius:8px; color:#808080; }
+.rv-dw-x:hover { background:#F0F0F0; }
+.rv-dw-b { flex:1; overflow-y:auto; padding:24px; }
+.rv-dw-f { padding:16px 24px; border-top:1px solid #F0F0F0; flex-shrink:0;
+           display:flex; align-items:center; justify-content:space-between; gap:12px; }
+
+/* 드로워 안 검토 요약·항목 */
+.rv-sum { border-radius:10px; padding:16px 18px; margin-bottom:20px; display:flex; align-items:flex-start; gap:12px; }
+.rv-sum.hit { background:#FFF8F0; border:1px solid #F3D6AE; }
+.rv-sum.ok  { background:#F1F9F3; border:1px solid #BFE3CB; }
+.rv-sum svg { width:20px; height:20px; flex-shrink:0; margin-top:2px; }
+.rv-sum.hit svg { color:#C2620A; }
+.rv-sum.ok  svg { color:#0A6B2C; }
+.rv-sum-t { font-size:16px; font-weight:700; margin:0 0 4px; line-height:1.4; }
+.rv-sum.hit .rv-sum-t { color:#7A4A00; }
+.rv-sum.ok  .rv-sum-t { color:#0A6B2C; }
+.rv-sum-d { font-size:14px; color:#494949; margin:0; line-height:1.65; }
+
+
+.rv-chips { display:flex; flex-wrap:wrap; gap:6px; margin-top:12px; }
+.rv-chip { display:inline-flex; align-items:center; justify-content:center; line-height:1; vertical-align:middle;
+           height:28px; padding:0 12px; border-radius:6px; background:#E4F1FE; color:#0A4A94; font-size:14px; font-weight:700; }
+.rv-dw-load { display:flex; flex-direction:column; align-items:center; gap:14px; padding:72px 24px; }
+.rv-dw-load .rv-spin { width:40px; height:40px; border-width:4px; margin:0; }
+.rv-dw-load p { margin:0; text-align:center; }
+
+/* 드로워 안 채점기준 편집 — 짚힌 것만 보여 주면 닫고 카드 찾아 다시 타이핑해야 한다.
+   전체를 펴 놓고 여기서 고쳐 덮어쓴다(26-09-02 올립).
+   800px라 제목을 표 옆이 아니라 위에 둔다 — 고치는 건 세부 기준 문장이라 폭을 다 준다. */
+.dw-r { border:1px solid #E6E6E6; border-radius:10px; padding:16px 18px 18px; margin-bottom:12px; }
+.dw-r.hit { border:1.5px solid #EFA94A; }
+.dw-r-h { display:flex; align-items:center; gap:10px; margin-bottom:12px; }
+.dw-r-no { font-size:16px; font-weight:700; color:#333; }
+.dw-cm { background:#F3F9FF; border:1px solid #D9EAFB; border-radius:8px; padding:12px 14px; margin-bottom:12px; }
+.dw-cm-t { display:flex; align-items:center; gap:6px; font-size:15px; font-weight:700; color:#0A2A5E; margin:0 0 4px; line-height:1.4; }
+.dw-cm-t svg { width:16px; height:16px; flex-shrink:0; }
+.dw-cm-d { font-size:14px; color:#494949; margin:0; line-height:1.65; }
+.dw-title { width:100%; min-height:62px; border:1px solid #D9D9D9; border-radius:6px; padding:8px 12px;
+            font-size:16px; font-family:inherit; resize:none; outline:none; color:#333; line-height:1.55; margin-bottom:10px; }
+.dw-title:focus { border-color:#0950A0; }
+.dw-tb { border:1px solid #D9D9D9; border-radius:8px; overflow:hidden; }
+.dw-sug > td { background:#F7FBFF; padding:10px 12px; }
+.dw-sug-row { display:flex; align-items:center; gap:10px; text-align:left; }
+.dw-sug-l { display:flex; align-items:center; gap:5px; font-size:13px; font-weight:700; color:#0A4A94; flex-shrink:0; }
+.dw-sug-l svg { width:14px; height:14px; }
+.dw-sug-t { font-size:14px; font-weight:700; color:#0A2A5E; flex:1; min-width:0; line-height:1.5; }
+.dw-apply { display:inline-flex; align-items:center; justify-content:center; line-height:1; vertical-align:middle;
+            height:30px; padding:0 12px; border:1px solid #89C0F3; border-radius:6px; background:#fff; color:#0A4A94;
+            font-family:inherit; font-size:14px; font-weight:700; cursor:pointer; flex-shrink:0; }
+.dw-apply:hover { background:#EAF4FF; }
+.dw-tools { display:flex; gap:8px; margin-top:8px; }
+/* 섞임 지적의 해결 동선 — 시스템이 채점기준을 지어내지 않고 있는 걸 복제한다 */
+.dw-split { margin-top:12px; padding-top:12px; border-top:1px solid #D9EAFB; }
+.dw-split p { font-size:14px; color:#494949; margin:0; line-height:1.65; }
+
 /* 모범답안 · 답변 유형 (v4 4단계 원본) */
 .s4-card { background:white; border:1px solid #E6E6E6; border-radius:10px; overflow:hidden; }
 .s4-type-btn { display:inline-flex; flex-direction:row; align-items:center; justify-content:center; line-height:1; vertical-align:middle; gap:8px; border:1px solid #E6E6E6; background:white; border-radius:8px; height:44px; padding:0 14px; cursor:pointer; font-family:inherit; text-align:left; transition:border-color .12s, background .12s; }
@@ -241,9 +405,12 @@ body { margin: 0; background: #EDF3FC; min-width: 1280px; }
    선 매칭은 문항이 늘면 교차해 못 읽는다(문항 10 × 기준 5 = 선 50개). */
 .lk-legend { border:1px solid #F0F0F2; background:#FBFBFC; border-radius:10px; padding:14px 16px; margin-bottom:14px; }
 .lk-legend-h { margin-bottom:8px; }
-.lk-legend-grid { display:flex; flex-direction:column; gap:7px; }
+.lk-legend-grid { display:flex; flex-direction:column; gap:2px; }
 .lk-legend-h { font-size:14px; font-weight:700; color:#808080; }
-.lk-lg { display:flex; align-items:flex-start; gap:8px; font-size:15px; color:#494949; line-height:1.5; }
+.lk-lg { display:flex; align-items:flex-start; gap:8px; font-size:15px; color:#494949; line-height:1.5;
+         padding:5px 9px; border-radius:8px; }
+/* 어느 문항에도 안 붙은 기준 — 표에서도 범례에서도 같은 바탕으로 */
+.lk-lg.none { background:#FFF3F3; }
 .lk-n { display:inline-flex; align-items:center; justify-content:center; flex-shrink:0; width:22px; height:22px;
         border-radius:50%; background:#E3ECF7; color:#0950A0; font-size:13px; font-weight:700; margin-top:1px; }
 .lk-sc { color:#808080; font-weight:700; white-space:nowrap; }
@@ -257,11 +424,12 @@ body { margin: 0; background: #EDF3FC; min-width: 1280px; }
 .lk-tb thead th.lk-numh { padding:7px 2px; }
 .lk-tb tbody tr:last-child th, .lk-tb tbody tr:last-child td { border-bottom:none; }
 .lk-tb tbody tr:hover { background:#FBFCFE; }
-.lk-qc { text-align:left; padding:12px 16px; font-size:15px; color:#333; line-height:1.5; }
+.lk-qc { text-align:left; padding:12px 16px; font-size:16px; color:#333; line-height:1.5; vertical-align:top; }
 /* 문항 지시문은 길어도 한 줄 — 두 줄이 되면 행 높이가 제각각이라 훑기 어렵다 */
 .lk-qrow { display:flex; align-items:center; gap:0; min-width:0; }
 .lk-qt { flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-.lk-qno { font-size:14px; font-weight:700; color:#0950A0; margin-right:8px; }
+/* 상태·체크는 문항 첫 줄에 맞춰 위로 붙인다 — 이유가 붙으면 행이 길어진다 */
+.lk-tb tbody .lk-st, .lk-tb tbody .lk-cell { vertical-align:top; padding-top:11px; }
 .lk-cell { width:48px; text-align:center; padding:8px 2px; }
 /* 연결이 비어 있는 행·열을 바탕으로 드러낸다 — 칩만으로는 열이 안 보인다 */
 .lk-tb tbody tr.lk-r-none { background:#FFFBFB; }
@@ -275,9 +443,16 @@ body { margin: 0; background: #EDF3FC; min-width: 1280px; }
 /* 연결 상태는 별도 열 — 문항 길이에 따라 자리가 밀리지 않게.
    칩은 이미 있는 .badge 를 그대로 쓴다(같은 뜻의 칩을 두 벌 만들지 않는다). */
 .lk-st { width:96px; text-align:center; padding:8px 6px; }
-.lk-why { margin-top:14px; border:1px solid #D9EAFB; background:#F3F9FF; border-radius:10px; padding:14px 16px; }
-.lk-why-h { display:flex; align-items:center; gap:7px; font-size:14px; font-weight:700; color:#0950A0; margin-bottom:8px; }
-.lk-why-row { display:flex; align-items:flex-start; gap:8px; font-size:15px; color:#324151; line-height:1.55; padding:4px 0; }
+/* AI 이유는 그 문항 바로 아래 — 표 아래에 모으면 어느 문항 얻기인지 다시 찾아야 한다.
+   문항이 먼저 읽혀야 하므로 한 단계 작게. */
+.lk-why-in { display:flex; align-items:flex-start; gap:6px; margin-top:6px; font-size:14px;
+             color:#5B7A94; line-height:1.5; }
+.lk-why-in svg { width:14px; height:14px; color:#2F77D5; flex-shrink:0; margin-top:3px; }
+/* 표 아래 규칙 안내 — 박스 없이 파란 info 아이콘 + 본문색.
+   하늘색은 AI가 말하는 자리에 쓰므로 여기서 쓰면 신호가 격친다. */
+.lk-hint { display:flex; align-items:flex-start; gap:8px; margin-top:14px;
+           font-size:15px; color:#494949; line-height:1.6; }
+.lk-hint svg { width:16px; height:16px; color:#0950A0; flex-shrink:0; margin-top:3px; }
 
 
 .adv-steps { display:flex; gap:8px; margin-bottom:24px; }
@@ -297,6 +472,12 @@ body { margin: 0; background: #EDF3FC; min-width: 1280px; }
 /* 방금 얻은 것을 말하는 배너 — 경고가 아니라 성과라 초록 */
 .note-done { background:#F1F9F3; color:#1E7A3E; }
 .adv-step.off .adv-step-n { background:#EFEFEF; color:#C4C4C4; }
+/* 단계 표시 바로 아래 — 지금 단계를 하면 무엇이 좋아지는가.
+   단 안의 설명은 '무엇을 하는가'를 말하므로 역할이 걹치지 않는다. */
+.adv-why { display:flex; align-items:flex-start; gap:10px; margin-bottom:20px;
+           background:#F7FBFF; border:1px solid #B5D6F9; border-radius:10px; padding:14px 16px;
+           font-size:16px; font-weight:700; color:#0A2A5E; line-height:1.6; }
+.adv-why svg { width:18px; height:18px; color:#0950A0; flex-shrink:0; margin-top:2px; }
 </style>
 </head>
 <body>
@@ -497,6 +678,13 @@ body { margin: 0; background: #EDF3FC; min-width: 1280px; }
                 <div class="sec-title">채점기준<i data-lucide="circle-help" style="width:18px;height:18px;color:#B3B3B3;cursor:pointer;"></i></div>
                 <span id="rubric-total" style="font-size:14px;color:#808080;font-weight:700;"></span>
               </div>
+              <!-- HowToUse — 쓰기 전에 필요한 도움말이라 카드 앞에 둔다.
+                   개발 화면은 섹션 맨 아래였으나, 그 자리에 AI 검토 밴드가 들어오면서
+                   바닥이 추가·도움말·검토 세 덩이로 갈려 짝이 안 보였다. -->
+              <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;">
+                <span style="font-size:16px;font-weight:700;color:#333;">어떻게 입력해야 하나요?</span>
+                <span style="font-size:16px;font-weight:700;color:#0A4A94;cursor:pointer;" onclick="showToast('info','채점기준 입력 예시를 보여주는 화면입니다.')">채점기준 입력 예시</span>
+              </div>
               <div id="rubric-list" style="display:flex;flex-direction:column;gap:12px;margin-bottom:12px;"></div>
               <!-- 추가 진입점 ① 비어 있을 때 (개발 화면 채점기준_card 초기 상태) -->
               <div class="rubric-add-outer" id="rubric-add-empty">
@@ -517,11 +705,8 @@ body { margin: 0; background: #EDF3FC; min-width: 1280px; }
                 <button class="btn-ai-gen" onclick="aiGenRubrics()"><i data-lucide="wand-sparkles" style="width:16px;height:16px;"></i>채점기준 AI 생성</button>
                 <button class="btn-direct-add" onclick="addRubric()"><i data-lucide="plus" style="width:16px;height:16px;"></i>직접 추가</button>
               </div>
-              <!-- HowToUse (개발 화면 하단 행 준수) -->
-              <div style="display:flex;align-items:center;gap:12px;padding:12px 0 0;">
-                <span style="font-size:16px;font-weight:700;color:#333;">어떻게 입력해야 하나요?</span>
-                <span style="font-size:16px;font-weight:700;color:#0A4A94;cursor:pointer;" onclick="showToast('info','채점기준 입력 예시를 보여주는 화면입니다.')">채점기준 입력 예시</span>
-              </div>
+              <!-- 채점기준 AI 검토 — 만드는 일(생성·추가)과 다 쓴 뒤에 하는 일은 단을 가른다 -->
+              <div id="rubric-review" class="rv-band"></div>
             </section>
 
             <!-- ④ 점수 계산 방식 -->
@@ -577,7 +762,7 @@ body { margin: 0; background: #EDF3FC; min-width: 1280px; }
               <div class="sec-head">
                 <div class="sec-title"><i data-lucide="sparkles" style="width:19px;height:19px;color:#0950A0;"></i>AI 채점 정확도 높이기</div>
               </div>
-              <p class="sec-desc"><strong>AI가 답안을 문항별로 나눠 읽고, 그 문항과 관련된 채점기준과 모범답안만 보고 채점해요.</strong> 그래서 결과가 더 정확해져요. 빈 활동지 한 장이면 시작할 수 있어요.</p>
+              <p class="sec-desc"><strong>문제가 무엇인지 먼저 확정하고, 그 문항에 필요한 채점기준과 모범답안만 보고 채점해요.</strong> 그래서 결과가 더 정확해져요. 빈 활동지 한 장이면 시작할 수 있어요.</p>
               <div id="adv-card-body"></div>
             </section>
         </div><!-- /grp-adv -->
@@ -648,14 +833,16 @@ body { margin: 0; background: #EDF3FC; min-width: 1280px; }
         <!-- 단계 표시 — 닿은 단계는 되돌아갈 수 있고, 안 닿은 단계는 누를 수 없다 -->
         <div id="adv-steps" class="adv-steps"></div>
         <!-- 방금 끝난 단계가 무엇을 바꿨는지 — 헤비한 과업을 이어가게 하는 동기 -->
-        <div id="adv-gain" class="note note-done" style="display:none;margin-bottom:16px;"></div>
+        <div id="adv-gain" class="note note-done" style="display:none;margin-bottom:14px;"></div>
+        <!-- 이 단계를 하면 무엇이 좋아지는지 — 상시. 과업이 무거워 대가가 계속 보여야 한다 -->
+        <div id="adv-why" class="adv-why"></div>
 
         <!-- 문항 분석 로딩 -->
         <div id="adv-loading" style="display:none;flex-direction:column;align-items:center;gap:14px;padding:56px 24px;">
           <div style="width:44px;height:44px;border:4px solid #D5EBFF;border-top-color:#0950A0;border-radius:50%;animation:spin .9s linear infinite;"></div>
           <p id="adv-load-title" style="font-size:18px;font-weight:700;color:#0A2A5E;margin:0;"></p>
           <p id="adv-load-why" style="font-size:16px;color:#494949;margin:0;text-align:center;line-height:1.55;"></p>
-          <p style="font-size:16px;color:#808080;margin:0;">화면을 벗어나면 처음부터 다시 해야 해요.</p>
+          <p style="font-size:16px;color:#808080;margin:0;">잠시만 기다려 주세요. 화면을 벗어나면 처음부터 다시 해야 해요.</p>
         </div>
 
         <!-- ═══ ① 빈 활동지 · 문항 확정 ═══ -->
@@ -710,8 +897,7 @@ body { margin: 0; background: #EDF3FC; min-width: 1280px; }
           </div>
           <div class="lk-legend" id="lk-legend"></div>
           <div style="overflow-x:auto;"><table class="lk-tb" id="lk-table"></table></div>
-          <div class="note note-info" id="lk-hint" style="display:none;margin-top:14px;"></div>
-          <div class="lk-why" id="lk-why" style="display:none;"></div>
+          <div class="lk-hint" id="lk-hint" style="display:none;"></div>
         </div>
 
         <!-- ═══ ③ 모범답안 · 채점 가이드 ═══ -->
@@ -735,10 +921,94 @@ body { margin: 0; background: #EDF3FC; min-width: 1280px; }
 </div><!-- /screen-adv -->
 
 
+<!-- ════════════════════════════════════════════════════
+     SCREEN · review — 시의2 채점기준 AI 검토(좌우 비교)
+     시의1(드로워)은 그대로 둔다 — 까망이에서 둘을 번갈아 본다.
+════════════════════════════════════════════════════ -->
+<div id="screen-review" class="screen">
+  <header style="background:white;height:98px;border-bottom:1px solid #D9D9D9;display:flex;align-items:center;padding:0 36px;position:sticky;top:0;z-index:100;">
+    <div style="max-width:1200px;width:100%;margin:0 auto;display:flex;align-items:center;justify-content:space-between;padding:0 36px;">
+      <div style="display:flex;align-items:center;gap:8px;">
+        <img src="../screens/logo_kg.png" style="height:42px; width:auto; display:block; flex-shrink:0;" alt="AI 서·논술형 평가지원시스템">
+      </div>
+      <nav style="display:flex;gap:52px;align-items:center;">
+        <a href="home_v1.html" style="font-size:20px;font-weight:700;color:#0950A0;text-decoration:none;">나의 평가</a>
+        <a href="#" style="font-size:20px;font-weight:700;color:#000;text-decoration:none;">평가 자료실</a>
+        <a href="#" style="font-size:20px;font-weight:700;color:#000;text-decoration:none;">고객센터</a>
+      </nav>
+      <div style="display:flex;align-items:center;gap:12px;">
+        <div style="width:36px;height:36px;background:#EDF3FC;border-radius:50%;display:flex;align-items:center;justify-content:center;">
+          <i data-lucide="user" style="width:20px;height:20px;color:#0950A0;"></i>
+        </div>
+        <span style="font-size:20px;font-weight:700;">김동* 님</span>
+      </div>
+    </div>
+  </header>
+  <div style="background:linear-gradient(90deg,#0950A0 4%,#2F77D5 97.86%);height:86px;display:flex;align-items:center;padding:0 36px;">
+    <div style="max-width:1200px;width:100%;margin:0 auto;padding:0 36px;display:flex;align-items:center;gap:12px;">
+      <div onclick="backFromReview()" style="width:36px;height:36px;background:rgba(255,255,255,0.2);border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;">
+        <i data-lucide="arrow-left" style="width:20px;height:20px;color:white;"></i>
+      </div>
+      <span style="font-size:28px;font-weight:700;color:white;">1학년 국어</span>
+      <div style="width:1px;height:24px;background:rgba(255,255,255,0.4);margin:0 4px;"></div>
+      <span class="hero-name" style="font-size:24px;font-weight:700;color:white;"></span>
+    </div>
+  </div>
+  <div style="padding-bottom:100px;">
+    <div style="max-width:1200px;width:100%;margin:0 auto;padding:0 36px;">
+      <div style="padding-top:40px;display:flex;gap:12px;">
+        <div style="flex:1;height:60px;background:#CBDCF4;border-radius:20px 20px 0 0;display:flex;align-items:center;justify-content:center;cursor:pointer;" onclick="location.href='eval_home_v10.html'"><span style="font-size:20px;font-weight:700;color:#000;">평가 홈</span></div>
+        <div style="flex:1;height:60px;background:#CBDCF4;border-radius:20px 20px 0 0;display:flex;align-items:center;justify-content:center;cursor:pointer;"><span style="font-size:20px;font-weight:700;color:#000;">평가 대상</span></div>
+        <div style="flex:1;height:60px;background:white;border-radius:20px 20px 0 0;display:flex;align-items:center;justify-content:center;cursor:pointer;"><span style="font-size:20px;font-weight:700;color:#0A2A5E;">평가 설계</span></div>
+        <div style="flex:1;height:60px;background:#CBDCF4;border-radius:20px 20px 0 0;display:flex;align-items:center;justify-content:center;cursor:pointer;" onclick="location.href='task_ocr_review_v2.html'"><span style="font-size:20px;font-weight:700;color:#000;">과제물 관리</span></div>
+        <div style="flex:1;height:60px;background:#CBDCF4;border-radius:20px 20px 0 0;display:flex;align-items:center;justify-content:center;cursor:pointer;" onclick="location.href='scoring_list_v1.html'"><span style="font-size:20px;font-weight:700;color:#000;">AI 채점</span></div>
+        <div style="flex:1;height:60px;background:#CBDCF4;border-radius:20px 20px 0 0;display:flex;align-items:center;justify-content:center;cursor:pointer;" onclick="location.href='report_v2.html'"><span style="font-size:20px;font-weight:700;color:#000;">평가 리포트</span></div>
+      </div>
+      <div style="background:white;border-radius:0 0 20px 20px;box-shadow:0 4px 36px rgba(95,102,178,0.16);padding:28px 24px;">
+        <div style="margin-bottom:18px;">
+          <h2 style="font-size:20px;font-weight:700;color:#000;margin:0 0 6px;">채점기준 AI 검토</h2>
+          <p id="rp-lead" style="font-size:16px;color:#494949;margin:0;line-height:1.6;"></p>
+        </div>
+
+        <div id="rp-loading" style="display:none;flex-direction:column;align-items:center;gap:14px;padding:72px 24px;">
+          <div style="width:44px;height:44px;border:4px solid #D5EBFF;border-top-color:#0950A0;border-radius:50%;animation:spin .9s linear infinite;"></div>
+          <p id="rp-load-title" style="font-size:18px;font-weight:700;color:#0A2A5E;margin:0;"></p>
+          <p style="font-size:16px;color:#494949;margin:0;text-align:center;line-height:1.55;">헷갈릴 만한 곳을 미리 고치면 AI가 매기는 점수가 선생님 기준에 더 가까워져요.</p>
+        </div>
+
+        <div id="rp-body"></div>
+
+        <div class="dg-navbar" id="rp-nav">
+          <button class="btn btn-outline" onclick="backFromReview()"><i data-lucide="arrow-left" style="width:16px;height:16px;"></i>설계로 돌아가기</button>
+          <div style="display:flex;align-items:center;gap:12px;">
+            <button class="btn btn-outline" onclick="runRubricReview()">다시 검토</button>
+            <button class="btn btn-primary" id="rp-apply" onclick="applyPlan2()"><span id="rp-apply-t">수정된 채점기준 적용</span></button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div><!-- /screen-review -->
+
+
+
 <!-- 토스트 -->
 <div id="toast" class="t-success"><i id="toast-icon" data-lucide="circle-check-big" style="width:20px;height:20px;flex-shrink:0;"></i><span id="toast-msg"></span></div>
 
 <!-- 확인 다이얼로그 -->
+
+<!-- 채점기준 AI 검토 드로워 — 읽고 닫는 일이라 카드에 눈러붙지 않는다 -->
+<div id="rv-dw-ov" class="rv-dw-ov" onclick="if(event.target===this)dwCloseAsk()">
+  <div class="rv-dw">
+    <div class="rv-dw-h">
+      <span>채점기준 AI 검토</span>
+      <button class="rv-dw-x" onclick="dwCloseAsk()"><i data-lucide="x" style="width:20px;height:20px;"></i></button>
+    </div>
+    <div class="rv-dw-b" id="rv-dw-body"></div>
+    <div class="rv-dw-f" id="rv-dw-foot"></div>
+  </div>
+</div>
+
 <div id="confirm-ov" class="ov">
   <div class="dlg">
     <div class="dlg-head">
@@ -784,6 +1054,8 @@ var S = {
   staleLink: false,      // 앞 단계가 바뀌어 ② 연결을 다시 봐야 함
   staleAnswer: false,    // 문항이 바뀌어 ③ 모범답안을 다시 봐야 함
   rubricDirty: false,    // 채점 후 채점기준을 건드렸는가 — 저장할 때 초기화를 묻는다
+  review: 'none',        // 채점기준 AI 검토: none | load | done
+  rvPlan: 1,             // 검토 결과를 어떻게 보여 줄가: 1 드로워(현행 API) | 2 좌우 비교 페이지(맥에게 요청할 안)
   linkReady: false,      // AI가 연결을 만들어 둔 상태 — 되돌아오면 다시 돌리지 않는다
   linkLoading: false,    // 연결을 만드는 중 — 기다려야 하고 벗어나면 처음부터
   answersFilled: false,
@@ -824,6 +1096,7 @@ var RUBRIC_SEED = [
   { id:5, title:'성실하게 과제를 수행했는지를 평가한다.',
     rows:[[5,'제출 기한을 지키고 분량을 충실히 채움'],[3,'기한을 넘겼거나 분량이 부족함'],[1,'과제 수행이 미흡함']] }
 ];
+
 
 var QUESTION_SEED = [
   { no:1, label:'1', text:'다음 글을 읽고, 글쓴이의 주장을 한 문장으로 요약하시오.', links:[1],
@@ -1133,6 +1406,607 @@ function removeStandard(i){
 }
 function fillStandards(){ standards = JSON.parse(JSON.stringify(STD_SEED)); renderStandards(); syncStdState(); }
 
+
+/* ════════════════════════════════════════════════════════
+   채점기준 AI 검토
+   쓴 것을 고쳐 주는 기능이 아니다 — AI가 채점할 때 헷갈릴 만한 곳을 짚어 주고,
+   고치는 건 선생님이 한다. 두 가지를 본다.
+     ① 한 기준에 평가 축이 셋 이상 섞였는가     → 나누면 무엇을 볼지 헷갈리지 않는다
+     ② 배점 사이를 정도 부사로만 갈랐는가        → 셀 수 있는 말로 바꾸면 경계가 선다
+════════════════════════════════════════════════════════ */
+var RV_AXES = [
+  { name:'어법의 정확성', kw:['맞춤법','띄어쓰기','어법','문법'] },
+  { name:'어휘 사용',   kw:['어휘','낱말'] },
+  { name:'문장 표현',   kw:['문장','문체'] },
+  { name:'분량',        kw:['분량','글자 수','자 이상','자 내외','자 미만'] },
+  { name:'글의 구성',   kw:['문단','구성','서론','본론','결론','짜임'] },
+  { name:'근거 제시',   kw:['근거','출처'] },
+  { name:'주장',        kw:['주장','입장'] },
+  { name:'제출 기한',   kw:['기한','마감'] }
+];
+/* 구간을 가르는 데 무게를 실은 정도 부사만 둔다 — 넣을수록 아무 데나 불어 신호가 망가진다 */
+var RV_VAGUE = ['다소','대체로','매우','약간','조금','어느 정도','상당히'];
+/* 쓰기 예시에 들어 있는 줄은 고쳐 쓴 모양까지 보여 준다.
+   직접 쓴 줄은 짚기만 하고 문장을 지어내지 않는다 — 없는 것을 있는 척 하지 않기 위해. */
+var RV_FIX = {
+  '서론·본론·결론이 나뉘고 문단 사이 연결어가 알맞게 쓰임':
+    '서론·본론·결론으로 나뉘고, 문단 사이 연결어가 빠진 곳이 없음',
+  '문단은 나뉘었으나 연결이 다소 어색함':
+    '서론·본론·결론으로 나뉘었으나, 문단 사이 연결어가 한 곳 이상 빠짐'
+};
+var REVIEW = [];   // 직전 검토 결과
+
+function rvText(r){
+  return String(r.title || '') + ' ' + r.rows.map(function(x){ return String(x[1] || ''); }).join(' ');
+}
+function rvCount(n){ return ['','한 가지','두 가지','세 가지','네 가지','다섯 가지'][n] || (n + '가지'); }
+
+function rvScan(){
+  var out = [];
+  rubrics.forEach(function(r, idx){
+    var all = rvText(r);
+    var axes = RV_AXES.filter(function(a){
+      return a.kw.some(function(k){ return all.indexOf(k) !== -1; });
+    }).map(function(a){ return a.name; });
+
+    /* ① 과적재 — 쌄 이상이면 한 기준으로 보기 어렵다 */
+    if (axes.length >= 3){
+      out.push({
+        rid: r.id, no: idx + 1, type: 'overload', axes: axes,
+        title: '한 기준에 여러 가지가 섞여 있어요',
+        body: '이 기준이 <strong>' + axes.join(', ') + '</strong>을 한꺼번에 보고 있어요. '
+            + rvCount(axes.length) + '로 나누고 각각 배점을 주면 AI가 무엇을 볼지 헷갈리지 않아요.'
+      });
+      return;   // 한 기준에 하나만 — 쪼개는 게 먼저다
+    }
+
+    /* ② 경계 모호 — 정도 부사가 들어 있는 줄을 찾는다 */
+    var hitRows = [], words = [];
+    r.rows.forEach(function(row){
+      var d = String(row[1] || '');
+      var w = RV_VAGUE.filter(function(v){ return d.indexOf(v) !== -1; });
+      if (w.length){
+        hitRows.push({ score: String(row[0] || ''), from: d, to: RV_FIX[d] || '' });
+        w.forEach(function(x){ if (words.indexOf(x) === -1) words.push(x); });
+      }
+    });
+    if (hitRows.length){
+      var quoted = words.map(function(w){ return "'" + w + "'"; }).join(', ');
+      out.push({
+        rid: r.id, no: idx + 1, type: 'boundary',
+        fixes: hitRows.filter(function(h){ return h.to; }),
+        title: '배점 사이 경계가 흐릿해요',
+        body: '배점을 <strong>' + quoted + '</strong> 같은 정도 표현으로 갈라 놓아서, 어디까지가 '
+            + hitRows[0].score + '점인지 정하기 어려워요. 몇 개인지·몇 군데인지처럼 '
+            + '<strong>셀 수 있는 말</strong>로 바꿔 보세요.'
+      });
+    }
+  });
+  return out;
+}
+function rvFor(rid){
+  for (var i = 0; i < REVIEW.length; i++) if (REVIEW[i].rid === rid) return REVIEW[i];
+  return null;
+}
+
+/* 검토는 그 때 그 문장을 본 결과다 — 채점기준을 고치면 낡아진다. 지우고 다시 묻는다. */
+function rvInvalidate(){
+  if (S.review === 'done' || S.review === 'load'){
+    clearTimeout(_rvTimer); clearInterval(_rvMsgTimer);
+    S.review = 'none'; REVIEW = [];
+    /* 입력 중에는 카드를 다시 그리지 않는다(커서가 튀다) — 붙어 있던 것만 걷어낸다 */
+    [].forEach.call(document.querySelectorAll('.rubric-card.rv-on'), function(el){ el.classList.remove('rv-on'); });
+    closeRvDrawer();
+    renderReviewBand();
+  }
+}
+var _rvTimer = null, _rvMsgTimer = null;
+var RV_LOAD_MSGS = ['채점기준을 하나씩 읽고 있어요',
+                    '한 기준에 여러 가지가 섞여 있는지 보고 있어요',
+                    '배점 사이 경계가 뚜렷한지 보고 있어요'];
+var RV_LOAD_WHY = '헷갈릴 만한 곳을 미리 고치면 AI가 매기는 점수가 선생님 기준에 더 가까워져요.';
+
+function runRubricReview(){
+  syncRubricsFromDom();
+  if (!isRubricComplete()){
+    showToast('error','채점기준을 모두 입력해야 검토할 수 있어요.');
+    return;
+  }
+  /* 결과가 아직 살아 있으면(채점기준을 안 건드렸으면) 다시 돌리지 않고 그대로 보여 준다.
+     버튼이 하나라도 5초를 또 기다리게 할 이유는 없다. 고치면 rvInvalidate 가 치워 준다. */
+  if (S.review === 'done'){
+    if (S.rvPlan === 2) gotoReviewPage(); else openRvDrawer();
+    return;
+  }
+  clearTimeout(_rvTimer); clearInterval(_rvMsgTimer);
+  S.review = 'load'; REVIEW = [];
+  renderRubrics();
+  if (S.rvPlan === 2){ showScreen('review'); renderReviewPage(); }
+  else { openRvDrawer(); }   // 복사본도 여기서 다시 만든다
+  var i = 0;
+  var paint = function(t){
+    ['rv-load-msg','rp-load-title'].forEach(function(id){
+      var el = document.getElementById(id);
+      if (el) el.textContent = t;
+    });
+  };
+  paint(RV_LOAD_MSGS[0]);
+  _rvMsgTimer = setInterval(function(){
+    i = (i + 1) % RV_LOAD_MSGS.length;
+    paint(RV_LOAD_MSGS[i]);
+  }, 2200);
+  _rvTimer = setTimeout(function(){
+    clearInterval(_rvMsgTimer);
+    REVIEW = rvScan();
+    S.review = 'done'; 
+    if (S.rvPlan === 2){
+      RV_PICK = {}; RV_EDIT = {};
+      REVIEW.forEach(function(c){ RV_PICK[c.rid] = true; });
+      S.case = 'rv-page'; setHash('#case=rv-page');
+    }
+    renderRubrics();
+    renderRvDrawer();
+    renderReviewPage();
+    renderMockpick();
+  }, 5000);
+}
+/* 드로워는 복사본(DW_R)을 고친다 — '채점기준에 반영'을 눌러야 진짜가 바뀐다.
+   그래야 고치다 말고 닫을 수 있고, 채점 결과 초기화 문의도 한 번에 묶인다. */
+var DW_R = [];
+
+function dwSync(){
+  document.querySelectorAll('#rv-dw-body .dw-r').forEach(function(box, ri){
+    if (!DW_R[ri]) return;
+    var t = box.querySelector('.dw-title');
+    if (t) DW_R[ri].title = t.value;
+    var rows = [];
+    box.querySelectorAll('tbody tr.dw-row').forEach(function(tr){
+      var ins = tr.querySelectorAll('input');
+      rows.push([ins[0].value, ins[1].value]);
+    });
+    if (rows.length) DW_R[ri].rows = rows;
+  });
+}
+function dwIn(){ dwSync(); }
+function dwDirty(){ return JSON.stringify(DW_R) !== JSON.stringify(rubrics); }
+
+/* 제안 문장을 그 줄에 넣는다 — AI가 고쳐 주는 게 아니라
+   API가 돌려준 문장을 선생님이 넣는 것. 넣고 나서 고쳐 써도 된다. */
+function dwApply(ri, li){
+  dwSync();
+  var c = rvFor(DW_R[ri].id);
+  if (!c || !c.fixes) return;
+  var row = DW_R[ri].rows[li];
+  var f = c.fixes.filter(function(x){ return String(x.score) === String(row[0]); })[0];
+  if (!f) return;
+  DW_R[ri].rows[li][1] = f.to;
+  renderRvDrawer();
+  showToast('info', '제안 문장을 넣었어요. 고쳐 써도 돼요.');
+}
+/* 나누기는 자동화하지 않는다 — API가 주는 건 축 이름(split_into)뿐이라
+   세부 기준 문장과 배점을 지어내야 하고, 배점 배분은 선생님의 평가 의도다.
+   대신 '없는 걸 만들기'를 '있는 걸 복사하기'로 바꿔 마찰만 없앱다(26-09-02 올립). */
+function dwDup(ri){
+  dwSync();
+  var c = JSON.parse(JSON.stringify(DW_R[ri]));
+  c.id = Date.now() + ri;
+  DW_R.splice(ri + 1, 0, c);
+  renderRvDrawer();
+  showToast('info', '복제했어요. 각각 하나씩만 남기고 배점을 나눠 주세요. 지금 만점은 ' + fullScore(DW_R) + '점이에요.');
+}
+/* 삭제도 복사본에만 듣는다 — '채점기준에 반영'을 눌러야 진짜로 지워진다.
+   그래서 드로워 안에서는 되돌릴 수 없다는 말을 하지 않는다 — 버리고 닫으면 그대로니까. */
+function dwDel(ri){
+  dwSync();
+  var name = DW_R[ri].title || ('채점기준 ' + (ri + 1));
+  openConfirm('채점기준 삭제',
+    '<strong>' + esc(name) + '</strong><br>이 채점기준을 목록에서 뺄까요? <strong>채점기준에 반영</strong>을 누르면 지워지고, 문항에 연결해 둔 것도 함께 끊어져요.',
+    '삭제', function(){
+      DW_R.splice(ri, 1);
+      renderRvDrawer();
+      showToast('info','목록에서 뺐어요. 채점기준에 반영을 누르면 지워져요.');
+    });
+}
+function dwAddRow(ri){ dwSync(); DW_R[ri].rows.push(['', '']); renderRvDrawer(); }
+function dwDelRow(ri){ dwSync(); if (DW_R[ri].rows.length > 1) DW_R[ri].rows.pop(); renderRvDrawer(); }
+
+function dwRubricHtml(r, ri){
+  var c = rvFor(r.id);
+  var cm = '';
+  if (c){
+    var extra = '';
+    if (c.type === 'overload'){
+      extra = '<div class="rv-chips">' + c.axes.map(function(a){ return '<span class="rv-chip">' + esc(a) + '</span>'; }).join('') + '</div>'
+        + '<div class="dw-split"><p>나누려면 위의 <strong>복제</strong>로 이 기준을 늘린 뒤 '
+        + '각각 하나씩만 남기세요. 배점은 선생님이 나눠 주세요.</p></div>';
+    }
+    cm = '<div class="dw-cm"><p class="dw-cm-t"><i data-lucide="sparkles"></i>' + esc(c.title) + '</p>'
+       + '<p class="dw-cm-d">' + c.body + '</p>' + extra + '</div>';
+  }
+
+  var rows = r.rows.map(function(row, li){
+    var tr = '<tr class="dw-row">'
+      + '<td class="c-score"><input type="number" value="' + esc(String(row[0])) + '" oninput="dwIn()" placeholder="-"></td>'
+      + '<td class="c-crit"><input type="text" value="' + esc(row[1]) + '" oninput="dwIn()" placeholder="이 배점을 주는 조건을 적어 주세요."></td>'
+      + '</tr>';
+    /* 이 줄에 제안이 있으면 바로 아래에 붙인다 — 멀리 두면 어느 줄 얼기인지 모른다 */
+    var f = (c && c.fixes) ? c.fixes.filter(function(x){ return String(x.score) === String(row[0]); })[0] : null;
+    if (f && f.to !== row[1]){
+      tr += '<tr class="dw-sug"><td colspan="2"><div class="dw-sug-row">'
+        + '<span class="dw-sug-l"><i data-lucide="sparkles"></i>이렇게</span>'
+        + '<span class="dw-sug-t">' + esc(f.to) + '</span>'
+        + '<button class="dw-apply" onclick="dwApply(' + ri + ',' + li + ')">적용</button>'
+        + '</div></td></tr>';
+    }
+    /* 넣고 나면 제안 줄은 그냥 사라진다 — 필드가 바뀜 걸 눈으로 보는데
+       '적용됨'을 또 말하면 자리만 차지한다(26-09-02 올립). */
+    return tr;
+  }).join('');
+
+  return '<div class="dw-r' + (c ? ' hit' : '') + '">'
+    /* 머리는 카드와 똑같이 — 번호 + 복제·삭제.
+       배지로 짚혔다고 또 적지는 않는다(바로 아래 코멘트 제목과 같은 말) */
+    + '<div class="dw-r-h"><span class="dw-r-no">채점기준 ' + (ri + 1) + '</span>'
+    +   '<span style="flex:1;"></span>'
+    +   '<button class="btn btn-ghost btn-sm" onclick="dwDup(' + ri + ')"><i data-lucide="copy-plus" style="width:15px;height:15px;color:#808080;"></i>복제</button>'
+    +   '<button class="btn btn-ghost btn-sm" onclick="dwDel(' + ri + ')"><i data-lucide="trash-2" style="width:15px;height:15px;color:#808080;"></i>삭제</button>'
+    + '</div>'
+    + cm
+    + '<textarea class="dw-title" oninput="dwIn()" placeholder="무엇을 평가하는 기준인지 적어 주세요.">' + esc(r.title) + '</textarea>'
+    + '<div class="dw-tb"><table class="rt"><thead><tr>'
+    +   '<th class="c-score" style="border-right:1px solid #D9D9D9;">배점</th>'
+    +   '<th style="text-align:left;">세부 기준</th></tr></thead><tbody>' + rows + '</tbody></table></div>'
+    + '<div class="dw-tools">'
+    +   '<button class="btn btn-ghost btn-sm" onclick="dwAddRow(' + ri + ')"><i data-lucide="circle-plus" style="width:15px;height:15px;color:#808080;"></i>배점 추가</button>'
+    +   '<button class="btn btn-ghost btn-sm" onclick="dwDelRow(' + ri + ')"><i data-lucide="circle-minus" style="width:15px;height:15px;color:#808080;"></i>배점 삭제</button>'
+    + '</div></div>';
+}
+
+/* 드로워 — 도는 중·결과(전체 채점기준 편집) 두 모습 */
+function renderRvDrawer(){
+  var b = document.getElementById('rv-dw-body');
+  var f = document.getElementById('rv-dw-foot');
+  if (!b || !f) return;
+
+  if (S.review === 'load'){
+    b.innerHTML = '<div class="rv-dw-load"><div class="rv-spin"></div>'
+      + '<p id="rv-load-msg" style="font-size:18px;font-weight:700;color:#0A2A5E;">' + RV_LOAD_MSGS[0] + '</p>'
+      + '<p style="font-size:16px;color:#494949;line-height:1.55;">' + RV_LOAD_WHY + '</p></div>';
+    f.innerHTML = '<span style="font-size:14px;color:#808080;">잠시만 기다려 주세요.</span>'
+      + '<button class="rv-again" onclick="closeRvDrawer()">닫기</button>';
+    icons(); return;
+  }
+
+  var sum = REVIEW.length
+    ? '<div class="rv-sum hit"><i data-lucide="message-square-warning"></i><div style="flex:1;">'
+      + '<p class="rv-sum-t">고치면 좋을 곳 ' + REVIEW.length + '곳을 짚었어요</p>'
+      + '<p class="rv-sum-d">여기서 바로 고친 뒤 <strong>채점기준에 반영</strong>을 눌러 주세요. '
+      + '그대로 둘 수도 있어요 — 채점은 막지 않아요.</p></div></div>'
+    : '<div class="rv-sum ok"><i data-lucide="circle-check"></i><div style="flex:1;">'
+      + '<p class="rv-sum-t">채점하기 좋은 기준이에요</p>'
+      + '<p class="rv-sum-d">한 기준에 여러 가지가 섞이거나 배점 사이 경계가 흐릿한 곳이 없어요. '
+      + '고치고 싶은 곳이 있으면 아래에서 바로 고쳐도 돼요.</p></div></div>';
+
+  b.innerHTML = sum + DW_R.map(dwRubricHtml).join('');
+  f.innerHTML = '<button class="rv-again" onclick="runRubricReview()">다시 검토</button>'
+    + '<button class="rv-go" style="margin-top:0;" onclick="dwSave()">'
+    + '<i data-lucide="check" style="width:16px;height:16px;"></i>채점기준에 반영</button>';
+  icons();
+}
+
+/* 반영 — 설계 화면의 채점기준을 덮어쓴다.
+   그러면 문항 연결은 다시 봐야 하고(markRubricChanged),
+   검토 결과도 지금 문장과 달라져 치운다(rvInvalidate). */
+function dwSave(){
+  dwSync();
+  if (!dwDirty()){ closeRvDrawer(); showToast('info','바뀜 내용이 없어요.'); return; }
+  rubrics = JSON.parse(JSON.stringify(DW_R));
+  S.rubricFilled = isRubricComplete();
+  markRubricChanged();
+  rvInvalidate();
+  renderRubrics(); renderAll(); renderScoreTable(); renderToc();
+  showToast('success','채점기준에 반영했어요. 바뀜 내용으로 다시 검토해 보세요.');
+}
+function dwCloseAsk(){
+  if (S.review === 'load'){ closeRvDrawer(); return; }
+  dwSync();
+  if (dwDirty()){
+    openConfirm('고친 내용 버리기',
+      '드로워에서 고친 내용이 채점기준에 반영되지 않아요.',
+      '버리고 닫기', function(){ closeRvDrawer(); });
+    return;
+  }
+  closeRvDrawer();
+}
+
+/* ════════════════════════════════════════════════════════
+   시의2 — AI가 다듬은 안을 통째로 보여 주고 골라 반영하게 한다.
+   ⚠ 지금 API는 여기까지 못 준다 — 경계 흐릿은 revised_descriptions 로 될 수 있으나,
+   섞임을 쪼개는 건 제목·배점·세부기준을 새로 써야 해서 split_into(축 이름)만으론 안 된다.
+   이 화면 자체가 맥에게 보낼 요구사항이다(26-09-02 올립).
+   배점은 만점을 그대로 지키게 나눠 둔다 — 만점이 변하면 채점 결과가 무효해진다.
+════════════════════════════════════════════════════════ */
+var RV_PLAN2 = {
+  2: { label:'배점 사이를 셀 수 있게 고쳐 봤어요',
+       result:[ { title:'논리적 구성과 문단 간 연결의 자연스러움을 평가한다.',
+                  rows:[[5,'서론·본론·결론으로 나뉘고, 문단 사이 연결어가 빠진 곳이 없음'],
+                        [3,'서론·본론·결론으로 나뉘었으나, 문단 사이 연결어가 한 곳 이상 빠짐'],
+                        [1,'문단 구분 없이 나열되어 흐름을 알기 어려움']] } ] },
+  3: { label:'세 가지로 나눠 봤어요 · 만점 5점은 그대로',
+       result:[ { title:'맞춤법과 띄어쓰기를 바르게 썼는지를 평가한다.',
+                  rows:[[2,'맞춤법·띄어쓰기 오류가 없음'],
+                        [1,'오류가 한·두 군데 있음'],
+                        [0,'오류가 세 군데 이상 있음']] },
+                { title:'어휘를 알맞게 골라 썼는지를 평가한다.',
+                  rows:[[2,'글의 주제에 맞는 어휘를 쓰고, 뜻이 통하지 않는 낱말이 없음'],
+                        [1,'뜻이 통하지 않는 낱말이 한·두 군데 있음'],
+                        [0,'뜻이 통하지 않는 낱말이 세 군데 이상 있음']] },
+                { title:'문장을 자연스럽게 썼는지를 평가한다.',
+                  rows:[[1,'문장이 자연스럽고 뜻이 분명함'],
+                        [0,'문장이 어색해 뜻을 알기 어려움']] } ] }
+};
+var RV_PICK = {};   // 채점기준 id → 고를가
+
+function plan2For(rid){ return RV_PLAN2[rid] || null; }
+/* 고른 것만 갈아끼운 결과 — 만점 미리보기에도 그대로 쓴다 */
+function plan2Preview(){
+  var out = [];
+  rubrics.forEach(function(r){
+    var p = plan2For(r.id);
+    if (p && RV_PICK[r.id]){
+      p.result.forEach(function(n, i){
+        out.push({ id: r.id * 100 + i, title:n.title, rows: JSON.parse(JSON.stringify(n.rows)) });
+      });
+    } else {
+      out.push(JSON.parse(JSON.stringify(r)));
+    }
+  });
+  return out;
+}
+function rvPickCount(){
+  var n = 0;
+  for (var k in RV_PICK) if (RV_PICK[k]) n++;
+  return n;
+}
+function rvTogglePick(rid){
+  RV_PICK[rid] = !RV_PICK[rid];
+  renderReviewPage();
+}
+
+/* 왼쪽(지금 기준)은 읽기만 — 고치는 건 오른쪽이다 */
+function cmpRowsHtml(rows){
+  return '<div class="cmp-rows">' + rows.map(function(row){
+    return '<div class="cmp-row"><b>' + esc(String(row[0])) + '</b><span>' + esc(row[1]) + '</span></div>';
+  }).join('') + '</div>';
+}
+
+/* AI가 다듬은 안을 교사가 그 자리에서 고친다.
+   고친 것은 RV_EDIT 에 남고, 체크를 끬다 켜도 사라지지 않는다. */
+var RV_EDIT = {};
+function rvEditFor(rid){
+  if (!RV_EDIT[rid]){
+    var p = RV_PLAN2[rid];
+    RV_EDIT[rid] = p ? JSON.parse(JSON.stringify(p.result)) : [];
+  }
+  return RV_EDIT[rid];
+}
+function rvUndo(rid){
+  delete RV_EDIT[rid];
+  renderReviewPage();
+  showToast('info','AI가 다듬은 처음 안으로 되돌렸어요.');
+}
+function rvSyncEdits(){
+  document.querySelectorAll('#rp-body .cmp-c.r[data-rid]').forEach(function(cell){
+    var rid = Number(cell.getAttribute('data-rid'));
+    var arr = RV_EDIT[rid];
+    if (!arr) return;
+    cell.querySelectorAll('.rp-ed').forEach(function(box, i){
+      if (!arr[i]) return;
+      var t = box.querySelector('.rp-t');
+      if (t) arr[i].title = t.value;
+      var rows = [];
+      box.querySelectorAll('tbody tr').forEach(function(tr){
+        var ins = tr.querySelectorAll('input');
+        rows.push([ins[0].value, ins[1].value]);
+      });
+      if (rows.length) arr[i].rows = rows;
+    });
+  });
+}
+/* 입력 중엔 다시 그리지 않는다(커서가 튀다) — 만점만 그 자리에서 갱신한다 */
+function rvEditIn(){ rvSyncEdits(); paintAfterScore(); }
+/* 왼쪽과 만점이 다르면 주황 — 배점을 고치다 만점이 깨지면 이미 매긴 점수가 근거를 잃는다 */
+function paintAfterScore(){
+  var el = document.getElementById('rp-after-score');
+  if (!el) return;
+  var a = fullScore(rubrics), b = fullScore(plan2Preview());
+  /* 만점은 같을 때 굳이 적지 않는다 — AI 의견에 '만점 5점은 그대로'가 이미 있고,
+     상시로 두 번 말하면 정작 깨졌을 때 눈에 안 들어온다(26-09-02 올립). */
+  el.textContent = (a === b) ? '' : ('만점이 ' + a + '점 → ' + b + '점으로 달라졌어요');
+  el.classList.toggle('off', a !== b);
+}
+
+function plan2For(rid){ return RV_PLAN2[rid] || null; }
+function plan2Preview(){
+  var out = [];
+  rubrics.forEach(function(r){
+    if (plan2For(r.id) && RV_PICK[r.id]){
+      rvEditFor(r.id).forEach(function(n, i){
+        out.push({ id: r.id * 100 + i, title:n.title, rows: JSON.parse(JSON.stringify(n.rows)) });
+      });
+    } else {
+      out.push(JSON.parse(JSON.stringify(r)));
+    }
+  });
+  return out;
+}
+function rvPickCount(){
+  var n = 0;
+  for (var k in RV_PICK) if (RV_PICK[k]) n++;
+  return n;
+}
+function rvTogglePick(rid){
+  rvSyncEdits();
+  RV_PICK[rid] = !RV_PICK[rid];
+  renderReviewPage();
+}
+
+/* 오른쪽 아래 — 고칠 수 있는 채점기준.
+   있던 줄과 다른 줄은 하늘색으로 물들여 뭐가 바뀌었는지 보여 준다. */
+function rpEditHtml(n, i, base){
+  var rows = n.rows.map(function(row, li){
+    var chg = !base || !base[li] || String(base[li][1]) !== String(row[1]) || String(base[li][0]) !== String(row[0]);
+    return '<tr' + (chg ? ' class="chg"' : '') + '>'
+      + '<td class="sc"><input type="number" value="' + esc(String(row[0])) + '" oninput="rvEditIn()"></td>'
+      + '<td><input type="text" value="' + esc(row[1]) + '" oninput="rvEditIn()"></td></tr>';
+  }).join('');
+  return '<div class="rp-ed">'
+    + (i === 0 ? '<p class="rp-ed-lab"><i data-lucide="pencil"></i>여기서 바로 고쳐 쓸 수 있어요</p>' : '')
+    + '<textarea class="rp-t" oninput="rvEditIn()">' + esc(n.title) + '</textarea>'
+    + '<div class="rp-tb"><table><tbody>' + rows + '</tbody></table></div></div>';
+}
+
+function renderReviewPage(){
+  var lead = document.getElementById('rp-lead');
+  var body = document.getElementById('rp-body');
+  var nav  = document.getElementById('rp-nav');
+  if (!body) return;
+
+  var loading = (S.review === 'load');
+  document.getElementById('rp-loading').style.display = loading ? 'flex' : 'none';
+  body.style.display = loading ? 'none' : 'block';
+  nav.style.display  = loading ? 'none' : 'flex';
+  if (loading){ lead.textContent = ''; return; }
+
+  if (!REVIEW.length){
+    lead.textContent = '한 기준에 여러 가지가 섞이거나 배점 사이 경계가 흐릿한 곳이 없어요.';
+    body.innerHTML = '<div class="rv-sum ok" style="margin:0;"><i data-lucide="circle-check"></i><div style="flex:1;">'
+      + '<p class="rv-sum-t">채점하기 좋은 기준이에요</p>'
+      + '<p class="rv-sum-d">다듬을 곳이 없어 비교할 것도 없어요.</p></div></div>';
+    document.getElementById('rp-apply').style.display = 'none';
+    icons(); return;
+  }
+
+  document.getElementById('rp-apply').style.display = '';
+  /* 맨 위는 조망만 — 왜 바꿨는지는 각 행 오른쪽에서 말한다 */
+  var nb = REVIEW.filter(function(c){ return c.type === 'boundary'; }).length;
+  var no = REVIEW.length - nb;
+  var kinds = [];
+  if (nb) kinds.push('배점 경계가 흐릿한 곳 ' + nb);
+  if (no) kinds.push('한 기준에 여러 가지가 섞인 곳 ' + no);
+  lead.innerHTML = '<strong>' + REVIEW.length + '곳을 다듬었어요 — ' + kinds.join(', ') + '.</strong> '
+    + '왼쪽은 지금 채점기준, 오른쪽은 AI가 다듬은 거예요.';
+
+  var cells = '<div class="cmp-h"><b>지금 채점기준</b></div>'
+    + '<div class="cmp-h r"><b>AI가 다듬은 것</b><span id="rp-after-score"></span></div>';
+
+  rubrics.forEach(function(r, ri){
+    var p = plan2For(r.id);
+    cells += '<div class="cmp-c' + (p ? '' : ' same') + '">'
+      + '<p class="cmp-no">채점기준 ' + (ri + 1) + '</p>'
+      + '<p class="cmp-t">' + esc(r.title) + '</p>'
+      + cmpRowsHtml(r.rows) + '</div>';
+
+    if (!p){
+      cells += '<div class="cmp-c r same"><p class="cmp-no">—</p>'
+        + '<p class="cmp-same-t">다듬을 곳이 없어요. 그대로 두면 돼요.</p></div>';
+      return;
+    }
+    var on  = !!RV_PICK[r.id];
+    var cm  = rvFor(r.id);
+    var arr = rvEditFor(r.id);
+    /* 위 — AI 의견(무엇을 했는지 + 왜) */
+    var op = '<div class="rp-op"><div class="rp-op-h">'
+      + '<span class="cmp-chk' + (on ? ' on' : '') + '" onclick="rvTogglePick(' + r.id + ')">'
+      +   (on ? '<i data-lucide="check"></i>' : '') + '</span>'
+      + '<span class="t">' + esc(p.label) + '</span></div>'
+      + '<p class="rp-op-d">' + (cm ? cm.body : '') + '</p>'
+      + '<button class="rp-undo" onclick="rvUndo(' + r.id + ')">'
+      + '<i data-lucide="rotate-ccw" style="width:13px;height:13px;"></i>AI 안으로 되돌리기</button></div>';
+    /* 아래 — 고칠 수 있는 채점기준 */
+    var ed = arr.map(function(n, i){
+      return rpEditHtml(n, i, (arr.length === 1) ? r.rows : null);
+    }).join('');
+    var note = (arr.length > 1)
+      ? '<div class="cmp-note"><i data-lucide="triangle-alert"></i><span>배점은 만점을 지키게 나눈 제안이에요. 여기서 바로 고쳐도 돼요.</span></div>'
+      : '';
+    cells += '<div class="cmp-c r' + (on ? ' pick' : '') + '" data-rid="' + r.id + '">' + op + ed + note + '</div>';
+  });
+
+  body.innerHTML = '<div class="cmp">' + cells + '</div>';
+  var n = rvPickCount();
+  var btn = document.getElementById('rp-apply');
+  var bt  = document.getElementById('rp-apply-t');
+  /* 라벨은 그대로 두고 개수만 붙인다 — 0개일 땐 비활성이 '못 한다'를 이미 말한다 */
+  if (bt) bt.textContent = '수정된 채점기준 적용' + (n ? (' (' + n + ')') : '');
+  paintAfterScore();
+  btn.classList.toggle('is-disabled', n === 0);
+  icons();
+}
+
+function gotoReviewPage(){
+  S.rvPlan = 2;
+  showScreen('review');
+  renderReviewPage();
+  setHash('#case=rv-page');
+  S.case = 'rv-page';
+  renderMockpick();
+}
+function backFromReview(){
+  showScreen('detail');
+  renderDetail();
+  scrollToSection('sec-rubric');
+  S.case = 'ready';
+  renderMockpick();
+}
+/* 반영 — 카드에서 고쳐 저장한 것과 같은 연쇄가 걸린다 */
+function applyPlan2(){
+  rvSyncEdits();
+  var n = rvPickCount();
+  if (!n){ showToast('error','적용할 채점기준을 하나 이상 골라 주세요.'); return; }
+  rubrics = plan2Preview();
+  S.rubricFilled = isRubricComplete();
+  markRubricChanged();
+  rvInvalidate();
+  RV_PICK = {}; RV_EDIT = {};
+  showScreen('detail');
+  renderDetail();
+  scrollToSection('sec-rubric');
+  S.case = 'ready'; renderMockpick();
+  showToast('success','수정된 채점기준 ' + n + '곳을 적용했어요. 바뀐 내용으로 다시 검토해 보세요.');
+}
+
+function openRvDrawer(){
+  DW_R = JSON.parse(JSON.stringify(rubrics));
+  document.getElementById('rv-dw-ov').classList.add('open');
+  renderRvDrawer();
+}
+function closeRvDrawer(){ document.getElementById('rv-dw-ov').classList.remove('open'); }
+
+
+/* 배너는 한 모습만 유지한다.
+   쓰려면 쓰고 말려면 말는 기능인데 상태마다 얼굴이 바니면(권유·결과·통과·다시보기)
+   읽는 비용이 기능값보다 커진다(26-09-02 올립).
+   결과가 어떻게 됐는지는 드로워/검토 화면이 말하고,
+   짚힌 곳은 카드 테두리로 남는다. 배너는 '들어가는 문'일 뿐이다. */
+function renderReviewBand(){
+  var el = document.getElementById('rubric-review');
+  if (!el) return;
+  if (!rubrics.length){ el.style.display = 'none'; el.innerHTML = ''; return; }
+  el.style.display = 'block';
+  if (S.review === 'load'){ el.innerHTML = ''; return; }
+
+  var ok = isRubricComplete();
+  var lock = ok ? '' : '<p class="rv-lock">채점기준을 다 입력하면 검토할 수 있어요.</p>';
+  el.innerHTML = '<div class="rv-box"><i data-lucide="sparkles"></i><div style="flex:1;">'
+    + '<p class="rv-t">AI가 헷갈릴 만한 곳을 미리 짚어 드려요</p>'
+    + '<p class="rv-d">한 기준에 여러 가지가 섞여 있거나 배점 사이 경계가 흐릿하면 알려 드려요. '
+    + '그런 곳을 먼저 고쳐 두면 AI가 매기는 점수가 선생님 기준에 더 가까워져요.</p>' + lock
+    + '<button class="rv-go' + (ok ? '' : ' is-disabled') + '" onclick="runRubricReview()">'
+    + '<i data-lucide="scan-search" style="width:16px;height:16px;"></i>채점기준 AI 검토</button></div></div>';
+  icons();
+}
+
 function rubricCardHtml(r, idx){
   var oninput = 'onRubricInput()';
   var lockedScore = false;   // 채점 후에도 잠기지 않는다 — 저장할 때 초기화를 묻는 것으로 대신한다
@@ -1156,8 +2030,11 @@ function rubricCardHtml(r, idx){
     ? '<button class="btn btn-ghost btn-sm is-disabled" title="AI 채점이 실행되어 삭제할 수 없어요"><i data-lucide="lock" style="width:15px;height:15px;"></i>삭제</button>'
     : '<button class="btn btn-ghost btn-sm" onclick="' + delFn + '(' + idx + ')"><i data-lucide="trash-2" style="width:15px;height:15px;color:#808080;"></i>삭제</button>';
 
+  /* 짚힌 카드는 테두리로만 표시하고, 내용은 드로워에서 읽는다 */
+  var cm = rvFor(r.id);
+
   return ''
-    + '<div class="rubric-card" data-rid="' + r.id + '" data-di="' + idx + '">'
+    + '<div class="rubric-card' + (cm ? ' rv-on' : '') + '" data-rid="' + r.id + '" data-di="' + idx + '">'
     +   '<div style="display:flex;align-items:center;padding:14px 14px 0;gap:4px;">'
     +     '<span style="font-size:16px;font-weight:700;color:#333;flex:1;">채점기준 ' + (idx+1) + '</span>'
     +     '<button class="btn btn-ghost btn-sm" onclick="' + copyFn + '(' + idx + ')"><i data-lucide="copy-plus" style="width:15px;height:15px;color:#808080;"></i>복제</button>'
@@ -1188,6 +2065,7 @@ function renderRubrics(){
   document.getElementById('rubric-total').textContent = rubrics.length ? ('채점기준 ' + rubrics.length + '개 · 만점 ' + total + '점') : '';
   document.getElementById('rubric-add-empty').style.display = rubrics.length ? 'none' : 'block';
   document.getElementById('rubric-add-more').style.display = rubrics.length ? 'flex' : 'none';
+  renderReviewBand();
   icons();
 }
 
@@ -1215,8 +2093,9 @@ function onRubricInput(){
   syncRubricsFromDom();
   var was = S.rubricFilled;
   S.rubricFilled = isRubricComplete();
-  // 채점기준이 바뀌면 문항에 연결해 둔 것을 다시 보게 한다
+  // 채점기준이 바뀌면 문항에 연결해 둔 것과 AI 검토 결과를 다시 보게 한다
   markRubricChanged();
+  rvInvalidate();
   var total = rubrics.reduce(function(a,r){ return a + Math.max.apply(null, r.rows.map(function(x){ return Number(x[0])||0; })); }, 0);
   document.getElementById('rubric-total').textContent = '채점기준 ' + rubrics.length + '개 · 만점 ' + total + '점';
   renderAll();
@@ -1233,6 +2112,7 @@ function aiGenRubrics(){
   rubrics = rubrics.concat(seed);
   S.rubricFilled = isRubricComplete();
   markRubricChanged();
+  rvInvalidate();
   renderRubrics(); renderAll(); renderScoreTable(); renderToc();
   showToast('success','성취기준을 바탕으로 채점기준 초안 ' + seed.length + '개를 만들었어요. 내용을 확인해 주세요.');
 }
@@ -1240,7 +2120,8 @@ function addRubric(){
   syncRubricsFromDom();
   rubrics.push({ id: Date.now(), title:'', rows:[['',''],['',''],['','']] });
   S.rubricFilled = false;
-  markRubricChanged();   // 새 기준은 어느 문항에도 연결되어 있지 않다
+  markRubricChanged();
+  rvInvalidate();   // 새 기준은 어느 문항에도 연결되어 있지 않다
   renderRubrics(); renderAll(); renderToc();
 }
 function copyRubric(i){
@@ -1249,6 +2130,7 @@ function copyRubric(i){
   c.id = Date.now();
   rubrics.splice(i+1, 0, c);
   markRubricChanged();
+  rvInvalidate();
   renderRubrics(); renderToc();
   showToast('success','채점기준을 복제했어요.');
 }
@@ -1262,6 +2144,7 @@ function removeRubric(i){
       QUESTIONS.forEach(function(q){ q.links = q.links.filter(function(id){ return rubrics.some(function(r){ return r.id === id; }); }); });
       S.rubricFilled = isRubricComplete();
       markRubricChanged();
+      rvInvalidate();
       renderRubrics(); renderAll(); renderScoreTable(); renderToc();
       showToast('success','채점기준을 삭제했어요.');
     });
@@ -1360,7 +2243,7 @@ document.addEventListener('click', function(){
 });
 
 function renderQuestionList(){
-  document.getElementById('dg-s2-intro').innerHTML = 'AI가 활동지를 문항 단위로 나눴어요. 실제 활동지와 같은지 확인하고, 다르면 직접 고쳐 주세요. 문항을 확정한 뒤에 모범답안을 씁니다.';
+  document.getElementById('dg-s2-intro').innerHTML = 'AI가 활동지를 문항 단위로 나누었어요. 실제 활동지와 같은지 확인하고, 다르면 직접 고쳐 주세요.';
   document.getElementById('dg-q-list').innerHTML = QUESTIONS.map(function(q, i){
     return '<div class="q-row" data-qi="' + i + '" style="border:1px solid #E6E6E6;border-radius:12px;overflow:hidden;background:white;">'
       + '<div style="display:flex;align-items:center;gap:6px;padding:10px 10px 10px 12px;background:#FBFBFC;border-bottom:1px solid #F0F0F0;">'
@@ -1517,6 +2400,8 @@ var MP_CASES = [
   { k:'list',       label:'설계 목록',              sub:'카드 6개 — 카드로 각 상태로' },
   { k:'new',        label:'새 설계',                 sub:'채점기준 0개' },
   { k:'ready',      label:'설계 완료',              sub:'채점기준까지 · 고도화 전' },
+  { k:'rv-hit',     label:'검토 시안1 — 드로워',      sub:'지금 API가 주는 것만 · 교사가 고침' },
+  { k:'rv-page',    label:'검토 시안2 — 좌우 비교',   sub:'AI가 다듬은 안 통째 · 맥에게 요청할 안' },
   { k:'ask',        label:'저장 직후 — 빈 활동지가 있나요?', sub:'분기 질문' },
   { k:'adv-upload', label:'고도화 ① 활동지 올리기 전', sub:'드롭존' },
   { k:'adv-1',      label:'고도화 ① 문항 확정',    sub:'문항 4개' },
@@ -1701,6 +2586,9 @@ function applyCase(k){
   S.linkReady = false; S.linkLoading = false;
   S.staleLink = false; S.staleAnswer = false; S.rubricDirty = false; S.justFrom = 0;
   S.answersFilled = false; S.locked = false; S.scored = false; S.marks = {};
+  clearTimeout(_rvTimer); clearInterval(_rvMsgTimer);
+  S.review = 'none'; REVIEW = []; RV_PICK = {}; RV_EDIT = {}; S.rvPlan = 1;
+  if (document.getElementById('rv-dw-ov')) closeRvDrawer();
   resetStageOpen();
 
   /* 옛 링크 호환 — 공유된 URL이 죽지 않게 */
@@ -1723,7 +2611,7 @@ function applyCase(k){
 
   if (k === 'new') rubrics = [];   // 개발 화면 초기 상태: 채점기준 0개 + AI 생성 카드
 
-  var FILLED = ['ready','ask','adv-upload','adv-1','adv-2','adv-3','adv-linked','adv-done','locked','scored'];
+  var FILLED = ['ready','rv-hit','rv-page','ask','adv-upload','adv-1','adv-2','adv-3','adv-linked','adv-done','locked','scored'];
   if (FILLED.indexOf(k) !== -1){
     S.name = '논설문 쓰기 — 우리 학교 급식 잔반 문제';
     S.stdFilled = true;
@@ -1731,6 +2619,11 @@ function applyCase(k){
     standards = JSON.parse(JSON.stringify(STD_SEED));
   }
 
+  /* 검토 결과 — 짚힌 예시는 씨앗 그대로 두고, 깨끗한 예시는 짚힌 두 줄을 고쳤다 */
+  if (k === 'rv-hit' || k === 'rv-page'){
+    REVIEW = rvScan(); S.review = 'done'; 
+    if (k === 'rv-page'){ S.rvPlan = 2; REVIEW.forEach(function(c){ RV_PICK[c.rid] = true; }); }
+  }
   if (k === 'adv-upload'){ S.worksheet = false; S.ws = 'idle'; }
   if (k === 'adv-1'){ S.worksheet = true; S.ws = 'ready'; S.advStep = 1; }
   if (k === 'adv-2'){ S.worksheet = true; S.ws = 'ready'; S.advStep = 2; S.linkReady = true; }
@@ -1744,8 +2637,10 @@ function applyCase(k){
 
   var target = 'detail';
   if (k === 'adv-upload' || k === 'adv-1' || k === 'adv-2' || k === 'adv-3') target = 'adv';
+  if (k === 'rv-page') target = 'review';
   renderDetail();
   showScreen(target);
+  if (k === 'rv-page') renderReviewPage();
   if (k === 'ask') setTimeout(askWorksheet, 250);
 }
 
@@ -1830,6 +2725,7 @@ function advSave(){
   renderDetail(); renderToc(); renderMockpick();
   if (finish) backToDetail('sec-adv');
   if (S.scored) noteAppliesNextRun();
+  else if (finish) showToast('success', ADV_GAIN[3]);
   else showToast('success','저장했어요.');
 }
 /* 재진입은 가장 앞의 '아직 안 한 단계'로. 다 했으면 ①부터 훑는다 */
@@ -1875,7 +2771,15 @@ function renderAdv(){
   var sum = document.getElementById('ws-sum-2');
   if (sum) sum.textContent = wsDone() ? ('문항 ' + QUESTIONS.length + '개') : '';
 
-  /* 방금 끝낸 단계가 무엇을 바꿨는지 — 다음 화면 위에서 한 번만 */
+  /* 지금 단계를 하면 무엇이 좋아지는지 — 상시 */
+  var why = document.getElementById('adv-why');
+  if (why){
+    var wm = (!loading && ADV_WHY[S.advStep]) || '';
+    why.innerHTML = wm ? '<i data-lucide="sparkles"></i><div>' + wm + '</div>' : '';
+    why.style.display = wm ? 'flex' : 'none';
+  }
+
+  /* 방금 끝낸 단계로 무엇을 얻었는지 — 다음 화면 위에서 한 번만 */
   var gain = document.getElementById('adv-gain');
   if (gain){
     var gm = (!loading && S.justFrom && S.advStep === S.justFrom + 1) ? ADV_GAIN[S.justFrom] : '';
@@ -1925,9 +2829,13 @@ function renderAdvCard(){
   if (!el) return;
   /* 할 일 목록과 해낸 목록을 같은 컴포넌트로 그린다 —
      시작 전에도 무엇을 하는 기능인지 세 줄로 보여야 '활동지만 올리는 것'으로 읽히지 않는다 */
-  var row = function(done, text){
-    return '<li style="display:flex;align-items:flex-start;gap:9px;font-size:16px;color:#494949;line-height:1.6;">'
-      + '<i data-lucide="' + (done ? 'circle-check-big' : 'circle-dashed') + '" style="width:17px;height:17px;color:' + (done ? '#00AF3D' : '#B3B3B3') + ';flex-shrink:0;margin-top:4px;"></i>'
+  /* 번호를 붙여 '순서대로 하는 일'임을 드러낸다 — 고도화 화면의 단계 표시와 같은 모양.
+     완료돼도 번호는 남긴다(색만 채움). 체크로 바꾸면 몇 번째였는지가 사라진다. */
+  var row = function(n, done, text){
+    var dot = done ? 'background:#00AF3D;color:#fff;' : 'background:#EDEDED;color:#808080;';
+    return '<li style="display:flex;align-items:flex-start;gap:10px;font-size:16px;color:#494949;line-height:1.6;">'
+      + '<span style="' + dot + 'display:inline-flex;align-items:center;justify-content:center;line-height:1;'
+      + 'width:21px;height:21px;border-radius:50%;font-size:12px;font-weight:700;flex-shrink:0;margin-top:3px;">' + n + '</span>'
       + '<span>' + text + '</span></li>';
   };
   var list = function(rows){
@@ -1935,9 +2843,9 @@ function renderAdvCard(){
   };
 
   var TODO = [
-    row(false, '빈 활동지를 올려 문항 확정하기'),
-    row(false, '문항마다 볼 채점기준 연결하기'),
-    row(false, '문항마다 모범답안 적기')
+    row(1, false, '빈 활동지를 올려 문항 확정하기'),
+    row(2, false, '문항마다 볼 채점기준 연결하기'),
+    row(3, false, '문항마다 모범답안 적기')
   ];
 
   var h;
@@ -1964,11 +2872,11 @@ function renderAdvCard(){
     var allDone = S.linkDone && na > 0;
     h = lockNote + stale
       + list([
-          row(true, '문항 ' + QUESTIONS.length + '개를 확정했어요.'),
-          row(S.linkDone && !S.staleLink, S.linkDone
+          row(1, true, '문항 ' + QUESTIONS.length + '개를 확정했어요.'),
+          row(2, S.linkDone && !S.staleLink, S.linkDone
             ? (S.staleLink ? '문항마다 채점기준을 연결했어요. (다시 확인 필요)' : '문항마다 채점기준을 연결했어요.')
             : '채점기준 연결은 아직이에요.'),
-          row(na > 0, na ? ('모범답안을 ' + na + '개 문항에 넣었어요.') : '모범답안은 아직 넣지 않았어요.')
+          row(3, na > 0, na ? ('모범답안을 ' + na + '개 문항에 넣었어요.') : '모범답안은 아직 넣지 않았어요.')
         ])
       + '<button class="btn btn-secondary" onclick="gotoAdv()"><i data-lucide="' + ((S.locked || allDone) ? 'list-checks' : 'pencil-line') + '" style="width:20px;height:20px;"></i>'
       + ((S.locked || allDone) ? '확인하기' : '이어서 하기') + '</button>';
@@ -1980,23 +2888,35 @@ function renderAdvCard(){
    분석은 이 화면에서만 돈다(실제 30초 내외). 벗어나면 처음부터 다시 —
    안내한 대로 동작하도록 이탈 경로를 showScreen 한 곳에서 막는다. */
 /* 기다리는 동안 '무엇을 하는지'와 '왜 하는지'를 같이 말한다 —
-   세 과업이 헤비해서, 기다리는 시간이 곧 설득할 시간이다. */
+   세 과업이 헤비해서, 기다리는 시간이 곧 설득할 시간이다.
+   왜 하는지는 2026-09-02 제공된 공식 사유를 따른다(내가 지어낸 이득으로 말하지 않는다). */
 var ADV_LOAD = {
   ws: {
     msgs: ['빈 활동지에서 문항을 나누고 있어요',
            '문항마다 어디부터 어디까지가 답안인지 표시하고 있어요'],
-    why: '문항이 나뉘면 AI가 학생 답안을 문항별로 읽어요.'
+    why: '문제가 무엇인지 먼저 정해 두면, 학생이 적어 놓은 낙서나 메모를 문제로 잘못 읽지 않아요.'
   },
   link: {
     msgs: ['채점기준을 문항과 맞춰 보고 있어요',
            '문항마다 볼 기준을 고르고 있어요'],
-    why: '문항마다 볼 기준이 정해지면 그 기준으로만 채점해요.'
+    why: '문항마다 볼 기준이 정해지면, 그 문항에 필요한 채점기준만으로 채점해요.'
   }
 };
-/* 방금 끝낸 단계가 무엇을 바꿨는지 — 다음 화면 위에서 한 번 말한다 */
+/* 같은 이득을 세 시점에 말한다 — 기다릴 때(왜 기다리나) · 하는 동안(왜 하나) · 마쳤을 때(무엇을 얻었나).
+   과업이 무거워서 한 군데서만 말하면 놓친다. */
+var ADV_WHY = {
+  1: '학생이 활동지에 해 놓은 낙서나 메모를 AI가 문제로 잘못 읽을 때가 있어요. '
+   + '빈 활동지로 문항을 먼저 확정해 두면 그런 일이 없어요.',
+  2: '문항마다 볼 기준을 정해 두면, 그 문항에 필요한 채점기준만으로 채점해요. '
+   + '관계없는 기준으로 답안을 보지 않아요.',
+  3: '모범답안으로 선생님이 보시는 <strong>잘한 답안의 수준</strong>을 알려 주면, '
+   + '미루어 짐작하기 어려운 답안도 채점할 수 있어요. '
+   + '채점 가이드엔 선생님이 채점할 때 함께 보시는 점을 적어 주세요.'
+};
 var ADV_GAIN = {
-  1: '문항을 나눴어요. 이제 AI가 학생 답안을 문항별로 읽어요.',
-  2: '문항마다 볼 채점기준을 정했어요. 이제 그 문항과 관련된 기준으로만 채점해요.'
+  1: '문항을 확정했어요. 이제 학생이 적어 놓은 낙서나 메모를 문제로 읽지 않아요.',
+  2: '문항마다 볼 채점기준을 정했어요. 이제 그 문항에 필요한 기준만으로 채점해요.',
+  3: '모범답안을 넣었어요. 이제 선생님이 보시는 잘한 답안의 수준을 AI가 알고 채점해요.'
 };
 var _msgTimer = null;
 function startLoadMsgs(kind){
@@ -2009,7 +2929,7 @@ function startLoadMsgs(kind){
   _msgTimer = setInterval(function(){
     i = (i + 1) % d.msgs.length;
     if (t) t.textContent = d.msgs[i];
-  }, 1300);
+  }, 2200);
 }
 function stopLoadMsgs(){ clearInterval(_msgTimer); }
 function cancelAdvLoad(){
@@ -2045,7 +2965,7 @@ function runLinkLoad(target){
     S.case = advCase();
     renderDetail(); renderToc(); renderMockpick();
     setHash('#case=' + S.case);
-  }, 2600);
+  }, 5000);
 }
 var _showScreenRaw = showScreen;
 showScreen = function(id){
@@ -2064,7 +2984,7 @@ function runAdvLoad(){
     S.case = 'adv-1';
     renderDetail(); renderToc(); renderMockpick();
     setHash('#case=adv-1');
-  }, 2600);
+  }, 5000);
 }
 /* 문항을 새로 만들면 그걸 참조하던 연결·답안은 함께 사라진다 */
 function resetAdvWork(){
@@ -2073,14 +2993,19 @@ function resetAdvWork(){
   S.advStep = 1; S.answersFilled = false;
   S.staleLink = false;
 }
+/* 받침에 따라 이/가 — 목록 끝 단어가 무엇이냐에 따라 달라진다 */
+function josa(w){
+  var c = w.charCodeAt(w.length - 1) - 0xAC00;
+  return (c >= 0 && c <= 11171 && c % 28) ? '이' : '가';
+}
 function pickWorksheet(){
-  if (S.locked){ showToast('error','과제물 인식이 시작되어 활동지를 바꿀 수 없어요.'); return; }
+  if (S.locked){ showToast('error','과제물 인식이 시작되어 활동지를 바꿀 수 없어요. 복사해서 만들기로 새 설계를 만들어 주세요.'); return; }
   if (!S.worksheet){ document.getElementById('ws-file').click(); return; }
   var gone = ['문항 목록과 직접 고친 내용'];
   if (S.linkDone) gone.push('문항마다 연결해 둔 채점기준');
   if (countAnswers() > 0) gone.push('문항별 모범답안과 채점 가이드');
   openConfirm('활동지를 바꿀까요?',
-    '<strong>' + gone.join(', ') + '</strong>이 사라지고 새로 만들어져요.<br>채점기준 자체는 그대로 남아요.',
+    '<strong>' + gone.join(', ') + '</strong>' + josa(gone[gone.length - 1]) + ' 사라지고 새로 만들어져요.<br>채점기준 자체는 그대로 남아요.',
     '파일 고르기', function(){ document.getElementById('ws-file').click(); });
 }
 function onWsFile(input){
@@ -2093,7 +3018,7 @@ function onWsFile(input){
   runAdvLoad();
 }
 function removeWorksheet(){
-  if (S.locked){ showToast('error','과제물 인식이 시작되어 활동지를 지울 수 없어요.'); return; }
+  if (S.locked){ showToast('error','과제물 인식이 시작되어 활동지를 지울 수 없어요. 복사해서 만들기로 새 설계를 만들어 주세요.'); return; }
   if (!wsDone()){ S.worksheet = false; renderAdv(); return; }
   openConfirm('활동지를 지울까요?',
     '<strong>문항 목록과 이어서 만든 연결·모범답안</strong>이 함께 사라져요.<br>채점기준 자체는 그대로 남아요.',
@@ -2106,9 +3031,8 @@ function removeWorksheet(){
 }
 function analyzeStructure(){
   if (!S.worksheet){ showToast('error','빈 활동지를 먼저 올려 주세요.'); return; }
-  if (S.locked){ showToast('error','과제물 인식이 시작되어 문항을 다시 나눌 수 없어요.'); return; }
+  if (S.locked){ showToast('error','과제물 인식이 시작되어 문항을 다시 나눌 수 없어요. 복사해서 만들기로 새 설계를 만들어 주세요.'); return; }
   if (!wsDone()){ runAdvLoad(); return; }
-  var josa = function(w){ var c = w.charCodeAt(w.length - 1) - 0xAC00; return (c >= 0 && c <= 11171 && c % 28) ? '이' : '가'; };
   var gone = ['문항 목록과 직접 고친 내용'];
   if (S.linkDone) gone.push('문항마다 연결해 둔 채점기준');
   if (countAnswers() > 0) gone.push('문항별 모범답안과 채점 가이드');
@@ -2146,8 +3070,8 @@ function renderS3(){
     + rubrics.map(function(r, i){
         var chip = !unused[i] ? ''
           : (allLinked ? '<span class="badge b-red">채점 제외</span>'
-                       : '<span class="badge b-gray">연결된 문항 없음</span>');
-        return '<div class="lk-lg"><span class="lk-n">' + (i + 1) + '</span>'
+                       : '<span class="badge b-red">연결된 문항 없음</span>');
+        return '<div class="lk-lg' + (unused[i] ? ' none' : '') + '"><span class="lk-n">' + (i + 1) + '</span>'
           + '<span style="flex:1;min-width:0;">' + esc(r.title || '(내용 없음)') + '</span>'
           + chip
           + '<span class="lk-sc">' + maxScoreOf(r) + '점</span></div>';
@@ -2188,12 +3112,18 @@ function renderS3(){
         + (on ? '<svg width="13" height="13" viewBox="0 0 11 11" fill="none"><polyline points="1.5,5.5 4.5,8 9.5,2.5" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>' : '')
         + '</button></td>';
     }).join('');
-    /* 지시문이 길어도 한 줄 — 두 줄이 되면 행 높이가 제각각이라 표를 훑기 어렵다.
-       상태 칩은 문항 셀 밖(별도 열)에 둬서 지시문 길이에 밀리지 않게 한다. */
-    return '<tr' + (q.links.length ? '' : ' class="lk-r-none"') + '><td class="lk-qc"><div class="lk-qrow" title="' + esc(q.text) + '">'
-      + '<span class="lk-qno">' + esc(q.label) + '</span>'
-      + '<span class="lk-qt">' + esc(q.text) + '</span>'
-      + '</div></td>'
+    /* 지시문은 길어도 한 줄 — 두 줄이 되면 행 높이가 제각각이라 표를 훑기 어렵다.
+       번호는 자유 텍스트라 색을 입히지 않고 지시문에 붙여 읽는다.
+       AI 이유는 그 문항 바로 아래 한 단계 작게 — 문항이 먼저 읽혀야 한다. */
+    var reason = q.aiReason
+      ? '<div class="lk-why-in"><i data-lucide="wand-sparkles"></i><span>' + esc(q.aiReason) + '</span></div>'
+      : '';
+    return '<tr' + (q.links.length ? '' : ' class="lk-r-none"') + '>'
+      + '<td class="lk-qc">'
+      +   '<div class="lk-qrow" title="' + esc(q.text) + '">'
+      +     '<span class="lk-qt">' + esc(q.label) + '. ' + esc(q.text) + '</span>'
+      +   '</div>' + reason
+      + '</td>'
       + '<td class="lk-st">' + tag + '</td>'
       + cells + '</tr>';
   }).join('') + '</tbody>';
@@ -2215,16 +3145,6 @@ function renderS3(){
     hint.style.display = msg ? 'flex' : 'none';
   }
 
-  /* AI 이유 — 표를 훑다가 '왜 이렇게 붙였지?' 싶을 때 읽는 자리.
-     칸마다 붙이면 표가 읽히지 않아 아래로 모은다. */
-  var rows = QUESTIONS.filter(function(q){ return q.aiReason; }).map(function(q){
-    return '<div class="lk-why-row"><span class="lk-qno" style="flex-shrink:0;">' + esc(q.label) + '</span>'
-      + '<span>' + esc(q.aiReason) + '</span></div>';
-  }).join('');
-  wy.innerHTML = rows
-    ? '<div class="lk-why-h"><i data-lucide="wand-sparkles" style="width:15px;height:15px;color:#2F77D5;"></i>AI가 이렇게 연결한 이유</div>' + rows
-    : '';
-  wy.style.display = rows ? 'block' : 'none';
   icons();
 }
 function toggleLink(qno, rid){
@@ -2307,7 +3227,7 @@ function doSaveDesign(){
 }
 function askWorksheet(){
   openConfirm('빈 활동지가 있나요?',
-    '<strong>빈 활동지를 올리면 AI가 답안을 문항별로 나눠 읽어요.</strong> 이어서 문항마다 볼 채점기준과 모범답안을 정해 두면, 그 문항에 맞는 것만 보고 채점해서 결과가 더 정확해져요.<br><br>'
+    '<strong>빈 활동지를 올리면 학생이 적어 놓은 낙서나 메모를 문제로 잘못 읽지 않아요.</strong> 이어서 문항마다 볼 채점기준과 모범답안을 정해 두면, 그 문항에 필요한 것만 보고 채점해서 결과가 더 정확해져요.<br><br>'
     + '평가 설계는 이미 저장했어요. 지금 마치고 나중에 하셔도 되고, 설계 화면에서 언제든 다시 시작할 수 있어요.',
     '있어요 · 올리러 가기', function(){ gotoAdv(); },
     '없어요 · 마치기', function(){ goList(); });

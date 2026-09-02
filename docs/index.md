@@ -13,7 +13,9 @@
 - **새 화면/컴포넌트 그리기 전(GNB·로고·파비콘·Dialog·Toast·패널·버튼·Input·Badge·토큰·타이포) → [design-system.md](design-system.md)**
 - **컴포넌트 구현 전 실제 수치(색·radius·spacing·폰트) → [design-system.md](design-system.md)의 Figma 파일키로 get_design_context** (육안 추정 금지)
 - **목업 내비게이터(까망이)에 화면·케이스 추가하거나 케이스 선택기 만들기 전 → [mockup-navigator.md](mockup-navigator.md)** (전용 패널 금지·진입 항목→케이스 그룹·딥링크·파일 간 동기화, CLIPO 목업과 공통 규칙)
-- **평가 설계 작업 전 → [sessions/2026-09-01.md](sessions/2026-09-01.md)의 "▶ 이어받기"** — 작업본 `../output/evaluation_design_v8.html`. 설계는 채점기준까지 = 완료, 그 위에 **AI 채점 정확도 높이기 3단계**(① 빈 활동지·문항 확정 ② 채점기준 연결(매트릭스) ③ 모범답안). **AI 진단·루브릭 수정 제안은 전부 삭제됨**
+- **평가 설계 작업 전 → [sessions/2026-09-01.md](sessions/2026-09-01.md)의 "▶ 이어받기"** — 작업본 `../output/evaluation_design_v8.html`. 설계는 채점기준까지 = 완료, 그 위에 **AI 채점 정확도 높이기 3단계**(① 빈 활동지·문항 확정 ② 채점기준 연결(매트릭스) ③ 모범답안). **v7의 AI 진단·루브릭 수정 제안은 삭제됨**
+- **채점기준 AI 검토(루브릭이 채점하기 적합한지) 손대기 전 → [sessions/2026-09-02.md](sessions/2026-09-02.md)** — AI팀이 실제 만든 API를 v8 채점기준 섹션에 붙인 것. 판정은 하드코딩이 아니라 입력된 텍스트를 훑는 규칙(`rvScan`)이라 교사가 고쳐 쓰면 따라 바뀐다. `overloaded_element`(섞임) · `ambiguous_boundary`(경계 흐릿) 두 가지
+- **⚠ 검토 결과 화면은 시안 2개가 나란히 살아 있다 — 지우지 말 것.** `#case=rv-hit`=시안1(우측 드로워, 지금 API로 되는 것) · `#case=rv-page`=시안2(별도 화면 좌우 비교, AI가 다듬은 안 통째로 — **맥에게 요청할 스펙**). `S.rvPlan`(1\|2)이 밴드 버튼과 `runRubricReview()`의 목적지를 가른다
 - **v7 `../output/evaluation_design_v7.html`(진단형)은 보존** — 공유된 URL이 살아 있어 삭제 금지. 설계 상세·크롬은 v8이 그대로 이어받았고, 다른 건 참고만
 - **시안2 `../output/evaluation_design_v6.html`(답안 1장 미리 채점)은 폐기가 아니라 2027년 백로그** — 미리보기 흐름을 나중에 살릴 것이므로 파일·문서 삭제 금지. v7 작업 시 참고만
 - **두 시안의 공통 토대 → [sessions/2026-08-21.md](sessions/2026-08-21.md)** (간편/정교 구분 폐지 · 설계 상세=세로 스크롤 한 화면 · 모범답안 전용 화면)
