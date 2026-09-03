@@ -143,6 +143,24 @@ body { margin: 0; background: #EDF3FC; min-width: 1280px; }
 .rv-t { font-size:16px; font-weight:700; color:#0A2A5E; margin:0 0 4px; line-height:1.4; }
 .rv-d { font-size:14px; color:#494949; margin:0; line-height:1.65; }
 .rv-lock { font-size:14px; color:#808080; margin:10px 0 0; line-height:1.5; }
+
+/* 시있3 — 배너 안에서 끝난다. 드로워도 별도 화면도 없다 */
+.rv-box.rv-res { flex-direction:column; gap:0; align-items:stretch; }
+.rv-res-h { display:flex; align-items:center; gap:10px; margin-bottom:12px; }
+.rv-res-t { font-size:14px; font-weight:700; color:#808080; }
+.rv-grade { display:inline-flex; align-items:center; justify-content:center; line-height:1; vertical-align:middle; gap:6px;
+            height:28px; padding:0 12px; border-radius:100px; font-size:14px; font-weight:700; border:1px solid; }
+.rv-grade::before { content:''; width:7px; height:7px; border-radius:50%; background:currentColor; }
+.rv-grade.g-good { color:#0A6B2C; background:#F1F9F3; border-color:#BFE3CB; }
+.rv-grade.g-fair { color:#0A4A94; background:#F3F9FF; border-color:#B5D6F9; }
+.rv-grade.g-fix  { color:#C2620A; background:#FFF8F0; border-color:#F3D6AE; }
+.rv-cmt { font-size:16px; color:#333; line-height:1.75; margin:0 0 10px; max-width:76ch; }
+.rv-cmt:last-of-type { margin-bottom:0; }
+.rv-foot { font-size:14px; color:#808080; line-height:1.6; margin:14px 0 0; padding-top:12px; border-top:1px solid #E4EEF9; }
+/* 고친 뒤에도 결과를 지우지 않는다 — 그걸 보면서 고치는 중이니까 */
+.rv-stale { display:flex; align-items:flex-start; gap:7px; font-size:14px; color:#7A4A00;
+            background:#FFF8F0; border-radius:8px; padding:10px 12px; margin:0 0 12px; line-height:1.6; }
+.rv-stale svg { width:16px; height:16px; flex-shrink:0; margin-top:2px; color:#C2620A; }
 .rv-go { display:inline-flex; align-items:center; justify-content:center; line-height:1; vertical-align:middle; gap:6px;
          height:40px; padding:0 16px; border:none; border-radius:8px; background:#2F77D5; color:#fff;
          font-family:inherit; font-size:14px; font-weight:700; cursor:pointer; flex-shrink:0; margin-top:10px; }
@@ -470,7 +488,6 @@ body { margin: 0; background: #EDF3FC; min-width: 1280px; }
 /* 앞 단계가 바뀜 다시 봐야 하는 단계 */
 .adv-step .adv-dot { width:7px; height:7px; border-radius:50%; background:#E8890C; flex-shrink:0; }
 /* 방금 얻은 것을 말하는 배너 — 경고가 아니라 성과라 초록 */
-.note-done { background:#F1F9F3; color:#1E7A3E; }
 .adv-step.off .adv-step-n { background:#EFEFEF; color:#C4C4C4; }
 /* 단계 표시 바로 아래 — 지금 단계를 하면 무엇이 좋아지는가.
    단 안의 설명은 '무엇을 하는가'를 말하므로 역할이 걹치지 않는다. */
@@ -478,6 +495,8 @@ body { margin: 0; background: #EDF3FC; min-width: 1280px; }
            background:#F7FBFF; border:1px solid #B5D6F9; border-radius:10px; padding:14px 16px;
            font-size:16px; font-weight:700; color:#0A2A5E; line-height:1.6; }
 .adv-why svg { width:18px; height:18px; color:#0950A0; flex-shrink:0; margin-top:2px; }
+.adv-why p { margin:0; }
+.adv-why p + p { margin-top:9px; }
 </style>
 </head>
 <body>
@@ -832,8 +851,6 @@ body { margin: 0; background: #EDF3FC; min-width: 1280px; }
 
         <!-- 단계 표시 — 닿은 단계는 되돌아갈 수 있고, 안 닿은 단계는 누를 수 없다 -->
         <div id="adv-steps" class="adv-steps"></div>
-        <!-- 방금 끝난 단계가 무엇을 바꿨는지 — 헤비한 과업을 이어가게 하는 동기 -->
-        <div id="adv-gain" class="note note-done" style="display:none;margin-bottom:14px;"></div>
         <!-- 이 단계를 하면 무엇이 좋아지는지 — 상시. 과업이 무거워 대가가 계속 보여야 한다 -->
         <div id="adv-why" class="adv-why"></div>
 
@@ -1032,6 +1049,7 @@ body { margin: 0; background: #EDF3FC; min-width: 1280px; }
     <span id="mp-caret">▾</span>
   </div>
   <div class="mp-body" id="mp-body">
+    <div class="mp-plan" id="mp-tabs"></div>
     <div id="mp-cases" style="display:flex;flex-direction:column;gap:6px;max-height:340px;overflow-y:auto;"></div>
   </div>
 </div>
@@ -1069,7 +1087,10 @@ var S = {
   questionsDirty: false,   // 활동지·문항을 건드렸는가 — 저장할 때 인식 결과 삭제를 묻는다
   rubricDirty: false,    // 채점 후 채점기준을 건드렸는가 — 저장할 때 초기화를 묻는다
   review: 'none',        // 채점기준 AI 검토: none | load | done
-  rvPlan: 1,             // 검토 결과를 어떻게 보여 줄가: 1 드로워(현행 API) | 2 좌우 비교 페이지(맥에게 요청할 안)
+  mpTab: 0,              // 까망이 탭: 0 채점기준 검토 | 1 정확도 향상
+  reviewStale: false,    // 결과를 본 뒤 채점기준을 고쳐는가 — 지우지 않고 낡았다고만 알린다
+  reviewFair: false,     // 적절 등급 케이스
+  rvPlan: 3,             // 검토 결과를 어떻게 보여 줄가: 1 드로워(현행 API) | 2 좌우 비교 페이지(맥에게 요청할 안)
   linkReady: false,      // AI가 연결을 만들어 둔 상태 — 되돌아오면 다시 돌리지 않는다
   linkLoading: false,    // 연결을 만드는 중 — 기다려야 하고 벗어나면 처음부터
   answersFilled: false,
@@ -1111,6 +1132,22 @@ var RUBRIC_SEED = [
     rows:[[5,'제출 기한을 지키고 분량을 충실히 채움'],[3,'기한을 넘겼거나 분량이 부족함'],[1,'과제 수행이 미흡함']] }
 ];
 
+
+/* 짚힌 두 곳을 고쳐 놓은 것 — '우수'·'적절' 등급을 보여 주는 케이스용.
+   없는 채점기준을 새로 지어내지 않고 같은 다섯 기준에서 짚힌 문장만 바꿔다. */
+var RUBRIC_OK = [
+  RUBRIC_SEED[0],
+  { id:2, title:'논리적 구성과 문단 간 연결을 평가한다.',
+    rows:[[5,'서론·본론·결론으로 나뉘고, 문단 사이 연결어가 빠진 곳이 없음'],
+          [3,'서론·본론·결론으로 나뉘었으나, 문단 사이 연결어가 한 곳 이상 빠짐'],
+          [1,'문단 구분 없이 나열되어 흐름을 알기 어려움']] },
+  { id:3, title:'어휘를 알맞게 골라 썼는지를 평가한다.',
+    rows:[[5,'글의 주제에 맞는 어휘를 썼고, 뜻이 통하지 않는 낱말이 없음'],
+          [3,'뜻이 통하지 않는 낱말이 한·두 군데 있음'],
+          [1,'뜻이 통하지 않는 낱말이 세 군데 이상 있음']] },
+  RUBRIC_SEED[3],
+  RUBRIC_SEED[4]
+];
 
 var QUESTION_SEED = [
   { no:1, label:'1', text:'다음 글을 읽고, 글쓴이의 주장을 한 문장으로 요약하시오.', links:[1],
@@ -1231,8 +1268,18 @@ var _suppressHash = false;
 var _booted = false;
 function setHash(h){
   if (_suppressHash) return;
+  /* 까망이 탭은 케이스로부터 따라오므로, 그 기본값과 다를 때만 적는다 —
+     그래야 보통의 주소가 `#case=rv-band` 하나로 깔끔하게 남는다(26-09-03 올립). */
+  var k = (h.indexOf('#case=') === 0) ? h.slice(6) : '';
+  if (k && typeof mpTabOf === 'function' && S.mpTab !== mpTabOf(k)) h += '&tab=' + S.mpTab;
   if (location.hash === h) return;
   history.replaceState(null, '', location.pathname + location.search + h);
+}
+/* 탭만 바꿔도 주소에 남긴다 — 그 링크를 열면 보던 화면과 펼쳐 둔 탭이 그대로 살아난다 */
+function syncTabHash(){
+  var k = S.case || (S.screen === 'list' ? 'list' : '');
+  if (!k) return;
+  setHash(k === 'list' ? '#list' : '#case=' + k);
 }
 function renderHeroName(){
   var t = (S.name && S.name.trim()) ? S.name : '새 평가 설계';
@@ -1266,13 +1313,23 @@ function openDetail(caseKey){
 
 function routeFromUrl(){
   var h = location.hash.slice(1);
+  /* `#case=adv-2&tab=0` — 화면은 adv-2, 까망이는 검토 탭을 펼 둔 상태 */
+  var forced = null;
+  var amp = h.indexOf('&tab=');
+  if (amp !== -1){ forced = Number(h.slice(amp + 5)); h = h.slice(0, amp); }
   _suppressHash = true;
   try {
-    if (!h || h === 'list'){ S.listEmpty = false; showScreen('list'); renderList(); }
+    if (!h || h === 'list'){ S.listEmpty = false; S.case = 'list'; showScreen('list'); renderList(); }
     else if (h === 'list-empty'){ applyCase('list-empty'); }
     else if (h === 'detail'){ if (_booted) { showScreen('detail'); renderDetail(); } else applyCase('new'); }
     else if (h.indexOf('case=') === 0){ applyCase(h.slice(5)); }
     else { showScreen('list'); renderList(); }
+    /* 주소가 집어 준 탭이 이긴다 — _mpLast를 지금 케이스로 맞춰 두어야 자동 추종이 다시 덮지 않는다 */
+    if (forced === 0 || forced === 1){
+      _mpLast = S.case || (S.screen === 'list' ? 'list' : '');
+      S.mpTab = forced;
+      renderMockpick();
+    }
   } finally { _suppressHash = false; }
 }
 window.addEventListener('hashchange', routeFromUrl);
@@ -1429,17 +1486,24 @@ function fillStandards(){ standards = JSON.parse(JSON.stringify(STD_SEED)); rend
      ② 배점 사이를 정도 부사로만 갈랐는가        → 셀 수 있는 말로 바꾸면 경계가 선다
 ════════════════════════════════════════════════════════ */
 var RV_AXES = [
-  { name:'어법의 정확성', kw:['맞춤법','띄어쓰기','어법','문법'] },
-  { name:'어휘 사용',   kw:['어휘','낱말'] },
-  { name:'문장 표현',   kw:['문장','문체'] },
-  { name:'분량',        kw:['분량','글자 수','자 이상','자 내외','자 미만'] },
-  { name:'글의 구성',   kw:['문단','구성','서론','본론','결론','짜임'] },
-  { name:'근거 제시',   kw:['근거','출처'] },
-  { name:'주장',        kw:['주장','입장'] },
-  { name:'제출 기한',   kw:['기한','마감'] }
+  { name:'어법의 정확성', plain:'맞춤법', kw:['맞춤법','띄어쓰기','어법','문법'] },
+  { name:'어휘 사용', plain:'어휘',   kw:['어휘','낱말'] },
+  { name:'문장 표현', plain:'문장',   kw:['문장','문체'] },
+  { name:'분량', plain:'글자 수',        kw:['분량','글자 수','자 이상','자 내외','자 미만'] },
+  { name:'글의 구성', plain:'문단 구성',   kw:['문단','구성','서론','본론','결론','짜임'] },
+  { name:'근거 제시', plain:'근거',   kw:['근거','출처'] },
+  { name:'주장', plain:'주장',        kw:['주장','입장'] },
+  { name:'제출 기한', plain:'제출 기한',   kw:['기한','마감'] }
 ];
 /* 구간을 가르는 데 무게를 실은 정도 부사만 둔다 — 넣을수록 아무 데나 불어 신호가 망가진다 */
 var RV_VAGUE = ['다소','대체로','매우','약간','조금','어느 정도','상당히'];
+/* 급간을 무엇으로 나누라고 짚을지 — 아는 것만 적고, 모르면 일반 문장으로 물러선다 */
+var RV_HINT = {
+  '논리적 구성과 문단 간 연결의 자연스러움을 평가한다.':
+    "5점 문구에 있는 '문단 사이 연결어'를 살려, 연결어가 빠진 곳의 개수로"
+};
+/* 적절 등급 예시 — 우리 규칙으로는 못 만드는 판정이라 케이스로만 쓴다 */
+var RV_FAIR_COMMENT = "'예상되는 반론을 고려하고 반박했는지' 채점기준의 '설득력 있게'가 어떤 것인지 예가 없어요. 지금도 채점은 되지만, 모범답안에 반박 예시를 한 줄 넣어 주시면 판정이 더 일관돼요.";
 /* 쓰기 예시에 들어 있는 줄은 고쳐 쓴 모양까지 보여 준다.
    직접 쓴 줄은 짚기만 하고 문장을 지어내지 않는다 — 없는 것을 있는 척 하지 않기 위해. */
 var RV_FIX = {
@@ -1459,15 +1523,24 @@ function rvScan(){
   var out = [];
   rubrics.forEach(function(r, idx){
     var all = rvText(r);
-    var axes = RV_AXES.filter(function(a){
+    var hit = RV_AXES.filter(function(a){
       return a.kw.some(function(k){ return all.indexOf(k) !== -1; });
-    }).map(function(a){ return a.name; });
+    });
+    var axes = hit.map(function(a){ return a.name; });
+    /* 코멘트에 쓸 이름 — '~을 평가한다' 꼬리를 떼 어웩하지 않게 */
+    var nm = String(r.title || '').replace(/[.\u00b7]?\s*을? ?평가한다\.?$/, '').trim() || ('채점기준 ' + (idx + 1));
+    var mx = Math.max.apply(null, r.rows.map(function(x){ return Number(x[0]) || 0; }));
 
     /* ① 과적재 — 쌄 이상이면 한 기준으로 보기 어렵다 */
     if (axes.length >= 3){
       out.push({
         rid: r.id, no: idx + 1, type: 'overload', axes: axes,
         title: '한 기준에 여러 가지가 섞여 있어요',
+        /* 배너용 — 맥이 준 실제 코멘트 톤 그대로 */
+        text: "'" + nm + "' 채점기준이 " + hit.map(function(a){ return a.plain; }).join(', ')
+            + '을 한꺼번에 보고 있어요. '
+            + hit.map(function(a){ return "'" + a.name + "'"; }).join(', ')
+            + '으로 나누고 ' + mx + '점을 다시 배분해 주시면 채점이 더 정확해져요.',
         body: '이 기준이 <strong>' + axes.join(', ') + '</strong>을 한꺼번에 보고 있어요. '
             + rvCount(axes.length) + '로 나누고 각각 배점을 주면 AI가 무엇을 볼지 헷갈리지 않아요.'
       });
@@ -1490,6 +1563,9 @@ function rvScan(){
         rid: r.id, no: idx + 1, type: 'boundary',
         fixes: hitRows.filter(function(h){ return h.to; }),
         title: '배점 사이 경계가 흐릿해요',
+        text: "'" + nm + "' 채점기준의 " + mx + '점에서 ' + hitRows[hitRows.length-1].score
+            + '점 급간이 ' + quoted + ' 같은 정도 표현으로만 나뉘어 경계가 흐려요. '
+            + (RV_HINT[r.title] || '셀 수 있는 기준으로') + ' 급간을 나눠 주세요.',
         body: '배점을 <strong>' + quoted + '</strong> 같은 정도 표현으로 갈라 놓아서, 어디까지가 '
             + hitRows[0].score + '점인지 정하기 어려워요. 몇 개인지·몇 군데인지처럼 '
             + '<strong>셀 수 있는 말</strong>로 바꿔 보세요.'
@@ -1504,14 +1580,31 @@ function rvFor(rid){
 }
 
 /* 검토는 그 때 그 문장을 본 결과다 — 채점기준을 고치면 낡아진다. 지우고 다시 묻는다. */
+/* 배너 상태가 바뀌면 까망이도 따라 움직인다 —
+   화면은 '검토 결과'인데 케이스 표시는 '검토 전'에 멈춰 있으면 어느 화면을 보는 중인지 헷갈린다.
+   도는 중엔 손대지 않는다(잠시 뒤 결과로 바뀜니까). */
+function rvSyncCase(){
+  if (S.rvPlan !== 3 || S.screen !== 'detail') return;
+  if (S.review === 'load') return;
+  var k;
+  if (S.review !== 'done')      k = 'ready';
+  else if (S.reviewStale)       k = 'rv-stale';
+  else if (S.reviewFair)        k = 'rv-band-fair';
+  else                          k = REVIEW.length ? 'rv-band' : 'rv-band-good';
+  if (S.case === k) return;
+  S.case = k;
+  setHash('#case=' + k);
+  renderMockpick();
+}
 function rvInvalidate(){
   if (S.review === 'done' || S.review === 'load'){
     clearTimeout(_rvTimer); clearInterval(_rvMsgTimer);
-    S.review = 'none'; REVIEW = [];
+    S.reviewStale = true;
     /* 입력 중에는 카드를 다시 그리지 않는다(커서가 튀다) — 붙어 있던 것만 걷어낸다 */
     [].forEach.call(document.querySelectorAll('.rubric-card.rv-on'), function(el){ el.classList.remove('rv-on'); });
     closeRvDrawer();
     renderReviewBand();
+    rvSyncCase();
   }
 }
 var _rvTimer = null, _rvMsgTimer = null;
@@ -1529,13 +1622,15 @@ function runRubricReview(){
   /* 결과가 아직 살아 있으면(채점기준을 안 건드렸으면) 다시 돌리지 않고 그대로 보여 준다.
      버튼이 하나라도 5초를 또 기다리게 할 이유는 없다. 고치면 rvInvalidate 가 치워 준다. */
   if (S.review === 'done'){
-    if (S.rvPlan === 2) gotoReviewPage(); else openRvDrawer();
-    return;
+    if (S.rvPlan === 3){ S.review = 'none'; S.reviewStale = false; }   // 시있3은 배너에 이미 떠 있다 → 다시 돌린다
+    else { if (S.rvPlan === 2) gotoReviewPage(); else openRvDrawer(); return; }
   }
   clearTimeout(_rvTimer); clearInterval(_rvMsgTimer);
   S.review = 'load'; REVIEW = [];
   renderRubrics();
-  if (S.rvPlan === 2){ showScreen('review'); renderReviewPage(); }
+  S.reviewStale = false;
+  if (S.rvPlan === 3){ /* 배너 자리에서 그대로 돌다 */ }
+  else if (S.rvPlan === 2){ showScreen('review'); renderReviewPage(); }
   else { openRvDrawer(); }   // 복사본도 여기서 다시 만든다
   var i = 0;
   var paint = function(t){
@@ -1562,6 +1657,7 @@ function runRubricReview(){
     renderRvDrawer();
     renderReviewPage();
     renderMockpick();
+    rvSyncCase();
   }, 5000);
 }
 /* 드로워는 복사본(DW_R)을 고친다 — '채점기준에 반영'을 눌러야 진짜가 바뀐다.
@@ -1998,18 +2094,67 @@ function openRvDrawer(){
 function closeRvDrawer(){ document.getElementById('rv-dw-ov').classList.remove('open'); }
 
 
-/* 배너는 한 모습만 유지한다.
-   쓰려면 쓰고 말려면 말는 기능인데 상태마다 얼굴이 바니면(권유·결과·통과·다시보기)
-   읽는 비용이 기능값보다 커진다(26-09-02 올립).
-   결과가 어떻게 됐는지는 드로워/검토 화면이 말하고,
-   짚힌 곳은 카드 테두리로 남는다. 배너는 '들어가는 문'일 뿐이다. */
+/* 배너 한 자리에서 끝낸다 — 실제 출력이 { grade, comment } 둘뿐이라
+   드로워도 별도 화면도 필요 없다(26-09-03 맥 계약 확인).
+   ⚠ 코멘트를 읽으면서 위의 채점기준을 고치므로, 고쳤다고 결과를 지우면 안 된다.
+      지우지 말고 '지금 기준과 다를 수 있다'고만 알린다(26-09-03 올립). */
+var RV_GRADE = {
+  '우수':     { cls:'g-good', desc:'고칠 곳이 없어요. 이대로 채점하면 돼요.' },
+  '적절':     { cls:'g-fair', desc:'이대로 채점할 수 있지만, 코멘트대로 손보면 더 정확해져요.' },
+  '보완필요': { cls:'g-fix',  desc:'채점 전에 코멘트의 내용을 고쳐 주세요. 지금 기준으로는 점수가 흔들릴 수 있어요.' }
+};
+/* 지적이 없을 때 AI가 내놓는 글 — 맥 예시 톤 그대로 */
+var RV_OK_COMMENT = '모든 채점기준의 급간이 개수처럼 셀 수 있는 기준으로 나뉘어 있어요. 이대로 채점하셔도 좋아요.';
+
+function rvGrade(){
+  if (S.reviewFair) return '적절';
+  return REVIEW.length ? '보완필요' : '우수';
+}
+function rvComment(){
+  if (S.reviewFair) return RV_FAIR_COMMENT;
+  if (!REVIEW.length) return RV_OK_COMMENT;
+  return REVIEW.map(function(c){ return c.text; }).join('\n\n');
+}
+
 function renderReviewBand(){
   var el = document.getElementById('rubric-review');
   if (!el) return;
   if (!rubrics.length){ el.style.display = 'none'; el.innerHTML = ''; return; }
   el.style.display = 'block';
-  if (S.review === 'load'){ el.innerHTML = ''; return; }
 
+  /* ① 도는 중 — 배너 자리에서 그대로 돈다 */
+  if (S.review === 'load'){
+    el.innerHTML = '<div class="rv-box"><div class="rv-spin"></div><div style="flex:1;">'
+      + '<p class="rv-t" id="rv-load-msg">' + RV_LOAD_MSGS[0] + '</p>'
+      + '<p class="rv-d">' + RV_LOAD_WHY + '</p></div></div>';
+    return;
+  }
+
+  /* ② 결과 — 등급 하나 + 글 하나. 어느 채점기준 얘긴지는 글 안에 이름으로만 있다 */
+  if (S.review === 'done'){
+    var g = rvGrade(), gi = RV_GRADE[g];
+    var stale = S.reviewStale
+      ? '<p class="rv-stale"><i data-lucide="info"></i>'
+        + '채점기준을 고치신 뒤라 아래 내용은 지금 기준과 다를 수 있어요. 다시 검토하면 새로 봐 드려요.</p>'
+      : '';
+    var paras = rvComment().split('\n\n').map(function(p){
+      return '<p class="rv-cmt">' + esc(p) + '</p>';
+    }).join('');
+    el.innerHTML = '<div class="rv-box rv-res">'
+      + '<div class="rv-res-h">'
+      +   '<span class="rv-res-t">AI 검토 결과 · 채점기준 전체</span>'
+      +   '<span class="rv-grade ' + gi.cls + '">' + g + '</span>'
+      +   '<span style="flex:1;"></span>'
+      +   '<button class="rv-again" onclick="runRubricReview()">다시 검토</button>'
+      + '</div>'
+      + stale + paras
+      + '<p class="rv-foot">' + esc(gi.desc)
+      +   ' 검토 결과는 읽고 참고하는 용도예요. 채점기준은 위에서 직접 고쳐 주세요.</p>'
+      + '</div>';
+    icons(); return;
+  }
+
+  /* ③ 아직 안 돌림 — 한 모습만 유지. 조건부는 잠금 사유 한 줄뿐 */
   var ok = isRubricComplete();
   var lock = ok ? '' : '<p class="rv-lock">채점기준을 다 입력하면 검토할 수 있어요.</p>';
   el.innerHTML = '<div class="rv-box"><i data-lucide="sparkles"></i><div style="flex:1;">'
@@ -2045,7 +2190,8 @@ function rubricCardHtml(r, idx){
     : '<button class="btn btn-ghost btn-sm" onclick="' + delFn + '(' + idx + ')"><i data-lucide="trash-2" style="width:15px;height:15px;color:#808080;"></i>삭제</button>';
 
   /* 짚힌 카드는 테두리로만 표시하고, 내용은 드로워에서 읽는다 */
-  var cm = rvFor(r.id);
+  /* 시있3은 코멘트가 전체 단위라 어느 카드 얘긴지 시스템이 모른다 — 표시하지 않는다 */
+  var cm = (S.rvPlan === 3) ? null : rvFor(r.id);
 
   return ''
     + '<div class="rubric-card' + (cm ? ' rv-on' : '') + '" data-rid="' + r.id + '" data-di="' + idx + '">'
@@ -2409,30 +2555,50 @@ function saveDraft(){
 /* ══════════════════════════════════════════════════════════
    까망이 목업 내비게이터
 ══════════════════════════════════════════════════════════ */
-/* 연속 동작으로 닿는 중간 상태는 넣지 않는다 — 진입점과 예외만 */
+/* 케이스가 열여덟 개라 한 줄로 세우면 뭘 보는지 모른다 — 두 갈래로 나눈다.
+   t:0 채점기준 검토(AI가 루브릭을 봐 주는 일) / t:1 정확도 향상(빈 활동지·연결·모범답안) */
+var MP_TABS = ['채점기준 검토', '정확도 향상'];
 var MP_CASES = [
-  { k:'list',       label:'설계 목록',              sub:'카드 6개 — 카드로 각 상태로' },
-  { k:'new',        label:'새 설계',                 sub:'채점기준 0개' },
-  { k:'ready',      label:'설계 완료',              sub:'채점기준까지 · 고도화 전' },
-  { k:'rv-hit',     label:'검토 시안1 — 드로워',      sub:'지금 API가 주는 것만 · 교사가 고침' },
-  { k:'rv-page',    label:'검토 시안2 — 좌우 비교',   sub:'AI가 다듬은 안 통째 · 맥에게 요청할 안' },
-  { k:'ask',        label:'저장 직후 — 빈 활동지가 있나요?', sub:'분기 질문' },
-  { k:'adv-upload', label:'고도화 ① 활동지 올리기 전', sub:'드롭존' },
-  { k:'adv-1',      label:'고도화 ① 문항 확정',    sub:'문항 4개' },
-  { k:'adv-2',      label:'고도화 ② 채점기준 연결', sub:'AI가 먼저 연결해 둔 상태' },
-  { k:'adv-3',      label:'고도화 ③ 모범답안',     sub:'답안 3개 입력됨' },
-  { k:'adv-linked', label:'고도화 ②까지 하고 나감', sub:'모범답안 전' },
-  { k:'adv-done',   label:'고도화 마친 뒤 설계 상세', sub:'요약 카드' },
-  { k:'locked',     label:'과제물 인식 후',          sub:'문항 잠김' },
-  { k:'scored',     label:'AI 채점 실행 후',         sub:'배점·삭제 잠김' }
-];
+  { t:0, k:'list',           label:'설계 목록',                sub:'카드 6개 — 카드로 각 상태로' },
+  { t:0, k:'new',            label:'새 설계',                  sub:'채점기준 0개' },
+  { t:0, k:'ready',          label:'설계 완료 · 검토 전',      sub:'배너에 검토 버튼만' },
+  { t:0, k:'rv-band',        label:'검토 결과 — 보완필요',     sub:'배너 인라인 · 맥 실제 계약' },
+  { t:0, k:'rv-band-fair',   label:'검토 결과 — 적절',         sub:'채점은 되지만 손보면 더 좋음' },
+  { t:0, k:'rv-band-good',   label:'검토 결과 — 우수',         sub:'고칠 곳 없음' },
+  { t:0, k:'rv-stale',       label:'검토 뒤 채점기준 고침',    sub:'결과는 남기고 낡았다고만 알림' },
+  { t:0, k:'rv-hit',         label:'(보류) 시안1 — 드로워',    sub:'채점기준별 코멘트 전제' },
+  { t:0, k:'rv-page',        label:'(보류) 시안2 — 좌우 비교', sub:'수정본을 준다는 전제' },
 
+  { t:1, k:'ask',            label:'저장 직후 — 빈 활동지가 있나요?', sub:'분기 질문' },
+  { t:1, k:'adv-upload',     label:'① 활동지 올리기 전',       sub:'드롭존' },
+  { t:1, k:'adv-1',          label:'① 문항 확정',              sub:'문항 4개' },
+  { t:1, k:'adv-2',          label:'② 채점기준 연결',          sub:'AI가 먼저 연결해 둔 상태' },
+  { t:1, k:'adv-3',          label:'③ 모범답안 · 채점 가이드',  sub:'답안 3개 입력됨' },
+  { t:1, k:'adv-linked',     label:'②까지 하고 나감',          sub:'모범답안 전' },
+  { t:1, k:'adv-done',       label:'마친 뒤 설계 상세',        sub:'요약 카드' },
+  { t:1, k:'locked',         label:'과제물 인식 후',            sub:'문항을 고치면 인식 결과가 지워짐' },
+  { t:1, k:'scored',         label:'AI 채점 실행 후',           sub:'채점기준을 고치면 점수가 지워짐' }
+];
+/* 케이스를 고르면 그 케이스가 든 탭으로 따라간다 — 딥링크로 들어와도 맞는 탭이 열린다 */
+function mpTabOf(k){
+  for (var i = 0; i < MP_CASES.length; i++) if (MP_CASES[i].k === k) return MP_CASES[i].t;
+  return S.mpTab || 0;
+}
+function mpTab(t){ S.mpTab = t; renderMockpick(); syncTabHash(); }
+/* 케이스가 바뀔 때만 탭을 따라간다 — 매번 따라가면 탭을 눌러도 제자리로 튀게 된다 */
+var _mpLast = null;
 function renderMockpick(){
   var cur = S.case || (S.screen === 'list' ? (S.listEmpty ? 'list-empty' : 'list') : '');
-  document.getElementById('mp-cases').innerHTML = MP_CASES.map(function(it){
-    return '<button class="mp-btn' + (it.k === cur ? ' on' : '') + '" onclick="mpGo(\'' + it.k + '\')">'
-         + it.label + '<span class="mp-sub">' + it.sub + '</span></button>';
+  if (cur !== _mpLast){ _mpLast = cur; if (cur) S.mpTab = mpTabOf(cur); }
+  var t = S.mpTab || 0;
+  document.getElementById('mp-tabs').innerHTML = MP_TABS.map(function(name, i){
+    return '<button class="' + (i === t ? 'on' : '') + '" onclick="mpTab(' + i + ')">' + name + '</button>';
   }).join('');
+  document.getElementById('mp-cases').innerHTML = MP_CASES.filter(function(it){ return it.t === t; })
+    .map(function(it){
+      return '<button class="mp-btn' + (it.k === cur ? ' on' : '') + '" onclick="mpGo(\'' + it.k + '\')">'
+           + it.label + '<span class="mp-sub">' + it.sub + '</span></button>';
+    }).join('');
 }
 function mpGo(k){
   closeConfirm();
@@ -2601,10 +2767,10 @@ function applyCase(k){
   S.name = ''; S.stdFilled = false; S.rubricFilled = false;
   S.worksheet = false; S.ws = 'idle'; S.advStep = 1; S.linkDone = false;
   S.linkReady = false; S.linkLoading = false;
-  S.staleLink = false; S.staleAnswer = false; S.rubricDirty = false; S.justFrom = 0;
+  S.staleLink = false; S.staleAnswer = false; S.rubricDirty = false;
   S.answersFilled = false; S.locked = false; S.scored = false; S.questionsDirty = false; S.marks = {};
   clearTimeout(_rvTimer); clearInterval(_rvMsgTimer);
-  S.review = 'none'; REVIEW = []; RV_PICK = {}; RV_EDIT = {}; S.rvPlan = 1;
+  S.review = 'none'; REVIEW = []; RV_PICK = {}; RV_EDIT = {}; S.rvPlan = 3; S.reviewStale = false; S.reviewFair = false;
   if (document.getElementById('rv-dw-ov')) closeRvDrawer();
   resetStageOpen();
 
@@ -2628,7 +2794,7 @@ function applyCase(k){
 
   if (k === 'new') rubrics = [];   // 개발 화면 초기 상태: 채점기준 0개 + AI 생성 카드
 
-  var FILLED = ['ready','rv-hit','rv-page','ask','adv-upload','adv-1','adv-2','adv-3','adv-linked','adv-done','locked','scored'];
+  var FILLED = ['ready','rv-band','rv-band-fair','rv-band-good','rv-stale','rv-hit','rv-page','ask','adv-upload','adv-1','adv-2','adv-3','adv-linked','adv-done','locked','scored'];
   if (FILLED.indexOf(k) !== -1){
     S.name = '논설문 쓰기 — 우리 학교 급식 잔반 문제';
     S.stdFilled = true;
@@ -2637,6 +2803,14 @@ function applyCase(k){
   }
 
   /* 검토 결과 — 짚힌 예시는 씨앗 그대로 두고, 깨끗한 예시는 짚힌 두 줄을 고쳤다 */
+  /* 시있3(배너 인라인) — 맥이 준 실제 계약 { grade, comment } 그대로 */
+  if (k === 'rv-band' || k === 'rv-band-fair' || k === 'rv-band-good'){
+    S.rvPlan = 3; S.review = 'done';
+    if (k === 'rv-band-good'){ rubrics = JSON.parse(JSON.stringify(RUBRIC_OK)); REVIEW = []; }
+    else if (k === 'rv-band-fair'){ rubrics = JSON.parse(JSON.stringify(RUBRIC_OK)); REVIEW = []; S.reviewFair = true; }
+    else REVIEW = rvScan();
+  }
+  if (k === 'rv-stale'){ S.rvPlan = 3; REVIEW = rvScan(); S.review = 'done'; S.reviewStale = true; }
   if (k === 'rv-hit' || k === 'rv-page'){
     REVIEW = rvScan(); S.review = 'done'; 
     if (k === 'rv-page'){ S.rvPlan = 2; REVIEW.forEach(function(c){ RV_PICK[c.rid] = true; }); }
@@ -2702,7 +2876,7 @@ function gotoAdvStep(n){
   /* 그 단계를 열어 보고 넘어가면 '다시 봐야 함'이 풀린다 */
   if (S.advStep === 2) S.staleLink = false;
   if (S.advStep === 3) S.staleAnswer = false;
-  if (n < S.advStep) S.justFrom = 0;                 // 되돌아갈 땐 성과 배너를 남기지 않는다
+  if (n < S.advStep)                 // 되돌아갈 땐 성과 배너를 남기지 않는다
   /* 아직 연결이 없으면 먼저 만든다(기다려야 함) */
   if (n >= 2 && !S.linkReady){ runLinkLoad(n); return; }
   S.advStep = n;
@@ -2715,13 +2889,14 @@ function advNext(){
   if (S.advStep === 1){
     if (S.ws !== 'ready'){ showToast('error','빈 활동지를 먼저 올려 주세요.'); return; }
     syncQuestionsFromDom();
-    S.justFrom = 1;
+    /* 성과는 토스트로 — 다음 단계 상단에 '왜 하는지' 배너가 이미 서 있다(26-09-03 올립) */
+    showToast('success', ADV_GAIN[1]);
     gotoAdvStep(2);
     return;
   }
   if (S.advStep === 2){
     S.linkDone = true;
-    S.justFrom = 2;
+    showToast('success', ADV_GAIN[2]);
     noteAppliesNextRun();
     gotoAdvStep(3);
   }
@@ -2796,13 +2971,6 @@ function renderAdv(){
     why.style.display = wm ? 'flex' : 'none';
   }
 
-  /* 방금 끝낸 단계로 무엇을 얻었는지 — 다음 화면 위에서 한 번만 */
-  var gain = document.getElementById('adv-gain');
-  if (gain){
-    var gm = (!loading && S.justFrom && S.advStep === S.justFrom + 1) ? ADV_GAIN[S.justFrom] : '';
-    gain.innerHTML = gm ? '<i data-lucide="circle-check-big"></i><div>' + gm + '</div>' : '';
-    gain.style.display = gm ? 'flex' : 'none';
-  }
 
   /* 앞 단계가 바뀌어 다시 봐야 하는 단 */
   var sl = document.getElementById('adv-stale');
@@ -2926,9 +3094,11 @@ var ADV_WHY = {
    + '빈 활동지로 문항을 먼저 확정해 두면 그런 일이 없어요.',
   2: '문항마다 볼 기준을 정해 두면, 그 문항에 필요한 채점기준만으로 채점해요. '
    + '관계없는 기준으로 답안을 보지 않아요.',
-  3: '모범답안으로 선생님이 보시는 <strong>잘한 답안의 수준</strong>을 알려 주면, '
-   + '미루어 짐작하기 어려운 답안도 채점할 수 있어요. '
-   + '채점 가이드엔 선생님이 채점할 때 함께 보시는 점을 적어 주세요.'
+  /* 모범답안과 채점 가이드는 서로 다른 이득이라 한 줄에 이어 붙이면 뒤엣것이 묻힌다 — 줄을 나눈다 */
+  3: '<p>모범답안으로 선생님이 보시는 <strong>잘한 답안의 수준</strong>을 알려 주면, '
+   + '미루어 짐작하기 어려운 답안도 채점할 수 있어요.</p>'
+   + '<p>채점 가이드에 <strong>채점할 때 함께 보시는 점</strong>을 적어 두면, '
+   + 'AI가 그것까지 반영해서 선생님이 생각하시는 수준에 맞춰 채점해요.</p>'
 };
 var ADV_GAIN = {
   1: '문항을 확정했어요. 이제 학생이 적어 놓은 낙서나 메모를 문제로 읽지 않아요.',
