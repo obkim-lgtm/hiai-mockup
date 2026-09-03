@@ -415,6 +415,17 @@ body { margin: 0; background: #EDF3FC; min-width: 1280px;
 /* ── 고도화 카드 ──
    필수 설계(흰 본문)와 축이 달라 배경으로 구분한다.
    좌측 띄는 쓰지 않고 배경+아이콘으로만. */
+/* 다시 봐야 하는 단이 있으면 카드가 먼저 말한다 —
+   안에 회색 배지와 괄호 텍스트만 두면 고치고 나서 모르고 지나간다(26-09-03 올립) */
+.stage-card.adv-hi.adv-stale-on { border-color:#EFA94A; background:#FFFCF7; }
+.stage-card.adv-hi.adv-stale-on .sec-title { color:#7A4A00; }
+/* 왜 다시 봐야 하는지 — 카드가 이미 주황이라 박스는 두르지 않는다(아이콘 + 글) */
+.adv-why-redo { display:flex; align-items:flex-start; gap:8px; margin:0 0 14px;
+                font-size:16px; color:#7A4A00; line-height:1.6; }
+.adv-why-redo svg { width:18px; height:18px; color:#C2620A; flex-shrink:0; margin-top:3px; }
+.adv-redo { display:inline-flex; align-items:center; justify-content:center; line-height:1; vertical-align:middle; gap:4px;
+            height:24px; padding:0 9px; margin-left:6px; border-radius:100px;
+            background:#FFF3E0; color:#C2620A; font-size:13px; font-weight:700; white-space:nowrap; }
 .stage-card.adv-hi { background:#F7FBFF; border-color:#B5D6F9; }
 
 /* ── 고도화 단계 표시 ── */
@@ -498,6 +509,11 @@ body { margin: 0; background: #EDF3FC; min-width: 1280px;
            background:#F7FBFF; border:1px solid #B5D6F9; border-radius:10px; padding:14px 16px;
            font-size:16px; font-weight:700; color:#0A2A5E; line-height:1.6; }
 .adv-why svg { width:18px; height:18px; color:#0950A0; flex-shrink:0; margin-top:2px; }
+/* 파란 배너와 같은 모양·같은 크기 — 색만 다르게 두어 무게를 맞춘다 */
+.adv-stale-top { display:flex; align-items:flex-start; gap:10px; margin-bottom:14px;
+                 background:#FFF8F0; border:1px solid #F3D6AE; border-radius:10px; padding:14px 16px;
+                 font-size:16px; font-weight:700; color:#7A4A00; line-height:1.6; }
+.adv-stale-top svg { width:18px; height:18px; color:#C2620A; flex-shrink:0; margin-top:2px; }
 .adv-why p { margin:0; }
 .adv-why p + p { margin-top:9px; }
 </style>
@@ -855,6 +871,9 @@ body { margin: 0; background: #EDF3FC; min-width: 1280px;
         <!-- 단계 표시 — 닿은 단계는 되돌아갈 수 있고, 안 닿은 단계는 누를 수 없다 -->
         <div id="adv-steps" class="adv-steps"></div>
         <!-- 이 단계를 하면 무엇이 좋아지는지 — 상시. 과업이 무거워 대가가 계속 보여야 한다 -->
+        <!-- 다시 봐야 하는 일 — 탭 바로 아래, '왜 하는지'(파랑)보다 위.
+             단 안에 두었더니 세 번째 메시지라 묻혔다(26-09-03 올립) -->
+        <div id="adv-stale" class="adv-stale-top" style="display:none;"></div>
         <div id="adv-why" class="adv-why"></div>
 
         <!-- 문항 분석 로딩 -->
@@ -911,10 +930,6 @@ body { margin: 0; background: #EDF3FC; min-width: 1280px;
         <!-- ═══ ② 채점기준 연결 ═══ -->
         <div id="adv-2" style="display:none;">
           <p class="step-desc">문항마다 어떤 채점기준으로 볼지 AI가 먼저 연결해 두었어요. 확인하고 고쳐 주세요.</p>
-          <div id="adv-stale" class="note note-info" style="display:none;margin-bottom:14px;">
-            <i data-lucide="info" style="color:#00778B;"></i>
-            <div><strong>채점기준이 바뀜었어요.</strong> 바뀐 기준이 문항에 연결되어 있는지 확인해 주세요.</div>
-          </div>
           <div class="lk-legend" id="lk-legend"></div>
           <div style="overflow-x:auto;"><table class="lk-tb" id="lk-table"></table></div>
           <div class="lk-hint" id="lk-hint" style="display:none;"></div>
@@ -923,7 +938,6 @@ body { margin: 0; background: #EDF3FC; min-width: 1280px;
         <!-- ═══ ③ 모범답안 · 채점 가이드 ═══ -->
         <div id="adv-3" style="display:none;">
           <p class="step-desc"><strong>단답형처럼 답이 정해진 문항은 모범답안을 넣어 주시면 채점이 정확해져요.</strong> 비워 두어도 채점은 진행돼요.</p>
-          <div id="adv-stale-a" class="note note-warn" style="display:none;margin-bottom:14px;"></div>
           <div id="qa-list" style="display:flex;flex-direction:column;gap:12px;"></div>
         </div>
 
@@ -1071,7 +1085,8 @@ body { margin: 0; background: #EDF3FC; min-width: 1280px;
 
    ⚠ 채점기준 변경 → ② 연결을 다시 봐야 한다는 표시는 이 스위치와 무관하게 늘 켜 둔다.
      저장 확인이 못 잡는 것이라(지워지는 게 아니니까) 없애면 교사가 영영 모른다 — 줄리 우려. */
-var SHOW_STANDING_NOTICE = false;   // 상시 잠금 배너 + 채점기준 섹션 재연결 안내
+var SHOW_STANDING_NOTICE = false;
+var _NOTICE_DEFAULT = false;   // 파일에 적힌 값 — st-on 케이스가 잠깐 켜 보여 준 뒤 이 값으로 돌아온다   // 상시 잠금 배너 + 채점기준 섹션 재연결 안내
 var LOCK_AFTER_OCR       = false;   // 과제물 인식 후 활동지·문항 고치기를 막을 것인가
 
 var S = {
@@ -1091,6 +1106,7 @@ var S = {
   rubricDirty: false,    // 채점 후 채점기준을 건드렸는가 — 저장할 때 초기화를 묻는다
   review: 'none',        // 채점기준 AI 검토: none | load | done
   mpTab: 0,              // 까망이 탭: 0 채점기준 검토 | 1 정확도 향상
+  staleAsked: false,     // ②단에서 다시 연결할지 물어봤는가 — 한 번만 묻는다
   reviewStale: false,    // 결과를 본 뒤 채점기준을 고쳐는가 — 지우지 않고 낡았다고만 알린다
   reviewFair: false,     // 적절 등급 케이스
   rvPlan: 3,             // 검토 결과를 어떻게 보여 줄가: 1 드로워(현행 API) | 2 좌우 비교 페이지(맥에게 요청할 안)
@@ -2560,7 +2576,7 @@ function saveDraft(){
 ══════════════════════════════════════════════════════════ */
 /* 케이스가 열여덟 개라 한 줄로 세우면 뭘 보는지 모른다 — 두 갈래로 나눈다.
    t:0 채점기준 검토(AI가 루브릭을 봐 주는 일) / t:1 정확도 향상(빈 활동지·연결·모범답안) */
-var MP_TABS = ['채점기준 검토', '정확도 향상'];
+var MP_TABS = ['채점기준 검토', '정확도 향상', '고친 뒤 처리'];
 var MP_CASES = [
   { t:0, k:'list',           label:'설계 목록',                sub:'카드 6개 — 카드로 각 상태로' },
   { t:0, k:'new',            label:'새 설계',                  sub:'채점기준 0개' },
@@ -2568,7 +2584,6 @@ var MP_CASES = [
   { t:0, k:'rv-band',        label:'검토 결과 — 보완필요',     sub:'배너 인라인 · 맥 실제 계약' },
   { t:0, k:'rv-band-fair',   label:'검토 결과 — 적절',         sub:'채점은 되지만 손보면 더 좋음' },
   { t:0, k:'rv-band-good',   label:'검토 결과 — 우수',         sub:'고칠 곳 없음' },
-  { t:0, k:'rv-stale',       label:'검토 뒤 채점기준 고침',    sub:'결과는 남기고 낡았다고만 알림' },
   { t:0, k:'rv-hit',         label:'(보류) 시안1 — 드로워',    sub:'채점기준별 코멘트 전제' },
   { t:0, k:'rv-page',        label:'(보류) 시안2 — 좌우 비교', sub:'수정본을 준다는 전제' },
 
@@ -2579,8 +2594,18 @@ var MP_CASES = [
   { t:1, k:'adv-3',          label:'③ 모범답안 · 채점 가이드',  sub:'답안 3개 입력됨' },
   { t:1, k:'adv-linked',     label:'②까지 하고 나감',          sub:'모범답안 전' },
   { t:1, k:'adv-done',       label:'마친 뒤 설계 상세',        sub:'요약 카드' },
-  { t:1, k:'locked',         label:'과제물 인식 후',            sub:'문항을 고치면 인식 결과가 지워짐' },
-  { t:1, k:'scored',         label:'AI 채점 실행 후',           sub:'채점기준을 고치면 점수가 지워짐' }
+  { t:1, k:'locked',         label:'과제물 인식 후',            sub:'고칠 수 있음 · 저장할 때 물어봄' },
+  { t:1, k:'scored',         label:'AI 채점 실행 후',           sub:'고칠 수 있음 · 저장할 때 물어봄' },
+
+  /* 무언가를 고쳤을 때 무슨 일이 생기는가 — 지우는 것과 다시 봐야 하는 것을 갈라 본다 */
+  { t:2, k:'rv-stale',       label:'검토 뒤 채점기준 고침',    sub:'결과는 남기고 낡았다고만 알림' },
+  { t:2, k:'st-link',        label:'채점기준 고침 → 연결 낡음', sub:'설계 상세 · 카드에 (다시 확인 필요)' },
+  { t:2, k:'st-link2',       label:'그 상태로 ②단 열기',       sub:'단 상단 안내 + 칩 주황 점' },
+  { t:2, k:'st-answer',      label:'문항 고침 → ②③ 둘 다',    sub:'③단 상단 안내' },
+  { t:2, k:'st-score',       label:'채점 후 고치고 저장',      sub:'채점 결과를 지울지 물음' },
+  { t:2, k:'st-ocr',         label:'인식 후 활동지 바꾸고 저장', sub:'인식 결과를 지울지 물음' },
+  { t:2, k:'st-both',        label:'둘 다 지워지는 경우',      sub:'확인창에 두 줄' },
+  { t:2, k:'st-on',          label:'(참고) 상시 안내 켠 모습',  sub:'SHOW_STANDING_NOTICE = true' }
 ];
 /* 케이스를 고르면 그 케이스가 든 탭으로 따라간다 — 딥링크로 들어와도 맞는 탭이 열린다 */
 function mpTabOf(k){
@@ -2746,12 +2771,13 @@ function jumpToAdv(caseKey){
       매긴 점수를 무효로 만들지 않는다 → 다음 채점부터 반영된다고 알리기만 한다.
 ══════════════════════════════════════════════════════════ */
 function markRubricChanged(){
-  if (S.linkDone) S.staleLink = true;
+  /* false → true 로 넘어갈 때만 묻기를 다시 열어 둔다 — 타이핑할 때마다 물으면 괴롭다 */
+  if (S.linkDone && !S.staleLink){ S.staleLink = true; S.staleAsked = false; }
   if (S.scored) S.rubricDirty = true;
 }
 /* 입력 중에도 불리므로 표식만 세우고 렌더는 하지 않는다(커서가 튄다) */
 function markQuestionsChanged(){
-  if (S.linkDone) S.staleLink = true;
+  if (S.linkDone && !S.staleLink){ S.staleLink = true; S.staleAsked = false; }
   if (countAnswers() > 0) S.staleAnswer = true;
   /* 인식이 끝난 뒤 문항을 건드렸다면, 학생 답안이 이 문항대로 나뉘어 있어 인식 결과가 어긋난다.
      막지 않고 표식만 남긴다 — 저장할 때 지울지 묻는다. */
@@ -2770,10 +2796,11 @@ function applyCase(k){
   S.name = ''; S.stdFilled = false; S.rubricFilled = false;
   S.worksheet = false; S.ws = 'idle'; S.advStep = 1; S.linkDone = false;
   S.linkReady = false; S.linkLoading = false;
-  S.staleLink = false; S.staleAnswer = false; S.rubricDirty = false;
+  S.staleLink = false; S.staleAnswer = false; S.staleAsked = false; S.rubricDirty = false;
   S.answersFilled = false; S.locked = false; S.scored = false; S.questionsDirty = false; S.marks = {};
   clearTimeout(_rvTimer); clearInterval(_rvMsgTimer);
   S.review = 'none'; REVIEW = []; RV_PICK = {}; RV_EDIT = {}; S.rvPlan = 3; S.reviewStale = false; S.reviewFair = false;
+  SHOW_STANDING_NOTICE = _NOTICE_DEFAULT;
   if (document.getElementById('rv-dw-ov')) closeRvDrawer();
   resetStageOpen();
 
@@ -2797,7 +2824,8 @@ function applyCase(k){
 
   if (k === 'new') rubrics = [];   // 개발 화면 초기 상태: 채점기준 0개 + AI 생성 카드
 
-  var FILLED = ['ready','rv-band','rv-band-fair','rv-band-good','rv-stale','rv-hit','rv-page','ask','adv-upload','adv-1','adv-2','adv-3','adv-linked','adv-done','locked','scored'];
+  var FILLED = ['ready','rv-band','rv-band-fair','rv-band-good','rv-stale','rv-hit','rv-page',
+                'st-link','st-link2','st-answer','st-score','st-ocr','st-both','st-on','ask','adv-upload','adv-1','adv-2','adv-3','adv-linked','adv-done','locked','scored'];
   if (FILLED.indexOf(k) !== -1){
     S.name = '논설문 쓰기 — 우리 학교 급식 잔반 문제';
     S.stdFilled = true;
@@ -2814,6 +2842,22 @@ function applyCase(k){
     else REVIEW = rvScan();
   }
   if (k === 'rv-stale'){ S.rvPlan = 3; REVIEW = rvScan(); S.review = 'done'; S.reviewStale = true; }
+
+  /* ══ 고친 뒤 처리 — 두 가지를 갈라 본다 ══
+     · 다시 봐야 하는 것(연결·모범답안) → 표시만, 막지 않음
+     · 지워지는 것(채점 결과·인식 결과) → 저장할 때 한 번 물음 */
+  var ST = ['st-link','st-link2','st-answer','st-score','st-ocr','st-both','st-on'];
+  if (ST.indexOf(k) !== -1){
+    S.worksheet = true; S.ws = 'ready'; S.linkDone = true; S.answersFilled = true;
+    fillQ4Links(); S.linkReady = true; fillAnswers();
+  }
+  if (k === 'st-link' || k === 'st-link2'){ S.staleLink = true; }
+  if (k === 'st-answer'){ S.staleLink = true; S.staleAnswer = true; }
+  if (k === 'st-link2'){ S.advStep = 2; }
+  if (k === 'st-answer'){ S.advStep = 3; }
+  if (k === 'st-score' || k === 'st-both' || k === 'st-on'){ S.scored = true; S.rubricDirty = true; S.staleLink = true; }
+  if (k === 'st-ocr'  || k === 'st-both'){ S.locked = true; S.questionsDirty = true; }
+  if (k === 'st-on'){ S.locked = true; SHOW_STANDING_NOTICE = true; }
   if (k === 'rv-hit' || k === 'rv-page'){
     REVIEW = rvScan(); S.review = 'done'; 
     if (k === 'rv-page'){ S.rvPlan = 2; REVIEW.forEach(function(c){ RV_PICK[c.rid] = true; }); }
@@ -2832,10 +2876,14 @@ function applyCase(k){
   var target = 'detail';
   if (k === 'adv-upload' || k === 'adv-1' || k === 'adv-2' || k === 'adv-3') target = 'adv';
   if (k === 'rv-page') target = 'review';
+  if (k === 'st-link2' || k === 'st-answer') target = 'adv';
   renderDetail();
   showScreen(target);
   if (k === 'rv-page') renderReviewPage();
+  if (target === 'adv') maybeAskRelink();
   if (k === 'ask') setTimeout(askWorksheet, 250);
+  /* 저장 확인을 보여 주는 케이스 — 들어오자마자 그 창을 띄운다 */
+  if (k === 'st-score' || k === 'st-ocr' || k === 'st-both') setTimeout(saveDesign, 250);
 }
 
 /* ══════════════════════════════════════════════════════════
@@ -2873,13 +2921,37 @@ function renderAdvSteps(){
       + '</button>';
   }).join('');
 }
+/* 다시 연결 — AI가 처음부터 다시 만든다. 직접 고친 연결은 새로 덮인다. */
+function redoLink(){
+  closeConfirm();
+  S.linkReady = false;
+  runLinkLoad(2);
+}
+/* ②단에 들어왔는데 연결이 낡았으면 한 번 묻는다 —
+   되돌릴 수 없는 일(직접 고친 연결이 덮임)을 고르는 거라 팝업이 맞는 자리다.
+   닫으면 배너의 `AI가 다시 연결`로 언제든 다시 할 수 있다. */
+/* 이동이 끝난 자리에서 부른다 — renderAdv 는 showScreen 보다 먼저 돌아 화면 판정이 아직 안 바뀜다 */
+function maybeAskRelink(){
+  if (S.advStep !== 2 || !S.staleLink || S.staleAsked) return;
+  S.staleAsked = true;
+  setTimeout(askRelink, 300);
+}
+function askRelink(){
+  /* 직접 고치기를 같은 무게의 선택지로 두지 않는다 — 새로 만든 채점기준은 어느 문항에도
+     붙어 있지 않아서, 손으로 하려면 칸을 하나하나 눌러야 한다. 다시 연결이 먼저다(26-09-03 올립). */
+  openConfirm((S.staleAnswer ? '문항' : '채점기준') + '이 바뀌었어요',
+    '<strong>다시 연결하면 '
+    + (S.staleAnswer ? '바뀐 문항에 맞는 기준' : '문항마다 바뀐 채점기준') + '으로 채점해서 결과가 더 정확해져요.</strong><br>'
+    + '지금 연결은 ' + (S.staleAnswer ? '문항을 바꾸기' : '채점기준을 고치기') + ' 전 상태예요. '
+    + '다시 연결한 뒤 필요한 곳만 손보시면 돼요. 직접 고치신 연결은 새로 만들어져요.',
+    'AI가 다시 연결', function(){ redoLink(); }, '나중에');
+}
 function gotoAdvStep(n){
   if (!advReach(n)){ showToast('error', advBlockMsg(n)); return; }
   if (S.advStep === 1) syncQuestionsFromDom();
   /* 그 단계를 열어 보고 넘어가면 '다시 봐야 함'이 풀린다 */
   if (S.advStep === 2) S.staleLink = false;
   if (S.advStep === 3) S.staleAnswer = false;
-  if (n < S.advStep)                 // 되돌아갈 땐 성과 배너를 남기지 않는다
   /* 아직 연결이 없으면 먼저 만든다(기다려야 함) */
   if (n >= 2 && !S.linkReady){ runLinkLoad(n); return; }
   S.advStep = n;
@@ -2887,6 +2959,7 @@ function gotoAdvStep(n){
   renderAdv();
   setHash('#case=' + S.case);
   window.scrollTo({ top:0, behavior:'smooth' });
+  maybeAskRelink();
 }
 function advNext(){
   if (S.advStep === 1){
@@ -2960,7 +3033,8 @@ function renderAdv(){
   show('ws-help-row', !S.worksheet);
   show('dz-filled', S.worksheet);
   show('adv-q-wrap', S.ws === 'ready');
-  show('btn-ws-reanalyze', !loading && S.worksheet && !S.locked, 'inline-flex');
+  /* 막지 않는다 — 다시 분석해도 되고, 지워지는 건 저장할 때 묻는다 */
+  show('btn-ws-reanalyze', !loading && S.worksheet, 'inline-flex');
   var fnm = document.getElementById('ws-file-name');
   if (fnm) fnm.textContent = WS_FILE_NAME;
   var sum = document.getElementById('ws-sum-2');
@@ -2977,11 +3051,26 @@ function renderAdv(){
 
   /* 앞 단계가 바뀌어 다시 봐야 하는 단 */
   var sl = document.getElementById('adv-stale');
-  if (sl) sl.innerHTML = '<i data-lucide="info"></i><div><strong>채점기준이나 문항이 바뀌었어요.</strong> 바뀐 내용이 이 연결에 맞는지 확인해 주세요.</div>';
-  show('adv-stale', S.advStep === 2 && !!S.staleLink, 'flex');
-  var sa = document.getElementById('adv-stale-a');
-  if (sa) sa.innerHTML = '<i data-lucide="info"></i><div><strong>문항이 바뀌었어요.</strong> 적어 둔 모범답안이 지금 문항에 맞는지 확인해 주세요.</div>';
-  show('adv-stale-a', S.advStep === 3 && !!S.staleAnswer, 'flex');
+  /* 단마다 무엇을 다시 봐야 하는지가 다르다 — ②은 연결(AI에게 맡길 수 있음),
+     ③는 모범답안(선생님이 쓰는 것이라 버튼이 없다) */
+  var sl = document.getElementById('adv-stale');
+  var slOn = (S.advStep === 2 && !!S.staleLink) || (S.advStep === 3 && !!S.staleAnswer);
+  if (sl && slOn){
+    /* 무엇이 잘못됐는지(상태) → 이대로 두면 어떻게 되는지(결과) → 무엇을 하면 되는지(행동) 순서.
+       '연결에 반영되어 있지 않다' 같은 시스템 말투 대신 선생님이 겪을 일로 적는다(26-09-03 올립). */
+    sl.innerHTML = (S.advStep === 2)
+      ? '<i data-lucide="triangle-alert"></i><div>'
+        + '<strong>다시 연결하면 '
+        + (S.staleAnswer ? '바뀐 문항에 맞는 기준' : '문항마다 바뀐 채점기준') + '으로 채점해서 결과가 더 정확해져요.</strong> '
+        + '지금 연결은 ' + (S.staleAnswer ? '문항을 바꾸기' : '채점기준을 고치기') + ' 전 상태예요. 이대로 채점해도 되고요.'
+        + '<div style="margin-top:10px;"><button class="btn btn-outline btn-sm" onclick="redoLink()">'
+        + '<i data-lucide="sparkles" style="width:15px;height:15px;"></i>AI가 다시 연결</button></div></div>'
+      : '<i data-lucide="triangle-alert"></i><div>'
+        + '<strong>모범답안이 지금 문항과 맞으면 AI가 선생님 기준을 더 정확히 알아요.</strong> '
+        + '문항이 바뀌었으니 문항마다 열어 확인해 주세요.</div>';
+  }
+  show('adv-stale', slOn, 'flex');
+
 
   /* 하단 이동 */
   var last = (S.advStep === 3);
@@ -3019,8 +3108,11 @@ function renderAdvCard(){
      시작 전에도 무엇을 하는 기능인지 세 줄로 보여야 '활동지만 올리는 것'으로 읽히지 않는다 */
   /* 번호를 붙여 '순서대로 하는 일'임을 드러낸다 — 고도화 화면의 단계 표시와 같은 모양.
      완료돼도 번호는 남긴다(색만 채움). 체크로 바꾸면 몇 번째였는지가 사라진다. */
+  /* done — true 마침 / 'redo' 마쳤지만 다시 봐야 함 / false 아직
+     세 가지를 두 가지로 접으면 '했는데 확인 필요'가 '안 함'으로 읽힌다 */
   var row = function(n, done, text){
-    var dot = done ? 'background:#00AF3D;color:#fff;' : 'background:#EDEDED;color:#808080;';
+    var dot = (done === 'redo') ? 'background:#EFA94A;color:#fff;'
+            : done ? 'background:#00AF3D;color:#fff;' : 'background:#EDEDED;color:#808080;';
     return '<li style="display:flex;align-items:flex-start;gap:10px;font-size:16px;color:#494949;line-height:1.6;">'
       + '<span style="' + dot + 'display:inline-flex;align-items:center;justify-content:center;line-height:1;'
       + 'width:21px;height:21px;border-radius:50%;font-size:12px;font-weight:700;flex-shrink:0;margin-top:3px;">' + n + '</span>'
@@ -3049,27 +3141,45 @@ function renderAdvCard(){
       + '<button class="btn btn-secondary" onclick="gotoAdv()"><i data-lucide="file-up" style="width:20px;height:20px;"></i>빈 활동지부터 올리기</button>';
   } else {
     var na = countAnswers();
-    var lockNote = S.locked
-      ? '<div class="note note-lock" style="margin-bottom:14px;"><i data-lucide="lock"></i><div>'
-        + '<strong>과제물 인식이 시작되어 문항을 바꿀 수 없어요.</strong> 학생 답안이 이미 이 문항대로 나뉘어 있어서예요. '
-        + '문항을 바꾸시려면 <strong>설계 추가 → 복사해서 만들기</strong>로 새 설계를 만들어 주세요. 채점기준과 모범답안은 그대로 따라와요.'
+    /* 막지 않는다(26-09-02) — '바꿀 수 없다'는 이제 사실이 아니다.
+       그 자리에 무엇이 사라지는지만 상시 안내로 두면 또 상시 배너가 되므로,
+       저장할 때 묻는 것으로 대신한다. 스위치를 켜 둔 사람에게만 보인다. */
+    var lockNote = (SHOW_STANDING_NOTICE && S.locked)
+      ? '<div class="note note-lock" style="margin-bottom:14px;"><i data-lucide="info"></i><div>'
+        + '<strong>과제물 인식이 끝난 평가예요.</strong> 문항을 고치셔도 되지만, '
+        + '학생 답안이 이미 지금 문항대로 나뉘어 있어 저장할 때 인식 결과를 지울지 물어봐요.'
         + '</div></div>'
       : '';
-    /* 같은 안내를 채점기준 섹션이 이미 하고 있어 여기서는 상태만 — 한 화면에 두 번 말하지 않는다 */
-    var stale = '';
+    /* 왜 다시 봐야 하는지를 적는다 — `다시 확인` 칩만 두면 무엇 때문인지 알 수가 없다(26-09-03 올립).
+       문항이 바뀐 경우와 채점기준만 바뀐 경우는 다시 볼 대상이 달라서 갈라 쓴다. */
+    var stale = S.staleAnswer
+      ? '<p class="adv-why-redo"><i data-lucide="triangle-alert"></i>'
+        + '<span><strong>문항이 바뀌었어요.</strong> 문항마다 볼 채점기준과 모범답안이 지금 문항에 맞는지 확인해 주세요.</span></p>'
+      : (S.staleLink
+        ? '<p class="adv-why-redo"><i data-lucide="triangle-alert"></i>'
+          + '<span><strong>채점기준이 바뀌었어요.</strong> 다시 연결하면 문항마다 바뀐 기준으로 채점해서 결과가 더 정확해져요.</span></p>'
+        : '');
     var allDone = S.linkDone && na > 0;
     h = lockNote + stale
       + list([
           row(1, true, '문항 ' + QUESTIONS.length + '개를 확정했어요.'),
-          row(2, S.linkDone && !S.staleLink, S.linkDone
-            ? (S.staleLink ? '문항마다 채점기준을 연결했어요. (다시 확인 필요)' : '문항마다 채점기준을 연결했어요.')
+          row(2, S.linkDone ? (S.staleLink ? 'redo' : true) : false, S.linkDone
+            ? '문항마다 채점기준을 연결했어요.'
+              + (S.staleLink ? '<span class="adv-redo">다시 확인</span>' : '')
             : '채점기준 연결은 아직이에요.'),
-          row(3, na > 0, na ? ('모범답안을 ' + na + '개 문항에 넣었어요.') : '모범답안은 아직 넣지 않았어요.')
+          row(3, na > 0 ? (S.staleAnswer ? 'redo' : true) : false,
+            na ? ('모범답안을 ' + na + '개 문항에 넣었어요.'
+                  + (S.staleAnswer ? '<span class="adv-redo">다시 확인</span>' : ''))
+               : '모범답안은 아직 넣지 않았어요.')
         ])
-      + '<button class="btn btn-secondary" onclick="gotoAdv()"><i data-lucide="' + ((S.locked || allDone) ? 'list-checks' : 'pencil-line') + '" style="width:20px;height:20px;"></i>'
-      + ((S.locked || allDone) ? '확인하기' : '이어서 하기') + '</button>';
+      /* 다 마쳤을 때만 '확인하기' — 인식이 끝나도 고칠 수 있게 풀었으므로 */
+      + '<button class="btn btn-secondary" onclick="gotoAdv()"><i data-lucide="' + (allDone ? 'list-checks' : 'pencil-line') + '" style="width:20px;height:20px;"></i>'
+      + ((S.staleLink || S.staleAnswer) ? '다시 확인하기' : (allDone ? '확인하기' : '이어서 하기')) + '</button>';
   }
   el.innerHTML = h;
+  /* 다시 봐야 하는 단이 하나라도 있으면 카드 테두리까지 바꾼다 */
+  var grp = document.getElementById('grp-adv');
+  if (grp) grp.classList.toggle('adv-stale-on', !!(S.staleLink || S.staleAnswer));
 }
 
 /* ── 활동지 업로드 → 문항 분석 ──
@@ -3186,23 +3296,27 @@ function resetAdvWork(){
      인식이 끝난 설계라면 저장할 때 인식 결과를 지울지 묻는다 */
   if (S.locked) S.questionsDirty = true;
 }
-/* 받침에 따라 이/가 — 목록 끝 단어가 무엇이냐에 따라 달라진다 */
-function josa(w){
-  var c = w.charCodeAt(w.length - 1) - 0xAC00;
-  return (c >= 0 && c <= 11171 && c % 28) ? '이' : '가';
+/* 활동지를 갈아 끼우거나 문항을 다시 나누면 뒤 단계가 통째로 날아간다.
+   쉼표로 이어 붙이면 몇 개가 사라지는지가 안 읽힌다 — 세어서 줄로 보여 준다(26-09-03 올립).
+   저장 확인창과 같은 모양을 쓴다: '지워지는 것을 줄로 센다'는 한 가지 법으로. */
+function resetWarnHtml(tail){
+  /* 몇 개인지는 안 센다 — 무엇이 사라지는지만 알면 판단이 된다(26-09-03 올립) */
+  var li = ['<li><strong>문항</strong> — 직접 고치신 내용까지 새로 만들어져요</li>'];
+  if (S.linkDone) li.push('<li><strong>문항마다 연결해 둔 채점기준</strong> — 사라져요</li>');
+  if (countAnswers() > 0) li.push('<li><strong>모범답안과 채점 가이드</strong> — 사라져요</li>');
+  return '<ul style="margin:8px 0 0;padding-left:18px;line-height:1.8;">' + li.join('') + '</ul>'
+    + '<div style="margin-top:10px;">채점기준 자체는 그대로 남아요. 되돌릴 수 없어요.'
+    + (tail || '') + '</div>';
 }
 function pickWorksheet(){
   if (LOCK_AFTER_OCR && S.locked){ showToast('error','과제물 인식이 시작되어 활동지를 바꿀 수 없어요. 복사해서 만들기로 새 설계를 만들어 주세요.'); return; }
   if (!S.worksheet){ document.getElementById('ws-file').click(); return; }
-  var gone = ['문항 목록과 직접 고친 내용'];
-  if (S.linkDone) gone.push('문항마다 연결해 둔 채점기준');
-  if (countAnswers() > 0) gone.push('문항별 모범답안과 채점 가이드');
   /* 인식이 끝난 뒤라면 인식 결과도 어긋난다 — 막지 않고, 여기서 미리 알린 뒤 저장할 때 확정한다 */
   var ocr = S.locked
-    ? '<br>과제물 인식 결과도 답안을 다시 나눠야 해서, 저장할 때 지울지 물어봐요.'
+    ? ' 과제물 인식 결과도 답안을 다시 나눠야 해서, 저장할 때 지울지 물어봐요.'
     : '';
   openConfirm('활동지를 바꿀까요?',
-    '<strong>' + gone.join(', ') + '</strong>' + josa(gone[gone.length - 1]) + ' 사라지고 새로 만들어져요.<br>채점기준 자체는 그대로 남아요.' + ocr,
+    '새 활동지로 문항을 다시 나눠요. 지금 것은 이렇게 돼요.' + resetWarnHtml(ocr),
     '파일 고르기', function(){ document.getElementById('ws-file').click(); });
 }
 function onWsFile(input){
@@ -3230,12 +3344,8 @@ function analyzeStructure(){
   if (!S.worksheet){ showToast('error','빈 활동지를 먼저 올려 주세요.'); return; }
   if (LOCK_AFTER_OCR && S.locked){ showToast('error','과제물 인식이 시작되어 문항을 다시 나눌 수 없어요. 복사해서 만들기로 새 설계를 만들어 주세요.'); return; }
   if (!wsDone()){ runAdvLoad(); return; }
-  var gone = ['문항 목록과 직접 고친 내용'];
-  if (S.linkDone) gone.push('문항마다 연결해 둔 채점기준');
-  if (countAnswers() > 0) gone.push('문항별 모범답안과 채점 가이드');
-  var last = gone[gone.length - 1];
   openConfirm('문항을 다시 나눌까요?',
-    '<strong>' + gone.join(', ') + '</strong>' + josa(last) + ' 사라지고 새로 만들어져요.<br>채점기준 자체는 그대로 남아요.',
+    '빈 활동지를 다시 읽어 문항을 새로 만들어요. 지금 것은 이렇게 돼요.' + resetWarnHtml(),
     '다시 분석', function(){ resetAdvWork(); runAdvLoad(); });
 }
 
@@ -3376,7 +3486,8 @@ function renderToc(){
 function renderRubricRelink(){
   var el = document.getElementById('rubric-relink');
   if (!el) return;
-  var on = SHOW_STANDING_NOTICE && S.linkDone && S.staleLink && !S.locked;
+  /* 인식 후에도 채점기준을 고칠 수 있게 풀었으므로 연결을 다시 보라는 안내도 그대로 필요하다 */
+  var on = SHOW_STANDING_NOTICE && S.linkDone && S.staleLink;
   el.style.display = on ? 'flex' : 'none';
   if (!on) return;
   el.innerHTML = '<i data-lucide="triangle-alert"></i>'
