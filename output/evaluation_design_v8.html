@@ -10,7 +10,10 @@
 <style>
 @import url('../screens/fonts.css');
 * { font-family: 'NanumSquareRound', -apple-system, sans-serif; box-sizing: border-box; }
-body { margin: 0; background: #EDF3FC; min-width: 1280px; }
+/* 한글은 어절 단위로만 끊는다 — 기본값이면 '되지만'이 '되지 / 만'으로 갈린다.
+   overflow-wrap은 안전망: URL처럼 끊을 데 없는 긴 덩어리가 칸을 밀고 나가지 않게. */
+body { margin: 0; background: #EDF3FC; min-width: 1280px;
+       word-break: keep-all; overflow-wrap: break-word; }
 .screen { display: none; }
 .screen.active { display: block; }
 @keyframes spin { to { transform: rotate(360deg); } }
