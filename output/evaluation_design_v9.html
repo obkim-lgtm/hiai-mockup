@@ -2244,7 +2244,7 @@ function rubricCardHtml(r, idx){
     : '<button class="btn btn-ghost btn-sm" onclick="' + delFn + '(' + idx + ')"><i data-lucide="trash-2" style="width:15px;height:15px;color:#808080;"></i>삭제</button>';
 
   /* 정확도 높이기에서 만든 연결을 채점기준 카드에서도 보이게 — 설계만 봐서는 어느 문항을 채점하는 기준인지 모른다(26-09-08 올립).
-     칩은 읽기 전용, 고치는 건 ②단에서. 연결이 없으면 상태로만 말하고 막지 않는다(미연결 문항은 채점기준 전체로 채점) */
+     칩은 읽기 전용, 고치는 건 ②단에서. 연결이 없으면 상태로만 말하고 막지 않는다(미연결 문항은 AI 채점에서 제외 — 26-09-08 이안 확인) */
   var linkRow = '';
   if (S.ws === 'ready' && S.linkReady){
     var lq = QUESTIONS.filter(function(q){ return q.links.indexOf(r.id) !== -1; });
@@ -3143,13 +3143,13 @@ function renderAll(){ renderAdv(); }
 
 /* ── 설계 상세: 고도화 요약 카드 ── */
 /* 빈 연결 안내 — 카드와 ②단이 같은 말을 한다. 상태 → 그래서(so what) → 행동(올립 26-09-08).
-   미연결 문항이 있으면 그 문항이 채점기준 전체로 채점되므로 채점기준 쪽은 '반영되지 않을 수 있으니'로 완충 */
+   연결 없는 문항도, 연결된 문항 없는 채점기준도 AI 채점에서 제외된다(26-09-08 이안 확인) — 완충 없이 단정 */
 function linkGapLines(){
   var uq = QUESTIONS.filter(function(q){ return !q.links.length; }).length;
   var ur = rubrics.filter(function(r){ return !QUESTIONS.some(function(q){ return q.links.indexOf(r.id) !== -1; }); }).length;
   var lines = [];
-  if (uq) lines.push('연결된 채점기준이 없는 문항이 ' + uq + '개 있어요. 채점기준 전체를 기준으로 채점되니 필요한 채점기준을 연결해 주세요.');
-  if (ur) lines.push('연결되지 않은 채점기준이 ' + ur + '개 있어요. AI 채점에 반영되지 ' + (uq ? '않을 수 있으니' : '않으니') + ' 문항 연결을 확인해 주세요.');
+  if (uq) lines.push('연결된 채점기준이 없는 문항이 ' + uq + '개 있어요. AI 채점에서 제외되니 채점기준을 연결해 주세요.');
+  if (ur) lines.push('연결되지 않은 채점기준이 ' + ur + '개 있어요. AI 채점에 반영되지 않으니 문항 연결을 확인해 주세요.');
   return lines;
 }
 function renderAdvCard(){
@@ -3196,7 +3196,7 @@ function renderAdvCard(){
     var uq = QUESTIONS.filter(function(q){ return !q.links.length; }).length;
     var ur = rubrics.filter(function(r){ return !QUESTIONS.some(function(q){ return q.links.indexOf(r.id) !== -1; }); }).length;
     /* 빈 연결은 선생님 말로, 주황 한 줄(26-09-08 올립: 빨강은 과하고 '연결된 문항이 없는 채점기준'은 무슨 말인지 모름).
-       사실만 — 연결 안 된 채점기준은 채점에 안 쓰이고, 연결 없는 문항은 채점기준 전체로 채점된다(v1.0 규칙) */
+       사실만 — 연결 안 된 채점기준도, 연결 없는 문항도 AI 채점에서 제외된다 */
     var gapLines = linkGapLines();
     var gap = gapLines.length
       ? '<span style="display:block;margin-top:3px;font-size:14px;color:#C2620A;">' + gapLines.join('<br>') + '</span>'
@@ -3397,9 +3397,7 @@ function renderS3(){
   var wy = document.getElementById('lk-why');
   if (!tb) return;
 
-  /* 어느 문항에도 안 붙은 기준은 채점에서 빠진다.
-     단, 미연결 문항이 하나라도 있으면 그 문항이 채점기준 전체로 채점되므로 이 기준도 쓰인다.
-     그래서 두 경우를 갈라 말한다 — 시스템이 아는 만큼만. */
+  /* 어느 문항에도 안 붙은 채점기준도, 채점기준이 안 붙은 문항도 AI 채점에서 제외된다(26-09-08 이안 확인). 둘 다 있으면 둘 다 말한다 */
   var allLinked = QUESTIONS.every(function(q){ return q.links.length > 0; });
   var unused = rubrics.map(function(r){
     return !QUESTIONS.some(function(q){ return q.links.indexOf(r.id) !== -1; });
@@ -3431,7 +3429,7 @@ function renderS3(){
     + '<tr>'
     +   rubrics.map(function(r, i){
           return '<th class="lk-cell lk-numh' + (unused[i] ? ' lk-c-none' : '') + '"'
-            + ' title="' + esc(r.title) + (unused[i] ? (allLinked ? ' — 연결된 문항이 없어 채점에서 빠져요' : ' — 연결된 문항이 없어요') : '') + '">'
+            + ' title="' + esc(r.title) + (unused[i] ? ' — 연결된 문항이 없어 채점에서 빠져요' : '') + '">'
             + '<span class="lk-n">' + (i + 1) + '</span></th>';
         }).join('')
     + '</tr></thead>';
@@ -3467,18 +3465,13 @@ function renderS3(){
   }).join('') + '</tbody>';
   tb.innerHTML = cols + head + body;
 
-  /* 색만 칠하고 뜻을 안 적으면 교사는 무엇을 해야 할지 모른다.
-     둘은 동시에 성립하지 않는다 — 모든 문항이 연결되어야 '제외'가 생긴다. */
+  /* 색만 칠하고 뜻을 안 적으면 교사는 무엇을 해야 할지 모른다. 둘 다 있으면 두 줄 */
   var hint = document.getElementById('lk-hint');
   if (hint){
-    var msg = '';
-    if (!allLinked){
-      msg = '<strong>연결하지 않은 문항은 채점기준 전체로 채점해요.</strong> '
-          + '그 문항에 맞는 기준만 연결하면 결과가 더 정확해져요.';
-    } else if (unused.indexOf(true) !== -1){
-      msg = '<strong>어느 문항에도 연결하지 않은 채점기준은 채점에서 빠져요.</strong> '
-          + '이 기준으로도 채점하려면 볼 문항을 골라 주세요.';
-    }
+    var ms = [];
+    if (!allLinked) ms.push('<strong>연결하지 않은 문항은 AI 채점에서 제외돼요.</strong> 그 문항에 맞는 채점기준을 연결해 주세요.');
+    if (unused.indexOf(true) !== -1) ms.push('<strong>어느 문항에도 연결하지 않은 채점기준은 채점에서 빠져요.</strong> 이 기준으로도 채점하려면 볼 문항을 골라 주세요.');
+    var msg = ms.map(function(m, i){ return (i ? '<div style="margin-top:4px;">' : '<div>') + m + '</div>'; }).join('');
     hint.innerHTML = msg ? '<i data-lucide="info"></i><div>' + msg + '</div>' : '';
     hint.style.display = msg ? 'flex' : 'none';
   }
