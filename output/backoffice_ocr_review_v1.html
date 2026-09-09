@@ -57,11 +57,12 @@
   .card{background:#fff;border:1px solid #E6E6E6;border-radius:10px;padding:20px 24px;margin-bottom:16px;}
 
   /* ── 필터 ── */
-  .filter-row{display:flex;align-items:center;gap:12px;margin-bottom:10px;}
-  .filter-row label{width:78px;flex-shrink:0;font-size:14px;font-weight:700;color:#494949;}
-  .filter-row input{flex:1;height:36px;border:1px solid #D9D9D9;border-radius:6px;padding:0 12px;
+  .filter-bar{display:flex;align-items:center;gap:18px;flex-wrap:wrap;}
+  .f{display:flex;align-items:center;gap:8px;flex:1 1 240px;min-width:200px;}
+  .f label{flex-shrink:0;font-size:14px;font-weight:700;color:#494949;white-space:nowrap;}
+  .f input{flex:1;min-width:0;height:36px;border:1px solid #D9D9D9;border-radius:6px;padding:0 12px;
     font-family:inherit;font-size:15px;color:#333;outline:none;background:#fff;}
-  .filter-row input:focus{border-color:#7FB3E8;}
+  .f input:focus{border-color:#7FB3E8;}
   .btn-search{display:inline-flex;align-items:center;justify-content:center;line-height:1;vertical-align:middle;
     height:36px;padding:0 22px;background:#0950A0;color:#fff;border:none;border-radius:6px;
     font-size:15px;font-weight:700;cursor:pointer;}
@@ -104,6 +105,15 @@
     height:32px;padding:0 12px;background:#fff;border:1px solid #7FB3E8;border-radius:6px;
     font-size:14px;font-weight:700;color:#0950A0;cursor:pointer;white-space:nowrap;}
   .btn-row:hover{background:#F3F9FF;}
+  .pager{display:flex;align-items:center;justify-content:center;gap:6px;padding:18px 0 22px;}
+  .pager button{min-width:34px;height:34px;padding:0 8px;border-radius:8px;border:none;background:none;
+    font-family:inherit;font-size:15px;font-weight:700;color:#494949;cursor:pointer;
+    display:inline-flex;align-items:center;justify-content:center;line-height:1;vertical-align:middle;}
+  .pager button:hover:not(.on):not(:disabled){background:#F0F0F0;}
+  .pager button.on{background:#0950A0;color:#fff;}
+  .pager button:disabled{color:#C9CDD2;cursor:default;}
+  .pager .dots{color:#B3B3B3;padding:0 4px;font-weight:700;}
+  .list-count{font-size:14px;color:#808080;margin:0 0 10px;}
   .empty{padding:56px 0;text-align:center;color:#B3B3B3;font-size:15px;}
 
   /* ── 상세 ── */
@@ -264,12 +274,14 @@
     <h1 class="page-title">OCR 인식 결과 검수</h1>
     <p class="page-desc">과제물 인식(OCR) 결과를 원본과 대조해 확인하고, 운영 모델의 인식 품질을 판정합니다.</p>
 
-    <div class="card">
-      <div class="filter-row"><label>학교명</label><input type="text"></div>
-      <div class="filter-row"><label>교사명</label><input type="text"></div>
-      <div class="filter-row"><label>평가명</label><input type="text"></div>
-      <div class="filter-row"><label>학생명</label><input type="text"></div>
-      <div style="display:flex;justify-content:flex-end;margin-top:14px;"><button class="btn-search">검색</button></div>
+    <div class="card" style="padding:16px 24px;">
+      <div class="filter-bar">
+        <div class="f"><label>학교명</label><input type="text"></div>
+        <div class="f"><label>교사명</label><input type="text"></div>
+        <div class="f"><label>평가명</label><input type="text"></div>
+        <div class="f"><label>학생명</label><input type="text"></div>
+        <button class="btn-search" style="flex-shrink:0;">검색</button>
+      </div>
     </div>
 
     <div class="card" style="padding:16px 24px;">
@@ -282,7 +294,8 @@
       </div>
     </div>
 
-    <div class="card" style="padding:0 0 4px;">
+    <p class="list-count" id="listCount"></p>
+    <div class="card" style="padding:0;">
       <table>
         <thead>
           <tr>
@@ -300,6 +313,7 @@
         <tbody id="rows"></tbody>
       </table>
       <div class="empty" id="emptyMsg" style="display:none;">조건에 맞는 과제물이 없습니다.</div>
+      <div class="pager" id="pager"></div>
     </div>
   </div>
 </div>
@@ -488,9 +502,47 @@ var ROWS = [
   }
 ];
 
+
+/* 페이지네이션 확인용 — 스테이징 목록에 실제로 있던 학교·교사·평가명을 그대로 씀 */
+(function(){
+  var POOL = [
+    ['데이터드리븐 중학교','테스트교사4','영어 프롬프트 QA'],
+    ['데이터드리븐 중학교','테스트교사4','한국어 문장과 의미가 같고 문법이 정확한 영어 문장 쓰기'],
+    ['GOE드리븐학교1','경기도드리븐교사','과학 빈답안 QA'],
+    ['경기도 교육청 고등학교','교육청 교사1','그래프 과학 테스트'],
+    ['데이터드리븐 중학교','테스트 교사1','테스트 과학'],
+    ['데이터드리븐 중학교','김두아','미술']
+  ];
+  var NAMES = ['김미나리','서지안','김시연','권지호','김도윤','김쑥갓','조인재','문하은','한지우','정하윤',
+               '김윤서','박서준','이하람','최유진','오지호','신다은','배시우','류가온','윤도현','임세아','고은별','남시현'];
+  for (var i = 0; i < 22; i++) {
+    var pool = POOL[i % POOL.length];
+    var total = [5, 6, 8, 10, 12][i % 5];
+    var unc   = [0, 0, 1, 2, 3, 0, 4, 0, 7, 0][i % 10];
+    if (unc > total) unc = total;
+    var v = (i % 3 === 0) ? 'P' : ((i % 7 === 0) ? 'F' : null);
+    var day = 6 - (i % 5);
+    ROWS.push({
+      id: 'gen' + i,
+      date: '2026-09-0' + day + ' 1' + (i % 6) + ':2' + (i % 6),
+      evalName: pool[2], teacher: pool[1], name: NAMES[i % NAMES.length],
+      sid: String(10101 + i),
+      unc: unc, total: total, verdict: v,
+      reason: v ? '샘플 판정 사유' : '',
+      prep: '회전 0° · 검출 영역 ' + (i % 3) + '개 · 회전 모델 정확도 0.9' + (10 + (i % 80)),
+      voc: (i % 6 === 0) ? { when:'09/0' + day + ' 1' + (i % 6) + ':40', by: pool[1],
+              chips:['글씨를 못 읽었어요'], text:'인식 결과가 원본과 달라 확인 부탁드립니다.' } : null,
+      cur: ['첫 번째 문항 답안입니다.','두 번째 문항 답안입니다.','세 번째 문항 답안입니다.'],
+      cmp: null
+    });
+  }
+})();
+
 /* ═════════ 목록 ═════════ */
 var FILTER = 'all';
 var SORT_DESC = true;
+var PER_PAGE = 20;
+var PAGE = 1;
 
 function pctOf(r){ return (r.unc == null || !r.total) ? null : Math.round(r.unc / r.total * 100); }
 
@@ -516,10 +568,11 @@ function matchFilter(r){
 }
 function setFilter(f){
   FILTER = f;
+  PAGE = 1;
   document.querySelectorAll('#chipRow .chip').forEach(function(c){ c.classList.toggle('on', c.dataset.f === f); });
   renderRows();
 }
-function toggleSort(){ SORT_DESC = !SORT_DESC; renderRows(); }
+function toggleSort(){ SORT_DESC = !SORT_DESC; PAGE = 1; renderRows(); }
 
 function renderRows(){
   // 정렬: ① 미판정 우선 ② 확인 필요 비율
@@ -531,7 +584,14 @@ function renderRows(){
     if (pb === null) pb = -1;
     return SORT_DESC ? pb - pa : pa - pb;
   });
-  document.getElementById('rows').innerHTML = list.map(function(r){
+  var totalPages = Math.max(1, Math.ceil(list.length / PER_PAGE));
+  if (PAGE > totalPages) PAGE = totalPages;
+  var start = (PAGE - 1) * PER_PAGE;
+  var pageRows = list.slice(start, start + PER_PAGE);
+  document.getElementById('listCount').textContent =
+    '전체 ' + list.length + '건 · ' + (list.length ? (start + 1) + '~' + (start + pageRows.length) : 0) + ' 표시';
+
+  document.getElementById('rows').innerHTML = pageRows.map(function(r){
     return '<tr class="clickable" onclick="openDetail(\'' + r.id + '\')">'
       + '<td style="color:#494949;font-size:14px;">' + r.date.slice(5) + '</td>'
       + '<td>' + r.evalName + '</td>'
@@ -545,6 +605,7 @@ function renderRows(){
       + '</tr>';
   }).join('');
   document.getElementById('emptyMsg').style.display = list.length ? 'none' : 'block';
+  renderPager(totalPages);
 
   document.getElementById('c-all').textContent  = ROWS.length;
   document.getElementById('c-todo').textContent = ROWS.filter(function(r){ return !r.verdict; }).length;
@@ -552,6 +613,34 @@ function renderRows(){
   document.getElementById('c-voc').textContent  = ROWS.filter(function(r){ return !!r.voc; }).length;
   document.getElementById('c-low').textContent  = ROWS.filter(function(r){ var p = pctOf(r); return p !== null && p >= 70; }).length;
   lucide.createIcons();
+}
+
+
+function goPage(n){ PAGE = n; renderRows(); window.scrollTo({ top: 0, behavior: 'smooth' }); }
+function renderPager(total){
+  var el = document.getElementById('pager');
+  if (total <= 1) { el.innerHTML = ''; return; }
+  var nums;
+  if (total <= 7) {
+    nums = [];
+    for (var i = 1; i <= total; i++) nums.push(i);
+  } else if (PAGE <= 4) {
+    nums = [1, 2, 3, 4, 5, '...', total];
+  } else if (PAGE >= total - 3) {
+    nums = [1, '...', total - 4, total - 3, total - 2, total - 1, total];
+  } else {
+    nums = [1, '...', PAGE - 1, PAGE, PAGE + 1, '...', total];
+  }
+  var html = '<button ' + (PAGE === 1 ? 'disabled' : 'onclick="goPage(' + (PAGE - 1) + ')"')
+           + ' aria-label="이전 페이지"><i data-lucide="chevron-left" style="width:17px;height:17px;"></i></button>';
+  nums.forEach(function(n){
+    html += (n === '...')
+      ? '<span class="dots">…</span>'
+      : '<button class="' + (n === PAGE ? 'on' : '') + '" onclick="goPage(' + n + ')">' + n + '</button>';
+  });
+  html += '<button ' + (PAGE === total ? 'disabled' : 'onclick="goPage(' + (PAGE + 1) + ')"')
+        + ' aria-label="다음 페이지"><i data-lucide="chevron-right" style="width:17px;height:17px;"></i></button>';
+  el.innerHTML = html;
 }
 
 /* ═════════ 상세 ═════════ */
