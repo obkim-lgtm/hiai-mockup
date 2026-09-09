@@ -408,6 +408,17 @@ body { margin: 0; background: #EDF3FC; min-width: 1280px;
 .dlg-title { font-size:18px; font-weight:700; color:#222631; margin:0; }
 .dlg-body { padding:0 24px 24px; font-size:16px; color:#494949; line-height:1.65; }
 .dlg-foot { padding:8px 24px 16px; display:flex; justify-content:flex-end; gap:12px; }
+/* 가운데형 — Figma Dialog_Confirm(2026-GGD-Design 36:12185)과 같은 치수(26-09-09 올립). 짧은 결정 창에만 쓴다
+   384px · 안쪽 28/20 · 아이콘 44 원(#EAEFFB) · 제목 18/1.25 · 본문 14/1.55 · 버튼 40 높이 같은 너비, 간격 12 */
+.dlg.dlg-center { width:384px; text-align:center; border-radius:16px; }
+.dlg.dlg-center .dlg-head { padding:28px 20px 0; }
+.dlg.dlg-center .dlg-x { display:none !important; }  /* X는 inline style이라 !important */
+.dlg.dlg-center .dlg-icon { width:44px; height:44px; border-radius:50%; background:#EAEFFB; color:#0950A0; display:inline-flex; align-items:center; justify-content:center; margin:0 auto 24px; }
+.dlg.dlg-center .dlg-icon svg { width:20px; height:20px; }
+.dlg.dlg-center .dlg-title { font-size:18px; line-height:1.25; color:#333; }
+.dlg.dlg-center .dlg-body { padding:12px 20px 0; color:#333; font-size:14px; line-height:1.55; }
+.dlg.dlg-center .dlg-foot { padding:24px 20px 28px; gap:12px; justify-content:center; }
+.dlg.dlg-center .dlg-foot .btn { flex:1; height:40px; padding:0 16px; font-size:16px; border-radius:8px; }
 /* 초기화 목록 — 한 판에 담고, 인원 수는 오른쪽에 주황으로(무게가 다르다) */
 .rs-list { margin-top:12px; border:1px solid #E6E6E6; border-radius:12px; overflow:hidden; }
 .rs-row { display:flex; align-items:center; gap:10px; padding:11px 14px; font-size:15px; color:#222631; background:#F8F8F8; }
@@ -590,7 +601,7 @@ body { margin: 0; background: #EDF3FC; min-width: 1280px;
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
           <div>
             <h2 style="font-size:24px;font-weight:700;color:#000;margin:0 0 4px;">평가 설계</h2>
-            <p style="font-size:14px;color:#494949;margin:0;font-weight:400;line-height:1.55;">성취기준과 채점기준을 정하고, AI가 그 기준대로 채점할 수 있는지 미리 확인해 보세요.</p>
+            <p style="font-size:16px;color:#494949;margin:0;font-weight:400;line-height:1.55;">진행할 평가를 설계해 주세요. 설계한 내용은 과제 제출 방식과 AI 채점의 기준이 됩니다.</p>
           </div>
           <div style="position:relative;">
             <button class="btn btn-primary" onclick="toggleAddMenu(event)"><i data-lucide="plus" style="width:20px;height:20px;"></i>설계 추가</button>
@@ -609,7 +620,7 @@ body { margin: 0; background: #EDF3FC; min-width: 1280px;
           </div>
           <div style="text-align:center;">
             <p style="font-size:18px;font-weight:700;color:#0A2A5E;margin:0 0 6px;">아직 만든 평가 설계가 없어요</p>
-            <p style="font-size:16px;color:#808080;margin:0;font-weight:400;line-height:1.6;">평가할 내용과 채점기준을 설계하면 과제 제출과 AI 채점을 시작할 수 있어요.</p>
+            <p style="font-size:16px;color:#808080;margin:0;font-weight:400;line-height:1.6;">설계를 만들면 과제물 인식과 AI 채점을 이어서 할 수 있어요.</p>
           </div>
           <button class="btn btn-primary" style="margin-top:6px;" onclick="openDetail('new')"><i data-lucide="plus" style="width:20px;height:20px;"></i>설계 추가</button>
         </div>
@@ -680,7 +691,7 @@ body { margin: 0; background: #EDF3FC; min-width: 1280px;
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;">
           <div>
             <h2 style="font-size:20px;font-weight:700;color:#000;margin:0 0 4px;">평가 설계</h2>
-            <p style="font-size:14px;color:#494949;margin:0;font-weight:400;line-height:1.55;">어떤 기준으로 채점할지 설계하는 화면이에요. 빈 활동지·모범답안과 문항별 채점기준 연결까지 더하면 AI 채점이 더 정확해져요.</p>
+            <p style="font-size:16px;color:#494949;margin:0;font-weight:400;line-height:1.55;">성취기준과 채점기준을 정하면 설계가 완료됩니다. AI 채점 정확도 높이기까지 마치면 채점 결과가 더 정확해집니다.</p>
           </div>
         </div>
 
@@ -1068,8 +1079,9 @@ body { margin: 0; background: #EDF3FC; min-width: 1280px;
 <div id="confirm-ov" class="ov">
   <div class="dlg">
     <div class="dlg-head">
+      <div id="confirm-icon" class="dlg-icon" style="display:none;"><i data-lucide="circle-check"></i></div>
       <h3 id="confirm-title" class="dlg-title">확인</h3>
-      <button onclick="closeConfirm()" style="position:absolute;top:11px;right:11px;width:36px;height:36px;border-radius:6px;border:none;background:transparent;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;">
+      <button class="dlg-x" onclick="closeConfirm()" style="position:absolute;top:11px;right:11px;width:36px;height:36px;border-radius:6px;border:none;background:transparent;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;">
         <i data-lucide="x" style="width:20px;height:20px;color:#808080;"></i>
       </button>
     </div>
@@ -2756,7 +2768,11 @@ function fullScore(list){
    저장 직후 "빈 활동지가 있나요?" 처럼 양쪽 다 진짜 갈래인 질문에 쓴다.
 ══════════════════════════════════════════════════════════ */
 var _confirmCancelFn = null;
-function openConfirm(title, body, okLabel, fn, cancelLabel, cancelFn){
+function openConfirm(title, body, okLabel, fn, cancelLabel, cancelFn, center){
+  var dlg = document.querySelector('#confirm-ov .dlg');
+  if (dlg) dlg.classList.toggle('dlg-center', !!center);
+  var ico = document.getElementById('confirm-icon');
+  if (ico) ico.style.display = center ? 'inline-flex' : 'none';
   document.getElementById('confirm-title').textContent = title;
   document.getElementById('confirm-body').innerHTML = body;
   var ok = document.getElementById('confirm-ok');
@@ -3529,12 +3545,13 @@ function askKeepScores(cb){
      주 버튼 = 그대로 저장. 지우는 쪽은 보조 버튼 */
   /* 지운 게 있을 때만, 박스 없이 회색 한 줄 — 결정할 게 없는 사실이라 강조하면 오히려 뭘 더 골라야 하나 싶다(26-09-08 올립) */
   var note = S.rubricRemoved
-    ? '<p style="margin:10px 0 0;font-size:14px;color:#808080;line-height:1.6;">지운 채점기준의 점수는 함께 사라져요.</p>'
+    ? '<p style="margin:8px 0 0;font-size:13px;color:#808080;">지운 채점기준의 점수는 함께 사라져요.</p>'
     : '';
   openConfirm('이미 채점한 학생이 있어요',
-    '<p style="margin:0;line-height:1.7;">지금 점수는 고치기 전 채점기준으로 매긴 거예요. 그대로 두어도 되고, 지우고 바뀐 기준으로 다시 채점할 수도 있어요.</p>' + note,
+    '<p style="margin:0;">지금 점수는 고치기 전 채점기준으로 매긴 거예요. 그대로 두어도 되고, 지우고 바뀐 기준으로 다시 채점할 수도 있어요.</p>' + note,
     '그대로 저장', function(){ S.rubricDirty = false; S.rubricRemoved = false; cb(); },
-    '점수 지우고 저장', function(){ S.scored = false; S.scoredN = 0; S.rubricDirty = false; S.rubricRemoved = false; cb(); });
+    '점수 지우고 저장', function(){ S.scored = false; S.scoredN = 0; S.rubricDirty = false; S.rubricRemoved = false; cb(); },
+    true);
 }
 function saveDesign(){
   if (!S.name.trim()){ showToast('error','평가(과제)명을 입력해 주세요.'); scrollToSection('sec-basic'); return; }
