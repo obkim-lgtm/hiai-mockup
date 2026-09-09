@@ -715,12 +715,14 @@ function openDetail(id){
 
   document.getElementById('screen-list').classList.remove('active');
   document.getElementById('screen-detail').classList.add('active');
+  setHash('#detail=' + r.id);
   window.scrollTo(0, 0);
   lucide.createIcons();
 }
 function goList(){
   document.getElementById('screen-detail').classList.remove('active');
   document.getElementById('screen-list').classList.add('active');
+  setHash('#list');
   renderRows();
   window.scrollTo(0, 0);
 }
@@ -819,6 +821,24 @@ function nbGo(el){
 function nbGoSelf(el){ nbClose(); goList(); }
 document.addEventListener('keydown', function(e){ if (e.key === 'Escape') nbClose(); });
 
+
+/* ═════════ 해시 라우팅 — 씬마다 고유 URL ═════════ */
+var _noHash = false;
+function setHash(h){
+  if (_noHash || location.hash === h) return;
+  history.replaceState(null, '', location.pathname + location.search + h);
+}
+function routeHash(h){
+  _noHash = true;
+  if (h && h.indexOf('#detail=') === 0) {
+    var id = h.replace('#detail=', '');
+    if (ROWS.some(function(r){ return r.id === id; })) { _noHash = false; openDetail(id); return; }
+  }
+  _noHash = false;
+  goList();
+}
+window.addEventListener('hashchange', function(){ routeHash(location.hash); });
+
 /* 목업 선택기 */
 function mpToggle(){
   var b = document.getElementById('mpBody');
@@ -845,6 +865,7 @@ function mpToggle(){
 
 renderRows();
 lucide.createIcons();
+if (location.hash) routeHash(location.hash);
 </script>
 </body>
 </html>

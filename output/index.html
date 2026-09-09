@@ -204,6 +204,21 @@ const SECTIONS = [
           {label:'과제 상세', hash:'#recognition-review/task'},
           {label:'과제물 상세', hash:'#recognition-review/student'},
         ]},
+      { name:'과제물 인식 Beta 고지 · 의견 남기기', file:'task_ocr_beta_notice_v1.html?v=1', desc:'인식 품질이 아직 충분하지 않아 <b>Beta 표기</b>를 달고, 잘못 인식된 부분을 선생님이 알려줄 수 있도록 제공<br>남겨주신 의견은 원본·인식 결과와 함께 관리자 화면에서 확인 (아래 백오피스 카드)',
+        states:[
+          {label:'정상 인식', hash:'#case=ocrOk', def:true},
+          {label:'확인 필요', hash:'#case=ocrFew'},
+          {label:'정확도 낮음', hash:'#case=ocrLow'},
+          {label:'인식 실패', hash:'#case=ocrFail'},
+        ]},
+      { name:'백오피스(관리자 기능) : OCR 인식 결과 검수', file:'backoffice_ocr_review_v1.html?v=1', desc:'비식별화 원본과 인식 결과를 <b>문항 단위로 대조해 과제물 단위로 인식 품질을 판정(P/F)</b><br>선생님이 남긴 의견, 다른 모델로 다시 인식한 결과를 같은 화면에서 확인',
+        states:[
+          {label:'검수 목록', hash:'#list', def:true},
+          {label:'이상 없음(0%)인데 의견 있음', hash:'#detail=20101', tip:'시스템이 못 잡은 오류 — 검수 우선순위 1순위'},
+          {label:'정확도 낮음', hash:'#detail=20103'},
+          {label:'확인 필요', hash:'#detail=20102'},
+          {label:'인식 실패', hash:'#detail=20405'},
+        ]},
     ]
   },
   {
