@@ -84,6 +84,7 @@
     font-size:14px;font-weight:700;color:#494949;padding:12px 10px;text-align:center;white-space:nowrap;}
   tbody td{border-bottom:1px solid #EFEFEF;font-size:15px;color:#333;padding:13px 10px;text-align:center;}
   tbody tr:hover{background:#FAFBFD;}
+  .ell{display:block;max-width:230px;margin:0 auto;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
   .sort-th{cursor:pointer;user-select:none;}
   .sort-th i{vertical-align:middle;margin-left:2px;}
 
@@ -594,7 +595,7 @@ function renderRows(){
   document.getElementById('rows').innerHTML = pageRows.map(function(r){
     return '<tr class="clickable" onclick="openDetail(\'' + r.id + '\')">'
       + '<td style="color:#494949;font-size:14px;">' + r.date.slice(5) + '</td>'
-      + '<td>' + r.evalName + '</td>'
+      + '<td><span class="ell" title="' + r.evalName + '">' + r.evalName + '</span></td>'
       + '<td>' + r.teacher + '</td>'
       + '<td>' + r.name + '</td>'
       + '<td style="color:#494949;">' + r.sid + '</td>'
