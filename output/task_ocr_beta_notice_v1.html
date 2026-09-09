@@ -985,8 +985,8 @@
       </div>
       <div class="beta-note-c" id="beta-note-c">
         <i data-lucide="info" style="width:15px;height:15px;color:#808080;flex-shrink:0;"></i>
-        <span class="bn-txt">AI는 실수할 수 있으며, 선생님의 확인이 필요합니다.</span>
-        <button class="bn-go" onclick="openOcrFeedback()"><i data-lucide="message-square-text" style="width:15px;height:15px;"></i>잘못된 부분 알려주기</button>
+        <span class="bn-txt">잘못 인식된 부분이 있다면 알려주세요. 인식 품질 개선에 반영돼요.</span>
+        <button class="bn-go" onclick="openOcrFeedback()"><i data-lucide="message-square-text" style="width:15px;height:15px;"></i>알려주기</button>
       </div>
       <!-- ▲ -->
       <!-- OCR 결과 카드 영역 -->
@@ -3792,10 +3792,11 @@ else mpInitAll();
         <button type="button" class="fb-chip" onclick="toggleFbChip(this)">문항과 답이 잘못 짝지어졌어요</button>
         <button type="button" class="fb-chip" onclick="toggleFbChip(this)">빈 답을 있는 것처럼 인식했어요</button>
       </div>
-      <div style="font-size:16px;font-weight:700;color:#333;margin:24px 0 8px;">자세한 의견 <span style="font-size:13px;font-weight:400;color:#808080;">선택</span></div>
+      <div style="font-size:16px;font-weight:700;color:#333;margin:24px 0 4px;">자세한 의견 <span style="font-size:13px;font-weight:400;color:#808080;">선택</span></div><p style="font-size:14px;color:#808080;line-height:1.55;margin:0 0 8px;">남겨주신 의견은 인식 성능을 개선하는 데 큰 도움이 됩니다.</p>
       <textarea id="ocrfb-ta" rows="4" placeholder="예: 3번 문항에서 학생이 쓴 분수가 다른 숫자로 인식됐어요." style="width:100%;background:white;border:1px solid #D9D9D9;border-radius:8px;padding:12px 14px;font-family:inherit;font-size:16px;line-height:1.55;color:#333;outline:none;resize:none;box-sizing:border-box;"></textarea>
 
-    <div style="padding:4px 24px 0;">
+    <div style="padding:4px 24px 0;display:flex;align-items:center;gap:8px;">
+      <i data-lucide="info" style="width:15px;height:15px;color:#808080;flex-shrink:0;"></i>
       <p style="font-size:14px;color:#808080;line-height:1.55;margin:0;">AI는 실수할 수 있으며, 선생님의 확인이 필요합니다.</p>
     </div>
     <div style="padding:12px 24px 24px;display:flex;justify-content:flex-end;gap:12px;">
