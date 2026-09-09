@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" href="../screens/favicon_src.png?v=2" type="image/png">
+<title>백오피스 — 인식 결과 검수</title>
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pretendard@1.3.9/dist/web/static/pretendard.css">
+<style>
+  @import url('../screens/fonts.css');
+  *{box-sizing:border-box;}
+  body{margin:0;font-family:'NanumSquareRound',-apple-system,sans-serif;background:#F4F5F7;color:#333;}
+  button{font-family:inherit;}
+  .screen{display:none;}
+  .screen.active{display:block;}
+
+  /* ── 상단바 ── */
+  .topbar{height:64px;background:#fff;border-bottom:1px solid #E6E6E6;display:flex;align-items:center;
+    justify-content:space-between;padding:0 20px;position:sticky;top:0;z-index:60;}
+  .topbar-left{display:flex;align-items:center;gap:14px;}
+  .hamburger{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;
+    background:none;border:none;border-radius:6px;cursor:pointer;color:#494949;}
+  .hamburger:hover{background:#F0F0F0;}
+  .brand-sub{font-size:12px;color:#808080;line-height:1.2;}
+  .brand-main{font-size:18px;font-weight:700;color:#222;line-height:1.2;}
+  .topbar-user{font-size:15px;font-weight:700;color:#0950A0;display:inline-flex;align-items:center;gap:4px;}
+
+  /* ── 본문 ── */
+  .wrap{max-width:1760px;margin:0 auto;padding:24px 20px 80px;}
+  .page-title{font-size:22px;font-weight:700;color:#222;margin:0 0 4px;}
+  .page-desc{font-size:14px;color:#808080;margin:0 0 20px;line-height:1.55;}
+  .card{background:#fff;border:1px solid #E6E6E6;border-radius:10px;padding:20px 24px;margin-bottom:16px;}
+
+  /* ── 필터 ── */
+  .filter-row{display:flex;align-items:center;gap:12px;margin-bottom:10px;}
+  .filter-row label{width:78px;flex-shrink:0;font-size:14px;font-weight:700;color:#494949;}
+  .filter-row input{flex:1;height:36px;border:1px solid #D9D9D9;border-radius:6px;padding:0 12px;
+    font-family:inherit;font-size:15px;color:#333;outline:none;background:#fff;}
+  .filter-row input:focus{border-color:#7FB3E8;}
+  .btn-search{display:inline-flex;align-items:center;justify-content:center;line-height:1;vertical-align:middle;
+    height:36px;padding:0 22px;background:#0950A0;color:#fff;border:none;border-radius:6px;
+    font-size:15px;font-weight:700;cursor:pointer;}
+  .btn-search:hover{background:#00319F;}
+
+  /* ── 칩 필터 ── */
+  .chips{display:flex;flex-wrap:wrap;gap:8px;align-items:center;}
+  .chip{display:inline-flex;align-items:center;justify-content:center;line-height:1;vertical-align:middle;gap:6px;
+    height:34px;padding:0 14px;border-radius:8px;border:1.5px solid #E6E6E6;background:#fff;cursor:pointer;
+    font-family:inherit;font-size:14px;font-weight:700;color:#494949;}
+  .chip:hover{border-color:#7FB3E8;background:#F7FBFF;}
+  .chip.on{border-color:#0950A0;background:#F3F9FF;color:#0950A0;}
+  .chip .cnt{font-size:13px;color:#808080;}
+  .chip.on .cnt{color:#0950A0;}
+
+  /* ── 표 ── */
+  table{width:100%;border-collapse:collapse;}
+  thead th{background:#F8F8F8;border-top:1px solid #E6E6E6;border-bottom:1px solid #E6E6E6;
+    font-size:14px;font-weight:700;color:#494949;padding:12px 10px;text-align:center;white-space:nowrap;}
+  tbody td{border-bottom:1px solid #EFEFEF;font-size:15px;color:#333;padding:13px 10px;text-align:center;}
+  tbody tr:hover{background:#FAFBFD;}
+  .sort-th{cursor:pointer;user-select:none;}
+  .sort-th i{vertical-align:middle;margin-left:2px;}
+
+  .ratio{display:inline-flex;align-items:center;justify-content:center;line-height:1;gap:6px;font-weight:700;}
+  .ratio .pct{font-size:15px;}
+  .ratio .frac{font-size:13px;font-weight:400;color:#808080;}
+  .voc{display:inline-flex;align-items:center;justify-content:center;line-height:1;gap:5px;
+    font-size:14px;font-weight:700;color:#0950A0;}
+  .verdict{display:inline-flex;align-items:center;justify-content:center;line-height:1;gap:5px;
+    height:24px;padding:0 10px;border-radius:6px;font-size:13px;font-weight:700;}
+  .v-p{background:#E7F7EC;color:#00AF3D;}
+  .v-f{background:#FFEFEF;color:#DB3E51;}
+  .v-none{color:#B3B3B3;font-size:15px;}
+  tbody tr.clickable{cursor:pointer;}
+  tbody tr.clickable:hover{background:#F3F9FF;}
+  tbody tr.clickable:hover .go{color:#0950A0;}
+  .go{color:#C9CDD2;display:inline-flex;align-items:center;justify-content:center;line-height:1;}
+  .btn-row{display:inline-flex;align-items:center;justify-content:center;line-height:1;vertical-align:middle;
+    height:32px;padding:0 12px;background:#fff;border:1px solid #7FB3E8;border-radius:6px;
+    font-size:14px;font-weight:700;color:#0950A0;cursor:pointer;white-space:nowrap;}
+  .btn-row:hover{background:#F3F9FF;}
+  .empty{padding:56px 0;text-align:center;color:#B3B3B3;font-size:15px;}
+
+  /* ── 상세 ── */
+  .back-link{display:inline-flex;align-items:center;gap:4px;background:none;border:none;padding:0;
+    font-family:inherit;font-size:14px;font-weight:700;color:#494949;cursor:pointer;margin-bottom:10px;}
+  .meta{display:flex;flex-wrap:wrap;gap:0 40px;}
+  .meta div{display:flex;gap:10px;font-size:15px;line-height:2;}
+  .meta .k{color:#808080;min-width:56px;}
+  .meta .v{color:#333;font-weight:700;}
+
+  .prep{display:flex;align-items:center;gap:10px;padding:12px 16px;background:#F8F8F8;
+    border:1px solid #EFEFEF;border-radius:8px;margin-bottom:12px;}
+  .prep .txt{flex:1;font-size:14px;color:#494949;line-height:1.55;}
+  .prep .lnk{display:inline-flex;align-items:center;justify-content:center;line-height:1;vertical-align:middle;gap:5px;
+    background:none;border:none;padding:0;font-family:inherit;font-size:14px;font-weight:700;color:#0A4A94;
+    cursor:pointer;text-decoration:underline;text-underline-offset:3px;white-space:nowrap;}
+
+  .voc-box{border:1px solid #C7E3FF;background:#F7FBFF;border-radius:8px;padding:16px 18px;margin-bottom:16px;}
+  .voc-head{display:flex;align-items:center;gap:8px;margin-bottom:10px;}
+  .voc-title{font-size:16px;font-weight:700;color:#0950A0;}
+  .voc-when{font-size:14px;color:#808080;margin-left:auto;}
+  .voc-chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px;}
+  .voc-chip{display:inline-flex;align-items:center;justify-content:center;line-height:1;
+    height:26px;padding:0 10px;border-radius:6px;background:#fff;border:1px solid #C7E3FF;
+    font-size:13px;font-weight:700;color:#0950A0;}
+  .voc-text{font-size:15px;color:#333;line-height:1.6;}
+
+  /* ── 3열 ── */
+  .cols{display:flex;gap:12px;align-items:stretch;}
+  .col{background:#fff;border:1px solid #E6E6E6;border-radius:10px;display:flex;flex-direction:column;min-width:0;}
+  .col-src{flex:1.15;}
+  .col-txt{width:430px;flex-shrink:0;}
+  .col-head{height:48px;flex-shrink:0;display:flex;align-items:center;gap:8px;padding:0 16px;
+    border-bottom:1px solid #EFEFEF;}
+  .col-head .nm{font-size:15px;font-weight:700;color:#333;}
+  .col-body{padding:16px;overflow-y:auto;max-height:640px;}
+  .scan-bar{height:44px;background:#494949;display:flex;align-items:center;justify-content:center;gap:10px;
+    border-radius:9px 9px 0 0;flex-shrink:0;}
+  .scan-bar span{font-size:13px;color:#fff;}
+  .scan-bar button{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;
+    background:none;border:none;border-radius:5px;cursor:pointer;color:#fff;}
+  .scan-bar button:hover{background:rgba(255,255,255,.14);}
+  .scan-view{flex:1;overflow:auto;padding:16px;display:flex;justify-content:center;background:#EBEBEA;
+    border-radius:0 0 9px 9px;max-height:684px;}
+  .scan-view img{width:100%;max-width:460px;height:auto;background:#fff;box-shadow:0 2px 12px rgba(0,0,0,.16);
+    align-self:flex-start;transform-origin:top center;transition:transform .15s;}
+
+  .q{border:1px solid #EFEFEF;border-radius:8px;margin-bottom:12px;}
+  .q-head{padding:10px 14px;border-bottom:1px solid #F4F4F4;background:#FAFBFD;border-radius:7px 7px 0 0;
+    display:flex;align-items:center;gap:8px;}
+  .q-num{font-size:14px;font-weight:700;color:#0950A0;}
+  .q-nm{font-size:14px;color:#494949;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .q-body{padding:12px 14px;font-family:'Pretendard',-apple-system,sans-serif;font-size:15px;
+    line-height:1.65;color:#333;white-space:pre-wrap;}
+  .unc{background:#FFEDD5;border-bottom:2px solid #FF8C4C;border-radius:2px;padding:0 1px;}
+
+  .model-sel{height:32px;border:1px solid #D9D9D9;border-radius:6px;padding:0 8px;font-family:inherit;
+    font-size:14px;font-weight:700;color:#333;background:#fff;cursor:pointer;outline:none;}
+  .btn-run{display:inline-flex;align-items:center;justify-content:center;line-height:1;vertical-align:middle;gap:5px;
+    height:32px;padding:0 12px;background:#0950A0;color:#fff;border:none;border-radius:6px;
+    font-size:14px;font-weight:700;cursor:pointer;white-space:nowrap;}
+  .btn-run:hover{background:#00319F;}
+  .btn-run:disabled{background:#C9CDD2;cursor:not-allowed;}
+  .col-empty{padding:72px 20px;text-align:center;color:#B3B3B3;font-size:15px;line-height:1.7;}
+  .spin{width:26px;height:26px;border:3px solid #D5EFFF;border-top:3px solid #0950A0;border-radius:50%;
+    animation:sp 1s linear infinite;margin:0 auto 12px;}
+  @keyframes sp{to{transform:rotate(360deg);}}
+
+  /* ── 판정 바 ── */
+  .judge{position:sticky;bottom:0;z-index:50;background:#fff;border-top:1px solid #D9D9D9;
+    box-shadow:0 -4px 20px rgba(0,0,0,.06);padding:14px 24px;margin:0;}
+  .judge-inner{max-width:1760px;margin:0 auto;display:flex;align-items:flex-start;gap:16px;}
+  .judge-label{font-size:15px;font-weight:700;color:#333;padding-top:9px;white-space:nowrap;}
+  .pf{display:flex;gap:8px;padding-top:2px;}
+  .pf button{display:inline-flex;align-items:center;justify-content:center;line-height:1;vertical-align:middle;gap:6px;
+    height:36px;padding:0 18px;border-radius:8px;border:1.5px solid #E6E6E6;background:#fff;cursor:pointer;
+    font-family:inherit;font-size:15px;font-weight:700;color:#494949;}
+  .pf button.on-p{border-color:#00AF3D;background:#E7F7EC;color:#00AF3D;}
+  .pf button.on-f{border-color:#DB3E51;background:#FFEFEF;color:#DB3E51;}
+  .judge textarea{flex:1;min-height:36px;height:60px;border:1px solid #D9D9D9;border-radius:8px;padding:9px 12px;
+    font-family:inherit;font-size:15px;line-height:1.5;color:#333;outline:none;resize:none;}
+  .judge textarea:focus{border-color:#7FB3E8;}
+  .btn-save{display:inline-flex;align-items:center;justify-content:center;line-height:1;vertical-align:middle;
+    height:36px;padding:0 20px;background:#0950A0;color:#fff;border:none;border-radius:8px;
+    font-size:15px;font-weight:700;cursor:pointer;white-space:nowrap;}
+  .btn-save:disabled{background:#C9CDD2;cursor:not-allowed;}
+  .req{font-size:13px;color:#DB3E51;margin-top:4px;display:none;}
+
+  /* ── 토스트 ── */
+  #toast{position:fixed;left:50%;bottom:110px;transform:translateX(-50%) translateY(12px);z-index:200;
+    background:#333;color:#fff;border-radius:8px;padding:12px 18px;font-size:15px;font-weight:700;
+    display:flex;align-items:center;gap:8px;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;}
+  #toast.on{opacity:1;transform:translateX(-50%) translateY(0);}
+
+  /* ── 목업 선택기 ── */
+  #mockpick{position:fixed;left:16px;bottom:16px;z-index:300;width:250px;background:#222631;color:#fff;
+    border-radius:10px;box-shadow:0 8px 28px rgba(0,0,0,.28);font-size:13px;overflow:hidden;}
+  .mp-head{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;cursor:pointer;font-weight:700;}
+  .mp-body{padding:6px;display:flex;flex-direction:column;gap:4px;max-height:60vh;overflow-y:auto;}
+  .mp-cap{font-size:11px;color:#9AA0AA;padding:6px 6px 2px;}
+  .mp-btn{display:block;width:100%;text-align:left;background:#2E3440;border:none;border-radius:6px;
+    color:#fff;padding:8px 10px;font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;line-height:1.35;}
+  .mp-btn:hover{background:#3B4252;}
+  .mp-btn.on{background:#0950A0;}
+  .mp-sub{display:block;font-size:11px;font-weight:400;color:#B9C0CC;margin-top:2px;}
+</style>
+</head>
+<body>
+
+<!-- ══════════ 상단바 ══════════ -->
+<div class="topbar">
+  <div class="topbar-left">
+    <button class="hamburger"><i data-lucide="menu" style="width:20px;height:20px;"></i></button>
+    <div>
+      <div class="brand-sub">AI 서·논술형 평가지원시스템</div>
+      <div class="brand-main">관리자 페이지</div>
+    </div>
+  </div>
+  <div class="topbar-user">Olivia님 <i data-lucide="chevron-down" style="width:16px;height:16px;"></i></div>
+</div>
+
+<!-- ══════════ 목록 ══════════ -->
+<div id="screen-list" class="screen active">
+  <div class="wrap">
+    <h1 class="page-title">인식 결과 검수</h1>
+    <p class="page-desc">과제물 인식(OCR) 결과를 원본과 대조해 확인하고, 운영 모델의 인식 품질을 판정합니다.</p>
+
+    <div class="card">
+      <div class="filter-row"><label>학교명</label><input type="text"></div>
+      <div class="filter-row"><label>교사명</label><input type="text"></div>
+      <div class="filter-row"><label>평가명</label><input type="text"></div>
+      <div class="filter-row"><label>학생명</label><input type="text"></div>
+      <div style="display:flex;justify-content:flex-end;margin-top:14px;"><button class="btn-search">검색</button></div>
+    </div>
+
+    <div class="card" style="padding:16px 24px;">
+      <div class="chips" id="chipRow">
+        <button class="chip on" data-f="all" onclick="setFilter('all')">전체 <span class="cnt" id="c-all">0</span></button>
+        <button class="chip" data-f="todo" onclick="setFilter('todo')"><i data-lucide="circle-dashed" style="width:14px;height:14px;"></i>미판정 <span class="cnt" id="c-todo">0</span></button>
+        <button class="chip" data-f="fail" onclick="setFilter('fail')"><i data-lucide="circle-x" style="width:14px;height:14px;"></i>Fail <span class="cnt" id="c-fail">0</span></button>
+        <button class="chip" data-f="voc" onclick="setFilter('voc')"><i data-lucide="message-square-text" style="width:14px;height:14px;"></i>의견 있음 <span class="cnt" id="c-voc">0</span></button>
+        <button class="chip" data-f="low" onclick="setFilter('low')"><i data-lucide="triangle-alert" style="width:14px;height:14px;"></i>정확도 낮음 <span class="cnt" id="c-low">0</span></button>
+      </div>
+    </div>
+
+    <div class="card" style="padding:0 0 4px;">
+      <table>
+        <thead>
+          <tr>
+            <th style="width:130px;">제출일</th>
+            <th style="width:190px;">평가명</th>
+            <th style="width:110px;">교사명</th>
+            <th style="width:100px;">학생명</th>
+            <th style="width:90px;">학번</th>
+            <th style="width:170px;" class="sort-th" onclick="toggleSort()">확인 필요 <i data-lucide="arrow-down" style="width:13px;height:13px;"></i></th>
+            <th style="width:90px;">의견</th>
+            <th style="width:100px;">판정</th>
+            <th style="width:56px;"></th>
+          </tr>
+        </thead>
+        <tbody id="rows"></tbody>
+      </table>
+      <div class="empty" id="emptyMsg" style="display:none;">조건에 맞는 과제물이 없습니다.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ 상세 ══════════ -->
+<div id="screen-detail" class="screen">
+  <div class="wrap">
+    <button class="back-link" onclick="goList()"><i data-lucide="chevron-left" style="width:16px;height:16px;"></i>이전으로</button>
+    <h1 class="page-title">인식 결과 검수</h1>
+    <p class="page-desc">비식별화된 원본과 인식 결과를 문항 단위로 대조합니다.</p>
+
+    <div class="card">
+      <div class="meta" id="metaBox"></div>
+    </div>
+
+    <!-- 전처리 요약 -->
+    <div class="prep">
+      <i data-lucide="info" style="width:15px;height:15px;color:#808080;flex-shrink:0;"></i>
+      <span class="txt" id="prepTxt">전처리 &nbsp;회전 0° · 검출 영역 0개 · 회전 모델 정확도 0.927</span>
+      <button class="lnk" onclick="showToast('과제물 검수 상세로 이동합니다.')">전처리 상세<i data-lucide="external-link" style="width:13px;height:13px;"></i></button>
+    </div>
+
+    <!-- 교사 의견 -->
+    <div class="voc-box" id="vocBox">
+      <div class="voc-head">
+        <i data-lucide="message-square-text" style="width:17px;height:17px;color:#0950A0;"></i>
+        <span class="voc-title">교사 의견</span>
+        <span class="voc-when" id="vocWhen"></span>
+      </div>
+      <div class="voc-chips" id="vocChips"></div>
+      <div class="voc-text" id="vocText"></div>
+    </div>
+
+    <!-- 3열 -->
+    <div class="cols">
+      <!-- 좌: 비식별화 원본 -->
+      <div class="col col-src">
+        <div class="scan-bar">
+          <span>비식별화 원본</span>
+          <button onclick="pageMove(-1)"><i data-lucide="chevron-left" style="width:15px;height:15px;"></i></button>
+          <span id="pgCur" style="min-width:34px;text-align:center;background:#333;border-radius:4px;padding:3px 0;">1</span>
+          <span id="pgTot" style="min-width:20px;text-align:center;">2</span>
+          <button onclick="pageMove(1)"><i data-lucide="chevron-right" style="width:15px;height:15px;"></i></button>
+          <span style="width:1px;height:14px;background:rgba(255,255,255,.25);"></span>
+          <button onclick="zoom(-10)"><i data-lucide="zoom-out" style="width:15px;height:15px;"></i></button>
+          <span id="zoomPct" style="min-width:44px;text-align:center;">100%</span>
+          <button onclick="zoom(10)"><i data-lucide="zoom-in" style="width:15px;height:15px;"></i></button>
+        </div>
+        <div class="scan-view"><img id="scanImg" src="../screens/student_submission.png" alt="비식별화된 학생 과제물"></div>
+      </div>
+
+      <!-- 중: 현재 버전 -->
+      <div class="col col-txt">
+        <div class="col-head">
+          <i data-lucide="scan-text" style="width:17px;height:17px;color:#0950A0;"></i>
+          <span class="nm">현재 버전</span>
+          <span style="margin-left:auto;font-size:13px;color:#808080;" id="curMeta"></span>
+        </div>
+        <div class="col-body" id="colCur"></div>
+      </div>
+
+      <!-- 우: 비교 모델 -->
+      <div class="col col-txt">
+        <div class="col-head">
+          <select class="model-sel" id="modelSel">
+            <option value="pro31">3.1 Pro</option>
+            <option value="pro31lite">3.1 Pro Lite</option>
+          </select>
+          <button class="btn-run" id="runBtn" onclick="runModel()"><i data-lucide="play" style="width:14px;height:14px;"></i>이 모델로 다시 인식</button>
+            </div>
+        <div class="col-body" id="colCmp"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 판정 바 -->
+  <div class="judge">
+    <div class="judge-inner">
+      <span class="judge-label">인식 품질 판정</span>
+      <div>
+        <div class="pf">
+          <button id="btnP" onclick="setVerdict('P')"><i data-lucide="circle-check" style="width:16px;height:16px;"></i>Pass</button>
+          <button id="btnF" onclick="setVerdict('F')"><i data-lucide="circle-x" style="width:16px;height:16px;"></i>Fail</button>
+        </div>
+        <p class="req" id="reqMsg">Fail은 사유를 남겨야 저장할 수 있어요.</p>
+      </div>
+      <textarea id="reason" placeholder="판정 사유 (Fail은 필수) · 다른 모델로 다시 인식한 결과도 여기에 적어주세요."></textarea>
+      <button class="btn-save" id="saveBtn" onclick="saveVerdict()">저장</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"><i data-lucide="circle-check-big" style="width:18px;height:18px;"></i><span id="toastMsg"></span></div>
+
+<!-- 목업 선택기 -->
+<div id="mockpick">
+  <div class="mp-head" onclick="mpToggle()">
+    <span style="display:inline-flex;align-items:center;gap:6px;"><i data-lucide="layout-grid" style="width:13px;height:13px;"></i>MOCKUP · 화면 보기</span>
+    <i id="mpCaret" data-lucide="chevron-down" style="width:14px;height:14px;transform:rotate(180deg);"></i>
+  </div>
+  <div class="mp-body" id="mpBody">
+    <button class="mp-btn" onclick="goList()">인식 결과 검수 목록 <span class="mp-sub">필터 · 확인 필요 % · 의견</span></button>
+    <div class="mp-cap">상세 · 케이스별</div>
+    <button class="mp-btn" onclick="openDetail('20101')">0%인데 의견 있음 <span class="mp-sub">시스템이 못 잡은 오류 — 최고 가치</span></button>
+    <button class="mp-btn" onclick="openDetail('20103')">정확도 낮음 80% <span class="mp-sub">사용자 화면에서 결과 숨겨짐</span></button>
+    <button class="mp-btn" onclick="openDetail('20102')">확인 필요 17% <span class="mp-sub">의견 없음 · 일반 검수</span></button>
+    <button class="mp-btn" onclick="openDetail('20405')">인식 실패 <span class="mp-sub">결과 없음 · 이미 Fail 판정</span></button>
+  </div>
+</div>
+
+<script>
+/* ═════════ 데이터 ═════════ */
+var COMMON_Q = [
+  {label:'문항 1', name:'이 책의 핵심 내용 요약'},
+  {label:'문항 2', name:'인상 깊었던 과학자 또는 원소의 발견 이야기'},
+  {label:'문항 3', name:'기둥의 겉넓이와 부피 구하기'}
+];
+
+var ROWS = [
+  { id:'20101', date:'2026-09-08 09:12', evalName:'독서 감상문 쓰기', teacher:'김서윤', name:'정하윤', sid:'20101',
+    unc:0, total:12, verdict:null, prep:'회전 0° · 검출 영역 0개 · 회전 모델 정확도 0.927',
+    voc:{ when:'09/08 14:22', by:'김서윤',
+          chips:['글씨를 못 읽었어요','수식·기호가 틀렸어요'],
+          text:'3번 문항에서 학생이 쓴 분수가 다른 숫자로 인식됐어요. 화면에는 확인 필요 표시가 없어서 그냥 넘어갈 뻔했습니다.' },
+    cur:[
+      '이 책은 원소 주기율표를 중심으로 각 원소의 발견 역사와 그에 얽힌 과학자들의 삶을 이야기가 형식으로 풀어낸 책이다.',
+      '빌헬름 뢴트겐이 X선을 발견한 이야기가 기억에 남는다. 그는 실험 중 우연히 형광이 빛나는 것을 보고 X선의 존재를 알게 되었는데,',
+      '겉넓이 = 30 + 240 = 260cm2\n부피 = 30 x 8 = 240cm3\n밑넓이 = 5 x 12 x 1/5 = 30'
+    ],
+    cmp:[
+      '이 책은 원소 주기율표를 중심으로 각 원소의 발견 역사와 그에 얽힌 과학자들의 삶을 이야기 형식으로 풀어낸 책이다.',
+      '빌헬름 뢴트겐이 X선을 발견한 이야기가 기억에 남는다. 그는 실험 중 우연히 형광이 빛나는 것을 보고 X선의 존재를 알게 되었는데,',
+      '겉넓이 = 30 + 240 = 260cm2\n부피 = 30 x 8 = 240cm3\n밑넓이 = 5 x 12 x 1/2 = 30'
+    ],
+    diffCur:[['이야기가 형식으로'],[],['1/5']],
+    diffCmp:[['이야기 형식으로'],[],['1/2']]
+  },
+  { id:'20103', date:'2026-09-08 09:12', evalName:'독서 감상문 쓰기', teacher:'김서윤', name:'박지민', sid:'20103',
+    unc:4, total:5, verdict:null, prep:'회전 90° · 검출 영역 2개 · 회전 모델 정확도 0.641',
+    voc:{ when:'09/08 16:05', by:'김서윤',
+          chips:['줄·문단이 뒤섞였어요','표·그림을 못 읽었어요'],
+          text:'인식 결과가 아예 안 보인다고 떠서 직접 채점했습니다. 원본은 알아볼 만한데 왜 이런지 모르겠어요.' },
+    cur:[
+      '원소 주기율표에 얽힌 는 과학자들의 이야기로 원소 발견의 역사를 흥미롭게 풀어 썼다',
+      '스푼 이 녹아 사라지는 갈륨 장난 이야기가 인상 깊었는데 실제로',
+      '겉넓이 밑넓이 5x12 30 옆넓이 240 겉넓이 260'
+    ],
+    cmp:[
+      '원소 주기율표에 얽힌 과학자들의 이야기로 원소 발견의 역사를 흥미롭게 풀어 썼다.',
+      '스푼이 녹아 사라지는 갈륨 장난 이야기가 인상 깊었는데, 실제로 해보고 싶다는 생각이 들었다.',
+      '겉넓이 = 밑넓이 5 x 12 = 30, 옆넓이 240, 겉넓이 260'
+    ],
+    diffCmp:[['과학자들의 이야기로'],['스푼이 녹아','실제로 해보고 싶다는 생각이 들었다.'],['밑넓이 5 x 12 = 30, 옆넓이 240']],
+    diffCur:[[],[],[]]
+  },
+  { id:'20102', date:'2026-09-08 09:12', evalName:'독서 감상문 쓰기', teacher:'김서윤', name:'이준호', sid:'20102',
+    unc:2, total:12, verdict:null, prep:'회전 0° · 검출 영역 1개 · 회전 모델 정확도 0.941',
+    voc:null,
+    cur:[
+      '이 책은 원소 주기율표를 중심으로 각 원소의 발견 역사와 그에 얽힌 과학자들의 삶을 이야기 형식으로 풀어낸 책이다.',
+      '빌헬름 뢴트겐이 X선을 발견한 이야기가 기억에 남는다. 처음에는 그 원인을 이해하지 못했지만 끝까지 파고들어 인류 역사상 최초로 내부 신체를 들여다볼 수 있는 기술을 만들어냈다.',
+      '겉넓이 = 30 + 240 = 260cm2\n부피 = 30 x 8 = 240cm3'
+    ],
+    uncCur:[[],['그 원인을'],[]],
+    cmp:null, diffCur:[[],[],[]], diffCmp:[[],[],[]]
+  },
+  { id:'20405', date:'2026-09-07 17:33', evalName:'중학교 수학', teacher:'박준서', name:'김두아', sid:'20405',
+    unc:null, total:null, verdict:'F', reason:'스캔 해상도가 낮아 인식 자체가 실패. 3.1 Pro로 다시 돌려도 동일하게 실패함. 재업로드 안내 필요.',
+    prep:'회전 180° · 검출 영역 0개 · 회전 모델 정확도 0.512',
+    voc:{ when:'09/07 18:40', by:'박준서',
+          chips:['글씨를 못 읽었어요'],
+          text:'인식 실패로 떠서 다시 인식을 눌러도 계속 실패합니다.' },
+    cur:null, cmp:null, cmpFail:true, diffCur:[], diffCmp:[]
+  },
+  { id:'30101', date:'2026-09-06 15:02', evalName:'그래프 과학 테스트', teacher:'이도현', name:'권지호', sid:'30101',
+    unc:1, total:8, verdict:'P', reason:'문항 1의 단위 표기만 미세하게 달라 실제 채점에는 영향 없음.',
+    prep:'회전 0° · 검출 영역 1개 · 회전 모델 정확도 0.958', voc:null,
+    cur:['그래프의 기울기는 속도를 의미한다.','x축은 시간, y축은 이동 거리이다.','기울기가 클수록 빠르게 이동한 것이다.'],
+    cmp:null, diffCur:[[],[],[]], diffCmp:[[],[],[]]
+  },
+  { id:'20102b', date:'2026-09-06 14:18', evalName:'그래프 과학 테스트', teacher:'이도현', name:'김도윤', sid:'20102',
+    unc:3, total:6, verdict:'P', reason:'확인 필요로 잡힌 3곳 모두 실제로는 정확히 인식됨. 임계치가 과하게 민감한 듯.',
+    prep:'회전 0° · 검출 영역 0개 · 회전 모델 정확도 0.933', voc:null,
+    cur:['그래프의 기울기는 속도를 의미한다.','x축은 시간, y축은 이동 거리이다.','기울기가 클수록 빠르게 이동한 것이다.'],
+    cmp:null, diffCur:[[],[],[]], diffCmp:[[],[],[]]
+  }
+];
+
+/* ═════════ 목록 ═════════ */
+var FILTER = 'all';
+var SORT_DESC = true;
+
+function pctOf(r){ return (r.unc == null || !r.total) ? null : Math.round(r.unc / r.total * 100); }
+
+function ratioCell(r){
+  var p = pctOf(r);
+  if (p === null) return '<span class="ratio" style="color:#808080;"><span class="pct">—</span></span>';
+  var color = p === 0 ? '#333' : (p >= 70 ? '#DB3E51' : '#FF8C4C');
+  return '<span class="ratio" style="color:' + color + ';"><span class="pct">' + p + '%</span>'
+       + '<span class="frac">' + r.unc + '/' + r.total + '</span></span>';
+}
+function verdictCell(r){
+  if (r.verdict === 'P') return '<span class="verdict v-p"><i data-lucide="circle-check" style="width:12px;height:12px;"></i>Pass</span>';
+  if (r.verdict === 'F') return '<span class="verdict v-f"><i data-lucide="circle-x" style="width:12px;height:12px;"></i>Fail</span>';
+  return '<span class="v-none">—</span>';
+}
+function matchFilter(r){
+  if (FILTER === 'all')  return true;
+  if (FILTER === 'todo') return !r.verdict;
+  if (FILTER === 'fail') return r.verdict === 'F';
+  if (FILTER === 'voc')  return !!r.voc;
+  if (FILTER === 'low')  { var p = pctOf(r); return p !== null && p >= 70; }
+  return true;
+}
+function setFilter(f){
+  FILTER = f;
+  document.querySelectorAll('#chipRow .chip').forEach(function(c){ c.classList.toggle('on', c.dataset.f === f); });
+  renderRows();
+}
+function toggleSort(){ SORT_DESC = !SORT_DESC; renderRows(); }
+
+function renderRows(){
+  // 정렬: ① 미판정 우선 ② 확인 필요 비율
+  var list = ROWS.filter(matchFilter).slice().sort(function(a,b){
+    var ta = a.verdict ? 1 : 0, tb = b.verdict ? 1 : 0;
+    if (ta !== tb) return ta - tb;
+    var pa = pctOf(a), pb = pctOf(b);
+    if (pa === null) pa = -1;
+    if (pb === null) pb = -1;
+    return SORT_DESC ? pb - pa : pa - pb;
+  });
+  document.getElementById('rows').innerHTML = list.map(function(r){
+    return '<tr class="clickable" onclick="openDetail(\'' + r.id + '\')">'
+      + '<td style="color:#494949;font-size:14px;">' + r.date.slice(5) + '</td>'
+      + '<td>' + r.evalName + '</td>'
+      + '<td>' + r.teacher + '</td>'
+      + '<td>' + r.name + '</td>'
+      + '<td style="color:#494949;">' + r.sid + '</td>'
+      + '<td>' + ratioCell(r) + '</td>'
+      + '<td>' + (r.voc ? '<span class="voc"><i data-lucide="message-square-text" style="width:14px;height:14px;"></i>1</span>' : '<span class="v-none">—</span>') + '</td>'
+      + '<td>' + verdictCell(r) + '</td>'
+      + '<td><span class="go"><i data-lucide="chevron-right" style="width:18px;height:18px;"></i></span></td>'
+      + '</tr>';
+  }).join('');
+  document.getElementById('emptyMsg').style.display = list.length ? 'none' : 'block';
+
+  document.getElementById('c-all').textContent  = ROWS.length;
+  document.getElementById('c-todo').textContent = ROWS.filter(function(r){ return !r.verdict; }).length;
+  document.getElementById('c-fail').textContent = ROWS.filter(function(r){ return r.verdict === 'F'; }).length;
+  document.getElementById('c-voc').textContent  = ROWS.filter(function(r){ return !!r.voc; }).length;
+  document.getElementById('c-low').textContent  = ROWS.filter(function(r){ var p = pctOf(r); return p !== null && p >= 70; }).length;
+  lucide.createIcons();
+}
+
+/* ═════════ 상세 ═════════ */
+var CUR = null, _page = 1, _zoom = 100;
+
+function mark(text, terms, cls){
+  var out = text;
+  (terms || []).forEach(function(t){
+    if (!t) return;
+    out = out.split(t).join('<span class="' + cls + '">' + t + '</span>');
+  });
+  return out;
+}
+function qCards(texts, marks){
+  if (!texts) return '';
+  return texts.map(function(t, i){
+    var q = COMMON_Q[i] || { label:'문항 ' + (i+1), name:'' };
+    return '<div class="q"><div class="q-head"><span class="q-num">' + q.label + '</span>'
+         + '<span class="q-nm">' + q.name + '</span></div>'
+         + '<div class="q-body">' + mark(t, marks && marks[i], 'unc') + '</div></div>';
+  }).join('');
+}
+
+function openDetail(id){
+  var r = ROWS.filter(function(x){ return x.id === id; })[0];
+  if (!r) return;
+  CUR = r; _page = 1; _zoom = 100;
+
+  document.getElementById('metaBox').innerHTML =
+      '<div><span class="k">평가명</span><span class="v">' + r.evalName + '</span></div>'
+    + '<div><span class="k">교사</span><span class="v">' + r.teacher + '</span></div>'
+    + '<div><span class="k">학생</span><span class="v">' + r.name + ' (' + r.sid + ')</span></div>'
+    + '<div><span class="k">제출일</span><span class="v">' + r.date + '</span></div>';
+
+  document.getElementById('prepTxt').innerHTML = '전처리 &nbsp;' + r.prep;
+
+  // 교사 의견
+  var vb = document.getElementById('vocBox');
+  if (r.voc) {
+    vb.style.display = 'block';
+    document.getElementById('vocWhen').textContent = r.voc.by + ' · ' + r.voc.when;
+    document.getElementById('vocChips').innerHTML = r.voc.chips.map(function(c){
+      return '<span class="voc-chip">' + c + '</span>';
+    }).join('');
+    document.getElementById('vocText').textContent = r.voc.text;
+  } else {
+    vb.style.display = 'none';
+  }
+
+  // 현재 버전
+  var p = pctOf(r);
+  document.getElementById('curMeta').textContent = (p === null) ? '인식 실패' : ('확인 필요 ' + r.unc + '/' + r.total);
+  var colCur = document.getElementById('colCur');
+  if (!r.cur) {
+    colCur.innerHTML = '<div class="col-empty"><i data-lucide="circle-x" style="width:30px;height:30px;color:#DB3E51;"></i>'
+      + '<div style="margin-top:10px;font-weight:700;color:#494949;">인식 실패</div>인식 결과가 없어 대조할 수 없습니다.</div>';
+  } else {
+    colCur.innerHTML = qCards(r.cur, r.uncCur || null);
+  }
+
+  // 비교 모델 — 초기화
+  document.getElementById('runBtn').disabled = false;
+  document.getElementById('runBtn').innerHTML = '<i data-lucide="play" style="width:14px;height:14px;"></i>이 모델로 다시 인식';
+  document.getElementById('colCmp').innerHTML =
+    '<div class="col-empty"><i data-lucide="git-compare" style="width:30px;height:30px;color:#C9CDD2;"></i>'
+    + '<div style="margin-top:10px;">모델을 고르고 <b style="color:#494949;">다시 인식</b>을 누르면<br>결과를 나란히 비교할 수 있어요.</div></div>';
+
+  // 판정
+  document.getElementById('reason').value = r.reason || '';
+  applyVerdictUI(r.verdict);
+
+  document.getElementById('screen-list').classList.remove('active');
+  document.getElementById('screen-detail').classList.add('active');
+  window.scrollTo(0, 0);
+  lucide.createIcons();
+}
+function goList(){
+  document.getElementById('screen-detail').classList.remove('active');
+  document.getElementById('screen-list').classList.add('active');
+  renderRows();
+  window.scrollTo(0, 0);
+}
+
+/* 원본 뷰어 */
+function pageMove(d){
+  var t = parseInt(document.getElementById('pgTot').textContent, 10);
+  _page = Math.min(Math.max(1, _page + d), t);
+  document.getElementById('pgCur').textContent = _page;
+}
+function zoom(d){
+  _zoom = Math.min(Math.max(50, _zoom + d), 200);
+  document.getElementById('zoomPct').textContent = _zoom + '%';
+  document.getElementById('scanImg').style.transform = 'scale(' + (_zoom / 100) + ')';
+}
+
+/* 재인식 — 비용이 드는 동작이라 버튼으로만 실행, 결과는 저장된 것으로 간주 */
+function runModel(){
+  if (!CUR) return;
+  var btn = document.getElementById('runBtn');
+  var sel = document.getElementById('modelSel');
+  var modelName = sel.options[sel.selectedIndex].text;
+  btn.disabled = true;
+  document.getElementById('colCmp').innerHTML =
+    '<div class="col-empty"><div class="spin"></div>' + modelName + '(으)로 다시 인식하는 중…</div>';
+  lucide.createIcons();
+
+  setTimeout(function(){
+    if (CUR.cmpFail) {
+      document.getElementById('colCmp').innerHTML =
+        '<div class="col-empty"><i data-lucide="circle-x" style="width:30px;height:30px;color:#DB3E51;"></i>'
+        + '<div style="margin-top:10px;font-weight:700;color:#494949;">' + modelName + '에서도 인식 실패</div>'
+        + '결과가 없어 비교할 수 없습니다.</div>';
+    } else if (!CUR.cmp) {
+      document.getElementById('colCmp').innerHTML =
+        '<div class="col-empty"><i data-lucide="equal" style="width:30px;height:30px;color:#00AF3D;"></i>'
+        + '<div style="margin-top:10px;font-weight:700;color:#494949;">현재 버전과 결과가 같아요</div>'
+        + '모든 문항의 인식 결과가 동일합니다.</div>';
+    } else {
+      document.getElementById('colCmp').innerHTML = qCards(CUR.cmp, null);
+    }
+    btn.innerHTML = '<i data-lucide="check" style="width:14px;height:14px;"></i>인식 완료';
+    lucide.createIcons();
+    showToast(modelName + ' 인식 결과를 불러왔어요. 결과는 저장돼 다시 돌리지 않아요.');
+  }, 1400);
+}
+
+/* 판정 */
+var _verdict = null;
+function applyVerdictUI(v){
+  _verdict = v || null;
+  document.getElementById('btnP').classList.toggle('on-p', v === 'P');
+  document.getElementById('btnF').classList.toggle('on-f', v === 'F');
+  document.getElementById('reqMsg').style.display = 'none';
+}
+function setVerdict(v){ applyVerdictUI(_verdict === v ? null : v); }
+function saveVerdict(){
+  var reason = document.getElementById('reason').value.trim();
+  if (!_verdict) { showToast('Pass 또는 Fail을 선택해 주세요.'); return; }
+  if (_verdict === 'F' && !reason) {
+    document.getElementById('reqMsg').style.display = 'block';
+    document.getElementById('reason').focus();
+    return;
+  }
+  CUR.verdict = _verdict;
+  CUR.reason = reason;
+  showToast('판정을 저장했어요. 교사 의견도 확인 처리됩니다.');
+  setTimeout(goList, 700);
+}
+
+/* 토스트 */
+var _tt;
+function showToast(msg){
+  var t = document.getElementById('toast');
+  document.getElementById('toastMsg').textContent = msg;
+  t.classList.add('on');
+  clearTimeout(_tt);
+  _tt = setTimeout(function(){ t.classList.remove('on'); }, 2600);
+}
+
+/* 목업 선택기 */
+function mpToggle(){
+  var b = document.getElementById('mpBody');
+  var open = b.style.display !== 'none';
+  b.style.display = open ? 'none' : 'flex';
+  document.getElementById('mpCaret').style.transform = open ? 'rotate(0deg)' : 'rotate(180deg)';
+}
+(function(){
+  var el = document.getElementById('mockpick'), head = el.querySelector('.mp-head');
+  var dx = 0, dy = 0, moved = false;
+  head.addEventListener('mousedown', function(e){
+    var r = el.getBoundingClientRect();
+    dx = e.clientX - r.left; dy = e.clientY - r.top; moved = false;
+    function mv(ev){
+      moved = true;
+      el.style.left = Math.max(0, Math.min(ev.clientX - dx, innerWidth - el.offsetWidth)) + 'px';
+      el.style.top  = Math.max(0, Math.min(ev.clientY - dy, innerHeight - 40)) + 'px';
+      el.style.bottom = 'auto';
+    }
+    function up(){ document.removeEventListener('mousemove', mv); document.removeEventListener('mouseup', up); }
+    document.addEventListener('mousemove', mv); document.addEventListener('mouseup', up);
+  });
+})();
+
+renderRows();
+lucide.createIcons();
+</script>
+</body>
+</html>

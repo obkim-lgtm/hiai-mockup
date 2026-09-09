@@ -23,6 +23,8 @@
 - **두 시안의 공통 토대 → [sessions/2026-08-21.md](sessions/2026-08-21.md)** (간편/정교 구분 폐지 · 설계 상세=세로 스크롤 한 화면 · 모범답안 전용 화면)
 - **채점기준 입력 UI(추가 버튼·카드·∑·배점) 그리기 전 → 개발 화면 Figma `MM23uA7pDEmFeMKGeFVJpB` `736:9578`** (점선 AI 카드 = 추가 진입점. 실측값은 sessions/2026-08-21.md §6에 정리)
 - **변경 규칙·잠금 정책(v5에도 유효) → [sessions/2026-08-04.md](sessions/2026-08-04.md)** (참조 원칙 하나 · 잠금 2축(OCR 분석 후/채점 실행 후) · 안내 3종 · 세트 교체는 제품에 없음). 구버전 4단계 위저드 목업 ../output/evaluation_design_v4_260713.html · PRD(간편/정교 전제라 개정 필요) https://app.notion.com/p/33717e5c8cf1817c830ee4f97380a4a0
+- **OCR 베타 고지·의견 수집 목업 → ../output/task_ocr_beta_notice_v1.html** (Beta 뱃지 · 배치안 A/B/C 토글 · 의견 팝업). QA 결과가 나빠 Beta를 달고 교사 의견을 받기로 한 건
+- **백오피스 인식 결과 검수 목업 → ../output/backoffice_ocr_review_v1.html** (목록: 확인 필요 %·의견·P/F 필터 / 상세: 비식별화 원본 ↔ 현재 버전 ↔ 비교 모델 3열 + 과제물 단위 P/F). 기존 `과제물 검수`(빌·전처리)와 분리된 신설 메뉴 안
 - 서비스 배경·컬러 팔레트 상세·스크린 인덱스 → ../context.md
 - 디자인 토큰(PPT 정리본) → ../HIAI_design_tokens_PPT.md
 - 실행·미리보기 방법 → ../manual.md
