@@ -541,7 +541,7 @@
               <th style="width:90px;">이름</th>
               <th>업로드 일시</th>
               <th style="width:80px; text-align:center; white-space:nowrap;">파일 수</th>
-              <th style="width:180px; text-align:center;">과제물 인식<span class="beta-badge" style="height:20px;margin-left:6px;">베타</span></th>
+              <th style="width:180px; text-align:center;">과제물 인식<span class="beta-badge" style="height:20px;margin-left:6px;">Beta</span></th>
               <th style="width:150px; text-align:center; white-space:nowrap;">과제 업로드 관리</th>
             </tr>
           </thead>
@@ -965,7 +965,7 @@
         <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:20px;">
           <div style="display:flex;align-items:center;gap:8px;">
             <i data-lucide="scan-text" style="width:20px;height:20px;color:#0950A0;"></i>
-            <span style="font-size:18px;font-weight:700;color:#333;line-height:1.25;">과제물 인식 결과</span><span class="beta-badge" id="ocr-b-beta-badge">베타</span>
+            <span style="font-size:18px;font-weight:700;color:#333;line-height:1.25;">과제물 인식 결과</span><span class="beta-badge" id="ocr-b-beta-badge">Beta</span>
           </div>
           <label id="ocr-b-answersonly-wrap" style="display:inline-flex;align-items:center;gap:8px;cursor:pointer;font-size:14px;font-weight:700;color:#333;user-select:none;">
             <input type="checkbox" id="ocr-b-answers-only" checked onchange="setOcrBAnswersOnly(this.checked)" style="width:14px;height:14px;accent-color:#0950A0;cursor:pointer;flex-shrink:0;">
@@ -3211,7 +3211,7 @@ function renderTableB() {
   var isUploaded = isB1 || isB2;
 
   // B2도 항상 과제물 인식 결과 컬럼 표시 (상태만 다름)
-  var theadRow = '<tr><th style="width:90px;text-align:center;">상태</th><th style="width:80px;">학번</th><th style="width:90px;">이름</th><th>업로드 일시</th><th style="width:80px;text-align:center;white-space:nowrap;">파일 수</th><th style="width:180px;text-align:center;">과제물 인식<span class="beta-badge" style="height:20px;margin-left:6px;">베타</span></th><th style="width:150px;text-align:center;white-space:nowrap;">과제 업로드 관리</th></tr>';
+  var theadRow = '<tr><th style="width:90px;text-align:center;">상태</th><th style="width:80px;">학번</th><th style="width:90px;">이름</th><th>업로드 일시</th><th style="width:80px;text-align:center;white-space:nowrap;">파일 수</th><th style="width:180px;text-align:center;">과제물 인식<span class="beta-badge" style="height:20px;margin-left:6px;">Beta</span></th><th style="width:150px;text-align:center;white-space:nowrap;">과제 업로드 관리</th></tr>';
   if (thead) thead.innerHTML = theadRow;
 
   var students = isB1 ? STUDENTS_B1 : (isB2 ? STUDENTS_B2 : []);
@@ -3795,7 +3795,10 @@ else mpInitAll();
       <div style="font-size:16px;font-weight:700;color:#333;margin:24px 0 8px;">자세한 의견 <span style="font-size:13px;font-weight:400;color:#808080;">선택</span></div>
       <textarea id="ocrfb-ta" rows="4" placeholder="어느 문항에서 어떻게 잘못 인식됐는지 적어주시면 큰 도움이 돼요." style="width:100%;background:white;border:1px solid #D9D9D9;border-radius:8px;padding:12px 14px;font-family:inherit;font-size:16px;line-height:1.55;color:#333;outline:none;resize:none;box-sizing:border-box;"></textarea>
 
-    <div style="padding:16px 24px 24px;display:flex;justify-content:flex-end;gap:12px;">
+    <div style="padding:4px 24px 0;">
+      <p style="font-size:14px;color:#808080;line-height:1.55;margin:0;">AI는 실수할 수 있으며, 선생님의 확인이 필요합니다.</p>
+    </div>
+    <div style="padding:12px 24px 24px;display:flex;justify-content:flex-end;gap:12px;">
       <button onclick="closeOcrFeedback()" style="display:inline-flex;align-items:center;justify-content:center;line-height:1;vertical-align:middle;height:40px;padding:0 16px;background:#F0F0F0;border:none;border-radius:4px;cursor:pointer;font-family:inherit;font-size:16px;font-weight:700;color:#494949;">취소</button>
       <button onclick="submitOcrFeedback()" style="display:inline-flex;align-items:center;justify-content:center;line-height:1;vertical-align:middle;height:40px;padding:0 16px;background:#0950A0;border:none;border-radius:4px;cursor:pointer;font-family:inherit;font-size:16px;font-weight:700;color:white;">의견 보내기</button>
     </div>
@@ -3828,7 +3831,7 @@ function setBetaVariant(v) {
 function dismissBetaNote() {
   _betaDismissed = true;
   applyBetaVariant();
-  if (typeof showToast === 'function') showToast('안내를 닫았어요. 베타 뱃지를 눌러 언제든 다시 볼 수 있어요.');
+  if (typeof showToast === 'function') showToast('안내를 닫았어요. Beta 뱃지를 눌러 언제든 다시 볼 수 있어요.');
 }
 
 /* ===== 의견 모달 ===== */
