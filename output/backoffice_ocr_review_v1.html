@@ -162,7 +162,6 @@
     border-bottom:1px solid #EFEFEF;}
   .ch-title{display:flex;flex-direction:column;gap:2px;min-width:0;}
   .ch-title .nm{display:inline-flex;align-items:center;gap:6px;font-size:15px;font-weight:700;color:#333;line-height:1.2;}
-  .ch-sub{font-size:14px;color:#808080;line-height:1.3;white-space:nowrap;}
   .ch-meta{font-size:14px;color:#808080;white-space:nowrap;}
   .ch-meta.edit{color:#0950A0;font-weight:700;}
   .btn-test{display:inline-flex;align-items:center;justify-content:center;line-height:1;vertical-align:middle;gap:5px;
@@ -207,8 +206,8 @@
   .q{border:1px solid #EFEFEF;border-radius:8px;margin-bottom:12px;}
   .q-head{padding:10px 14px;border-bottom:1px solid #F4F4F4;background:#FAFBFD;border-radius:7px 7px 0 0;
     display:flex;align-items:center;gap:8px;}
-  .q-num{font-size:14px;font-weight:700;color:#0950A0;}
-  .q-nm{font-size:14px;color:#494949;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .q-num{font-size:14px;font-weight:700;color:#0950A0;flex-shrink:0;white-space:nowrap;}
+  .q-nm{font-size:14px;color:#494949;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;min-width:0;}
   .q-body{padding:12px 14px;font-family:'Pretendard',-apple-system,sans-serif;font-size:15px;
     line-height:1.65;color:#333;white-space:pre-wrap;}
 
@@ -439,7 +438,6 @@
         <div class="col-head">
           <div class="ch-title">
             <span class="nm"><i data-lucide="flask-conical" style="width:17px;height:17px;color:#808080;"></i>모델 테스트</span>
-            <span class="ch-sub">검수용 · 서비스에 반영되지 않음</span>
           </div>
           <button class="ch-x" onclick="closeTest()"><i data-lucide="x" style="width:17px;height:17px;"></i></button>
         </div>
@@ -821,7 +819,7 @@ function qCards(texts, marks, edits){
     if (isUnc)  badges += '<span class="badge-unc"><i data-lucide="triangle-alert" style="width:11px;height:11px;"></i>인식 불확실</span>';
     if (edited) badges += '<button class="badge-edit" onclick="toggleEdit(' + i + ')"><i data-lucide="pencil" style="width:11px;height:11px;"></i>선생님 수정<i data-lucide="chevron-down" style="width:11px;height:11px;"></i></button>';
     return '<div class="q"><div class="q-head"><span class="q-num">' + q.label + '</span>'
-         + '<span class="q-nm">' + q.name + '</span>'
+         + '<span class="q-nm" title="' + q.name + '">' + q.name + '</span>'
          + (badges ? '<span class="q-badges">' + badges + '</span>' : '')
          + '</div>'
          + '<div class="q-body">' + t + '</div>'
