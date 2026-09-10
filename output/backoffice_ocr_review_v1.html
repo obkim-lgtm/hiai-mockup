@@ -516,15 +516,15 @@
     <button class="mp-btn" onclick="openDetail('20101')">1차 · 0%인데 의견 2건 <span class="mp-sub">시스템 미감지 오류 · 지난 회차</span></button>
     <button class="mp-btn" onclick="openDetail('20101r2')">2차 · 최신 <span class="mp-sub">선생님 수정 1문항</span></button>
     <div class="mp-cap">박지민 20103 · 인식 3건</div>
-    <button class="mp-btn" onclick="openDetail('20103')">1차 · 정확도 낮음 80% <span class="mp-sub">선생님 화면에서 결과 숨겨짐 · 의견 있음</span></button>
+    <button class="mp-btn" onclick="openDetail('20103')">1차 · 정확도 낮음 80% <span class="mp-sub">결과 숨겨짐 · 의견 · 모델 테스트 이미 실행함</span></button>
     <button class="mp-btn" onclick="openDetail('20103r2')">2차 · 확인 필요 60% <span class="mp-sub">지난 회차</span></button>
     <button class="mp-btn" onclick="openDetail('20103r3')">3차 · 확인 필요 20% <span class="mp-sub">재인식으로 개선 · 선생님 수정 2문항</span></button>
     <div class="mp-cap">그 외</div>
     <button class="mp-btn" onclick="openDetail('20102')">이준호 · 확인 필요 17% <span class="mp-sub">인식 불확실 1 · 선생님 수정 1문항</span></button>
     <button class="mp-btn" onclick="openDetail('10105')">정현우 · 인식 실패 <span class="mp-sub">미판정 — 검수 대기</span></button>
     <button class="mp-btn" onclick="openDetail('20405')">김두아 · 인식 실패 <span class="mp-sub">이미 Fail 판정 · 의견 있음</span></button>
-    <button class="mp-btn" onclick="openDetail('30101')">권지호 · Pass 판정 완료 <span class="mp-sub">확인 필요 13%</span></button>
-    <button class="mp-btn" onclick="openDetail('20102b')">김도윤 · 판정 뒤집힘 <span class="mp-sub">Rena Pass → Olivia Fail · 이력 2건</span></button>
+    <button class="mp-btn" onclick="openDetail('30101')">권지호 · 의견 왔지만 Pass <span class="mp-sub">제보 확인했으나 인식은 정확함</span></button>
+    <button class="mp-btn" onclick="openDetail('20102b')">김도윤 · 판정 뒤집힘 <span class="mp-sub">Rena Pass(사유 없음) → Olivia Fail</span></button>
   </div>
 </div>
 
@@ -574,7 +574,9 @@ var ROWS = [
       '겉넓이 = 밑넓이 5 x 12 = 30, 옆넓이 240, 겉넓이 260'
     ],
     diffCmp:[['과학자들의 이야기로'],['스푼이 녹아','실제로 해보고 싶다는 생각이 들었다.'],['밑넓이 5 x 12 = 30, 옆넓이 240']],
-    diffCur:[[],[],[]]
+    diffCur:[[],[],[]],
+    /* 이미 테스트를 돌린 건 — 결과가 저장돼 다시 열면 그대로 보인다 */
+    testedWith:{ recog:'g31-pro', struct:'g31-pro', at:'2026-09-09 09:30' }
   },
   { id:'20102', date:'2026-09-08 09:12', evalName:'독서 감상문 쓰기', teacher:'김서윤', name:'이준호', sid:'20102',
     unc:2, total:12, verdict:null, prep:'회전 0° · 검출 영역 1개 · 회전 모델 정확도 0.941',
@@ -638,8 +640,11 @@ var ROWS = [
     prep:'회전 270° · 검출 영역 0개 · 회전 모델 정확도 0.488',
     voc:null, cur:null, cmp:null, cmpFail:true },
   { id:'30101', date:'2026-09-06 15:02', evalName:'그래프 과학 테스트', teacher:'이도현', name:'권지호', sid:'30101',
-    unc:1, total:8, verdict:'P', verdictBy:'Olivia', verdictAt:'2026-09-08 11:24', reason:'문항 1의 단위 표기만 미세하게 달라 실제 채점에는 영향 없음.',
-    prep:'회전 0° · 검출 영역 1개 · 회전 모델 정확도 0.958', voc:null,
+    unc:1, total:8, verdict:'P', verdictBy:'Olivia', verdictAt:'2026-09-08 11:24',
+    reason:'제보받은 1번 문항을 원본과 대조했으나 인식은 정확함. 단위 표기 방식 차이로 보이며 채점에는 영향 없음.',
+    prep:'회전 0° · 검출 영역 1개 · 회전 모델 정확도 0.958',
+    vocs:[{ when:'09/07 09:40', by:'이도현', chips:['수식·기호가 틀렸어요'],
+            text:'1번 문항 단위가 이상하게 보여요. 확인 부탁드립니다.' }],
     cur:['그래프의 기울기는 속도를 의미한다.','x축은 시간, y축은 이동 거리이다.','기울기가 클수록 빠르게 이동한 것이다.'],
     cmp:null, diffCur:[[],[],[]], diffCmp:[[],[],[]]
   },
@@ -647,7 +652,7 @@ var ROWS = [
     unc:3, total:6, verdict:'F', verdictBy:'Olivia', verdictAt:'2026-09-09 17:40',
     reason:'다시 보니 2번 문항 숫자가 틀렸음. 채점에 영향이 있어 Fail로 정정.',
     prevVerdicts:[
-      { v:'P', by:'Rena', at:'2026-09-08 14:02', reason:'확인 필요로 잡힌 3곳 모두 실제로는 정확히 인식됨. 임계치가 과하게 민감한 듯.' }
+      { v:'P', by:'Rena', at:'2026-09-08 14:02', reason:'' }
     ],
     prep:'회전 0° · 검출 영역 0개 · 회전 모델 정확도 0.933', voc:null,
     cur:['그래프의 기울기는 속도를 의미한다.','x축은 시간, y축은 이동 거리이다.','기울기가 클수록 빠르게 이동한 것이다.'],
@@ -915,10 +920,14 @@ function openDetail(id){
     colCur.innerHTML = low + past + qCards(r.cur, r.uncCur || null, r.edits);
   }
 
-  // 모델 테스트 — 닫은 채로 시작(2단)
+  // 모델 테스트 — 기본은 닫힘(2단). 이미 돌린 건은 저장된 결과를 펼쳐서 보여준다
   closeTest();
   document.getElementById('runBtn').disabled = false;
   document.getElementById('runDone').style.display = 'none';
+  if (r.testedWith) {
+    document.getElementById('modelRecog').value = r.testedWith.recog;
+    document.getElementById('modelStruct').value = r.testedWith.struct;
+  }
   document.getElementById('colCmp').innerHTML =
     '<div class="col-empty"><i data-lucide="git-compare" style="width:30px;height:30px;color:#C9CDD2;"></i>'
     + '<div style="margin-top:10px;">모델을 고르고 <b style="color:#494949;">인식 실행</b>을 누르면<br>결과를 나란히 비교할 수 있어요.</div></div>';
@@ -934,6 +943,15 @@ function openDetail(id){
   }
   renderVerdictHistory(r);
   applyVerdictUI(r.verdict);
+
+  // 저장된 테스트 결과가 있으면 열어 둔다
+  if (r.testedWith) {
+    openTest();
+    document.getElementById('colCmp').innerHTML = qCards(r.cmp, null);
+    var done0 = document.getElementById('runDone');
+    done0.textContent = r.testedWith.at + ' 실행함';
+    done0.style.display = 'inline';
+  }
 
   document.getElementById('screen-list').classList.remove('active');
   document.getElementById('screen-detail').classList.add('active');
