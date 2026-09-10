@@ -864,7 +864,7 @@ function openDetail(id){
       + ((r.seq && r.seq > 1) ? '<span class="seq-badge">' + r.seq + '차</span>' : '')
       + siblingLinks(r) + '</span></div>';
 
-  document.getElementById('prepTxt').innerHTML = '전처리 &nbsp;' + r.prep    + (r.prepMemo ? ' · <b style="color:#0950A0;">메모 ' + r.prepMemo + '건</b>' : '');
+  document.getElementById('prepTxt').innerHTML = '전처리 &nbsp;' + r.prep    + ' · <b style="color:' + (r.prepMemo ? '#0950A0' : '#333') + ';">메모 ' + (r.prepMemo || 0) + '건</b>';
 
   // 교사 의견
   var vb = document.getElementById('vocBox');
