@@ -227,11 +227,26 @@
     animation:sp 1s linear infinite;margin:0 auto 12px;}
   @keyframes sp{to{transform:rotate(360deg);}}
 
-  /* ── 판정 바 ── */
+  /* 판정 이력 */
+  .vh{background:#fff;border:1px solid #E6E6E6;border-radius:10px;padding:16px 20px;margin-top:12px;}
+  .vh-head{display:flex;align-items:center;gap:8px;font-size:15px;font-weight:700;color:#333;margin-bottom:12px;}
+  .vh-item + .vh-item{border-top:1px solid #EFEFEF;margin-top:12px;padding-top:12px;}
+  .vh-meta{display:flex;align-items:center;gap:8px;margin-bottom:5px;}
+  .vh-who{font-size:14px;color:#808080;}
+  .vh-who b{color:#494949;}
+  .vh-now{display:inline-flex;align-items:center;justify-content:center;line-height:1;height:20px;padding:0 7px;
+    border-radius:5px;background:#F0F0F0;color:#808080;font-size:12px;font-weight:700;}
+  .vh-reason{font-size:15px;color:#333;line-height:1.6;}
+  .vh-reason.empty{color:#B3B3B3;}
+
+  /* 판정 바 */
   .judge{position:sticky;bottom:0;z-index:50;background:#fff;border-top:1px solid #D9D9D9;
     box-shadow:0 -4px 20px rgba(0,0,0,.06);padding:14px 24px;margin:0;}
   .judge-inner{max-width:1760px;margin:0 auto;display:flex;align-items:flex-start;gap:16px;}
-  .judge-label{font-size:15px;font-weight:700;color:#333;padding-top:9px;white-space:nowrap;}
+  .judge-lbl-wrap{display:flex;flex-direction:column;gap:3px;padding-top:6px;white-space:nowrap;flex-shrink:0;}
+  .judge-label{font-size:15px;font-weight:700;color:#333;}
+  .judge-by{font-size:13px;color:#808080;}
+  .judge-by b{color:#494949;}
   .pf{display:flex;gap:8px;padding-top:2px;}
   .pf button{display:inline-flex;align-items:center;justify-content:center;line-height:1;vertical-align:middle;gap:6px;
     height:36px;padding:0 18px;border-radius:8px;border:1.5px solid #E6E6E6;background:#fff;cursor:pointer;
@@ -459,12 +474,21 @@
         <div class="col-body" id="colCmp"></div>
       </div>
     </div>
+
+    <!-- 판정 이력 (2건 이상일 때만) -->
+    <div class="vh" id="verdictHistory" style="display:none;">
+      <div class="vh-head"><i data-lucide="history" style="width:16px;height:16px;color:#0950A0;"></i>판정 이력 <span id="vhCount" style="font-size:14px;font-weight:400;color:#808080;"></span></div>
+      <div id="vhList"></div>
+    </div>
   </div>
 
   <!-- 판정 바 -->
   <div class="judge">
     <div class="judge-inner">
-      <span class="judge-label">인식 품질 판정</span>
+      <div class="judge-lbl-wrap">
+        <span class="judge-label">인식 품질 판정</span>
+        <span class="judge-by" id="judgeBy" style="display:none;"></span>
+      </div>
       <div>
         <div class="pf">
           <button id="btnP" onclick="setVerdict('P')"><i data-lucide="circle-check" style="width:16px;height:16px;"></i>Pass</button>
@@ -500,6 +524,7 @@
     <button class="mp-btn" onclick="openDetail('10105')">정현우 · 인식 실패 <span class="mp-sub">미판정 — 검수 대기</span></button>
     <button class="mp-btn" onclick="openDetail('20405')">김두아 · 인식 실패 <span class="mp-sub">이미 Fail 판정 · 의견 있음</span></button>
     <button class="mp-btn" onclick="openDetail('30101')">권지호 · Pass 판정 완료 <span class="mp-sub">확인 필요 13%</span></button>
+    <button class="mp-btn" onclick="openDetail('20102b')">김도윤 · 판정 뒤집힘 <span class="mp-sub">Rena Pass → Olivia Fail · 이력 2건</span></button>
   </div>
 </div>
 
@@ -564,7 +589,7 @@ var ROWS = [
     cmp:null
   },
   { id:'20405', date:'2026-09-07 17:33', evalName:'중학교 수학', teacher:'박준서', name:'김두아', sid:'20405',
-    unc:null, total:null, verdict:'F', reason:'스캔 해상도가 낮아 인식 자체가 실패. 3.1 Pro로 다시 돌려도 동일하게 실패함. 재업로드 안내 필요.',
+    unc:null, total:null, verdict:'F', verdictBy:'Rena', verdictAt:'2026-09-09 10:35', reason:'스캔 해상도가 낮아 인식 자체가 실패. 3.1 Pro로 다시 돌려도 동일하게 실패함. 재업로드 안내 필요.',
     prep:'회전 180° · 검출 영역 0개 · 회전 모델 정확도 0.512',
     voc:{ when:'09/07 18:40', by:'박준서',
           chips:['글씨를 못 읽었어요'],
@@ -613,13 +638,17 @@ var ROWS = [
     prep:'회전 270° · 검출 영역 0개 · 회전 모델 정확도 0.488',
     voc:null, cur:null, cmp:null, cmpFail:true },
   { id:'30101', date:'2026-09-06 15:02', evalName:'그래프 과학 테스트', teacher:'이도현', name:'권지호', sid:'30101',
-    unc:1, total:8, verdict:'P', reason:'문항 1의 단위 표기만 미세하게 달라 실제 채점에는 영향 없음.',
+    unc:1, total:8, verdict:'P', verdictBy:'Olivia', verdictAt:'2026-09-08 11:24', reason:'문항 1의 단위 표기만 미세하게 달라 실제 채점에는 영향 없음.',
     prep:'회전 0° · 검출 영역 1개 · 회전 모델 정확도 0.958', voc:null,
     cur:['그래프의 기울기는 속도를 의미한다.','x축은 시간, y축은 이동 거리이다.','기울기가 클수록 빠르게 이동한 것이다.'],
     cmp:null, diffCur:[[],[],[]], diffCmp:[[],[],[]]
   },
   { id:'20102b', date:'2026-09-06 14:18', evalName:'그래프 과학 테스트', teacher:'이도현', name:'김도윤', sid:'20102',
-    unc:3, total:6, verdict:'P', reason:'확인 필요로 잡힌 3곳 모두 실제로는 정확히 인식됨. 임계치가 과하게 민감한 듯.',
+    unc:3, total:6, verdict:'F', verdictBy:'Olivia', verdictAt:'2026-09-09 17:40',
+    reason:'다시 보니 2번 문항 숫자가 틀렸음. 채점에 영향이 있어 Fail로 정정.',
+    prevVerdicts:[
+      { v:'P', by:'Rena', at:'2026-09-08 14:02', reason:'확인 필요로 잡힌 3곳 모두 실제로는 정확히 인식됨. 임계치가 과하게 민감한 듯.' }
+    ],
     prep:'회전 0° · 검출 영역 0개 · 회전 모델 정확도 0.933', voc:null,
     cur:['그래프의 기울기는 속도를 의미한다.','x축은 시간, y축은 이동 거리이다.','기울기가 클수록 빠르게 이동한 것이다.'],
     cmp:null, diffCur:[[],[],[]], diffCmp:[[],[],[]]
@@ -683,8 +712,9 @@ function ratioCell(r){
        + '<span class="frac">' + r.unc + '/' + r.total + '</span></span>';
 }
 function verdictCell(r){
-  if (r.verdict === 'P') return '<span class="verdict v-p"><i data-lucide="circle-check" style="width:12px;height:12px;"></i>Pass</span>';
-  if (r.verdict === 'F') return '<span class="verdict v-f"><i data-lucide="circle-x" style="width:12px;height:12px;"></i>Fail</span>';
+  var by = r.verdictBy ? (' title="' + r.verdictBy + ' · ' + r.verdictAt + '"') : '';
+  if (r.verdict === 'P') return '<span class="verdict v-p"' + by + '><i data-lucide="circle-check" style="width:12px;height:12px;"></i>Pass</span>';
+  if (r.verdict === 'F') return '<span class="verdict v-f"' + by + '><i data-lucide="circle-x" style="width:12px;height:12px;"></i>Fail</span>';
   return '<span class="v-none">—</span>';
 }
 function matchFilter(r){
@@ -781,6 +811,7 @@ function renderPager(total){
 
 /* ═════════ 상세 ═════════ */
 var CUR = null, _page = 1, _zoom = 100;
+var ADMIN_NAME = 'Olivia';  // 로그인한 관리자
 
 function qCards(texts, marks, edits){
   if (!texts) return '';
@@ -892,8 +923,16 @@ function openDetail(id){
     '<div class="col-empty"><i data-lucide="git-compare" style="width:30px;height:30px;color:#C9CDD2;"></i>'
     + '<div style="margin-top:10px;">모델을 고르고 <b style="color:#494949;">인식 실행</b>을 누르면<br>결과를 나란히 비교할 수 있어요.</div></div>';
 
-  // 판정
+  // 판정 — 관리자가 여럿이므로 누가 언제 판정했는지 함께 보여준다
   document.getElementById('reason').value = r.reason || '';
+  var jb = document.getElementById('judgeBy');
+  if (r.verdict && r.verdictBy) {
+    jb.innerHTML = '<b>' + r.verdictBy + '</b> · ' + r.verdictAt;
+    jb.style.display = 'inline';
+  } else {
+    jb.style.display = 'none';
+  }
+  renderVerdictHistory(r);
   applyVerdictUI(r.verdict);
 
   document.getElementById('screen-list').classList.remove('active');
@@ -979,6 +1018,30 @@ function runModel(){
   }, 1400);
 }
 
+/* 판정 이력 — 목록에는 최신 판정만, 상세에서 이전 판정까지 본다 */
+function renderVerdictHistory(r){
+  var box = document.getElementById('verdictHistory');
+  var prev = r.prevVerdicts || [];
+  if (!r.verdict || !prev.length) { box.style.display = 'none'; return; }
+
+  var all = [{ v:r.verdict, by:r.verdictBy, at:r.verdictAt, reason:r.reason, now:true }].concat(prev);
+  box.style.display = 'block';
+  document.getElementById('vhCount').textContent = all.length + '건';
+  document.getElementById('vhList').innerHTML = all.map(function(x){
+    var chip = (x.v === 'P')
+      ? '<span class="verdict v-p"><i data-lucide="circle-check" style="width:12px;height:12px;"></i>Pass</span>'
+      : '<span class="verdict v-f"><i data-lucide="circle-x" style="width:12px;height:12px;"></i>Fail</span>';
+    return '<div class="vh-item">'
+      + '<div class="vh-meta">' + chip
+      + '<span class="vh-who"><b>' + x.by + '</b> · ' + x.at + '</span>'
+      + (x.now ? '<span class="vh-now">현재 판정</span>' : '')
+      + '</div>'
+      + '<div class="vh-reason' + (x.reason ? '' : ' empty') + '">' + (x.reason || '사유 없음') + '</div>'
+      + '</div>';
+  }).join('');
+  if (window.lucide) lucide.createIcons();
+}
+
 /* 판정 */
 var _verdict = null;
 function applyVerdictUI(v){
@@ -996,9 +1059,19 @@ function saveVerdict(){
     document.getElementById('reason').focus();
     return;
   }
+  // 기존 판정이 있으면 이력으로 보존한 뒤 새 판정을 현재로
+  if (CUR.verdict) {
+    CUR.prevVerdicts = [{ v:CUR.verdict, by:CUR.verdictBy, at:CUR.verdictAt, reason:CUR.reason }]
+      .concat(CUR.prevVerdicts || []);
+  }
   CUR.verdict = _verdict;
   CUR.reason = reason;
-  showToast('판정을 저장했어요. 교사 의견도 확인 처리됩니다.');
+  CUR.verdictBy = ADMIN_NAME;
+  CUR.verdictAt = '2026-09-10 ' + new Date().toTimeString().slice(0, 5);
+  var jb2 = document.getElementById('judgeBy');
+  jb2.innerHTML = '<b>' + CUR.verdictBy + '</b> · ' + CUR.verdictAt;
+  jb2.style.display = 'inline';
+  showToast((_verdict === 'P' ? 'Pass' : 'Fail') + '로 저장했어요.');
   setTimeout(goList, 700);
 }
 
