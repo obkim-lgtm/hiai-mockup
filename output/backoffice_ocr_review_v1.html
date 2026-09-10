@@ -143,7 +143,9 @@
   .voc-box{border:1px solid #C7E3FF;background:#F7FBFF;border-radius:8px;padding:16px 18px;margin-bottom:16px;}
   .voc-head{display:flex;align-items:center;gap:8px;margin-bottom:10px;}
   .voc-title{font-size:16px;font-weight:700;color:#0950A0;}
-  .voc-when{font-size:14px;color:#808080;margin-left:auto;}
+  .voc-cnt{font-size:14px;color:#0950A0;font-weight:700;}
+  .voc-item + .voc-item{border-top:1px solid #C7E3FF;margin-top:12px;padding-top:12px;}
+  .voc-meta{font-size:14px;color:#808080;margin-bottom:8px;}
   .voc-chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px;}
   .voc-chip{display:inline-flex;align-items:center;justify-content:center;line-height:1;
     height:26px;padding:0 10px;border-radius:6px;background:#fff;border:1px solid #C7E3FF;
@@ -385,11 +387,10 @@
     <div class="voc-box" id="vocBox">
       <div class="voc-head">
         <i data-lucide="message-square-text" style="width:17px;height:17px;color:#0950A0;"></i>
-        <span class="voc-title">교사 의견</span>
-        <span class="voc-when" id="vocWhen"></span>
+        <span class="voc-title">선생님 의견</span>
+        <span class="voc-cnt" id="vocCount"></span>
       </div>
-      <div class="voc-chips" id="vocChips"></div>
-      <div class="voc-text" id="vocText"></div>
+      <div id="vocList"></div>
     </div>
 
     <!-- 3열 -->
@@ -488,7 +489,7 @@
   <div class="mp-body" id="mpBody">
     <button class="mp-btn" onclick="goList()">인식 결과 검수 목록 <span class="mp-sub">필터 · 확인 필요 % · 의견</span></button>
     <div class="mp-cap">정하윤 20101 · 인식 2건</div>
-    <button class="mp-btn" onclick="openDetail('20101')">1차 · 0%인데 의견 있음 <span class="mp-sub">시스템 미감지 오류 · 지난 회차</span></button>
+    <button class="mp-btn" onclick="openDetail('20101')">1차 · 0%인데 의견 2건 <span class="mp-sub">시스템 미감지 오류 · 지난 회차</span></button>
     <button class="mp-btn" onclick="openDetail('20101r2')">2차 · 최신 <span class="mp-sub">선생님 수정 1문항</span></button>
     <div class="mp-cap">박지민 20103 · 인식 3건</div>
     <button class="mp-btn" onclick="openDetail('20103')">1차 · 정확도 낮음 80% <span class="mp-sub">선생님 화면에서 결과 숨겨짐 · 의견 있음</span></button>
@@ -513,9 +514,14 @@ var COMMON_Q = [
 var ROWS = [
   { id:'20101', date:'2026-09-08 09:12', evalName:'독서 감상문 쓰기', teacher:'김서윤', name:'정하윤', sid:'20101',
     unc:0, total:12, verdict:null, prep:'회전 0° · 검출 영역 0개 · 회전 모델 정확도 0.927',
-    voc:{ when:'09/08 14:22', by:'김서윤',
-          chips:['글씨를 못 읽었어요','수식·기호가 틀렸어요'],
-          text:'3번 문항에서 학생이 쓴 분수가 다른 숫자로 인식됐어요. 화면에는 확인 필요 표시가 없어서 그냥 넘어갈 뻔했습니다.' },
+    vocs:[
+      { when:'09/08 14:22', by:'김서윤',
+        chips:['글씨를 못 읽었어요','수식·기호가 틀렸어요'],
+        text:'3번 문항에서 학생이 쓴 분수가 다른 숫자로 인식됐어요. 화면에는 확인 필요 표시가 없어서 그냥 넘어갈 뻔했습니다.' },
+      { when:'09/08 16:47', by:'김서윤',
+        chips:['줄·문단이 뒤섞였어요'],
+        text:'2번 문항 답안이 중간에서 끊겨 있어요. 원본에는 뒤에 두 문장이 더 있습니다.' }
+    ],
     cur:[
       '이 책은 원소 주기율표를 중심으로 각 원소의 발견 역사와 그에 얽힌 과학자들의 삶을 이야기가 형식으로 풀어낸 책이다.',
       '빌헬름 뢴트겐이 X선을 발견한 이야기가 기억에 남는다. 그는 실험 중 우연히 형광이 빛나는 것을 보고 X선의 존재를 알게 되었는데,',
@@ -662,6 +668,11 @@ var SORT_DESC = true;
 var PER_PAGE = 20;
 var PAGE = 1;
 
+/* 의견은 인식 결과 1건에 여러 개 달릴 수 있다 (PRD 1:N) */
+function vocsOf(r){
+  if (r.vocs) return r.vocs;
+  return r.voc ? [r.voc] : [];
+}
 function pctOf(r){ return (r.unc == null || !r.total) ? null : Math.round(r.unc / r.total * 100); }
 
 function ratioCell(r){
@@ -680,7 +691,7 @@ function matchFilter(r){
   if (FILTER === 'all')  return true;
   if (FILTER === 'todo') return !r.verdict;
   if (FILTER === 'fail') return r.verdict === 'F';
-  if (FILTER === 'voc')  return !!r.voc;
+  if (FILTER === 'voc')  return vocsOf(r).length > 0;
   if (FILTER === 'low')  { var p = pctOf(r); return p !== null && p >= 70; }
   if (FILTER === 'again') return (r.seq || 1) > 1;
   return true;
@@ -723,7 +734,7 @@ function renderRows(){
       + '<td>' + r.name + '</td>'
       + '<td style="color:#494949;">' + r.sid + '</td>'
       + '<td>' + ratioCell(r) + '</td>'
-      + '<td>' + (r.voc ? '<span class="voc"><i data-lucide="message-square-text" style="width:14px;height:14px;"></i>1</span>' : '<span class="v-none">—</span>') + '</td>'
+      + '<td>' + (vocsOf(r).length ? '<span class="voc"><i data-lucide="message-square-text" style="width:14px;height:14px;"></i>' + vocsOf(r).length + '</span>' : '<span class="v-none">—</span>') + '</td>'
       + '<td>' + verdictCell(r) + '</td>'
       + '<td><span class="go"><i data-lucide="chevron-right" style="width:18px;height:18px;"></i></span></td>'
       + '</tr>';
@@ -734,7 +745,7 @@ function renderRows(){
   document.getElementById('c-all').textContent  = ROWS.length;
   document.getElementById('c-todo').textContent = ROWS.filter(function(r){ return !r.verdict; }).length;
   document.getElementById('c-fail').textContent = ROWS.filter(function(r){ return r.verdict === 'F'; }).length;
-  document.getElementById('c-voc').textContent  = ROWS.filter(function(r){ return !!r.voc; }).length;
+  document.getElementById('c-voc').textContent  = ROWS.filter(function(r){ return vocsOf(r).length > 0; }).length;
   document.getElementById('c-low').textContent  = ROWS.filter(function(r){ var p = pctOf(r); return p !== null && p >= 70; }).length;
   document.getElementById('c-again').textContent = ROWS.filter(function(r){ return (r.seq || 1) > 1; }).length;
   lucide.createIcons();
@@ -828,13 +839,17 @@ function openDetail(id){
 
   // 교사 의견
   var vb = document.getElementById('vocBox');
-  if (r.voc) {
+  var vocs = vocsOf(r);
+  if (vocs.length) {
     vb.style.display = 'block';
-    document.getElementById('vocWhen').textContent = r.voc.by + ' · ' + r.voc.when;
-    document.getElementById('vocChips').innerHTML = r.voc.chips.map(function(c){
-      return '<span class="voc-chip">' + c + '</span>';
+    document.getElementById('vocCount').textContent = vocs.length > 1 ? (vocs.length + '건') : '';
+    document.getElementById('vocList').innerHTML = vocs.map(function(v){
+      return '<div class="voc-item">'
+        + '<div class="voc-meta">' + v.by + ' · ' + v.when + '</div>'
+        + '<div class="voc-chips">' + v.chips.map(function(c){ return '<span class="voc-chip">' + c + '</span>'; }).join('') + '</div>'
+        + '<div class="voc-text">' + v.text + '</div>'
+        + '</div>';
     }).join('');
-    document.getElementById('vocText').textContent = r.voc.text;
   } else {
     vb.style.display = 'none';
   }
