@@ -234,7 +234,7 @@
   .vh-now{display:inline-flex;align-items:center;justify-content:center;line-height:1;height:20px;padding:0 7px;
     border-radius:5px;background:#F0F0F0;color:#808080;font-size:12px;font-weight:700;}
   .vh-reason{font-size:15px;color:#333;line-height:1.6;}
-  .vh-reason.empty{color:#B3B3B3;}
+  .vh-reason.none{color:#B3B3B3;}
 
   /* 판정 바 */
   .judge{position:fixed;left:0;right:0;bottom:0;z-index:50;background:#fff;border-top:1px solid #D9D9D9;
@@ -1058,7 +1058,7 @@ function renderVerdictHistory(r){
       + '<span class="vh-who"><b>' + x.by + '</b> · ' + x.at + '</span>'
       + (x.now ? '<span class="vh-now">현재 판정</span>' : '')
       + '</div>'
-      + '<div class="vh-reason' + (x.reason ? '' : ' empty') + '">' + (x.reason || '사유 없음') + '</div>'
+      + '<div class="vh-reason' + (x.reason ? '' : ' none') + '">' + (x.reason || '사유 없음') + '</div>'
       + '</div>';
   }).join('');
   if (window.lucide) lucide.createIcons();
