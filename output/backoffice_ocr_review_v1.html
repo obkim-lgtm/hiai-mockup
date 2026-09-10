@@ -576,7 +576,7 @@ var ROWS = [
     diffCmp:[['과학자들의 이야기로'],['스푼이 녹아','실제로 해보고 싶다는 생각이 들었다.'],['밑넓이 5 x 12 = 30, 옆넓이 240']],
     diffCur:[[],[],[]],
     /* 이미 테스트를 돌린 건 — 결과가 저장돼 다시 열면 그대로 보인다 */
-    testedWith:{ recog:'g31-pro', struct:'g31-pro', at:'2026-09-09 09:30' }
+    testedWith:{ recog:'g31-pro', struct:'g31-pro', by:'Rena', at:'09/09 09:30' }
   },
   { id:'20102', date:'2026-09-08 09:12', evalName:'독서 감상문 쓰기', teacher:'김서윤', name:'이준호', sid:'20102',
     unc:2, total:12, verdict:null, prep:'회전 0° · 검출 영역 1개 · 회전 모델 정확도 0.941',
@@ -949,7 +949,7 @@ function openDetail(id){
     openTest();
     document.getElementById('colCmp').innerHTML = qCards(r.cmp, null);
     var done0 = document.getElementById('runDone');
-    done0.textContent = r.testedWith.at + ' 실행함';
+    done0.textContent = r.testedWith.by + ' · ' + r.testedWith.at + ' 실행함';
     done0.style.display = 'inline';
   }
 
@@ -1029,7 +1029,7 @@ function runModel(){
     // 테스트 목적이므로 모델·횟수 제한 없음 — 버튼은 계속 살려 둔다
     btn.disabled = false;
     var done = document.getElementById('runDone');
-    done.textContent = modelName + ' 실행함';
+    done.textContent = ADMIN_NAME + ' · 09/10 ' + new Date().toTimeString().slice(0,5) + ' 실행함';
     done.style.display = 'inline';
     lucide.createIcons();
     showToast('테스트 결과입니다(' + modelName + '). 선생님 화면에는 반영되지 않아요.');
