@@ -211,7 +211,6 @@
   .q-nm{font-size:14px;color:#494949;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
   .q-body{padding:12px 14px;font-family:'Pretendard',-apple-system,sans-serif;font-size:15px;
     line-height:1.65;color:#333;white-space:pre-wrap;}
-  .unc{background:#FFEDD5;border-bottom:2px solid #FF8C4C;border-radius:2px;padding:0 1px;}
 
   .model-sel{height:32px;border:1px solid #D9D9D9;border-radius:6px;padding:0 8px;font-family:inherit;
     font-size:14px;font-weight:700;color:#333;background:#fff;cursor:pointer;outline:none;}
@@ -768,14 +767,6 @@ function renderPager(total){
 /* ═════════ 상세 ═════════ */
 var CUR = null, _page = 1, _zoom = 100;
 
-function mark(text, terms, cls){
-  var out = text;
-  (terms || []).forEach(function(t){
-    if (!t) return;
-    out = out.split(t).join('<span class="' + cls + '">' + t + '</span>');
-  });
-  return out;
-}
 function qCards(texts, marks, edits){
   if (!texts) return '';
   return texts.map(function(t, i){
@@ -789,7 +780,7 @@ function qCards(texts, marks, edits){
          + '<span class="q-nm">' + q.name + '</span>'
          + (badges ? '<span class="q-badges">' + badges + '</span>' : '')
          + '</div>'
-         + '<div class="q-body">' + mark(t, marks && marks[i], 'unc') + '</div>'
+         + '<div class="q-body">' + t + '</div>'
          + (edited
              ? '<div class="q-edit" id="qedit-' + i + '" style="display:none;">'
                + '<div class="q-edit-lbl">선생님 수정본</div>'
