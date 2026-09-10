@@ -34,11 +34,14 @@
       width:24px;height:24px;background:none;border:none;border-radius:5px;cursor:pointer;color:#B3B3B3;flex-shrink:0;padding:0;}
     .beta-note-b .bn-x:hover{background:#EFEFEF;color:#808080;}
     /* C안 — 가벼운 줄(박스 없음) + 의견요청 문구 */
-    .beta-note-c{display:none;align-items:center;gap:8px;margin:-8px 0 18px;padding:0 24px;}
-    .beta-note-c .bn-txt{font-size:14px;color:#494949;line-height:1.55;flex:1;min-width:0;}
+    .beta-note-c{display:none;align-items:flex-start;gap:10px;margin:-4px 24px 18px;padding:14px 16px;
+      background:#F8F8F8;border:1px solid #EFEFEF;border-radius:10px;}
+    .beta-note-c .bn-ico{width:18px;height:18px;color:#808080;flex-shrink:0;margin-top:2px;}
+    .beta-note-c .bn-txt{font-size:15px;color:#333;line-height:1.6;flex:1;min-width:0;}
+    .beta-note-c .bn-txt em{display:block;font-style:normal;color:#494949;}
     .beta-note-c .bn-go{display:inline-flex;align-items:center;justify-content:center;line-height:1;vertical-align:middle;
-      gap:5px;background:none;border:none;padding:0;font-family:inherit;font-size:14px;font-weight:700;color:#0A4A94;
-      cursor:pointer;white-space:nowrap;flex-shrink:0;text-decoration:underline;text-underline-offset:3px;}
+      gap:6px;background:none;border:none;padding:0;font-family:inherit;font-size:15px;font-weight:700;color:#0A4A94;
+      cursor:pointer;white-space:nowrap;flex-shrink:0;text-decoration:underline;text-underline-offset:3px;margin-top:2px;}
     .beta-note-c .bn-go:hover{color:#00319F;}
     /* 의견 모달 칩 (eval_home_v10 fb-chip 재사용) */
     .fb-chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;}
@@ -984,9 +987,9 @@
         <button class="bn-x" onclick="dismissBetaNote()" aria-label="닫기"><i data-lucide="x" style="width:14px;height:14px;"></i></button>
       </div>
       <div class="beta-note-c" id="beta-note-c">
-        <i data-lucide="info" style="width:15px;height:15px;color:#808080;flex-shrink:0;"></i>
-        <span class="bn-txt">잘못 인식된 부분이 있다면 알려주세요. 인식 품질 개선에 반영돼요.</span>
-        <button class="bn-go" onclick="openOcrFeedback()"><i data-lucide="message-square-text" style="width:15px;height:15px;"></i>알려주기</button>
+        <i data-lucide="circle-alert" class="bn-ico"></i>
+        <span class="bn-txt">AI는 실수할 수 있으며, 선생님의 확인이 필요합니다.<em>잘못 인식된 부분을 알려주시면 인식 품질 개선에 반영됩니다.</em></span>
+        <button class="bn-go" onclick="openOcrFeedback()"><i data-lucide="message-square-text" style="width:17px;height:17px;"></i>알려주기</button>
       </div>
       <!-- ▲ -->
       <!-- OCR 결과 카드 영역 -->
