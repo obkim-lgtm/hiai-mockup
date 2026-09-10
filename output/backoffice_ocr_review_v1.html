@@ -191,9 +191,6 @@
   /* 정확도 낮음 안내 */
   .low-note{display:flex;align-items:flex-start;gap:8px;padding:12px 14px;margin-bottom:14px;
     background:#FFEFEF;border:1px solid #FFCDCD;border-radius:8px;}
-  .past-note{display:flex;align-items:flex-start;gap:8px;padding:12px 14px;margin-bottom:14px;
-    background:#F8F8F8;border:1px solid #EFEFEF;border-radius:8px;}
-  .past-note span{font-size:14px;color:#494949;line-height:1.55;}
   .low-note span{font-size:14px;color:#494949;line-height:1.55;}
   .col-body{padding:16px;overflow-y:auto;max-height:640px;}
   .scan-bar{height:44px;background:#494949;display:flex;align-items:center;justify-content:center;gap:10px;
@@ -906,16 +903,7 @@ function openDetail(id){
       ? '<div class="low-note"><i data-lucide="triangle-alert" style="width:16px;height:16px;color:#DB3E51;flex-shrink:0;margin-top:1px;"></i>'
         + '<span><strong style="color:#DB3E51;">정확도 낮음</strong> — 선생님 화면에서는 결과가 숨겨지고 AI 채점에서도 제외된 건입니다.</span></div>'
       : '';
-    // 이후 회차가 있으면 = 지난 인식 결과. 그 시점 선생님 수정본은 재인식으로 교체되어 남지 않음
-    var hasLater = ROWS.some(function(x){
-      return x.sid === r.sid && x.evalName === r.evalName && (x.seq || 1) > (r.seq || 1);
-    });
-    var past = hasLater
-      ? '<div class="past-note"><i data-lucide="history" style="width:16px;height:16px;color:#808080;flex-shrink:0;margin-top:1px;"></i>'
-        + '<span>이후 다시 인식된 건이라 <strong style="color:#333;">이 시점의 선생님 수정 내역은 남아 있지 않습니다.</strong> '
-        + '수정 표시가 없어도 선생님이 고치지 않았다는 뜻은 아닙니다.</span></div>'
-      : '';
-    colCur.innerHTML = low + past + qCards(r.cur, r.uncCur || null, r.edits);
+    colCur.innerHTML = low + qCards(r.cur, r.uncCur || null, r.edits);
   }
 
   // 모델 테스트 — 기본은 닫힘(2단). 이미 돌린 건은 저장된 결과를 펼쳐서 보여준다
