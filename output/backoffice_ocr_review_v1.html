@@ -192,7 +192,7 @@
   .low-note{display:flex;align-items:flex-start;gap:8px;padding:12px 14px;margin-bottom:14px;
     background:#FFEFEF;border:1px solid #FFCDCD;border-radius:8px;}
   .low-note span{font-size:14px;color:#494949;line-height:1.55;}
-  .col-body{padding:16px;overflow-y:auto;max-height:640px;}
+  .col-body{padding:16px;overflow-y:auto;max-height:640px;flex:1;min-height:0;}
   .scan-bar{height:44px;background:#494949;display:flex;align-items:center;justify-content:center;gap:10px;
     border-radius:9px 9px 0 0;flex-shrink:0;}
   .scan-bar span{font-size:14px;color:#fff;}
@@ -219,7 +219,8 @@
     font-size:14px;font-weight:700;cursor:pointer;white-space:nowrap;}
   .btn-run:hover{background:#00319F;}
   .btn-run:disabled{background:#C9CDD2;cursor:not-allowed;}
-  .col-empty{padding:72px 20px;text-align:center;color:#B3B3B3;font-size:15px;line-height:1.7;}
+  .col-empty{height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;
+    padding:20px;text-align:center;color:#B3B3B3;font-size:15px;line-height:1.7;}
   .spin{width:26px;height:26px;border:3px solid #D5EFFF;border-top:3px solid #0950A0;border-radius:50%;
     animation:sp 1s linear infinite;margin:0 auto 12px;}
   @keyframes sp{to{transform:rotate(360deg);}}
