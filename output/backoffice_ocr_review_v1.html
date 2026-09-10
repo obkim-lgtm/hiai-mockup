@@ -524,7 +524,7 @@
     <button class="mp-btn" onclick="openDetail('10105')">정현우 · 인식 실패 <span class="mp-sub">미판정 — 검수 대기</span></button>
     <button class="mp-btn" onclick="openDetail('20405')">김두아 · 인식 실패 <span class="mp-sub">이미 Fail 판정 · 의견 있음</span></button>
     <button class="mp-btn" onclick="openDetail('30101')">권지호 · 의견 왔지만 Pass <span class="mp-sub">제보 확인했으나 인식은 정확함</span></button>
-    <button class="mp-btn" onclick="openDetail('20102b')">김도윤 · 판정 뒤집힘 <span class="mp-sub">Rena Pass(사유 없음) → Olivia Fail</span></button>
+    <button class="mp-btn" onclick="openDetail('20102b')">김도윤 · 판정 뒤집힘 <span class="mp-sub">Lean Pass(사유 없음) → Olivia Fail</span></button>
   </div>
 </div>
 
@@ -576,7 +576,7 @@ var ROWS = [
     diffCmp:[['과학자들의 이야기로'],['스푼이 녹아','실제로 해보고 싶다는 생각이 들었다.'],['밑넓이 5 x 12 = 30, 옆넓이 240']],
     diffCur:[[],[],[]],
     /* 이미 테스트를 돌린 건 — 결과가 저장돼 다시 열면 그대로 보인다 */
-    testedWith:{ recog:'g31-pro', struct:'g31-pro', by:'Rena', at:'09/09 09:30' }
+    testedWith:{ recog:'g31-pro', struct:'g31-pro', by:'Lean', at:'09/09 09:30' }
   },
   { id:'20102', date:'2026-09-08 09:12', evalName:'독서 감상문 쓰기', teacher:'김서윤', name:'이준호', sid:'20102',
     unc:2, total:12, verdict:null, prep:'회전 0° · 검출 영역 1개 · 회전 모델 정확도 0.941',
@@ -591,7 +591,7 @@ var ROWS = [
     cmp:null
   },
   { id:'20405', date:'2026-09-07 17:33', evalName:'중학교 수학', teacher:'박준서', name:'김두아', sid:'20405',
-    unc:null, total:null, verdict:'F', verdictBy:'Rena', verdictAt:'2026-09-09 10:35', reason:'스캔 해상도가 낮아 인식 자체가 실패. 3.1 Pro로 다시 돌려도 동일하게 실패함. 재업로드 안내 필요.',
+    unc:null, total:null, verdict:'F', verdictBy:'Lean', verdictAt:'2026-09-09 10:35', reason:'스캔 해상도가 낮아 인식 자체가 실패. 3.1 Pro로 다시 돌려도 동일하게 실패함. 재업로드 안내 필요.',
     prep:'회전 180° · 검출 영역 0개 · 회전 모델 정확도 0.512',
     voc:{ when:'09/07 18:40', by:'박준서',
           chips:['글씨를 못 읽었어요'],
@@ -652,7 +652,7 @@ var ROWS = [
     unc:3, total:6, verdict:'F', verdictBy:'Olivia', verdictAt:'2026-09-09 17:40',
     reason:'다시 보니 2번 문항 숫자가 틀렸음. 채점에 영향이 있어 Fail로 정정.',
     prevVerdicts:[
-      { v:'P', by:'Rena', at:'2026-09-08 14:02', reason:'' }
+      { v:'P', by:'Lean', at:'2026-09-08 14:02', reason:'' }
     ],
     prep:'회전 0° · 검출 영역 0개 · 회전 모델 정확도 0.933', voc:null,
     cur:['그래프의 기울기는 속도를 의미한다.','x축은 시간, y축은 이동 거리이다.','기울기가 클수록 빠르게 이동한 것이다.'],
