@@ -88,6 +88,14 @@
   .sort-th{cursor:pointer;user-select:none;}
   .sort-th i{vertical-align:middle;margin-left:2px;}
 
+  .seq-badge{display:inline-flex;align-items:center;justify-content:center;line-height:1;
+    height:20px;padding:0 7px;margin-left:6px;border-radius:5px;background:#DCEBFF;color:#0950A0;
+    font-size:12px;font-weight:700;vertical-align:middle;}
+  .recog-at{font-size:14px;color:#494949;white-space:nowrap;}
+  .sib-link{display:inline-flex;align-items:center;justify-content:center;line-height:1;vertical-align:middle;gap:4px;
+    background:none;border:none;padding:0;margin-left:10px;font-family:inherit;font-size:14px;font-weight:700;
+    color:#0A4A94;cursor:pointer;text-decoration:underline;text-underline-offset:3px;white-space:nowrap;}
+  .sib-link:hover{color:#00319F;}
   .ratio{display:inline-flex;align-items:center;justify-content:center;line-height:1;gap:6px;font-weight:700;}
   .ratio .pct{font-size:15px;}
   .ratio .frac{font-size:13px;font-weight:400;color:#808080;}
@@ -145,11 +153,45 @@
   /* ── 3열 ── */
   .cols{display:flex;gap:12px;align-items:stretch;}
   .col{background:#fff;border:1px solid #E6E6E6;border-radius:10px;display:flex;flex-direction:column;min-width:0;}
-  .col-src{flex:1.15;}
-  .col-txt{width:430px;flex-shrink:0;}
-  .col-head{height:48px;flex-shrink:0;display:flex;align-items:center;gap:8px;padding:0 16px;
+  .col-src{flex:1;min-width:360px;}
+  .col-main{flex:1;min-width:420px;}
+  .col-test{width:440px;flex-shrink:0;}
+  .col-head{min-height:56px;flex-shrink:0;display:flex;align-items:center;gap:10px;padding:8px 16px;
     border-bottom:1px solid #EFEFEF;}
-  .col-head .nm{font-size:15px;font-weight:700;color:#333;}
+  .ch-title{display:flex;flex-direction:column;gap:2px;min-width:0;}
+  .ch-title .nm{display:inline-flex;align-items:center;gap:6px;font-size:15px;font-weight:700;color:#333;line-height:1.2;}
+  .ch-sub{font-size:12px;color:#808080;line-height:1.3;white-space:nowrap;}
+  .ch-meta{font-size:13px;color:#808080;white-space:nowrap;}
+  .ch-meta.edit{color:#0950A0;font-weight:700;}
+  .btn-test{display:inline-flex;align-items:center;justify-content:center;line-height:1;vertical-align:middle;gap:5px;
+    margin-left:auto;height:32px;padding:0 12px;background:#fff;border:1px solid #7FB3E8;border-radius:6px;
+    font-family:inherit;font-size:14px;font-weight:700;color:#0950A0;cursor:pointer;white-space:nowrap;flex-shrink:0;}
+  .btn-test:hover{background:#F3F9FF;}
+  .ch-x{display:inline-flex;align-items:center;justify-content:center;margin-left:auto;width:28px;height:28px;
+    background:none;border:none;border-radius:6px;cursor:pointer;color:#808080;flex-shrink:0;}
+  .ch-x:hover{background:#F0F0F0;}
+  .test-bar{display:flex;flex-direction:column;gap:8px;padding:12px 16px;border-bottom:1px solid #EFEFEF;background:#FAFBFD;}
+  .test-row{display:flex;align-items:center;gap:8px;width:100%;}
+  .test-lbl{width:46px;flex-shrink:0;font-size:13px;font-weight:700;color:#494949;}
+  .test-row .model-sel{flex:1;min-width:0;}
+  /* 문항 뱃지 */
+  .q-badges{margin-left:auto;display:inline-flex;align-items:center;gap:6px;flex-shrink:0;}
+  .badge-unc{display:inline-flex;align-items:center;justify-content:center;line-height:1;gap:4px;height:22px;
+    padding:0 8px;border-radius:5px;background:#FFEDD5;color:#C2410C;font-size:12px;font-weight:700;}
+  .badge-edit{display:inline-flex;align-items:center;justify-content:center;line-height:1;gap:4px;height:22px;
+    padding:0 8px;border-radius:5px;background:#F3F9FF;border:1px solid #C7E3FF;color:#0950A0;
+    font-family:inherit;font-size:12px;font-weight:700;cursor:pointer;}
+  .badge-edit:hover{background:#E7F2FF;}
+  .q-edit{border-top:1px dashed #D9D9D9;margin:0 14px;padding:10px 0 12px;}
+  .q-edit-lbl{font-size:12px;font-weight:700;color:#0950A0;margin-bottom:5px;}
+  .q-edit-body{font-family:'Pretendard',-apple-system,sans-serif;font-size:15px;line-height:1.65;color:#333;white-space:pre-wrap;}
+  /* 정확도 낮음 안내 */
+  .low-note{display:flex;align-items:flex-start;gap:8px;padding:12px 14px;margin-bottom:14px;
+    background:#FFEFEF;border:1px solid #FFCDCD;border-radius:8px;}
+  .past-note{display:flex;align-items:flex-start;gap:8px;padding:12px 14px;margin-bottom:14px;
+    background:#F8F8F8;border:1px solid #EFEFEF;border-radius:8px;}
+  .past-note span{font-size:14px;color:#494949;line-height:1.55;}
+  .low-note span{font-size:14px;color:#494949;line-height:1.55;}
   .col-body{padding:16px;overflow-y:auto;max-height:640px;}
   .scan-bar{height:44px;background:#494949;display:flex;align-items:center;justify-content:center;gap:10px;
     border-radius:9px 9px 0 0;flex-shrink:0;}
@@ -292,6 +334,7 @@
         <button class="chip" data-f="fail" onclick="setFilter('fail')"><i data-lucide="circle-x" style="width:14px;height:14px;"></i>Fail <span class="cnt" id="c-fail">0</span></button>
         <button class="chip" data-f="voc" onclick="setFilter('voc')"><i data-lucide="message-square-text" style="width:14px;height:14px;"></i>의견 있음 <span class="cnt" id="c-voc">0</span></button>
         <button class="chip" data-f="low" onclick="setFilter('low')"><i data-lucide="triangle-alert" style="width:14px;height:14px;"></i>정확도 낮음 <span class="cnt" id="c-low">0</span></button>
+        <button class="chip" data-f="again" onclick="setFilter('again')"><i data-lucide="rotate-cw" style="width:14px;height:14px;"></i>다시 인식 <span class="cnt" id="c-again">0</span></button>
       </div>
     </div>
 
@@ -300,8 +343,9 @@
       <table>
         <thead>
           <tr>
-            <th style="width:130px;">제출일</th>
-            <th style="width:190px;">평가명</th>
+            <th style="width:110px;">제출일</th>
+            <th style="width:150px;">인식 일시</th>
+            <th style="width:170px;">평가명</th>
             <th style="width:110px;">교사명</th>
             <th style="width:100px;">학생명</th>
             <th style="width:90px;">학번</th>
@@ -366,25 +410,48 @@
         <div class="scan-view"><img id="scanImg" src="../screens/student_submission.png" alt="비식별화된 학생 과제물"></div>
       </div>
 
-      <!-- 중: 현재 버전 -->
-      <div class="col col-txt">
+      <!-- 중: 인식 결과 (서비스에 사용 중) -->
+      <div class="col col-main">
         <div class="col-head">
-          <i data-lucide="scan-text" style="width:17px;height:17px;color:#0950A0;"></i>
-          <span class="nm">현재 버전</span>
-          <span style="margin-left:auto;font-size:13px;color:#808080;" id="curMeta"></span>
+          <div class="ch-title">
+            <span class="nm"><i data-lucide="scan-text" style="width:17px;height:17px;color:#0950A0;"></i>인식 결과</span>
+          </div>
+          <span class="ch-meta" id="curMeta"></span>
+          <span class="ch-meta edit" id="editMeta"></span>
+          <button class="btn-test" onclick="openTest()"><i data-lucide="flask-conical" style="width:15px;height:15px;"></i>모델 테스트</button>
         </div>
         <div class="col-body" id="colCur"></div>
       </div>
 
-      <!-- 우: 비교 모델 -->
-      <div class="col col-txt">
+      <!-- 우: 모델 테스트 (서비스 미반영) -->
+      <div class="col col-test" id="colTest" style="display:none;">
         <div class="col-head">
-          <select class="model-sel" id="modelSel">
-            <option value="pro31">3.1 Pro</option>
-            <option value="pro31lite">3.1 Pro Lite</option>
-          </select>
-          <button class="btn-run" id="runBtn" onclick="runModel()"><i data-lucide="play" style="width:14px;height:14px;"></i>이 모델로 다시 인식</button>
-            </div>
+          <div class="ch-title">
+            <span class="nm"><i data-lucide="flask-conical" style="width:17px;height:17px;color:#808080;"></i>모델 테스트</span>
+            <span class="ch-sub">검수용 · 서비스에 반영되지 않음</span>
+          </div>
+          <button class="ch-x" onclick="closeTest()"><i data-lucide="x" style="width:17px;height:17px;"></i></button>
+        </div>
+        <div class="test-bar">
+          <div class="test-row">
+            <span class="test-lbl">인식</span>
+            <select class="model-sel" id="modelRecog">
+              <option value="cur">현재 모델</option>
+              <option value="pro31">3.1 Pro</option>
+            </select>
+          </div>
+          <div class="test-row">
+            <span class="test-lbl">구조화</span>
+            <select class="model-sel" id="modelStruct">
+              <option value="cur">현재 모델</option>
+              <option value="pro31">3.1 Pro</option>
+            </select>
+          </div>
+          <div class="test-row" style="justify-content:flex-end;">
+            <span id="runDone" style="display:none;font-size:13px;color:#808080;white-space:nowrap;margin-right:auto;"></span>
+            <button class="btn-run" id="runBtn" onclick="runModel()"><i data-lucide="play" style="width:14px;height:14px;"></i>인식 실행</button>
+          </div>
+        </div>
         <div class="col-body" id="colCmp"></div>
       </div>
     </div>
@@ -417,11 +484,18 @@
   </div>
   <div class="mp-body" id="mpBody">
     <button class="mp-btn" onclick="goList()">인식 결과 검수 목록 <span class="mp-sub">필터 · 확인 필요 % · 의견</span></button>
-    <div class="mp-cap">상세 · 케이스별</div>
-    <button class="mp-btn" onclick="openDetail('20101')">0%인데 의견 있음 <span class="mp-sub">시스템이 못 잡은 오류 — 최고 가치</span></button>
-    <button class="mp-btn" onclick="openDetail('20103')">정확도 낮음 80% <span class="mp-sub">사용자 화면에서 결과 숨겨짐</span></button>
-    <button class="mp-btn" onclick="openDetail('20102')">확인 필요 17% <span class="mp-sub">의견 없음 · 일반 검수</span></button>
-    <button class="mp-btn" onclick="openDetail('20405')">인식 실패 <span class="mp-sub">결과 없음 · 이미 Fail 판정</span></button>
+    <div class="mp-cap">정하윤 20101 · 인식 2건</div>
+    <button class="mp-btn" onclick="openDetail('20101')">1차 · 0%인데 의견 있음 <span class="mp-sub">시스템 미감지 오류 · 지난 회차</span></button>
+    <button class="mp-btn" onclick="openDetail('20101r2')">2차 · 최신 <span class="mp-sub">선생님 수정 1문항</span></button>
+    <div class="mp-cap">박지민 20103 · 인식 3건</div>
+    <button class="mp-btn" onclick="openDetail('20103')">1차 · 정확도 낮음 80% <span class="mp-sub">선생님 화면에서 결과 숨겨짐 · 의견 있음</span></button>
+    <button class="mp-btn" onclick="openDetail('20103r2')">2차 · 확인 필요 60% <span class="mp-sub">지난 회차</span></button>
+    <button class="mp-btn" onclick="openDetail('20103r3')">3차 · 확인 필요 20% <span class="mp-sub">재인식으로 개선 · 선생님 수정 2문항</span></button>
+    <div class="mp-cap">그 외</div>
+    <button class="mp-btn" onclick="openDetail('20102')">이준호 · 확인 필요 17% <span class="mp-sub">인식 불확실 1 · 선생님 수정 1문항</span></button>
+    <button class="mp-btn" onclick="openDetail('10105')">정현우 · 인식 실패 <span class="mp-sub">미판정 — 검수 대기</span></button>
+    <button class="mp-btn" onclick="openDetail('20405')">김두아 · 인식 실패 <span class="mp-sub">이미 Fail 판정 · 의견 있음</span></button>
+    <button class="mp-btn" onclick="openDetail('30101')">권지호 · Pass 판정 완료 <span class="mp-sub">확인 필요 13%</span></button>
   </div>
 </div>
 
@@ -449,8 +523,6 @@ var ROWS = [
       '빌헬름 뢴트겐이 X선을 발견한 이야기가 기억에 남는다. 그는 실험 중 우연히 형광이 빛나는 것을 보고 X선의 존재를 알게 되었는데,',
       '겉넓이 = 30 + 240 = 260cm2\n부피 = 30 x 8 = 240cm3\n밑넓이 = 5 x 12 x 1/2 = 30'
     ],
-    diffCur:[['이야기가 형식으로'],[],['1/5']],
-    diffCmp:[['이야기 형식으로'],[],['1/2']]
   },
   { id:'20103', date:'2026-09-08 09:12', evalName:'독서 감상문 쓰기', teacher:'김서윤', name:'박지민', sid:'20103',
     unc:4, total:5, verdict:null, prep:'회전 90° · 검출 영역 2개 · 회전 모델 정확도 0.641',
@@ -479,7 +551,8 @@ var ROWS = [
       '겉넓이 = 30 + 240 = 260cm2\n부피 = 30 x 8 = 240cm3'
     ],
     uncCur:[[],['그 원인을'],[]],
-    cmp:null, diffCur:[[],[],[]], diffCmp:[[],[],[]]
+    edits:{1:'빌헬름 뢴트겐이 X선을 발견한 이야기가 기억에 남는다. 처음에는 그 원리를 이해하지 못했지만 끝까지 파고들어 인류 역사상 최초로 내부 신체를 들여다볼 수 있는 기술을 만들어냈다.'},
+    cmp:null
   },
   { id:'20405', date:'2026-09-07 17:33', evalName:'중학교 수학', teacher:'박준서', name:'김두아', sid:'20405',
     unc:null, total:null, verdict:'F', reason:'스캔 해상도가 낮아 인식 자체가 실패. 3.1 Pro로 다시 돌려도 동일하게 실패함. 재업로드 안내 필요.',
@@ -489,6 +562,47 @@ var ROWS = [
           text:'인식 실패로 떠서 다시 인식을 눌러도 계속 실패합니다.' },
     cur:null, cmp:null, cmpFail:true, diffCur:[], diffCmp:[]
   },
+  /* 재인식(2차) — 목록 행은 인식 1건 단위. 같은 학생이 여러 줄로 뜬다 */
+  { id:'20103r2', date:'2026-09-08 09:12', recogAt:'2026-09-09 11:40', seq:2,
+    evalName:'독서 감상문 쓰기', teacher:'김서윤', name:'박지민', sid:'20103',
+    unc:3, total:5, verdict:null, prep:'회전 0° · 검출 영역 2개 · 회전 모델 정확도 0.902',
+    voc:null,
+    cur:[
+      '원소 주기율표에 얽힌 과학자들의 이야기로 원소 발견의 역사를 흥미롭게 풀어 썼다.',
+      '스푼이 녹아 사라지는 갈륨 장난 이야기가 인상 깊었는데 실제로',
+      '겉넓이 밑넓이 5x12 30 옆넓이 240 겉넓이 260'
+    ],
+    uncCur:[[],['실제로'],['옆넓이 240']],
+    cmp:null },
+  { id:'20101r2', date:'2026-09-08 09:12', recogAt:'2026-09-09 09:05', seq:2,
+    evalName:'독서 감상문 쓰기', teacher:'김서윤', name:'정하윤', sid:'20101',
+    unc:0, total:12, verdict:null, prep:'회전 0° · 검출 영역 0개 · 회전 모델 정확도 0.931',
+    voc:null,
+    cur:[
+      '이 책은 원소 주기율표를 중심으로 각 원소의 발견 역사와 그에 얽힌 과학자들의 삶을 이야기 형식으로 풀어낸 책이다.',
+      '빌헬름 뢴트겐이 X선을 발견한 이야기가 기억에 남는다. 그는 실험 중 우연히 형광이 빛나는 것을 보고 X선의 존재를 알게 되었는데,',
+      '겉넓이 = 30 + 240 = 260cm2\n부피 = 30 x 8 = 240cm3\n밑넓이 = 5 x 12 x 1/5 = 30'
+    ],
+    edits:{2:'겉넓이 = 30 + 240 = 260cm2\n부피 = 30 x 8 = 240cm3\n밑넓이 = 5 x 12 x 1/2 = 30'},
+    cmp:null },
+  { id:'20103r3', date:'2026-09-08 09:12', recogAt:'2026-09-09 15:22', seq:3,
+    evalName:'독서 감상문 쓰기', teacher:'김서윤', name:'박지민', sid:'20103',
+    unc:1, total:5, verdict:null, prep:'회전 0° · 검출 영역 2개 · 회전 모델 정확도 0.948',
+    voc:null,
+    cur:[
+      '원소 주기율표에 얽힌 과학자들의 이야기로 원소 발견의 역사를 흥미롭게 풀어 썼다.',
+      '스푼이 녹아 사라지는 갈륨 장난 이야기가 인상 깊었는데, 실제로 해보고 싶다는 생각이 들었다.',
+      '겉넓이 = 밑넓이 5 x 12 = 30, 옆넓이 240, 겉넓이 260'
+    ],
+    uncCur:[[],[],['옆넓이 240']],
+    edits:{1:'스푼이 녹아 사라지는 갈륨 장난 이야기가 인상 깊었는데, 실제로 해보고 싶다는 생각이 들었다.',
+           2:'겉넓이 = 밑넓이 5 x 12 = 60, 옆넓이 240, 겉넓이 300'},
+    cmp:null },
+  { id:'10105', date:'2026-09-07 10:14', recogAt:'2026-09-07 10:20',
+    evalName:'중학교 수학', teacher:'박준서', name:'정현우', sid:'10105',
+    unc:null, total:null, verdict:null,
+    prep:'회전 270° · 검출 영역 0개 · 회전 모델 정확도 0.488',
+    voc:null, cur:null, cmp:null, cmpFail:true },
   { id:'30101', date:'2026-09-06 15:02', evalName:'그래프 과학 테스트', teacher:'이도현', name:'권지호', sid:'30101',
     unc:1, total:8, verdict:'P', reason:'문항 1의 단위 표기만 미세하게 달라 실제 채점에는 영향 없음.',
     prep:'회전 0° · 검출 영역 1개 · 회전 모델 정확도 0.958', voc:null,
@@ -565,6 +679,7 @@ function matchFilter(r){
   if (FILTER === 'fail') return r.verdict === 'F';
   if (FILTER === 'voc')  return !!r.voc;
   if (FILTER === 'low')  { var p = pctOf(r); return p !== null && p >= 70; }
+  if (FILTER === 'again') return (r.seq || 1) > 1;
   return true;
 }
 function setFilter(f){
@@ -578,6 +693,9 @@ function toggleSort(){ SORT_DESC = !SORT_DESC; PAGE = 1; renderRows(); }
 function renderRows(){
   // 정렬: ① 미판정 우선 ② 확인 필요 비율
   var list = ROWS.filter(matchFilter).slice().sort(function(a,b){
+    // 목업 편의 — 케이스 학생을 위로 모아 스크롤 없이 보이게 한다 (실제 목록엔 없는 규칙)
+    var da = a.id.indexOf('gen') === 0 ? 1 : 0, db = b.id.indexOf('gen') === 0 ? 1 : 0;
+    if (da !== db) return da - db;
     var ta = a.verdict ? 1 : 0, tb = b.verdict ? 1 : 0;
     if (ta !== tb) return ta - tb;
     var pa = pctOf(a), pb = pctOf(b);
@@ -594,7 +712,9 @@ function renderRows(){
 
   document.getElementById('rows').innerHTML = pageRows.map(function(r){
     return '<tr class="clickable" onclick="openDetail(\'' + r.id + '\')">'
-      + '<td style="color:#494949;font-size:14px;">' + r.date.slice(5) + '</td>'
+      + '<td style="color:#808080;font-size:14px;">' + r.date.slice(5, 10) + '</td>'
+      + '<td><span class="recog-at">' + (r.recogAt || r.date).slice(5) + '</span>'
+      + ((r.seq && r.seq > 1) ? '<span class="seq-badge">' + r.seq + '차</span>' : '') + '</td>'
       + '<td><span class="ell" title="' + r.evalName + '">' + r.evalName + '</span></td>'
       + '<td>' + r.teacher + '</td>'
       + '<td>' + r.name + '</td>'
@@ -613,6 +733,7 @@ function renderRows(){
   document.getElementById('c-fail').textContent = ROWS.filter(function(r){ return r.verdict === 'F'; }).length;
   document.getElementById('c-voc').textContent  = ROWS.filter(function(r){ return !!r.voc; }).length;
   document.getElementById('c-low').textContent  = ROWS.filter(function(r){ var p = pctOf(r); return p !== null && p >= 70; }).length;
+  document.getElementById('c-again').textContent = ROWS.filter(function(r){ return (r.seq || 1) > 1; }).length;
   lucide.createIcons();
 }
 
@@ -655,14 +776,43 @@ function mark(text, terms, cls){
   });
   return out;
 }
-function qCards(texts, marks){
+function qCards(texts, marks, edits){
   if (!texts) return '';
   return texts.map(function(t, i){
     var q = COMMON_Q[i] || { label:'문항 ' + (i+1), name:'' };
+    var isUnc  = !!(marks && marks[i] && marks[i].length);
+    var edited = edits && edits[i] != null ? edits[i] : null;
+    var badges = '';
+    if (isUnc)  badges += '<span class="badge-unc"><i data-lucide="triangle-alert" style="width:11px;height:11px;"></i>인식 불확실</span>';
+    if (edited) badges += '<button class="badge-edit" onclick="toggleEdit(' + i + ')"><i data-lucide="pencil" style="width:11px;height:11px;"></i>선생님 수정<i data-lucide="chevron-down" style="width:11px;height:11px;"></i></button>';
     return '<div class="q"><div class="q-head"><span class="q-num">' + q.label + '</span>'
-         + '<span class="q-nm">' + q.name + '</span></div>'
-         + '<div class="q-body">' + mark(t, marks && marks[i], 'unc') + '</div></div>';
+         + '<span class="q-nm">' + q.name + '</span>'
+         + (badges ? '<span class="q-badges">' + badges + '</span>' : '')
+         + '</div>'
+         + '<div class="q-body">' + mark(t, marks && marks[i], 'unc') + '</div>'
+         + (edited
+             ? '<div class="q-edit" id="qedit-' + i + '" style="display:none;">'
+               + '<div class="q-edit-lbl">선생님 수정본</div>'
+               + '<div class="q-edit-body">' + edited + '</div></div>'
+             : '')
+         + '</div>';
   }).join('');
+}
+
+/* 선생님 수정본 펼치기 — 기본 접힘. 판정 대상은 AI 인식 결과라 원본이 먼저 보여야 함 */
+function toggleEdit(i){
+  var el = document.getElementById('qedit-' + i);
+  if (!el) return;
+  el.style.display = (el.style.display === 'none') ? 'block' : 'none';
+}
+
+/* 모델 테스트 열 — 기본 닫힘(2단). 열면 3단 */
+function openTest(){
+  document.getElementById('colTest').style.display = 'flex';
+  if (window.lucide) lucide.createIcons();
+}
+function closeTest(){
+  document.getElementById('colTest').style.display = 'none';
 }
 
 function openDetail(id){
@@ -674,7 +824,10 @@ function openDetail(id){
       '<div><span class="k">평가명</span><span class="v">' + r.evalName + '</span></div>'
     + '<div><span class="k">교사</span><span class="v">' + r.teacher + '</span></div>'
     + '<div><span class="k">학생</span><span class="v">' + r.name + ' (' + r.sid + ')</span></div>'
-    + '<div><span class="k">제출일</span><span class="v">' + r.date + '</span></div>';
+    + '<div><span class="k">제출일</span><span class="v">' + r.date + '</span></div>'
+    + '<div><span class="k">인식 일시</span><span class="v">' + (r.recogAt || r.date)
+      + ((r.seq && r.seq > 1) ? '<span class="seq-badge">' + r.seq + '차</span>' : '')
+      + siblingLinks(r) + '</span></div>';
 
   document.getElementById('prepTxt').innerHTML = '전처리 &nbsp;' + r.prep;
 
@@ -691,23 +844,43 @@ function openDetail(id){
     vb.style.display = 'none';
   }
 
-  // 현재 버전
+  // 인식 결과 (서비스에 사용 중)
   var p = pctOf(r);
   document.getElementById('curMeta').textContent = (p === null) ? '인식 실패' : ('확인 필요 ' + r.unc + '/' + r.total);
+  var nEdit = r.edits ? Object.keys(r.edits).length : 0;
+  var em = document.getElementById('editMeta');
+  em.textContent = nEdit ? ('선생님 수정 ' + nEdit + '문항') : '';
+  em.style.display = nEdit ? 'inline' : 'none';
+
   var colCur = document.getElementById('colCur');
   if (!r.cur) {
     colCur.innerHTML = '<div class="col-empty"><i data-lucide="circle-x" style="width:30px;height:30px;color:#DB3E51;"></i>'
-      + '<div style="margin-top:10px;font-weight:700;color:#494949;">인식 실패</div>인식 결과가 없어 대조할 수 없습니다.</div>';
+      + '<div style="margin-top:10px;font-weight:700;color:#494949;">인식 실패</div>인식 결과가 없습니다. 원본을 보고 판정해 주세요.</div>';
   } else {
-    colCur.innerHTML = qCards(r.cur, r.uncCur || null);
+    // 정확도 낮음(70% 이상) — 선생님 화면에서는 숨기지만 검수 화면에서는 그대로 보여준다
+    var low = (p !== null && p >= 70)
+      ? '<div class="low-note"><i data-lucide="triangle-alert" style="width:16px;height:16px;color:#DB3E51;flex-shrink:0;margin-top:1px;"></i>'
+        + '<span><strong style="color:#DB3E51;">정확도 낮음</strong> — 선생님 화면에서는 결과가 숨겨지고 AI 채점에서도 제외된 건입니다.</span></div>'
+      : '';
+    // 이후 회차가 있으면 = 지난 인식 결과. 그 시점 선생님 수정본은 재인식으로 교체되어 남지 않음
+    var hasLater = ROWS.some(function(x){
+      return x.sid === r.sid && x.evalName === r.evalName && (x.seq || 1) > (r.seq || 1);
+    });
+    var past = hasLater
+      ? '<div class="past-note"><i data-lucide="history" style="width:16px;height:16px;color:#808080;flex-shrink:0;margin-top:1px;"></i>'
+        + '<span>이후 다시 인식된 건이라 <strong style="color:#333;">이 시점의 선생님 수정 내역은 남아 있지 않습니다.</strong> '
+        + '수정 표시가 없어도 선생님이 고치지 않았다는 뜻은 아닙니다.</span></div>'
+      : '';
+    colCur.innerHTML = low + past + qCards(r.cur, r.uncCur || null, r.edits);
   }
 
-  // 비교 모델 — 초기화
+  // 모델 테스트 — 닫은 채로 시작(2단)
+  closeTest();
   document.getElementById('runBtn').disabled = false;
-  document.getElementById('runBtn').innerHTML = '<i data-lucide="play" style="width:14px;height:14px;"></i>이 모델로 다시 인식';
+  document.getElementById('runDone').style.display = 'none';
   document.getElementById('colCmp').innerHTML =
     '<div class="col-empty"><i data-lucide="git-compare" style="width:30px;height:30px;color:#C9CDD2;"></i>'
-    + '<div style="margin-top:10px;">모델을 고르고 <b style="color:#494949;">다시 인식</b>을 누르면<br>결과를 나란히 비교할 수 있어요.</div></div>';
+    + '<div style="margin-top:10px;">모델을 고르고 <b style="color:#494949;">인식 실행</b>을 누르면<br>결과를 나란히 비교할 수 있어요.</div></div>';
 
   // 판정
   document.getElementById('reason').value = r.reason || '';
@@ -727,6 +900,19 @@ function goList(){
   window.scrollTo(0, 0);
 }
 
+/* 같은 과제물의 다른 인식 건 — 회차 사이를 바로 건너뛴다 */
+function siblingLinks(r){
+  var sibs = ROWS.filter(function(x){
+    return x.sid === r.sid && x.evalName === r.evalName && x.id !== r.id;
+  }).sort(function(a, b){ return (a.seq || 1) - (b.seq || 1); });
+  if (!sibs.length) return '';
+  return sibs.map(function(x){
+    return '<button class="sib-link" onclick="openDetail(\'' + x.id + '\')">'
+         + '<i data-lucide="corner-up-right" style="width:14px;height:14px;"></i>'
+         + (x.seq || 1) + '차 보기</button>';
+  }).join('');
+}
+
 /* 원본 뷰어 */
 function pageMove(d){
   var t = parseInt(document.getElementById('pgTot').textContent, 10);
@@ -740,12 +926,21 @@ function zoom(d){
 }
 
 /* 재인식 — 비용이 드는 동작이라 버튼으로만 실행, 결과는 저장된 것으로 간주 */
+/* 실행 결과 표기용 — 인식/구조화 모델을 함께 적는다 */
+function testModelLabel(){
+  var a = document.getElementById('modelRecog');
+  var b = document.getElementById('modelStruct');
+  var an = a.options[a.selectedIndex].text;
+  var bn = b.options[b.selectedIndex].text;
+  return (an === bn) ? an : ('인식 ' + an + ' · 구조화 ' + bn);
+}
+
 function runModel(){
   if (!CUR) return;
   var btn = document.getElementById('runBtn');
-  var sel = document.getElementById('modelSel');
-  var modelName = sel.options[sel.selectedIndex].text;
+  var modelName = testModelLabel();
   btn.disabled = true;
+  document.getElementById('runDone').style.display = 'none';
   document.getElementById('colCmp').innerHTML =
     '<div class="col-empty"><div class="spin"></div>' + modelName + '(으)로 다시 인식하는 중…</div>';
   lucide.createIcons();
@@ -764,9 +959,13 @@ function runModel(){
     } else {
       document.getElementById('colCmp').innerHTML = qCards(CUR.cmp, null);
     }
-    btn.innerHTML = '<i data-lucide="check" style="width:14px;height:14px;"></i>인식 완료';
+    // 테스트 목적이므로 모델·횟수 제한 없음 — 버튼은 계속 살려 둔다
+    btn.disabled = false;
+    var done = document.getElementById('runDone');
+    done.textContent = modelName + ' 실행함';
+    done.style.display = 'inline';
     lucide.createIcons();
-    showToast(modelName + ' 인식 결과를 불러왔어요. 결과는 저장돼 다시 돌리지 않아요.');
+    showToast('테스트 결과입니다(' + modelName + '). 선생님 화면에는 반영되지 않아요.');
   }, 1400);
 }
 
