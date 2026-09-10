@@ -869,7 +869,10 @@ function openDetail(id){
 
   // 교사 의견
   var vb = document.getElementById('vocBox');
-  var vocs = vocsOf(r);
+  // 판정 이력과 같이 최신이 위로
+  var vocs = vocsOf(r).slice().sort(function(a, b){
+    return a.when < b.when ? 1 : (a.when > b.when ? -1 : 0);
+  });
   if (vocs.length) {
     vb.style.display = 'block';
     document.getElementById('vocCount').textContent = vocs.length > 1 ? (vocs.length + '건') : '';
