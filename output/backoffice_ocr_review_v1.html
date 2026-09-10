@@ -172,7 +172,8 @@
   .ch-x:hover{background:#F0F0F0;}
   .test-bar{display:flex;flex-direction:column;gap:8px;padding:12px 16px;border-bottom:1px solid #EFEFEF;background:#FAFBFD;}
   .test-row{display:flex;align-items:center;gap:8px;width:100%;}
-  .test-lbl{width:46px;flex-shrink:0;font-size:13px;font-weight:700;color:#494949;}
+  .test-lbl{width:46px;flex-shrink:0;font-size:13px;font-weight:700;color:#494949;cursor:help;
+    border-bottom:1px dotted #C9CDD2;}
   .test-row .model-sel{flex:1;min-width:0;}
   /* 문항 뱃지 */
   .q-badges{margin-left:auto;display:inline-flex;align-items:center;gap:6px;flex-shrink:0;}
@@ -433,19 +434,20 @@
         </div>
         <div class="test-bar">
           <div class="test-row">
-            <span class="test-lbl">인식</span>
+            <span class="test-lbl" title="이미지에서 글자·수식·그림 내용을 읽는 단계">인식</span>
             <select class="model-sel" id="modelRecog">
-              <option value="flash31">3.1 Flash (현재)</option>
-              <option value="flash35">3.5 Flash</option>
-              <option value="pro31">3.1 Pro</option>
+              <option value="g3-flash">Gemini 3 Flash Preview (현재)</option>
+              <option value="g38-flash">Gemini 3.8 Flash</option>
+              <option value="g31-pro">Gemini 3.1 Pro Preview</option>
             </select>
           </div>
           <div class="test-row">
-            <span class="test-lbl">구조화</span>
+            <span class="test-lbl" title="인식한 내용을 문항별로 나누고 정해진 형식으로 정리하는 단계">구조화</span>
             <select class="model-sel" id="modelStruct">
-              <option value="flash31">3.1 Flash (현재)</option>
-              <option value="flash35">3.5 Flash</option>
-              <option value="pro31">3.1 Pro</option>
+              <option value="g31-lite">Gemini 3.1 Flash-Lite (현재)</option>
+              <option value="g35-lite">Gemini 3.5 Flash-Lite</option>
+              <option value="g38-flash">Gemini 3.8 Flash</option>
+              <option value="g31-pro">Gemini 3.1 Pro Preview</option>
             </select>
           </div>
           <div class="test-row" style="justify-content:flex-end;">
@@ -925,7 +927,7 @@ function testModelLabel(){
   var b = document.getElementById('modelStruct');
   var an = a.options[a.selectedIndex].text;
   var bn = b.options[b.selectedIndex].text;
-  return (an === bn) ? an : ('인식 ' + an + ' · 구조화 ' + bn);
+  return '인식 ' + an + ' · 구조화 ' + bn;
 }
 
 function runModel(){
