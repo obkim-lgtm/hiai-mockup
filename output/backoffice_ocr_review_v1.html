@@ -451,7 +451,7 @@
         <div class="test-bar">
           <div class="test-row">
             <span class="test-lbl" title="이미지에서 글자·수식·그림 내용을 읽는 단계">인식</span>
-            <select class="model-sel" id="modelRecog">
+            <select class="model-sel" id="modelRecog" onchange="syncRunBtn()">
               <option value="g3-flash">Gemini 3 Flash Preview (현재)</option>
               <option value="g38-flash">Gemini 3.8 Flash</option>
               <option value="g31-pro">Gemini 3.1 Pro Preview</option>
@@ -459,7 +459,7 @@
           </div>
           <div class="test-row">
             <span class="test-lbl" title="인식한 내용을 문항별로 나누고 정해진 형식으로 정리하는 단계">구조화</span>
-            <select class="model-sel" id="modelStruct">
+            <select class="model-sel" id="modelStruct" onchange="syncRunBtn()">
               <option value="g31-lite">Gemini 3.1 Flash-Lite (현재)</option>
               <option value="g35-lite">Gemini 3.5 Flash-Lite</option>
               <option value="g38-flash">Gemini 3.8 Flash</option>
@@ -467,7 +467,7 @@
             </select>
           </div>
           <div class="test-row" style="justify-content:flex-end;">
-            <span id="runDone" style="display:none;font-size:14px;color:#808080;white-space:nowrap;margin-right:auto;"></span>
+            <span id="runHint" style="font-size:14px;color:#808080;white-space:nowrap;margin-right:auto;">바꿀 모델을 골라 주세요</span><span id="runDone" style="display:none;font-size:14px;color:#808080;white-space:nowrap;margin-right:auto;"></span>
             <button class="btn-run" id="runBtn" onclick="runModel()"><i data-lucide="play" style="width:14px;height:14px;"></i>인식 실행</button>
           </div>
         </div>
@@ -576,7 +576,7 @@ var ROWS = [
     diffCmp:[['과학자들의 이야기로'],['스푼이 녹아','실제로 해보고 싶다는 생각이 들었다.'],['밑넓이 5 x 12 = 30, 옆넓이 240']],
     diffCur:[[],[],[]],
     /* 이미 테스트를 돌린 건 — 결과가 저장돼 다시 열면 그대로 보인다 */
-    testedWith:{ recog:'g31-pro', struct:'g31-pro', by:'Lean', at:'09/09 09:30' }
+    testedWith:{ recog:'g31-pro', struct:'g31-pro', by:'Lean', at:'2026-09-09 09:30' }
   },
   { id:'20102', date:'2026-09-08 09:12', evalName:'독서 감상문 쓰기', teacher:'김서윤', name:'이준호', sid:'20102',
     unc:2, total:12, verdict:null, prep:'회전 0° · 검출 영역 1개 · 회전 모델 정확도 0.941',
@@ -943,6 +943,7 @@ function openDetail(id){
   }
   renderVerdictHistory(r);
   applyVerdictUI(r.verdict);
+  syncRunBtn();
 
   // 저장된 테스트 결과가 있으면 열어 둔다
   if (r.testedWith) {
@@ -1002,6 +1003,18 @@ function testModelLabel(){
   return '인식 ' + an + ' · 구조화 ' + bn;
 }
 
+/* 두 축 모두 현재 모델이면 지금과 같은 조건이라 돌릴 이유가 없다 — 호출만 낭비됨 */
+function syncRunBtn(){
+  var a = document.getElementById('modelRecog');
+  var b = document.getElementById('modelStruct');
+  var btn = document.getElementById('runBtn');
+  var hint = document.getElementById('runHint');
+  if (!a || !b || !btn) return;
+  var same = (a.value === 'g3-flash' && b.value === 'g31-lite');
+  btn.disabled = same;
+  if (hint) hint.style.display = same ? 'inline' : 'none';
+}
+
 function runModel(){
   if (!CUR) return;
   var btn = document.getElementById('runBtn');
@@ -1029,10 +1042,10 @@ function runModel(){
     // 테스트 목적이므로 모델·횟수 제한 없음 — 버튼은 계속 살려 둔다
     btn.disabled = false;
     var done = document.getElementById('runDone');
-    done.textContent = ADMIN_NAME + ' · 09/10 ' + new Date().toTimeString().slice(0,5) + ' 실행함';
+    done.textContent = ADMIN_NAME + ' · 2026-09-10 ' + new Date().toTimeString().slice(0,5) + ' 실행함';
     done.style.display = 'inline';
     lucide.createIcons();
-    showToast('테스트 결과입니다(' + modelName + '). 선생님 화면에는 반영되지 않아요.');
+    showToast('테스트 결과를 불러왔습니다.');
   }, 1400);
 }
 
@@ -1071,9 +1084,11 @@ function applyVerdictUI(v){
 function setVerdict(v){ applyVerdictUI(_verdict === v ? null : v); }
 function saveVerdict(){
   var reason = document.getElementById('reason').value.trim();
-  if (!_verdict) { showToast('Pass 또는 Fail을 선택해 주세요.'); return; }
+  var req = document.getElementById('reqMsg');
+  if (!_verdict) { req.textContent = '판정을 선택해 주세요.'; req.style.display = 'block'; return; }
   if (_verdict === 'F' && !reason) {
-    document.getElementById('reqMsg').style.display = 'block';
+    req.textContent = 'Fail은 사유를 남겨야 저장할 수 있습니다.';
+    req.style.display = 'block';
     document.getElementById('reason').focus();
     return;
   }
@@ -1089,7 +1104,7 @@ function saveVerdict(){
   var jb2 = document.getElementById('judgeBy');
   jb2.innerHTML = '<b>' + CUR.verdictBy + '</b> · ' + CUR.verdictAt;
   jb2.style.display = 'inline';
-  showToast((_verdict === 'P' ? 'Pass' : 'Fail') + '로 저장했어요.');
+  showToast('저장되었습니다.');
   setTimeout(goList, 700);
 }
 
@@ -1116,7 +1131,7 @@ function nbClose(){
 /* 목업이라 다른 메뉴는 이동하지 않음 — 위치만 보여준다 */
 function nbGo(el){
   nbClose();
-  showToast(el.textContent.trim() + ' 화면은 이 목업에 없어요.');
+  showToast(el.textContent.trim() + ' 화면은 이 목업에 없습니다.');
 }
 function nbGoSelf(el){ nbClose(); goList(); }
 document.addEventListener('keydown', function(e){ if (e.key === 'Escape') nbClose(); });
