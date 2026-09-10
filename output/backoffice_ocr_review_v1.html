@@ -84,7 +84,7 @@
     font-size:14px;font-weight:700;color:#494949;padding:12px 10px;text-align:center;white-space:nowrap;}
   tbody td{border-bottom:1px solid #EFEFEF;font-size:15px;color:#333;padding:13px 10px;text-align:center;}
   tbody tr:hover{background:#FAFBFD;}
-  .ell{display:block;max-width:230px;margin:0 auto;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .ell{display:block;max-width:280px;margin:0 auto;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
   .sort-th{cursor:pointer;user-select:none;}
   .sort-th i{vertical-align:middle;margin-left:2px;}
 
@@ -356,9 +356,8 @@
       <table>
         <thead>
           <tr>
-            <th style="width:110px;">제출일</th>
             <th style="width:150px;">인식 일시</th>
-            <th style="width:170px;">평가명</th>
+            <th style="width:250px;">평가명</th>
             <th style="width:110px;">교사명</th>
             <th style="width:100px;">학생명</th>
             <th style="width:90px;">학번</th>
@@ -756,7 +755,6 @@ function renderRows(){
 
   document.getElementById('rows').innerHTML = pageRows.map(function(r){
     return '<tr class="clickable" onclick="openDetail(\'' + r.id + '\')">'
-      + '<td style="color:#808080;font-size:14px;">' + r.date.slice(5, 10) + '</td>'
       + '<td><span class="recog-at">' + (r.recogAt || r.date).slice(5) + '</span>'
       + ((r.seq && r.seq > 1) ? '<span class="seq-badge">' + r.seq + '차</span>' : '') + '</td>'
       + '<td><span class="ell" title="' + r.evalName + '">' + r.evalName + '</span></td>'
