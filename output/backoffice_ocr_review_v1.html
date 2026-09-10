@@ -52,6 +52,7 @@
 
   /* ── 본문 ── */
   .wrap{max-width:1760px;margin:0 auto;padding:24px 20px 32px;}
+  #screen-detail .wrap{padding-bottom:110px;}  /* 하단 고정 판정 바에 가리지 않게 */
   .page-title{font-size:22px;font-weight:700;color:#222;margin:0 0 4px;}
   .page-desc{font-size:14px;color:#808080;margin:0 0 20px;line-height:1.55;}
   .card{background:#fff;border:1px solid #E6E6E6;border-radius:10px;padding:20px 24px;margin-bottom:16px;}
@@ -236,7 +237,7 @@
   .vh-reason.empty{color:#B3B3B3;}
 
   /* 판정 바 */
-  .judge{position:sticky;bottom:0;z-index:50;background:#fff;border-top:1px solid #D9D9D9;
+  .judge{position:fixed;left:0;right:0;bottom:0;z-index:50;background:#fff;border-top:1px solid #D9D9D9;
     box-shadow:0 -4px 20px rgba(0,0,0,.06);padding:14px 24px;margin:0;}
   .judge-inner{max-width:1760px;margin:0 auto;display:flex;align-items:flex-start;gap:16px;}
   .judge-lbl-wrap{display:flex;flex-direction:column;gap:3px;padding-top:6px;white-space:nowrap;flex-shrink:0;}
@@ -571,7 +572,7 @@ var ROWS = [
     testedWith:{ recog:'g31-pro', struct:'g31-pro', by:'Lean', at:'2026-09-09 09:30' }
   },
   { id:'20102', date:'2026-09-08 09:12', evalName:'독서 감상문 쓰기', teacher:'김서윤', name:'이준호', sid:'20102',
-    unc:2, total:12, verdict:null, prep:'자동 회전 완료 · 비식별화 완료',
+    unc:1, total:12, verdict:null, prep:'자동 회전 완료 · 비식별화 완료',
     voc:null,
     cur:[
       '이 책은 원소 주기율표를 중심으로 각 원소의 발견 역사와 그에 얽힌 과학자들의 삶을 이야기 형식으로 풀어낸 책이다.',
