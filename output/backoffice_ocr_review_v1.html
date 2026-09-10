@@ -240,10 +240,7 @@
   .judge{position:fixed;left:0;right:0;bottom:0;z-index:50;background:#fff;border-top:1px solid #D9D9D9;
     box-shadow:0 -4px 20px rgba(0,0,0,.06);padding:14px 24px;margin:0;}
   .judge-inner{max-width:1760px;margin:0 auto;display:flex;align-items:flex-start;gap:16px;}
-  .judge-lbl-wrap{display:flex;flex-direction:column;gap:3px;padding-top:6px;white-space:nowrap;flex-shrink:0;}
-  .judge-label{font-size:15px;font-weight:700;color:#333;}
-  .judge-by{font-size:14px;color:#808080;}
-  .judge-by b{color:#494949;}
+  .judge-label{font-size:15px;font-weight:700;color:#333;padding-top:9px;white-space:nowrap;flex-shrink:0;}
   .pf{display:flex;gap:8px;padding-top:2px;}
   .pf button{display:inline-flex;align-items:center;justify-content:center;line-height:1;vertical-align:middle;gap:6px;
     height:36px;padding:0 18px;border-radius:8px;border:1.5px solid #E6E6E6;background:#fff;cursor:pointer;
@@ -479,10 +476,7 @@
   <!-- 판정 바 -->
   <div class="judge">
     <div class="judge-inner">
-      <div class="judge-lbl-wrap">
-        <span class="judge-label">인식 품질 판정</span>
-        <span class="judge-by" id="judgeBy" style="display:none;"></span>
-      </div>
+      <span class="judge-label">인식 품질 판정</span>
       <div>
         <div class="pf">
           <button id="btnP" onclick="setVerdict('P')"><i data-lucide="circle-check" style="width:16px;height:16px;"></i>Pass</button>
@@ -926,17 +920,10 @@ function openDetail(id){
     '<div class="col-empty"><i data-lucide="git-compare" style="width:30px;height:30px;color:#C9CDD2;"></i>'
     + '<div style="margin-top:10px;">모델을 고르고 <b style="color:#494949;">인식 실행</b>을 누르면<br>결과를 나란히 비교할 수 있어요.</div></div>';
 
-  // 판정 — 관리자가 여럿이므로 누가 언제 판정했는지 함께 보여준다
-  document.getElementById('reason').value = r.reason || '';
-  var jb = document.getElementById('judgeBy');
-  if (r.verdict && r.verdictBy) {
-    jb.innerHTML = '<b>' + r.verdictBy + '</b> · ' + r.verdictAt;
-    jb.style.display = 'inline';
-  } else {
-    jb.style.display = 'none';
-  }
+  // 판정 바 = 새 판정을 쓰는 자리. 기존 판정은 아래 이력 카드에서 읽는다
+  document.getElementById('reason').value = '';
   renderVerdictHistory(r);
-  applyVerdictUI(r.verdict);
+  applyVerdictUI(null);
   syncRunBtn();
 
   // 저장된 테스트 결과가 있으면 열어 둔다
@@ -1047,11 +1034,11 @@ function runModel(){
 function renderVerdictHistory(r){
   var box = document.getElementById('verdictHistory');
   var prev = r.prevVerdicts || [];
-  if (!r.verdict || !prev.length) { box.style.display = 'none'; return; }
+  if (!r.verdict) { box.style.display = 'none'; return; }
 
   var all = [{ v:r.verdict, by:r.verdictBy, at:r.verdictAt, reason:r.reason, now:true }].concat(prev);
   box.style.display = 'block';
-  document.getElementById('vhCount').textContent = all.length + '건';
+  document.getElementById('vhCount').textContent = all.length > 1 ? (all.length + '건') : '';
   document.getElementById('vhList').innerHTML = all.map(function(x){
     var chip = (x.v === 'P')
       ? '<span class="verdict v-p"><i data-lucide="circle-check" style="width:12px;height:12px;"></i>Pass</span>'
@@ -1092,9 +1079,6 @@ function saveVerdict(){
   CUR.reason = reason;
   CUR.verdictBy = ADMIN_NAME;
   CUR.verdictAt = '2026-09-10 ' + new Date().toTimeString().slice(0, 5);
-  var jb2 = document.getElementById('judgeBy');
-  jb2.innerHTML = '<b>' + CUR.verdictBy + '</b> · ' + CUR.verdictAt;
-  jb2.style.display = 'inline';
   showToast('저장되었습니다.');
   setTimeout(goList, 700);
 }
