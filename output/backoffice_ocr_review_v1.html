@@ -260,7 +260,6 @@
     height:36px;padding:0 20px;background:#0950A0;color:#fff;border:none;border-radius:8px;
     font-size:15px;font-weight:700;cursor:pointer;white-space:nowrap;}
   .btn-save:disabled{background:#C9CDD2;cursor:not-allowed;}
-  .req{font-size:14px;color:#DB3E51;margin-top:4px;display:none;}
 
   /* ── 토스트 ── */
   #toast{position:fixed;left:50%;bottom:110px;transform:translateX(-50%) translateY(12px);z-index:200;
@@ -494,7 +493,6 @@
           <button id="btnP" onclick="setVerdict('P')"><i data-lucide="circle-check" style="width:16px;height:16px;"></i>Pass</button>
           <button id="btnF" onclick="setVerdict('F')"><i data-lucide="circle-x" style="width:16px;height:16px;"></i>Fail</button>
         </div>
-        <p class="req" id="reqMsg">Fail은 사유를 남겨야 저장할 수 있어요.</p>
       </div>
       <textarea id="reason" placeholder="판정 사유 (Fail은 필수) · 다른 모델로 다시 인식한 결과도 여기에 적어주세요."></textarea>
       <button class="btn-save" id="saveBtn" onclick="saveVerdict()">저장</button>
@@ -1079,16 +1077,13 @@ function applyVerdictUI(v){
   _verdict = v || null;
   document.getElementById('btnP').classList.toggle('on-p', v === 'P');
   document.getElementById('btnF').classList.toggle('on-f', v === 'F');
-  document.getElementById('reqMsg').style.display = 'none';
 }
 function setVerdict(v){ applyVerdictUI(_verdict === v ? null : v); }
 function saveVerdict(){
   var reason = document.getElementById('reason').value.trim();
-  var req = document.getElementById('reqMsg');
-  if (!_verdict) { req.textContent = '판정을 선택해 주세요.'; req.style.display = 'block'; return; }
+  if (!_verdict) { showToast('판정을 선택해 주세요.'); return; }
   if (_verdict === 'F' && !reason) {
-    req.textContent = 'Fail은 사유를 남겨야 저장할 수 있습니다.';
-    req.style.display = 'block';
+    showToast('Fail은 사유를 남겨야 저장할 수 있습니다.');
     document.getElementById('reason').focus();
     return;
   }
