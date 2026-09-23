@@ -45,16 +45,16 @@
     .radio-circle.selected { border: 5px solid #0950A0; }
 
     /* 우측 탭 (채점 | 피드백) — 활성은 색·밑줄만, 굵기 변화 없음 */
-    /* 탭 줄: 회색 바탕 + 선택 탭만 흰 바탕으로 아래 내용과 이어짐 → 탭으로 읽힘 */
-    .r-tabbar { display: flex; flex-shrink: 0; background: #F0F0F0; padding: 8px 8px 0; gap: 4px; border-bottom: 1px solid #D9D9D9; }
+    /* 탭 줄: 회색 바탕 + 선택 탭만 흰 바탕·파란 밑줄 (겹침·둥근 모서리 없이 반듯하게) */
+    .r-tabbar { display: flex; flex-shrink: 0; background: #F0F0F0; border-bottom: 1px solid #D9D9D9; }
     .r-tab {
-      flex: 1; height: 48px; border: 1px solid transparent; border-bottom: none; background: transparent; cursor: pointer;
-      font-size: 16px; font-weight: 700; color: #808080; position: relative; gap: 6px; border-radius: 10px 10px 0 0; margin-bottom: -1px;
+      flex: 1; height: 52px; border: none; border-bottom: 3px solid transparent; background: transparent; cursor: pointer;
+      font-size: 16px; font-weight: 700; color: #808080; position: relative; gap: 6px; padding-top: 3px;
       display: inline-flex; align-items: center; justify-content: center; line-height: 1; vertical-align: middle;
     }
-    .r-tab:hover { color: #494949; background: #E6E6E6; }
-    .r-tab.active { color: #0950A0; background: white; border-color: #D9D9D9; }
-    .r-tab.active::after { content: ''; position: absolute; left: -1px; right: -1px; top: -1px; height: 3px; background: #0950A0; border-radius: 10px 10px 0 0; }
+    .r-tab + .r-tab { border-left: 1px solid #D9D9D9; }
+    .r-tab:hover { color: #494949; background: #E8E8E8; }
+    .r-tab.active { color: #0950A0; background: white; border-bottom-color: #0950A0; }
     .r-tab .dot { width: 6px; height: 6px; border-radius: 50%; background: #0950A0; display: none; }
     .r-tab .dot.on { display: inline-block; }
 
@@ -149,6 +149,16 @@
       <div class="l-switch">
         <button class="l-tab active" id="l-tab-orig" onclick="switchLeft('orig')"><i data-lucide="file-image" style="width:14px;height:14px;"></i>원본 제출물</button>
         <button class="l-tab" id="l-tab-text" onclick="switchLeft('text')"><i data-lucide="align-left" style="width:14px;height:14px;"></i>인식 결과</button>
+      </div>
+    </div>
+    <div id="l-orig" style="flex:1;display:flex;flex-direction:column;min-height:0;">
+      <div style="background:#494949;display:flex;align-items:center;justify-content:center;gap:24px;padding:4px 20px;min-height:44px;flex-shrink:0;color:white;font-size:16px;">
+        <span>03/21 14:00 업로드</span>
+        <span style="display:inline-flex;align-items:center;gap:10px;"><i data-lucide="chevron-left" style="width:18px;height:18px;"></i><span style="background:#333;border-radius:4px;padding:2px 12px;">1</span>/ 1<i data-lucide="chevron-right" style="width:18px;height:18px;"></i></span>
+        <span style="display:inline-flex;align-items:center;gap:8px;"><i data-lucide="zoom-in" style="width:18px;height:18px;"></i>100%<i data-lucide="zoom-out" style="width:18px;height:18px;"></i></span>
+      </div>
+      <div style="flex:1;overflow:auto;background:#EBEBEA;padding:24px;">
+        <img src="../screens/student_submission.png" style="width:100%;max-width:640px;height:auto;display:block;margin:0 auto;" alt="학생 원본 제출물">
       </div>
     </div>
     <div id="l-text" style="flex:1;display:none;overflow-y:auto;padding:24px;background:#F0F0F0;">
