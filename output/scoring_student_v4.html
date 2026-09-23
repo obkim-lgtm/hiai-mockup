@@ -140,7 +140,7 @@
         <div style="width:1px;height:13px;background:#D9D9D9;"></div>
         <button class="btn-c" style="background:none;border:none;font-size:16px;font-weight:700;color:#494949;cursor:pointer;padding:0;gap:4px;">다음 학생<i data-lucide="chevron-right" style="width:20px;height:20px;"></i></button>
       </div>
-      <button class="primary-btn" onclick="showToast('success','점수와 피드백을 저장했어요.')"><i data-lucide="check" style="width:20px;height:20px;"></i>저장</button>
+      <button class="primary-btn" onclick="saveNow(false)"><i data-lucide="check" style="width:20px;height:20px;"></i>저장</button>
     </div>
   </div>
 </div>
@@ -223,7 +223,7 @@
         </div>
         <!-- 마무리: 저장 후 다음 학생 (탭 내용 맨 끝 · 고정 아님) -->
         <div style="display:flex;justify-content:flex-end;margin-top:28px;padding-top:20px;border-top:1px solid #D9D9D9;">
-          <button class="primary-btn" onclick="showToast('success','저장했어요. 다음 학생으로 이동해요.')"><i data-lucide="check" style="width:20px;height:20px;"></i>저장 후 다음 학생</button>
+          <button class="primary-btn" onclick="saveNow(true)"><i data-lucide="check" style="width:20px;height:20px;"></i>저장 후 다음 학생</button>
         </div>
       </div>
 
@@ -240,7 +240,11 @@
           <div id="fa-on">
             <div id="fb-views" style="margin-bottom:12px;"></div>
             <div id="fb-body" style="background:#F8F8F8;border-radius:12px;padding:20px;"></div>
-            <div style="display:flex;align-items:center;justify-content:flex-end;margin-top:12px;">
+            <div style="display:flex;align-items:center;justify-content:flex-end;gap:16px;margin-top:12px;">
+              <!-- 기존 사용자 흐름 유지: 근거도 같이 가져오기 (문항별·채점요소별만 · 종합 의견은 근거 없음) -->
+              <label id="with-reason-wrap" style="display:inline-flex;align-items:center;gap:8px;font-size:14px;font-weight:700;color:#333;cursor:pointer;user-select:none;">
+                <input type="checkbox" id="with-reason" onchange="setWithReason(this.checked)" style="width:16px;height:16px;accent-color:#0950A0;cursor:pointer;margin:0;">채점 근거도 함께
+              </label>
               <button class="pill-btn" style="height:36px;" onclick="importFb()"><i data-lucide="download" style="width:14px;height:14px;"></i><span id="fb-import-label">종합 의견 가져오기</span></button>
             </div>
           </div>
@@ -275,7 +279,7 @@
 
           <!-- 마무리: 저장 후 다음 학생 (탭 내용 맨 끝 · 고정 아님) -->
           <div style="display:flex;justify-content:flex-end;margin-top:16px;">
-            <button class="primary-btn" onclick="showToast('success','저장했어요. 다음 학생으로 이동해요.')"><i data-lucide="check" style="width:20px;height:20px;"></i>저장 후 다음 학생</button>
+            <button class="primary-btn" onclick="saveNow(true)"><i data-lucide="check" style="width:20px;height:20px;"></i>저장 후 다음 학생</button>
           </div>
         </div>
       </div>
@@ -351,11 +355,22 @@
     var tot = S.picked.reduce(function(a,b){return a+(b||0);},0);
     var max = ELEMENTS.reduce(function(a,e){return a+Math.max.apply(null,e.scores);},0);
     document.getElementById('total').textContent = tot + ' / ' + max;
-    document.getElementById('score-check').classList.toggle('on', S.picked.every(function(v){ return v != null; }));
   }
   function setReasonView(v){ S.reasonView = v; renderScore(); }
+  // 탭 ✓ = 저장된 값 기준 (채점: 모든 채점요소 점수 저장됨 / 피드백: 선생님 직접 피드백 저장됨). 입력만으로는 붙지 않음
+  var SAVED = { score:false, fb:false };
+  function renderChecks(){
+    document.getElementById('score-check').classList.toggle('on', SAVED.score);
+    document.getElementById('fb-check').classList.toggle('on', SAVED.fb);
+  }
+  function saveNow(next){
+    SAVED.score = allPicked();
+    SAVED.fb = document.getElementById('tfb').value.trim().length > 0;
+    renderChecks();
+    showToast('success', next ? '저장했어요. 다음 학생으로 이동해요.' : '저장했어요.');
+  }
   function allPicked(){ return S.picked.every(function(v){ return v != null; }); }
-  function nudgeFb(){ showToast('success','점수를 확정했어요. 피드백은 피드백 탭에서 쓸 수 있어요.'); }
+  function nudgeFb(){ showToast('success','점수를 모두 골랐어요. 피드백은 피드백 탭에서 쓸 수 있어요.'); }
   function pickScore(i, s){ var was = allPicked(); S.picked[i] = s; renderScore(); renderRubric(); if (!was && allPicked()) nudgeFb(); }
   function resetScores(){ S.picked = ELEMENTS.map(function(){return null;}); S.rubricMade = false; renderScore(); renderRubric(); showToast('success','점수를 초기화했어요.'); }
   function applyAi(){ S.picked = ELEMENTS.map(function(e){return e.ai;}); renderScore(); renderRubric(); nudgeFb(); }
@@ -369,6 +384,7 @@
   }
   function renderFb(){
     renderUnitPicker();
+    if (document.getElementById('with-reason')) syncWithReason();
     document.getElementById('fb-import-label').textContent = {sum:'종합 의견 가져오기', q:'문항별 피드백 가져오기', el:'채점요소별 피드백 가져오기'}[S.fbView];
     var h = '';
     if (S.fbView === 'sum') {
@@ -403,7 +419,21 @@
     w.innerHTML = h; icons();
   }
   function setFbView(v){ S.fbView = v; try{ localStorage.setItem('hiai_fb_view', v); }catch(e){} renderFb(); }
-  function importFb(){ importText(fbText(S.fbView)); }
+  // 채점 근거도 함께 — 기본 켬(기존 가져오기가 근거까지 가져왔음), 마지막 선택 기억
+  var WITH_REASON = true;
+  try { var wr = localStorage.getItem('hiai_fb_with_reason'); if (wr != null) WITH_REASON = (wr === '1'); } catch(e){}
+  function setWithReason(v){ WITH_REASON = v; try{ localStorage.setItem('hiai_fb_with_reason', v ? '1' : '0'); }catch(e){} }
+  function syncWithReason(){
+    document.getElementById('with-reason-wrap').style.display = S.fbView === 'sum' ? 'none' : 'inline-flex';
+    document.getElementById('with-reason').checked = WITH_REASON;
+  }
+  function importFb(){
+    if (S.fbView === 'sum' || !WITH_REASON) { importText(fbText(S.fbView)); return; }
+    var items = S.fbView === 'q'
+      ? QUESTIONS.map(function(x,i){ return { head:'문항 ' + (i+1), reason:x.reason, fb:x.feedback }; })
+      : ELEMENTS.map(function(e){ return { head:e.name, reason:e.reason, fb:e.feedback }; });
+    importText(items.map(function(it){ return '[' + it.head + ']\n채점 근거: ' + it.reason + '\n피드백: ' + it.fb; }).join('\n\n'));
+  }
 
   // ── 피드백 탭: ② 루브릭 기반 AI (보기 옵션 없음) ──
   function renderRubric(){
@@ -436,7 +466,6 @@
   function onTfb(){
     var v = document.getElementById('tfb').value;
     document.getElementById('tfb-count').textContent = bytes(v);
-    document.getElementById('fb-check').classList.toggle('on', v.trim().length > 0);
   }
 
   // ── 탭 (#score / #feedback) ──
