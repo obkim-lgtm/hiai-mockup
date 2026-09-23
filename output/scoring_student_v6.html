@@ -234,7 +234,11 @@
           </div>
           <div id="fb-views" style="margin-bottom:12px;"></div>
           <div id="fb-body" style="background:#F8F8F8;border-radius:12px;padding:20px;"></div>
-          <div style="display:flex;align-items:center;justify-content:flex-end;margin-top:12px;">
+          <div style="display:flex;align-items:center;justify-content:flex-end;gap:16px;margin-top:12px;">
+            <!-- 기존 사용자 흐름 유지: 근거도 같이 가져오기 (피드백에서 고른 단위를 따라감 · 종합 의견은 근거 없음) -->
+            <label id="with-reason-wrap" style="display:inline-flex;align-items:center;gap:8px;font-size:14px;font-weight:700;color:#333;cursor:pointer;user-select:none;">
+              <input type="checkbox" id="with-reason" onchange="setWithReason(this.checked)" style="width:16px;height:16px;accent-color:#0950A0;cursor:pointer;margin:0;">채점 근거도 함께
+            </label>
             <button class="pill-btn" style="height:36px;" onclick="importFb()"><i data-lucide="download" style="width:14px;height:14px;"></i><span id="fb-import-label">종합 의견 가져오기</span></button>
           </div>
         </div>
@@ -332,7 +336,7 @@
 
   // ── 피드백 탭: ① 과제물 분석 AI ──
   function fbText(view){
-    if (view === 'q') return QUESTIONS.map(function(x,i){ return '[문항 ' + (i+1) + '] ' + x.feedback; }).join('\n\n');
+    if (view === 'q') return QUESTIONS.map(function(x,i){ return '[' + x.title + '] ' + x.feedback; }).join('\n\n');
     if (view === 'el') return ELEMENTS.map(function(e){ return '[' + e.name + '] ' + e.feedback; }).join('\n\n');
     return SUMMARY;
   }
@@ -362,10 +366,26 @@
     icons();
   }
   setReasonView = function(v){ S.reasonView = v; renderReasons(); };
+  // 채점 근거도 함께 — 시안 1과 동일 (기본 켬 · 마지막 선택 기억 · 피드백 단위를 따라감)
+  var WITH_REASON = true;
+  try { var wr = localStorage.getItem('hiai_fb_with_reason'); if (wr != null) WITH_REASON = (wr === '1'); } catch(e){}
+  function setWithReason(v){ WITH_REASON = v; try{ localStorage.setItem('hiai_fb_with_reason', v ? '1' : '0'); }catch(e){} }
+  function syncWithReason(){
+    document.getElementById('with-reason-wrap').style.display = S.fbView === 'sum' ? 'none' : 'inline-flex';
+    document.getElementById('with-reason').checked = WITH_REASON;
+  }
+  function importFb(){
+    if (S.fbView === 'sum' || !WITH_REASON) { importText(fbText(S.fbView)); return; }
+    var items = S.fbView === 'q'
+      ? QUESTIONS.map(function(x,i){ return { head:x.title, reason:x.reason, fb:x.feedback }; })
+      : ELEMENTS.map(function(e){ return { head:e.name, reason:e.reason, fb:e.feedback }; });
+    importText(items.map(function(it){ return '[' + it.head + ']\n채점 근거: ' + it.reason + '\n피드백: ' + it.fb; }).join('\n\n'));
+  }
 
   // ── AI 피드백 (종합 의견｜문항별｜채점요소별) ──
   function renderFb(){
     renderUnitPicker();
+    if (document.getElementById("with-reason")) syncWithReason();
     document.getElementById('fb-import-label').textContent = {sum:'종합 의견 가져오기', q:'문항별 피드백 가져오기', el:'채점요소별 피드백 가져오기'}[S.fbView];
     var h = '';
     if (S.fbView === 'sum') {
@@ -401,7 +421,6 @@
     w.innerHTML = h; icons();
   }
   function setFbView(v){ S.fbView = v; try{ localStorage.setItem('hiai_fb_view', v); }catch(e){} renderFb(); }
-  function importFb(){ importText(fbText(S.fbView)); }
 
   // ── 피드백 탭: ② 루브릭 기반 AI (보기 옵션 없음) ──
   function renderRubric(){
