@@ -34,6 +34,8 @@
       display: inline-flex; align-items: center; justify-content: center; line-height: 1; vertical-align: middle;
     }
     .pill-btn:hover { background: #F5F5F5; }
+    .text-btn { background: none; border: none; height: 32px; padding: 0 8px; border-radius: 6px; font-size: 14px; font-weight: 700; color: #808080; cursor: pointer; gap: 4px; display: inline-flex; align-items: center; justify-content: center; line-height: 1; vertical-align: middle; }
+    .text-btn:hover { background: #F0F0F0; color: #494949; }
     .primary-btn {
       background: #0950A0; border: none; border-radius: 8px; height: 40px; padding: 0 16px;
       font-size: 16px; font-weight: 700; color: white; cursor: pointer; gap: 6px;
@@ -210,17 +212,18 @@
         <div id="score-rows"></div>
         <div id="q-reasons" style="display:none;margin-top:8px;"></div>
 
+        <!-- 채점 행동: 주 버튼 1 + 가끔 쓰는 것은 회색 텍스트 -->
         <div style="display:flex;align-items:center;gap:8px;margin-top:20px;">
-          <button id="btn-rerun" class="btn-c" onclick="showToast('info','AI 채점을 다시 실행해요.')" style="background:#0950A0;border:none;border-radius:8px;height:36px;padding:0 12px;font-size:16px;font-weight:700;color:white;cursor:pointer;gap:6px;"><i data-lucide="wand-sparkles" style="width:16px;height:16px;"></i>AI 채점 재실행</button>
-          <div style="margin-left:auto;display:flex;gap:8px;">
-            <button class="pill-btn" onclick="resetScores()">점수 초기화</button>
-            <button id="btn-applyai" class="pill-btn" onclick="applyAi()"><i data-lucide="check" style="width:14px;height:14px;"></i>AI 점수 그대로 적용</button>
+          <button id="btn-applyai" class="btn-c" onclick="applyAi()" style="gap:6px;height:40px;padding:0 16px;background:white;border:1px solid #0950A0;border-radius:8px;color:#0950A0;font-size:16px;font-weight:700;cursor:pointer;" onmouseover="this.style.background='#F3F9FF'" onmouseout="this.style.background='white'"><i data-lucide="check-check" style="width:18px;height:18px;"></i>AI 점수 그대로 적용</button>
+          <div style="margin-left:auto;display:flex;align-items:center;gap:4px;">
+            <button class="text-btn" onclick="resetScores()">점수 초기화</button>
+            <span style="color:#D9D9D9;">·</span>
+            <button id="btn-rerun" class="text-btn" onclick="showToast('info','AI 채점을 다시 실행해요.')"><i data-lucide="rotate-ccw" style="width:14px;height:14px;"></i>AI 채점 재실행</button>
           </div>
         </div>
-
-        <!-- 다음 흐름: 피드백 탭으로 (선택 · 피드백 안 쓰면 상단 저장만) -->
+        <!-- 마무리: 저장 후 다음 학생 (탭 내용 맨 끝 · 고정 아님) -->
         <div style="display:flex;justify-content:flex-end;margin-top:28px;padding-top:20px;border-top:1px solid #D9D9D9;">
-          <button class="btn-c" onclick="switchTab('fb')" style="gap:6px;height:40px;padding:0 16px;background:white;border:1px solid #7FB3E8;border-radius:8px;color:#0950A0;font-size:16px;font-weight:700;cursor:pointer;" onmouseover="this.style.background='#F3F9FF'" onmouseout="this.style.background='white'">피드백 탭으로<i data-lucide="arrow-right" style="width:18px;height:18px;"></i></button>
+          <button class="primary-btn" onclick="showToast('success','저장했어요. 다음 학생으로 이동해요.')"><i data-lucide="check" style="width:20px;height:20px;"></i>저장 후 다음 학생</button>
         </div>
       </div>
 
@@ -260,7 +263,7 @@
             <span style="font-size:18px;font-weight:700;color:#333;">선생님 직접 피드백</span>
             <i data-lucide="circle-help" title="결과지 출력·배부에서 학생에게 공개할지 선택할 수 있어요. AI 근거와 피드백은 선생님 참고용이에요." style="width:18px;height:18px;color:#B3B3B3;cursor:help;"></i>
           </div>
-          <div id="tfb-box" style="background:white;border:1px solid #D9D9D9;border-radius:12px;padding:16px 20px 12px;margin-bottom:16px;">
+          <div id="tfb-box" style="background:white;border:1px solid #D9D9D9;border-radius:12px;padding:16px 20px 12px;">
             <textarea id="tfb" oninput="onTfb()" onfocus="this.parentNode.style.borderColor='#0950A0'" onblur="this.parentNode.style.borderColor='#D9D9D9'"
               style="width:100%;border:none;height:180px;resize:none;font-size:16px;color:#333;outline:none;line-height:1.55;display:block;"
               placeholder="채점 완료 시, 학생에게 제공되는 과제 피드백 내용입니다.&#10;AI 피드백을 가져와 고쳐 쓰거나 직접 작성해 보세요."></textarea>
@@ -269,13 +272,16 @@
               <button class="btn-c" onclick="showToast('info','수식 입력은 실제 서비스에서 제공돼요.')" style="gap:4px;height:28px;padding:0 10px;background:white;border:1px solid #7FB3E8;border-radius:8px;color:#0950A0;font-size:14px;font-weight:700;cursor:pointer;"><i data-lucide="sigma" style="width:14px;height:14px;"></i>수식 입력</button>
             </div>
           </div>
-          <div style="display:flex;justify-content:flex-end;">
+
+          <!-- 마무리: 저장 후 다음 학생 (탭 내용 맨 끝 · 고정 아님) -->
+          <div style="display:flex;justify-content:flex-end;margin-top:16px;">
             <button class="primary-btn" onclick="showToast('success','저장했어요. 다음 학생으로 이동해요.')"><i data-lucide="check" style="width:20px;height:20px;"></i>저장 후 다음 학생</button>
           </div>
         </div>
       </div>
 
     </div>
+
   </div>
 </div>
 
@@ -348,9 +354,11 @@
     document.getElementById('score-check').classList.toggle('on', S.picked.every(function(v){ return v != null; }));
   }
   function setReasonView(v){ S.reasonView = v; renderScore(); }
-  function pickScore(i, s){ S.picked[i] = s; renderScore(); renderRubric(); }
+  function allPicked(){ return S.picked.every(function(v){ return v != null; }); }
+  function nudgeFb(){ showToast('success','점수를 확정했어요. 피드백은 피드백 탭에서 쓸 수 있어요.'); }
+  function pickScore(i, s){ var was = allPicked(); S.picked[i] = s; renderScore(); renderRubric(); if (!was && allPicked()) nudgeFb(); }
   function resetScores(){ S.picked = ELEMENTS.map(function(){return null;}); S.rubricMade = false; renderScore(); renderRubric(); showToast('success','점수를 초기화했어요.'); }
-  function applyAi(){ S.picked = ELEMENTS.map(function(e){return e.ai;}); renderScore(); renderRubric(); showToast('success','AI 점수를 그대로 적용했어요.'); }
+  function applyAi(){ S.picked = ELEMENTS.map(function(e){return e.ai;}); renderScore(); renderRubric(); nudgeFb(); }
   function pickStatus(el){ document.querySelectorAll('.radio-circle').forEach(function(c){c.classList.remove('selected');}); el.querySelector('.radio-circle').classList.add('selected'); }
 
   // ── 피드백 탭: ① 과제물 분석 AI ──
