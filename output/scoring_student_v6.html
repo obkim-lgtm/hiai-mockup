@@ -225,7 +225,7 @@
           <div id="rs-body" style="background:#F8F8F8;border-radius:12px;padding:20px;"></div>
         </div>
 
-        <!-- ② AI 피드백 (단 2 · 전체 요약｜문항별｜채점요소별) -->
+        <!-- ② AI 피드백 (단 2 · 종합 의견｜문항별｜채점요소별) -->
         <div id="fb-analysis" style="padding:24px 24px 28px;border-bottom:1px solid #D9D9D9;">
           <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px;">
             <i data-lucide="sparkles" style="width:20px;height:20px;color:#0950A0;"></i>
@@ -234,9 +234,8 @@
           </div>
           <div id="fb-views" style="margin-bottom:12px;"></div>
           <div id="fb-body" style="background:#F8F8F8;border-radius:12px;padding:20px;"></div>
-          <div style="display:flex;align-items:center;justify-content:space-between;margin-top:12px;">
-            <span id="fb-count" style="font-size:14px;color:#6D7381;"></span>
-            <button class="pill-btn" style="height:36px;" onclick="importFb()"><i data-lucide="download" style="width:14px;height:14px;"></i><span id="fb-import-label">전체 요약 피드백 가져오기</span></button>
+          <div style="display:flex;align-items:center;justify-content:flex-end;margin-top:12px;">
+            <button class="pill-btn" style="height:36px;" onclick="importFb()"><i data-lucide="download" style="width:14px;height:14px;"></i><span id="fb-import-label">종합 의견 가져오기</span></button>
           </div>
         </div>
 
@@ -364,10 +363,10 @@
   }
   setReasonView = function(v){ S.reasonView = v; renderReasons(); };
 
-  // ── AI 피드백 (전체 요약｜문항별｜채점요소별) ──
+  // ── AI 피드백 (종합 의견｜문항별｜채점요소별) ──
   function renderFb(){
     renderUnitPicker();
-    document.getElementById('fb-import-label').textContent = {sum:'전체 요약', q:'문항별', el:'채점요소별'}[S.fbView] + ' 피드백 가져오기';
+    document.getElementById('fb-import-label').textContent = {sum:'종합 의견 가져오기', q:'문항별 피드백 가져오기', el:'채점요소별 피드백 가져오기'}[S.fbView];
     var h = '';
     if (S.fbView === 'sum') {
       h = '<p class="fb-text">' + esc(SUMMARY) + '</p>';
@@ -381,11 +380,10 @@
       });
     }
     document.getElementById('fb-body').innerHTML = h;
-    document.getElementById('fb-count').textContent = bytes(fbText(S.fbView));
   }
 
   var UNITS = [
-    { v:'sum', name:'전체 요약', icon:'file-text', desc:'글 전체를 한 번에' },
+    { v:'sum', name:'종합 의견', icon:'file-text', desc:'글 전체를 한 번에' },
     { v:'q',   name:'문항별', icon:'list-ordered', desc:'문항마다 나눠서' },
     { v:'el',  name:'채점요소별', icon:'list-checks', desc:'채점요소마다 나눠서' }
   ];
@@ -411,7 +409,7 @@
     var h;
     if (S.rubricMade && all) {
       h = '<p class="fb-text">' + esc(RUBRIC_FB) + '</p>'
-        + '<div style="display:flex;align-items:center;justify-content:space-between;margin-top:20px;"><span style="font-size:14px;color:#6D7381;">' + bytes(RUBRIC_FB) + '</span>'
+        + '<div style="display:flex;align-items:center;justify-content:flex-end;margin-top:20px;">'
         + '<button class="pill-btn" style="height:36px;" onclick="importText(RUBRIC_FB)"><i data-lucide="download" style="width:14px;height:14px;"></i>피드백 가져오기</button></div>';
     } else if (all) {
       h = '<div style="display:flex;align-items:center;justify-content:space-between;gap:12px;"><span style="font-size:16px;color:#494949;line-height:1.5;">고른 점수로 피드백을 만들 수 있어요.</span>'
