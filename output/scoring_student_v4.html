@@ -133,6 +133,10 @@
     .judge-part { background: #FFF3E6; color: #C25E00; }
     .judge-no { background: #FFEFEF; color: #DB3E51; }
     .judge-open { background: #F0F0F0; color: #6D7381; }
+    .score-tag { margin-left: auto; flex-shrink: 0; font-size: 14px; font-weight: 700; color: #808080; line-height: 1.5; }
+    .score-tag.diff { color: #C25E00; background: #FFF3E6; border-radius: 100px; padding: 2px 10px; }
+    .pair-row + .pair-row { margin-top: 12px; }
+    .pair-label { display: block; font-size: 14px; font-weight: 700; color: #6D7381; margin-bottom: 4px; }
     .rel-line { font-size: 14px; color: #808080; line-height: 1.5; margin: 8px 0 0 4px; }
     .rel-src { margin-left: 6px; color: #9A9A9A; font-weight: 700; }
     .rel-src::before { content: '·'; margin-right: 6px; font-weight: 400; }
@@ -280,10 +284,6 @@
             <div id="fb-views" style="margin-bottom:16px;"></div>
             <div id="fb-body" style="background:#F8F8F8;border-radius:12px;padding:20px;"></div>
             <div style="display:flex;align-items:center;justify-content:flex-end;gap:16px;margin-top:12px;">
-              <!-- 기존 사용자 흐름 유지: 근거도 같이 가져오기 (문항별·채점요소별만 · 종합 의견은 근거 없음) -->
-              <label id="with-reason-wrap" style="display:inline-flex;align-items:center;gap:8px;font-size:14px;font-weight:700;color:#333;cursor:pointer;user-select:none;">
-                <input type="checkbox" id="with-reason" onchange="setWithReason(this.checked)" style="width:16px;height:16px;accent-color:#0950A0;cursor:pointer;margin:0;">채점 근거도 함께
-              </label>
               <button class="pill-btn" style="height:36px;" onclick="importFb()"><i data-lucide="download" style="width:14px;height:14px;"></i><span id="fb-import-label">종합 의견 가져오기</span></button>
             </div>
           </div>
@@ -467,9 +467,9 @@
   }
   function allPicked(){ return S.picked.every(function(v){ return v != null; }); }
   function nudgeFb(){ showToast('success','점수를 모두 골랐어요. 피드백은 피드백 탭에서 쓸 수 있어요.'); }
-  function pickScore(i, s){ var was = allPicked(); S.picked[i] = s; renderScore(); renderRubric(); if (!was && allPicked()) nudgeFb(); }
-  function resetScores(){ S.picked = ELEMENTS.map(function(){return null;}); S.rubricMade = false; renderScore(); renderRubric(); showToast('success','점수를 초기화했어요.'); }
-  function applyAi(){ S.picked = ELEMENTS.map(function(e){return e.ai;}); renderScore(); renderRubric(); nudgeFb(); }
+  function pickScore(i, s){ var was = allPicked(); S.picked[i] = s; renderScore(); renderRubric(); renderFb(); if (!was && allPicked()) nudgeFb(); }
+  function resetScores(){ S.picked = ELEMENTS.map(function(){return null;}); S.rubricMade = false; renderScore(); renderRubric(); renderFb(); showToast('success','점수를 초기화했어요.'); }
+  function applyAi(){ S.picked = ELEMENTS.map(function(e){return e.ai;}); renderScore(); renderRubric(); renderFb(); nudgeFb(); }
   function pickStatus(el){ document.querySelectorAll('.radio-circle').forEach(function(c){c.classList.remove('selected');}); el.querySelector('.radio-circle').classList.add('selected'); }
 
   // ── 피드백 탭: ① 과제물 분석 AI ──
@@ -481,20 +481,41 @@
   function renderFb(){
     renderUnitPicker();
     if (document.getElementById('with-reason')) syncWithReason();
-    document.getElementById('fb-import-label').textContent = {sum:'종합 의견 가져오기', q:'문항별 피드백 가져오기', el:'채점요소별 피드백 가져오기'}[S.fbView];
+    // 버튼 이름이 '채점 근거도 함께' 상태를 따라감 → 위 체크박스를 못 봐도 버튼에서 무엇이 들어가는지 확인
+    var plus = (WITH_REASON && S.fbView !== 'sum') ? ' + 근거' : '';
+    document.getElementById('fb-import-label').textContent = {sum:'종합 의견 가져오기', q:'문항별 피드백' + plus + ' 가져오기', el:'채점요소별 피드백' + plus + ' 가져오기'}[S.fbView];
     var h = '';
+    var withR = WITH_REASON && S.fbView !== 'sum';
+    // 근거를 켜면 '채점 근거 → 피드백' 짝으로 보여줌 (가져오기 결과와 같은 모양)
+    function body(reason, fb){
+      if (!withR) return '<p class="fb-text">' + esc(fb) + '</p>';
+      return '<div class="pair-row"><span class="pair-label">채점 근거</span><p class="fb-text">' + esc(reason) + '</p></div>'
+           + '<div class="pair-row"><span class="pair-label">피드백</span><p class="fb-text">' + esc(fb) + '</p></div>';
+    }
     if (S.fbView === 'sum') {
-      h = '<p class="fb-text">' + esc(SUMMARY) + '</p>';
+      h = '<div class="fb-head" style="margin-bottom:12px;"><span class="q-title">종합 의견</span>' + totalTag() + '</div><p class="fb-text">' + esc(SUMMARY) + '</p>';
     } else if (S.fbView === 'q') {
       QUESTIONS.forEach(function(x,i){
-        h += '<div class="fb-block"><div class="fb-head" style="align-items:flex-start;">' + qHead(x, i) + '</div><p class="fb-text">' + esc(x.feedback) + '</p></div>';
+        h += '<div class="fb-block"><div class="fb-head" style="align-items:flex-start;">' + qHead(x, i) + '</div>' + body(x.reason, x.feedback) + '</div>';
       });
     } else {
-      ELEMENTS.forEach(function(e){
-        h += '<div class="fb-block"><div class="fb-head"><span class="q-title">' + esc(e.name) + '</span></div><p class="fb-text">' + esc(e.feedback) + '</p></div>';
+      ELEMENTS.forEach(function(e, i){
+        h += '<div class="fb-block"><div class="fb-head"><span class="q-title">' + esc(e.name) + '</span>' + scoreTag(e.ai, S.picked[i], Math.max.apply(null, e.scores)) + '</div>' + body(e.reason, e.feedback) + '</div>';
       });
     }
     document.getElementById('fb-body').innerHTML = h;
+  }
+  // 피드백 옆 점수: AI 피드백은 AI 점수 기준으로 쓰였으므로, 선생님 점수가 다를 때만 둘 다 보여 눈에 띄게 (일관성 확인용)
+  function scoreTag(ai, teacher, max){
+    if (teacher == null) return '<span class="score-tag">AI ' + ai + ' / ' + max + '점</span>';
+    if (teacher === ai) return '<span class="score-tag">' + teacher + ' / ' + max + '점</span>';
+    return '<span class="score-tag diff">AI ' + ai + '점 → 선생님 ' + teacher + '점</span>';
+  }
+  function totalTag(){
+    var max = ELEMENTS.reduce(function(a,e){ return a + Math.max.apply(null, e.scores); }, 0);
+    var ai = ELEMENTS.reduce(function(a,e){ return a + e.ai; }, 0);
+    var t = allPicked() ? S.picked.reduce(function(a,b){ return a + b; }, 0) : null;
+    return scoreTag(ai, t, max).replace('score-tag', 'score-tag total');
   }
   // ── 문항별 제공 범위 (Beta): 학교급 무관(초·중·고 모두) 수학·과학 교과만. 그 외 교과는 비활성 + 툴팁 ──
   //    목업 확인용: ?subject=국어 → 비활성 / 기본(과학) → 활성
@@ -531,7 +552,10 @@
       h = '<div class="unit-fill">' + UNITS.map(function(u){ return '<button class="' + (u.v===S.fbView?'active':'') + '" onclick="setFbView(\'' + u.v + '\')"><i data-lucide="' + u.icon + '" style="width:16px;height:16px;"></i>' + u.name + '</button>'; }).join('') + '</div>';
     } else {
       // 채점 탭 '근거 [세그먼트]'와 같은 모양: 라벨 + 세그먼트
-      h = '<div style="display:flex;align-items:center;gap:10px;"><span class="seg-label">피드백</span><div class="seg">' + UNITS.map(unitCard).join('') + '</div></div>';
+      // 채점 근거도 함께: 단위 선택 옆 — 켜면 화면에도 근거가 같이 보이고, 보이는 그대로 가져온다 (종합 의견은 근거 없음 → 숨김)
+      h = '<div style="display:flex;align-items:center;gap:10px;"><span class="seg-label">피드백</span><div class="seg">' + UNITS.map(unitCard).join('') + '</div>'
+        + '<label id="with-reason-wrap" style="margin-left:auto;display:inline-flex;align-items:center;gap:8px;font-size:14px;font-weight:700;color:#333;cursor:pointer;user-select:none;">'
+        + '<input type="checkbox" id="with-reason" onchange="setWithReason(this.checked)" style="width:16px;height:16px;accent-color:#0950A0;cursor:pointer;margin:0;">채점 근거도 함께</label></div>';
     }
     w.innerHTML = h; icons();
   }
@@ -539,7 +563,7 @@
   // 채점 근거도 함께 — 기본 켬(기존 가져오기가 근거까지 가져왔음), 마지막 선택 기억
   var WITH_REASON = true;
   try { var wr = localStorage.getItem('hiai_fb_with_reason'); if (wr != null) WITH_REASON = (wr === '1'); } catch(e){}
-  function setWithReason(v){ WITH_REASON = v; try{ localStorage.setItem('hiai_fb_with_reason', v ? '1' : '0'); }catch(e){} }
+  function setWithReason(v){ WITH_REASON = v; try{ localStorage.setItem('hiai_fb_with_reason', v ? '1' : '0'); }catch(e){} renderFb(); }
   function syncWithReason(){
     document.getElementById('with-reason-wrap').style.display = S.fbView === 'sum' ? 'none' : 'inline-flex';
     document.getElementById('with-reason').checked = WITH_REASON;
