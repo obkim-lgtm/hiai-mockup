@@ -36,6 +36,8 @@
     .pill-btn:hover { background: #F5F5F5; }
     .text-btn { background: none; border: none; height: 32px; padding: 0 8px; border-radius: 6px; font-size: 14px; font-weight: 700; color: #808080; cursor: pointer; gap: 4px; display: inline-flex; align-items: center; justify-content: center; line-height: 1; vertical-align: middle; }
     .text-btn:hover { background: #F0F0F0; color: #494949; }
+    .grey-btn { background: white; border: 1px solid #D9D9D9; height: 32px; padding: 0 12px; border-radius: 8px; font-size: 14px; font-weight: 700; color: #494949; cursor: pointer; gap: 4px; display: inline-flex; align-items: center; justify-content: center; line-height: 1; vertical-align: middle; }
+    .grey-btn:hover { background: #F5F5F5; border-color: #B3B3B3; }
     .primary-btn {
       background: #0950A0; border: none; border-radius: 8px; height: 40px; padding: 0 16px;
       font-size: 16px; font-weight: 700; color: white; cursor: pointer; gap: 6px;
@@ -87,6 +89,12 @@
     .unit-card .uc-desc { font-size: 14px; color: #808080; line-height: 1.4; }
     .unit-card.active { border-color: #7FB3E8; background: #F3F9FF; }
     .unit-card.active .uc-name { color: #0950A0; }
+    .beta-badge { display: inline-flex; align-items: center; justify-content: center; line-height: 1; vertical-align: middle; height: 20px; padding: 0 7px; border-radius: 6px; background: #E7F2FF; color: #0950A0; font-size: 12px; font-weight: 700; letter-spacing: .2px; flex-shrink: 0; margin-left: 2px; }
+    .unit-card.disabled { cursor: not-allowed; background: #F8F8F8; border-color: #E5E5E5; position: relative; }
+    .unit-card.disabled .uc-name { color: #B3B3B3; }
+    .unit-card.disabled .beta-badge { background: #EDEDED; color: #9A9A9A; }
+    .unit-card.disabled:hover { border-color: #E5E5E5; }
+    .unit-card[data-tip]:hover::after { content: attr(data-tip); position: absolute; bottom: calc(100% + 10px); left: 50%; transform: translateX(-50%); background: #fff; color: #0A2A5E; font-size: 14px; font-weight: 700; line-height: 18px; padding: 10px 16px; border-radius: 8px; white-space: nowrap; z-index: 20; box-shadow: 0 4px 36px rgba(45,85,145,.16); }
     .unit-tabs { display: flex; border-bottom: 1px solid #D9D9D9; }
     .unit-tabs button { flex: 1; height: 44px; border: none; background: none; font-size: 16px; font-weight: 700; color: #808080; cursor: pointer; border-bottom: 3px solid transparent; margin-bottom: -1px; display: inline-flex; align-items: center; justify-content: center; line-height: 1; gap: 6px; }
     .unit-tabs button.active { color: #0950A0; border-bottom-color: #0950A0; }
@@ -212,13 +220,13 @@
         <div id="score-rows"></div>
         <div id="q-reasons" style="display:none;margin-top:8px;"></div>
 
-        <!-- 채점 행동: 주 버튼 1 + 가끔 쓰는 것은 회색 텍스트 -->
+        <!-- 채점 행동 — 묶음: 왼쪽=AI 결과(재실행) / 오른쪽=점수 칸(초기화·AI 점수 적용, 점수 버튼 열과 끝 맞춤)
+             무게: AI 채점 재실행=연한 파랑 테두리(AI 행동) · 초기화·AI 점수 적용=회색 테두리(점수 칸 편의, 교사가 직접 보는 게 기본) -->
         <div style="display:flex;align-items:center;gap:8px;margin-top:20px;">
-          <button id="btn-applyai" class="btn-c" onclick="applyAi()" style="gap:6px;height:40px;padding:0 16px;background:white;border:1px solid #0950A0;border-radius:8px;color:#0950A0;font-size:16px;font-weight:700;cursor:pointer;" onmouseover="this.style.background='#F3F9FF'" onmouseout="this.style.background='white'"><i data-lucide="check-check" style="width:18px;height:18px;"></i>AI 점수 그대로 적용</button>
-          <div style="margin-left:auto;display:flex;align-items:center;gap:4px;">
-            <button class="text-btn" onclick="resetScores()">점수 초기화</button>
-            <span style="color:#D9D9D9;">·</span>
-            <button id="btn-rerun" class="text-btn" onclick="showToast('info','AI 채점을 다시 실행해요.')"><i data-lucide="rotate-ccw" style="width:14px;height:14px;"></i>AI 채점 재실행</button>
+          <button id="btn-rerun" class="btn-c" onclick="showToast('info','AI 채점을 다시 실행해요.')" style="gap:4px;height:32px;padding:0 12px;background:white;border:1px solid #7FB3E8;border-radius:8px;color:#0950A0;font-size:14px;font-weight:700;cursor:pointer;" onmouseover="this.style.background='#F3F9FF'" onmouseout="this.style.background='white'"><i data-lucide="rotate-ccw" style="width:14px;height:14px;"></i>AI 채점 재실행</button>
+          <div style="margin-left:auto;display:flex;align-items:center;gap:8px;">
+            <button class="grey-btn" onclick="resetScores()"><i data-lucide="eraser" style="width:14px;height:14px;"></i>점수 초기화</button>
+            <button id="btn-applyai" class="grey-btn" onclick="applyAi()"><i data-lucide="check" style="width:14px;height:14px;"></i>AI 점수 그대로 적용</button>
           </div>
         </div>
         <!-- 마무리: 저장 후 다음 학생 (탭 내용 맨 끝 · 고정 아님) -->
@@ -400,6 +408,25 @@
     }
     document.getElementById('fb-body').innerHTML = h;
   }
+  // ── 문항별 제공 범위 (Beta): 초등 전체 + 중고등 수학·과학 교과만. 그 외 교과는 비활성 + 툴팁 ──
+  //    목업 확인용: ?subject=국어 → 비활성 / 기본(중·과학) → 활성 / ?school=초 → 교과 무관 활성
+  var QP = new URLSearchParams(location.search);
+  var SCHOOL = QP.get('school') || '중';
+  var SUBJECT = QP.get('subject') || '과학';
+  var Q_ENABLED = (SCHOOL === '초') || SUBJECT === '수학' || SUBJECT === '과학';
+  var Q_TIP = '현재 수학, 과학 교과만 생성됩니다.';
+  var BETA = '<span class="beta-badge">Beta</span>';
+  function applyQGate(){
+    if (!Q_ENABLED) { S.reasonView = 'el'; if (S.fbView === 'q') S.fbView = 'sum'; }
+    var b = document.getElementById('rs-q');
+    b.innerHTML = '<span class="uc-name"><i data-lucide="list-ordered" style="width:18px;height:18px;"></i>문항별' + BETA + '</span>';
+    if (!Q_ENABLED) { b.classList.add('disabled'); b.removeAttribute('onclick'); b.setAttribute('aria-disabled','true'); b.setAttribute('data-tip', Q_TIP); }
+  }
+  function unitCard(u){
+    var isQ = u.v === 'q', off = isQ && !Q_ENABLED;
+    var attrs = off ? ' aria-disabled="true" data-tip="' + Q_TIP + '"' : ' onclick="setFbView(\'' + u.v + '\')"';
+    return '<button class="unit-card' + (u.v === S.fbView ? ' active' : '') + (off ? ' disabled' : '') + '"' + attrs + '><span class="uc-name"><i data-lucide="' + u.icon + '" style="width:18px;height:18px;"></i>' + u.name + (isQ ? BETA : '') + '</span></button>';
+  }
   var UNITS = [
     { v:'sum', name:'종합 의견', icon:'file-text', desc:'글 전체를 한 번에' },
     { v:'q',   name:'문항별', icon:'list-ordered', desc:'문항마다 나눠서' },
@@ -414,7 +441,7 @@
     } else if (FB_STYLE === 'c') {
       h = '<div class="unit-fill">' + UNITS.map(function(u){ return '<button class="' + (u.v===S.fbView?'active':'') + '" onclick="setFbView(\'' + u.v + '\')"><i data-lucide="' + u.icon + '" style="width:16px;height:16px;"></i>' + u.name + '</button>'; }).join('') + '</div>';
     } else {
-      h = '<div class="unit-cards">' + UNITS.map(function(u){ return '<button class="unit-card' + (u.v===S.fbView?' active':'') + '" onclick="setFbView(\'' + u.v + '\')"><span class="uc-name"><i data-lucide="' + u.icon + '" style="width:18px;height:18px;"></i>' + u.name + '</span></button>'; }).join('') + '</div>';
+      h = '<div class="unit-cards">' + UNITS.map(unitCard).join('') + '</div>';
     }
     w.innerHTML = h; icons();
   }
@@ -505,6 +532,7 @@
     toastTimer = setTimeout(function(){ t.style.display = 'none'; }, 2200);
   }
 
+  applyQGate();
   renderScore(); renderFb(); renderRubric(); renderLeftText(); onTfb();
   switchTab(location.hash === '#feedback' ? 'fb' : 'score');
   icons();
