@@ -38,12 +38,21 @@
     .text-btn:hover { background: #F0F0F0; color: #494949; }
     .grey-btn { background: white; border: 1px solid #D9D9D9; height: 32px; padding: 0 12px; border-radius: 8px; font-size: 14px; font-weight: 700; color: #494949; cursor: pointer; gap: 4px; display: inline-flex; align-items: center; justify-content: center; line-height: 1; vertical-align: middle; }
     .grey-btn:hover { background: #F5F5F5; border-color: #B3B3B3; }
+    /* 버튼 무게: 파란 채움=저장 / 연한 파랑 테두리=AI 채점 재실행(찾을 수 있게) / 회색 테두리=AI 제안 점수 적용(편의, 강조 X — AI 실수 가능) / 회색 글자=점수 초기화(가장 드묾) */
+    .ai-outline-btn { background: white; border: 1px solid #7FB3E8; height: 32px; padding: 0 12px; border-radius: 8px; font-size: 14px; font-weight: 700; color: #0950A0; cursor: pointer; gap: 4px; display: inline-flex; align-items: center; justify-content: center; line-height: 1; vertical-align: middle; }
+    .ai-outline-btn:hover { background: #F3F9FF; }
     .primary-btn {
       background: #0950A0; border: none; border-radius: 8px; height: 40px; padding: 0 16px;
       font-size: 16px; font-weight: 700; color: white; cursor: pointer; gap: 6px;
       display: inline-flex; align-items: center; justify-content: center; line-height: 1; vertical-align: middle;
     }
     .primary-btn:hover { background: #0A4A94; }
+    .outline-btn {
+      background: white; border: 1px solid #0950A0; border-radius: 8px; height: 40px; padding: 0 16px;
+      font-size: 16px; font-weight: 700; color: #0950A0; cursor: pointer; gap: 6px;
+      display: inline-flex; align-items: center; justify-content: center; line-height: 1; vertical-align: middle;
+    }
+    .outline-btn:hover { background: #F3F9FF; }
 
     .radio-item { display: flex; align-items: center; gap: 6px; cursor: pointer; font-size: 16px; font-weight: 700; color: #333; }
     .radio-circle { width: 18px; height: 18px; border-radius: 50%; border: 2px solid #D9D9D9; flex-shrink: 0; }
@@ -72,6 +81,12 @@
       display: inline-flex; align-items: center; justify-content: center; line-height: 1; vertical-align: middle;
     }
     .seg button.active { background: white; color: #0950A0; box-shadow: 0 1px 3px rgba(0,0,0,.08); }
+    .seg button { gap: 4px; position: relative; }
+    .seg-label { width: 44px; flex-shrink: 0; font-size: 14px; font-weight: 700; color: #494949; } /* 두 탭 세그먼트 시작점 맞춤 */
+    .seg button .beta-badge { height: 18px; padding: 0 6px; font-size: 11px; }
+    .seg button.disabled { cursor: not-allowed; color: #B3B3B3; }
+    .seg button.disabled .beta-badge { background: #EDEDED; color: #9A9A9A; }
+    .seg button[data-tip]:hover::after { content: attr(data-tip); position: absolute; bottom: calc(100% + 10px); left: 50%; transform: translateX(-50%); background: #fff; color: #0A2A5E; font-size: 14px; font-weight: 700; line-height: 18px; padding: 10px 16px; border-radius: 8px; white-space: nowrap; z-index: 20; box-shadow: 0 4px 36px rgba(45,85,145,.16); }
 
     .tab-toggle-btn {
       flex: 1; height: 40px; font-size: 16px; font-weight: 700; cursor: pointer; border-radius: 8px;
@@ -205,32 +220,38 @@
 
       <!-- ─── 채점 탭 ─── -->
       <div id="pane-score" style="padding:24px 24px 52px;">
-        <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+        <!-- 제목 줄: 드문 행동(재실행·초기화)은 제목 오른쪽 작은 텍스트 버튼 — 숨기지 않되 목록 위를 차지하지 않게 -->
+        <div style="display:flex;align-items:center;gap:8px;height:32px;margin-bottom:16px;">
           <i data-lucide="circle-check-big" style="width:20px;height:20px;color:#0950A0;"></i>
           <span style="font-size:18px;font-weight:700;color:#333;">채점 결과</span>
+          <!-- 점수 칸 도구 (한 묶음·같은 위계): 점수 초기화 + AI 제안 점수 모두 적용 — 둘 다 회색 글자 -->
+          <div style="margin-left:auto;display:flex;align-items:center;gap:4px;">
+            <button class="text-btn" onclick="resetScores()"><i data-lucide="eraser" style="width:14px;height:14px;"></i>점수 초기화</button>
+            <button id="btn-applyai" class="text-btn" style="margin-right:-8px;" onclick="applyAi()"><i data-lucide="check-check" style="width:14px;height:14px;"></i>AI 제안 점수 모두 적용</button>
+          </div>
         </div>
-        <p style="font-size:14px;color:#808080;margin:0 0 16px;">AI는 채점을 보조하는 역할을 하며, 채점의 최종 권한은 선생님에게만 있습니다.</p>
 
-        <!-- 근거 보기 스위치 (문항 결과가 있을 때만) -->
-        <div id="reason-switch" class="unit-cards" style="grid-template-columns:repeat(2,1fr);margin-bottom:12px;">
-          <button id="rs-el" class="unit-card active" onclick="setReasonView('el')"><span class="uc-name"><i data-lucide="list-checks" style="width:18px;height:18px;"></i>채점요소별</span></button>
-          <button id="rs-q" class="unit-card" onclick="setReasonView('q')"><span class="uc-name"><i data-lucide="list-ordered" style="width:18px;height:18px;"></i>문항별</span></button>
+        <!-- 목록 머리: 근거 보기 전환만 (한 번 정하면 끝 → 작은 세그먼트) -->
+        <div id="list-head" style="display:flex;align-items:center;gap:10px;">
+          <span class="seg-label">근거</span>
+          <div class="seg" id="reason-switch">
+            <button id="rs-el" class="active" onclick="setReasonView('el')">채점요소별</button>
+            <button id="rs-q" onclick="setReasonView('q')">문항별</button>
+          </div>
         </div>
 
         <div id="score-rows"></div>
         <div id="q-reasons" style="display:none;margin-top:8px;"></div>
 
-        <!-- 채점 행동 — 묶음: 왼쪽=AI 결과(재실행) / 오른쪽=점수 칸(초기화·AI 점수 적용, 점수 버튼 열과 끝 맞춤)
-             무게: AI 채점 재실행=연한 파랑 테두리(AI 행동) · 초기화·AI 점수 적용=회색 테두리(점수 칸 편의, 교사가 직접 보는 게 기본) -->
-        <div style="display:flex;align-items:center;gap:8px;margin-top:20px;">
-          <button id="btn-rerun" class="btn-c" onclick="showToast('info','AI 채점을 다시 실행해요.')" style="gap:4px;height:32px;padding:0 12px;background:white;border:1px solid #7FB3E8;border-radius:8px;color:#0950A0;font-size:14px;font-weight:700;cursor:pointer;" onmouseover="this.style.background='#F3F9FF'" onmouseout="this.style.background='white'"><i data-lucide="rotate-ccw" style="width:14px;height:14px;"></i>AI 채점 재실행</button>
-          <div style="margin-left:auto;display:flex;align-items:center;gap:8px;">
-            <button class="grey-btn" onclick="resetScores()"><i data-lucide="eraser" style="width:14px;height:14px;"></i>점수 초기화</button>
-            <button id="btn-applyai" class="grey-btn" onclick="applyAi()"><i data-lucide="check" style="width:14px;height:14px;"></i>AI 점수 그대로 적용</button>
-          </div>
+        <!-- AI 보조 안내: 목록 위를 가리지 않게 최하단으로 -->
+        <div style="display:flex;align-items:flex-start;gap:6px;margin-top:20px;">
+          <i data-lucide="info" style="width:16px;height:16px;color:#808080;flex-shrink:0;margin-top:1px;"></i>
+          <span style="font-size:14px;color:#808080;line-height:1.5;">AI는 채점을 보조하는 역할을 하며, 채점의 최종 권한은 선생님에게만 있습니다.</span>
         </div>
-        <!-- 마무리: 저장 후 다음 학생 (탭 내용 맨 끝 · 고정 아님) -->
-        <div style="display:flex;justify-content:flex-end;margin-top:28px;padding-top:20px;border-top:1px solid #D9D9D9;">
+
+        <!-- 마무리 줄: AI 채점 재실행(저장과 같은 크기 · 테두리) + 저장 후 다음 학생(채움) -->
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:28px;padding-top:20px;border-top:1px solid #D9D9D9;">
+          <button id="btn-rerun" class="outline-btn" onclick="showToast('info','AI 채점을 다시 실행해요.')"><i data-lucide="rotate-ccw" style="width:18px;height:18px;"></i>AI 채점 재실행</button>
           <button class="primary-btn" onclick="saveNow(true)"><i data-lucide="check" style="width:20px;height:20px;"></i>저장 후 다음 학생</button>
         </div>
       </div>
@@ -239,14 +260,14 @@
       <div id="pane-fb" style="display:none;">
         <!-- ① 과제물 분석 AI 피드백 (단 1) -->
         <div id="fb-analysis" style="padding:24px 24px 28px;border-bottom:1px solid #D9D9D9;">
-          <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px;">
+          <div style="display:flex;align-items:center;gap:8px;height:32px;margin-bottom:16px;">
             <i data-lucide="sparkles" style="width:20px;height:20px;color:#0950A0;"></i>
             <span id="fa-title" style="font-size:18px;font-weight:700;color:#333;">과제물 분석 AI 피드백</span>
             <i data-lucide="circle-help" title="학생 답안을 읽고 만든 피드백이에요. 수정할 수 없고, 가져온 뒤 선생님 직접 피드백에서 고쳐 쓸 수 있어요." style="width:18px;height:18px;color:#B3B3B3;cursor:help;"></i>
-            <span id="fa-badge" style="margin-left:auto;background:#F0F0F0;color:#494949;border-radius:9999px;font-size:14px;font-weight:700;padding:3px 12px;">기본 설정으로 채점</span>
           </div>
           <div id="fa-on">
-            <div id="fb-views" style="margin-bottom:12px;"></div>
+            <!-- 채점 탭 목록 머리(근거 [세그먼트])와 같은 모양 · 구분선 없음 -->
+            <div id="fb-views" style="margin-bottom:16px;"></div>
             <div id="fb-body" style="background:#F8F8F8;border-radius:12px;padding:20px;"></div>
             <div style="display:flex;align-items:center;justify-content:flex-end;gap:16px;margin-top:12px;">
               <!-- 기존 사용자 흐름 유지: 근거도 같이 가져오기 (문항별·채점요소별만 · 종합 의견은 근거 없음) -->
@@ -260,7 +281,7 @@
 
         <!-- ② 루브릭 기반 AI 피드백 (단 2 · 보기 옵션 없음) -->
         <div id="fb-rubric" style="padding:24px 24px 28px;border-bottom:1px solid #D9D9D9;">
-          <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px;">
+          <div style="display:flex;align-items:center;gap:8px;height:32px;margin-bottom:16px;">
             <i data-lucide="sparkles" style="width:20px;height:20px;color:#0950A0;"></i>
             <span style="font-size:18px;font-weight:700;color:#333;">루브릭 기반 AI 피드백</span>
             <i data-lucide="circle-help" title="선생님이 고른 채점 요소 점수만으로 피드백을 만들어요. 최대 5개의 기록이 저장돼요." style="width:18px;height:18px;color:#B3B3B3;cursor:help;"></i>
@@ -270,7 +291,7 @@
 
         <!-- 선생님 직접 피드백 -->
         <div style="padding:24px 24px 52px;">
-          <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px;">
+          <div style="display:flex;align-items:center;gap:8px;height:32px;margin-bottom:16px;">
             <i data-lucide="message-circle" style="width:20px;height:20px;color:#0950A0;"></i>
             <span style="font-size:18px;font-weight:700;color:#333;">선생님 직접 피드백</span>
             <i data-lucide="circle-help" title="결과지 출력·배부에서 학생에게 공개할지 선택할 수 있어요. AI 근거와 피드백은 선생님 참고용이에요." style="width:18px;height:18px;color:#B3B3B3;cursor:help;"></i>
@@ -358,6 +379,8 @@
       qr.innerHTML = q; qr.style.display = 'block';
     } else { qr.style.display = 'none'; }
 
+    // AI 제안이 남아 있을 때만(아직 확정 안 한 요소가 있을 때) 'AI 제안 점수 모두 적용' 노출
+    document.getElementById('btn-applyai').style.visibility = S.picked.some(function(v){ return v == null; }) ? 'visible' : 'hidden';
     document.getElementById('rs-el').classList.toggle('active', elMode);
     document.getElementById('rs-q').classList.toggle('active', !elMode);
     var tot = S.picked.reduce(function(a,b){return a+(b||0);},0);
@@ -408,29 +431,30 @@
     }
     document.getElementById('fb-body').innerHTML = h;
   }
-  // ── 문항별 제공 범위 (Beta): 초등 전체 + 중고등 수학·과학 교과만. 그 외 교과는 비활성 + 툴팁 ──
-  //    목업 확인용: ?subject=국어 → 비활성 / 기본(중·과학) → 활성 / ?school=초 → 교과 무관 활성
+  // ── 문항별 제공 범위 (Beta): 학교급 무관(초·중·고 모두) 수학·과학 교과만. 그 외 교과는 비활성 + 툴팁 ──
+  //    목업 확인용: ?subject=국어 → 비활성 / 기본(과학) → 활성
   var QP = new URLSearchParams(location.search);
-  var SCHOOL = QP.get('school') || '중';
   var SUBJECT = QP.get('subject') || '과학';
-  var Q_ENABLED = (SCHOOL === '초') || SUBJECT === '수학' || SUBJECT === '과학';
+  var Q_ENABLED = SUBJECT === '수학' || SUBJECT === '과학';
   var Q_TIP = '현재 수학, 과학 교과만 생성됩니다.';
   var BETA = '<span class="beta-badge">Beta</span>';
   function applyQGate(){
     if (!Q_ENABLED) { S.reasonView = 'el'; if (S.fbView === 'q') S.fbView = 'sum'; }
     var b = document.getElementById('rs-q');
-    b.innerHTML = '<span class="uc-name"><i data-lucide="list-ordered" style="width:18px;height:18px;"></i>문항별' + BETA + '</span>';
+    b.innerHTML = '문항별' + BETA;
     if (!Q_ENABLED) { b.classList.add('disabled'); b.removeAttribute('onclick'); b.setAttribute('aria-disabled','true'); b.setAttribute('data-tip', Q_TIP); }
   }
   function unitCard(u){
     var isQ = u.v === 'q', off = isQ && !Q_ENABLED;
     var attrs = off ? ' aria-disabled="true" data-tip="' + Q_TIP + '"' : ' onclick="setFbView(\'' + u.v + '\')"';
-    return '<button class="unit-card' + (u.v === S.fbView ? ' active' : '') + (off ? ' disabled' : '') + '"' + attrs + '><span class="uc-name"><i data-lucide="' + u.icon + '" style="width:18px;height:18px;"></i>' + u.name + (isQ ? BETA : '') + '</span></button>';
+    // 채점 탭 근거 전환과 같은 작은 세그먼트 (두 탭 일관)
+    return '<button class="' + (u.v === S.fbView ? 'active' : '') + (off ? ' disabled' : '') + '"' + attrs + '>' + u.name + (isQ ? BETA : '') + '</button>';
   }
+  // 순서: 채점 탭 근거(채점요소별 → 문항별)와 맞춤
   var UNITS = [
     { v:'sum', name:'종합 의견', icon:'file-text', desc:'글 전체를 한 번에' },
-    { v:'q',   name:'문항별', icon:'list-ordered', desc:'문항마다 나눠서' },
-    { v:'el',  name:'채점요소별', icon:'list-checks', desc:'채점요소마다 나눠서' }
+    { v:'el',  name:'채점요소별', icon:'list-checks', desc:'채점요소마다 나눠서' },
+    { v:'q',   name:'문항별', icon:'list-ordered', desc:'문항마다 나눠서' }
   ];
   var FB_STYLE = (new URLSearchParams(location.search).get('fbstyle') || 'a').toLowerCase();
   function renderUnitPicker(){
@@ -441,7 +465,8 @@
     } else if (FB_STYLE === 'c') {
       h = '<div class="unit-fill">' + UNITS.map(function(u){ return '<button class="' + (u.v===S.fbView?'active':'') + '" onclick="setFbView(\'' + u.v + '\')"><i data-lucide="' + u.icon + '" style="width:16px;height:16px;"></i>' + u.name + '</button>'; }).join('') + '</div>';
     } else {
-      h = '<div class="unit-cards">' + UNITS.map(unitCard).join('') + '</div>';
+      // 채점 탭 '근거 [세그먼트]'와 같은 모양: 라벨 + 세그먼트
+      h = '<div style="display:flex;align-items:center;gap:10px;"><span class="seg-label">피드백</span><div class="seg">' + UNITS.map(unitCard).join('') + '</div></div>';
     }
     w.innerHTML = h; icons();
   }
