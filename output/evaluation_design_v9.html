@@ -57,7 +57,8 @@ body { margin: 0; background: #EDF3FC; min-width: 1280px;
 .note i { width:17px; height:17px; flex-shrink:0; margin-top:2px; }
 .note-info  { background:#F2F7FF; color:#2B4C96; }
 .note-warn  { background:#FFF8F0; color:#7A4A00; }
-.note-lock  { background:#F8F8F8; color:#5A5A5A; }
+.note-lock  { background:#FFF8F0; border:1px solid #F3D6AE; color:#7A4A00; font-size:16px; line-height:1.6; }   /* 정확도 높이기 잠금 — 회색이라 안 보였음(09-29 올립). 빨강은 오류 자리라 쓰지 않고, 2단계 연결 안내 배너(.adv-stale-top)와 같은 주황 */
+.note-lock i, .note-lock svg { width:18px; height:18px; color:#C2620A; }
 .note-ok    { background:#F1F9F3; color:#0A6B2C; }
 
 /* ── 뱃지 ── */
