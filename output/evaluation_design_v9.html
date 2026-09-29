@@ -1128,9 +1128,12 @@ var S = {
   name: '',
   stdFilled: false,
   rubricFilled: false,   // 채점기준까지 입력 = 설계 완료
+  saved: false,          // 저장된 설계인가 — 정확도 높이기는 저장된 설계에서만 열림(V1.3, 빌 26-09-28).
+                         // HIAI 설계 폼엔 문항이 없어 임시 저장 중에 들어갈 이유가 없고, 저장 조건이 평가명·채점기준뿐이라 막혀도 비용은 저장 한 번
   /* ── 고도화(선택) ── */
   worksheet: false,      // 빈 활동지 파일을 올렸는가
   ws: 'idle',            // 문항 구조화: idle | load | ready
+  qSaved: false,         // 1단계(나눈 문항)를 저장했는가 — 저장 없이 나가면 문항만 버리고 활동지 파일은 남김(V1.3, 빌 26-09-28)
   advStep: 1,            // 지금 보는 단계: 1 문항 확정 | 2 채점기준 연결 | 3 모범답안
   linkDone: false,       // ②을 마쳤는가 — ③은 이게 참이어야 열린다
   rubricDirty: false,    // 채점 후 채점기준을 건드렸는가 — 저장할 때 '기존 점수 유지 / 초기화' 선택창
@@ -2343,7 +2346,9 @@ function onRubricInput(){
   renderAll();
   renderScoreTable();
   renderToc();
-  if (!was && S.rubricFilled) showToast('info','채점기준을 다 입력했어요. 이제 문항마다 연결할 수 있어요.');
+  if (!was && S.rubricFilled) showToast('info', S.saved
+    ? '채점기준을 다 입력했어요. 이제 문항마다 연결할 수 있어요.'
+    : '채점기준을 다 입력했어요. 저장하면 문항마다 연결할 수 있어요.');
 }
 function onBasicInput(){ S.name = document.getElementById('f-name').value; renderHeroName(); renderToc(); }
 function openFormulaTip(){ showToast('info','수식 입력 도구를 여는 화면입니다.'); }
@@ -2807,7 +2812,7 @@ function onConfirmCancel(){
 ══════════════════════════════════════════════════════════ */
 /* 카드 아래 단 — 왼쪽은 '어떤 상태로 언제', 오른쪽은 '지금 할 수 있는 일'.
    '설계 완료'는 기본값이라 배지로 알릴 게 없어 빼고, 예외인 '임시 저장'만 남긴다.
-   임시 저장과 고도화는 동시에 성립하지 않는다 — 설계가 안 끝나면 고도화가 잠기므로. */
+   임시 저장과 고도화는 동시에 성립하지 않는다 — 고도화는 저장된 설계에서만 열리므로(V1.3). */
 function cardSubHtml(c){
   var h = '<div style="display:flex;align-items:center;gap:8px;min-height:22px;margin-bottom:16px;">';
   if (c.state === 'draft'){
@@ -2872,7 +2877,7 @@ function noteAppliesNextRun(){
 ══════════════════════════════════════════════════════════ */
 function applyCase(k){
   clearTimeout(_loadTimer);   // 돌던 분석 타이머가 나중에 깨어나 다른 케이스를 덮지 않게
-  S.name = ''; S.stdFilled = false; S.rubricFilled = false;
+  S.name = ''; S.stdFilled = false; S.rubricFilled = false; S.saved = false;
   S.worksheet = false; S.ws = 'idle'; S.advStep = 1; S.linkDone = false;
   S.linkReady = false; S.linkLoading = false;
   S.rubricDirty = false; S.rubricRemoved = false; S.rubricAdded = false; S.qEditing = -1;
@@ -2914,6 +2919,7 @@ function applyCase(k){
     S.name = '논설문 쓰기 — 우리 학교 급식 잔반 문제';
     S.stdFilled = true;
     S.rubricFilled = true;
+    S.saved = true;   // 채점기준까지 채운 케이스는 모두 저장된 설계
     standards = JSON.parse(JSON.stringify(STD_SEED));
   }
 
@@ -2957,6 +2963,7 @@ function applyCase(k){
   if (k === 'scored'){ S.scoredN = 28; S.worksheet = true; S.ws = 'ready'; S.linkDone = true; S.answersFilled = true; S.locked = true; S.scored = true; fillQ4Links(); S.linkReady = true; }
 
   if (S.answersFilled) fillAnswers();
+  S.qSaved = (S.ws === 'ready');   // 케이스로 연 문항은 저장된 문항
 
   var target = 'detail';
   if (k === 'adv-upload' || k === 'adv-1' || k === 'adv-2' || k === 'adv-3') target = 'adv';
@@ -3026,6 +3033,7 @@ function advNext(){
   if (S.advStep === 1){
     if (S.ws !== 'ready'){ showToast('error','빈 활동지를 먼저 올려 주세요.'); return; }
     syncQuestionsFromDom();
+    S.qSaved = true;   // 다음으로 넘어가면 1단계는 저장된 것
     /* 성과는 토스트로 — 다음 단계 상단에 '왜 하는지' 배너가 이미 서 있다(26-09-03 올립) */
     showToast('success', ADV_GAIN[1]);
     gotoAdvStep(2);
@@ -3052,6 +3060,7 @@ function advSave(){
   doAdvSave();
 }
 function doAdvSave(){
+  if (S.ws === 'ready') S.qSaved = true;
   if (S.advStep >= 2) S.linkDone = true;
   var finish = (S.advStep === 3);
   renderDetail(); renderToc(); renderMockpick();
@@ -3064,6 +3073,7 @@ function doAdvSave(){
 function gotoAdv(){
   /* 설계(채점기준)가 끝나야 얹을 수 있다 — 카드 버튼은 비활성이지만 딥링크로도 들어올 수 있어 여기서도 막는다 */
   if (!S.rubricFilled){ showToast('error','채점기준을 모두 입력해야 시작할 수 있어요.'); scrollToSection('sec-rubric'); return; }
+  if (!S.saved){ showToast('error','설계를 저장하면 시작할 수 있어요.'); return; }   // 임시 저장 설계는 열지 않음(V1.3)
   var n = 1;
   if (S.ws === 'ready'){
     /* 카드가 '다시 확인하기'였으면 다시 볼 단으로 바로 간다 — ①에 내려놓고 '다음'을 누르게 하면 한 번 헛디딘다.
@@ -3200,16 +3210,21 @@ function renderAdvCard(){
   ];
 
   var h;
-  /* 설계가 끝나야(채점기준까지) 그 위에 얹는 일이다. 잠근 이유를 버튼 앞에 먼저 읽힌다 */
-  if (!S.rubricFilled){
+  /* 저장된 설계에서만 연다(V1.3). 잠근 이유를 버튼 앞에 먼저 읽힌다 —
+     채점기준이 덜 찼으면 그것부터, 다 찼는데 저장 전이면 저장만 남았다고 */
+  if (!S.rubricFilled || !S.saved){
     h = '<div class="note note-lock" style="margin-bottom:14px;"><i data-lucide="lock"></i>'
-      + '<div><strong>채점기준을 모두 입력하면 시작할 수 있어요.</strong> 문항마다 볼 기준을 연결하려면 채점기준이 먼저 있어야 해요.</div></div>'
+      + (!S.rubricFilled
+          ? '<div><strong>채점기준을 모두 입력하고 저장하면 시작할 수 있어요.</strong> 문항마다 볼 기준을 연결하려면 채점기준이 먼저 있어야 해요.</div></div>'
+          : '<div><strong>설계를 저장하면 시작할 수 있어요.</strong> 저장한 채점기준을 문항마다 연결해요.</div></div>')
       + list(TODO)
       + '<button class="btn btn-secondary is-disabled" onclick="gotoAdv()"><i data-lucide="file-up" style="width:20px;height:20px;"></i>빈 활동지부터 올리기</button>';
   } else if (!wsDone()){
     /* 문항이 나뉜 것(ready)만 시작으로 친다 — 올리다 만 것도, 들어갔다 그냥 나온 것도 남는 게 없다 */
     h = list(TODO)
-      + '<button class="btn btn-secondary" onclick="gotoAdv()"><i data-lucide="file-up" style="width:20px;height:20px;"></i>빈 활동지부터 올리기</button>';
+      + (S.worksheet   // 활동지는 남아 있고 문항만 없는 상태 — 다시 올리라고 하면 틀린 안내
+          ? '<button class="btn btn-secondary" onclick="gotoAdv()"><i data-lucide="scan-text" style="width:20px;height:20px;"></i>이어서 하기</button>'
+          : '<button class="btn btn-secondary" onclick="gotoAdv()"><i data-lucide="file-up" style="width:20px;height:20px;"></i>빈 활동지부터 올리기</button>');
   } else {
     var na = countAnswers();
     /* 연결이 비어 있는 곳은 상태로만 — 끊김·낡음·초기화 신호는 없다(26-09-08 회의) */
@@ -3295,11 +3310,11 @@ function cancelAdvLoad(){
     showToast('info','채점기준 연결을 멈췄어요. 다시 들어오면 처음부터 연결해요.');
     return;
   }
+  /* 활동지 파일은 올리는 순간 저장됨 — 분석만 멈추고 파일은 남긴다(V1.3). 다시 오면 '문항 다시 분석'으로 나눈다 */
   S.ws = 'idle';
-  S.worksheet = false;
   S.advStep = 1;
   renderAdv();
-  showToast('info','문항 분석을 멈췄어요. 빈 활동지를 다시 올려 주세요.');
+  showToast('info','문항 분석을 멈췄어요. 올린 활동지는 그대로예요.');
 }
 /* ②단은 들어갈 때 AI가 연결을 만든다 — 그동안 기다려야 하고, 벗어나면 처음부터 다시.
    한 번 만들어 두면(linkReady) 되돌아왔을 때 다시 돌리지 않는다. */
@@ -3323,6 +3338,11 @@ function runLinkLoad(target){
 var _showScreenRaw = showScreen;
 showScreen = function(id){
   if (S.screen === 'adv' && id !== 'adv' && (S.ws === 'load' || S.linkLoading)) cancelAdvLoad();
+  /* 1단계를 저장하지 않고 나감 — 나눈 문항만 버리고 활동지는 남긴다. 다시 오면 버튼으로 다시 나눈다(자동으로 다시 돌리지 않음) */
+  else if (S.screen === 'adv' && id !== 'adv' && S.ws === 'ready' && !S.qSaved){
+    resetAdvWork(); S.ws = 'idle';
+    showToast('info','저장하지 않은 문항은 지웠어요. 올린 활동지는 그대로예요.');
+  }
   _showScreenRaw(id);
 };
 function runAdvLoad(){
@@ -3332,7 +3352,7 @@ function runAdvLoad(){
   clearTimeout(_loadTimer);
   _loadTimer = setTimeout(function(){
     stopLoadMsgs();
-    S.ws = 'ready'; S.advStep = 1; S.linkDone = false; S.linkReady = false;
+    S.ws = 'ready'; S.qSaved = false; S.advStep = 1; S.linkDone = false; S.linkReady = false;
     resetStageOpen();
     S.case = 'adv-1';
     renderDetail(); renderToc(); renderMockpick();
@@ -3534,6 +3554,7 @@ function renderRubricRelink(){
 /* 안내에서 바로 ②단으로 — 설계 상세에서 고쳤으니 그 자리에서 이어 가게 */
 function gotoAdvStep2(){
   if (!S.rubricFilled){ showToast('error','채점기준을 모두 입력해야 시작할 수 있어요.'); return; }
+  if (!S.saved){ showToast('error','설계를 저장하면 시작할 수 있어요.'); return; }
   S.advStep = 2;
   S.case = advCase();
   renderAdv();
@@ -3577,6 +3598,7 @@ function saveDesign(){
   askKeepScores(doSaveDesign);
 }
 function doSaveDesign(){
+  S.saved = true;
   Object.keys(S.marks).forEach(function(k){ S.marks[k] = false; });
   renderDetail();
   showToast('success','수정되었습니다.');
