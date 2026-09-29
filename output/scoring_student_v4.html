@@ -84,6 +84,10 @@
     .seg button:not(.active):not(.disabled):hover { border-color: #7FB3E8; }
     .seg button.active { background: #F3F9FF; border-color: #7FB3E8; color: #0950A0; }
     .seg button.disabled { background: #F8F8F8; border-color: #E5E5E5; }
+    /* 문항별 값 없음(배포 전 채점 결과) 안내 */
+    .noq { display: flex; flex-direction: column; align-items: center; gap: 12px; padding: 32px 16px; background: #F8F8F8; border-radius: 12px; margin-top: 16px; text-align: center; }
+    #fb-body .noq { margin-top: 0; padding: 12px 0; }
+    .noq-text { margin: 0; font-size: 16px; color: #494949; line-height: 1.5; word-break: keep-all; }
 
     .seg button .beta-badge { height: 18px; padding: 0 6px; font-size: 11px; }
     .seg button.disabled { cursor: not-allowed; color: #B3B3B3; }
@@ -276,7 +280,7 @@
             <div id="fb-views" style="margin-bottom:16px;"></div>
             <div id="fb-body" style="background:#F8F8F8;border-radius:12px;padding:20px;"></div>
             <div style="display:flex;align-items:center;justify-content:flex-end;gap:16px;margin-top:12px;">
-              <button class="pill-btn" style="height:36px;" onclick="importFb()"><i data-lucide="download" style="width:14px;height:14px;"></i><span id="fb-import-label">종합 의견 가져오기</span></button>
+              <button id="fb-import-row" class="pill-btn" style="height:36px;" onclick="importFb()"><i data-lucide="download" style="width:14px;height:14px;"></i><span id="fb-import-label">종합 의견 가져오기</span></button>
             </div>
           </div>
         </div>
@@ -384,7 +388,9 @@
     document.getElementById('score-rows').innerHTML = h;
 
     var qr = document.getElementById('q-reasons');
-    if (!elMode) {
+    if (!elMode && NO_Q_RESULT) {
+      qr.innerHTML = noQResult('근거'); qr.style.display = 'block'; icons();
+    } else if (!elMode) {
       var q = '';
       QUESTIONS.forEach(function(x, i){
         q += '<div style="padding:16px 0;' + (i < QUESTIONS.length-1 ? 'border-bottom:1px solid #EDEDED;' : '') + '">';
@@ -444,6 +450,8 @@
     }
     if (S.fbView === 'sum') {
       h = '<div class="fb-head" style="margin-bottom:12px;"><span class="q-title">종합 의견</span>' + totalTag() + '</div><p class="fb-text">' + esc(SUMMARY) + '</p>';
+    } else if (S.fbView === 'q' && NO_Q_RESULT) {
+      h = noQResult('피드백');
     } else if (S.fbView === 'q') {
       QUESTIONS.forEach(function(x,i){
         h += '<div class="fb-block"><div class="fb-head" style="align-items:flex-start;">' + qHead(x, i) + '</div>' + body(x.reason, x.feedback) + '</div>';
@@ -454,6 +462,9 @@
       });
     }
     document.getElementById('fb-body').innerHTML = h;
+    // 문항별 결과가 없으면 가져올 것도 없음 → 가져오기 줄 숨김(자리는 유지)
+    document.getElementById('fb-import-row').style.visibility = (S.fbView === 'q' && NO_Q_RESULT) ? 'hidden' : 'visible';
+    icons();
   }
   // 피드백 옆 점수: AI 피드백은 AI 점수 기준으로 쓰였으므로, 선생님 점수가 다를 때만 둘 다 보여 눈에 띄게 (일관성 확인용)
   function scoreTag(ai, teacher, max){
@@ -472,7 +483,17 @@
   var QP = new URLSearchParams(location.search);
   var SUBJECT = QP.get('subject') || '수학';
   var Q_ENABLED = SUBJECT === '수학' || SUBJECT === '과학';
-  var Q_TIP = '수학, 과학 교과에서 먼저 제공하고 있어요.';
+  var Q_TIP = '수학, 과학 교과에서 먼저 제공하고 있어요. 다른 교과는 준비 중이에요.';
+
+  // ── 배포 전에 채점된 결과 (?case=legacy): 문항별 값이 없음 → 버튼은 누를 수 있고, 누르면 재실행 안내 ──
+  var NO_Q_RESULT = new URLSearchParams(location.search).get('case') === 'legacy';
+  function noQResult(what){
+    return '<div class="noq">'
+      + '<i data-lucide="list-ordered" style="width:28px;height:28px;color:#B3B3B3;"></i>'
+      + '<p class="noq-text">문항별 ' + what + (what === '근거' ? '는' : '은') + ' AI 채점을 다시 실행하면 볼 수 있어요.</p>'
+      + '<button class="outline-btn" style="height:36px;font-size:14px;padding:0 12px;" onclick="showToast(\'info\',\'AI 채점을 다시 실행해요.\')"><i data-lucide="rotate-ccw" style="width:16px;height:16px;"></i>AI 채점 재실행</button>'
+      + '</div>';
+  }
   var BETA = '<span class="beta-badge">Beta</span>';
   function applyQGate(){
     if (!Q_ENABLED) { S.reasonView = 'el'; if (S.fbView === 'q') S.fbView = 'sum'; }
@@ -620,6 +641,10 @@
     <i id="mp-caret" data-lucide="chevron-down" style="width:14px;height:14px;"></i>
   </div>
   <div id="mp-body" class="mp-body">
+    <div class="mp-cap">시안 1 · 케이스</div>
+    <button class="mp-btn" data-case="base" onclick="location.href='scoring_student_v4.html#score'">기본 <span class="mp-sub">수학 · 문항별 있음</span></button>
+    <button class="mp-btn" data-case="legacy" onclick="location.href='scoring_student_v4.html?case=legacy#score'">배포 전에 채점된 결과 <span class="mp-sub">문항별 값 없음 · 재실행 안내</span></button>
+    <button class="mp-btn" data-case="subject" onclick="location.href='scoring_student_v4.html?subject=%EA%B5%AD%EC%96%B4#score'">문항별 제공 안 되는 교과 <span class="mp-sub">국어 · 버튼 비활성</span></button>
     <div class="mp-cap">우측 채점 영역 · 시안별</div>
     <button class="mp-btn" data-f="scoring_student_v4.html" onclick="mpNav(this.dataset.f)">시안 1 <span class="mp-sub">채점｜피드백 탭</span></button>
     <button class="mp-btn" data-f="scoring_student_v5.html" onclick="mpNav(this.dataset.f)">시안 2 <span class="mp-sub">근거·피드백 한 섹션</span></button>
@@ -629,7 +654,9 @@
 <script>
   (function(){
     var cur = location.pathname.split('/').pop();
-    document.querySelectorAll('#mockpick .mp-btn').forEach(function(b){ b.classList.toggle('on', b.dataset.f === cur); });
+    var qp = new URLSearchParams(location.search);
+    var curCase = qp.get('case') === 'legacy' ? 'legacy' : (qp.get('subject') ? 'subject' : 'base');
+    document.querySelectorAll('#mockpick .mp-btn').forEach(function(b){ b.classList.toggle('on', b.dataset.case ? b.dataset.case === curCase : b.dataset.f === cur); });
     window.mpNav = function(f){ if (f !== cur) location.href = f; };
     var el = document.getElementById('mockpick'), body = document.getElementById('mp-body'), caret = document.getElementById('mp-caret');
     var KEY = 'hiai_mp_scoring_student';
