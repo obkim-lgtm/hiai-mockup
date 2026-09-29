@@ -3497,9 +3497,8 @@ function renderS3(){
 
   lg.innerHTML = '<div class="lk-legend-h">채점기준</div><div class="lk-legend-grid">'
     + rubrics.map(function(r, i){
-        var chip = !unused[i] ? ''
-          : (allLinked ? '<span class="badge b-red">채점 제외</span>'
-                       : '<span class="badge b-red">연결된 문항 없음</span>');
+        /* 상태만 말한다 — '채점 제외'는 연결 0개일 때 틀린 말(그땐 채점기준 전체로 채점, V1.3). 결과는 위 배너가 설명(09-29 올립) */
+        var chip = !unused[i] ? '' : '<span class="badge b-red">연결된 문항 없음</span>';
         return '<div class="lk-lg' + (unused[i] ? ' none' : '') + '"><span class="lk-n">' + (i + 1) + '</span>'
           + '<span style="flex:1;min-width:0;">' + esc(r.title || '(내용 없음)') + '</span>'
           + chip
