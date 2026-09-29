@@ -2653,7 +2653,8 @@ var ANSWER_SEED = {
 };
 function countAnswers(){
   var n = 0;
-  QUESTIONS.forEach(function(q){ if (q.answer && q.answer.trim()) n++; });
+  /* 모범답안·채점 가이드 중 하나라도 적은 문항 — 둘 다 선택 입력이라 가이드만 적어도 센다(09-29 올립) */
+  QUESTIONS.forEach(function(q){ if ((q.answer && q.answer.trim()) || (q.guide && q.guide.trim())) n++; });
   return n;
 }
 /* 내용이 길어지면 칸이 늘어난다 — 안에서 스크롤되면 적은 내용이 가려져 놓치기 쉽다 */
@@ -3291,7 +3292,7 @@ function renderAdvCard(){
           row(1, true, '문항 ' + QUESTIONS.length + '개를 확정했어요.'),
           row(2, S.linkDone ? (uq ? 'redo' : true) : false,
             S.linkDone ? ('문항마다 채점기준을 연결했어요.' + gap) : '채점기준 연결은 아직이에요.'),
-          row(3, na > 0, na ? ('모범답안을 ' + na + '개 문항에 넣었어요.') : '모범답안은 아직 넣지 않았어요.')
+          row(3, na > 0, na ? ('모범답안·채점 가이드를 ' + na + '개 문항에 넣었어요.') : '모범답안·채점 가이드는 아직 넣지 않았어요.')
         ])
       + '<button class="btn btn-secondary" onclick="gotoAdv()"><i data-lucide="' + (allDone ? 'list-checks' : 'pencil-line') + '" style="width:20px;height:20px;"></i>'
       + (allDone ? '확인하기' : '이어서 하기') + '</button>';
@@ -3333,7 +3334,7 @@ var ADV_WHY = {
 var ADV_GAIN = {
   1: '문항을 확정했어요. 이제 문항마다 볼 채점기준과 모범답안을 정할 수 있어요.',
   2: '문항마다 볼 채점기준을 정했어요. 이제 그 문항에 필요한 기준만으로 채점해요.',
-  3: '모범답안을 넣었어요. 이제 선생님이 보시는 잘한 답안의 수준을 AI가 알고 채점해요.'
+  3: '모범답안·채점 가이드를 넣었어요. 이제 AI가 문항마다 선생님이 보시는 답안과 채점 방향을 알고 채점해요.'   // 가이드만 적어도 맞게(09-29 올립)
 };
 var _msgTimer = null;
 function startLoadMsgs(kind){
