@@ -491,7 +491,8 @@
     return '<div class="noq">'
       + '<i data-lucide="list-ordered" style="width:28px;height:28px;color:#B3B3B3;"></i>'
       + '<p class="noq-text">문항별 ' + what + (what === '근거' ? '는' : '은') + ' AI 채점을 다시 실행하면 볼 수 있어요.</p>'
-      + '<button class="outline-btn" style="height:36px;font-size:14px;padding:0 12px;" onclick="showToast(\'info\',\'AI 채점을 다시 실행해요.\')"><i data-lucide="rotate-ccw" style="width:16px;height:16px;"></i>AI 채점 재실행</button>'
+      // 채점 탭은 탭 끝에 재실행 버튼이 있어 생략, 피드백 탭은 재실행 버튼이 없어 여기서 바로 누르게
+      + (what === '피드백' ? '<button class="outline-btn" style="height:36px;font-size:14px;padding:0 12px;" onclick="showToast(\'info\',\'AI 채점을 다시 실행해요.\')"><i data-lucide="rotate-ccw" style="width:16px;height:16px;"></i>AI 채점 재실행</button>' : '')
       + '</div>';
   }
   var BETA = '<span class="beta-badge">Beta</span>';
