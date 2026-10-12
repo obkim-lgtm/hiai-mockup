@@ -13,6 +13,7 @@
 - **새 화면/컴포넌트 그리기 전(GNB·로고·파비콘·Dialog·Toast·패널·버튼·Input·Badge·토큰·타이포) → [design-system.md](design-system.md)**
 - **컴포넌트 구현 전 실제 수치(색·radius·spacing·폰트) → [design-system.md](design-system.md)의 Figma 파일키로 get_design_context** (육안 추정 금지)
 - **목업 내비게이터(까망이)에 화면·케이스 추가하거나 케이스 선택기 만들기 전 → [mockup-navigator.md](mockup-navigator.md)** (전용 패널 금지·진입 항목→케이스 그룹·딥링크·파일 간 동기화, CLIPO 목업과 공통 규칙)
+- **정교한 설계(H-2608 PRD v2.1, 2026-10-12) 목업·PRD·QA 작업 전 → [precise-design.md](precise-design.md)** — 확정 규칙 요약(저장 모델·①②③ 정의·라우팅·`!`·확인 C1~C6·데이터 연쇄·OCR 관계·기본 설계 수정 정책)과 결정 이력·남은 확인. 작업 기록은 [sessions/2026-10-12.md](sessions/2026-10-12.md)
 - **평가 설계 작업 전 → [sessions/2026-09-03.md](sessions/2026-09-03.md) 맨 위 `09-10` 절(저장 선택창 최종, 배포·PRD 반영) + 맨 아래 "2026-09-08 오후" 절과 "▶ 이어받기"** — 작업본 **`../output/evaluation_design_v9.html`**(v8은 회의록·PRD에 공유된 주소라 보존). 설계는 채점기준까지 = 완료, 그 위에 **AI 채점 정확도 높이기 3단계**(① 빈 활동지·문항 확정 ② 채점기준 연결(매트릭스) ③ 모범답안). **v7의 AI 진단·루브릭 수정 제안은 삭제됨**
 - **채점기준 AI 검토(루브릭이 채점하기 적합한지) 손대기 전 → [sessions/2026-09-02.md](sessions/2026-09-02.md)** — AI팀이 실제 만든 API를 v8 채점기준 섹션에 붙인 것. 판정은 하드코딩이 아니라 입력된 텍스트를 훑는 규칙(`rvScan`)이라 교사가 고쳐 쓰면 따라 바뀐다. `overloaded_element`(섞임) · `ambiguous_boundary`(경계 흐릿) 두 가지
 - **⚠ 채점기준 AI 검토는 시안3(배너 인라인)으로 확정 → [sessions/2026-09-03.md](sessions/2026-09-03.md)** — 실제 계약은 `{ grade, comment }` **필드 두 개뿐**(등급 `우수`·`적절`·`보완필요` 3단계 + 글 하나). 채점기준별이 아니라 **전체 루브릭 단위**라 매핑도 카드 표시도 없다. 드로워·별도 화면 없이 **배너 한 자리에서 끝난다**. 시안1(`#case=rv-hit`)·시안2(`#case=rv-page`)는 전제가 달라 접혔으나 **지우지 말 것**(까망이에 `(보류)`로 남김). `S.rvPlan` 1\|2\|3이 가른다
